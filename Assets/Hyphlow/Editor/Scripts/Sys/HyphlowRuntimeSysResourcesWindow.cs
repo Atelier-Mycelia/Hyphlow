@@ -9,10 +9,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
 {
     public sealed class HyphlowRuntimeSysResourcesWindow : EditorWindow
     {
-        private const string ResourcesSubfolderPath = "AtMycelia/Hyphlow/Sys";
+        private const string ResourcesSubfolderPath = "Runtime";
         private const string AssetName = "HyphlowRuntimeSysAssets";
 
-        [MenuItem("Window/Atelier Mycelia/Hyphlow/Sys/Hyphlow Runtime Sys Resources")]
+        [MenuItem("Window/Atelier Mycelia/Hyphlow/Hyphlow Runtime Sys Resources")]
         public static void Open()
         {
             HyphlowRuntimeSysResourcesWindow window = GetWindow<HyphlowRuntimeSysResourcesWindow>();

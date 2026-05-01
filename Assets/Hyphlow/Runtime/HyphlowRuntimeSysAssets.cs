@@ -76,7 +76,7 @@ namespace AtMycelia.Hyphlow.Sys
                                       $"{AssetDatabase.GetAssetPath(S)}. New instance: {name} at " +
                                       $"{AssetDatabase.GetAssetPath(this)}.";
                 Debug.LogError(errorMessage);
-                Destroy(this);
+                DestroyImmediate(this);
                 return;
             }
 
