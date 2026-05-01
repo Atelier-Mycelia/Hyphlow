@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
+  m_Name: SoundFX
+  m_EditorClassIdentifier: 
+  _includeInSaves: 1
+  _uniqueId: 369aa3d0-522e-4c51-be33-fc9f4e61e380
+  _alwaysKeepGuid: 1
+  _varManager:
+    _muscariables:
+    - rid: 3688520209775198766
+    - rid: 3688520209775198767
+    - rid: 3688520209775198768
+    _legacyVariables: []
+    _nextValidVarID: 4
+    _isInitted: 0
+  _nextVarID: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 3688520209775198766
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: uiHover
+        _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 3688520209775198767
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: uiSelect
+        _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 3688520209775198768
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: uiInvalidSelect
+        _itemId: 3
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}

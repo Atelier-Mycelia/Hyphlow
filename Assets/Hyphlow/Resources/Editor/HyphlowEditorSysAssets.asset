@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9cb465272796ed479da619d12345ac8, type: 3}
+  m_Name: HyphlowEditorSysAssets
+  m_EditorClassIdentifier: 
+  add:
+    free: {fileID: 2800000, guid: 89f59e80b30404e41838084e1fd15d1b, type: 3}
+    pro: {fileID: 2800000, guid: 4b432f1cad6e442438585f95df7639a7, type: 3}
+  add_small:
+    free: {fileID: 2800000, guid: 7dc32a2e5874ae140b76485223d720d3, type: 3}
+    pro: {fileID: 2800000, guid: 01c22db9fa60ee740a0edfd545a2315e, type: 3}
+  delete:
+    free: {fileID: 2800000, guid: 951d789e921cf0b46ae94c9f3aaf2937, type: 3}
+    pro: {fileID: 2800000, guid: daef818c588db954c87b5796438a69b6, type: 3}
+  down:
+    free: {fileID: 2800000, guid: 9922bf1dd9a6ed04ba356dec2bafca98, type: 3}
+    pro: {fileID: 0}
+  duplicate:
+    free: {fileID: 2800000, guid: f20b67a04f0b875489e3aee79b434135, type: 3}
+    pro: {fileID: 2800000, guid: 219d91bf7500ee244a5b0eada5f47ccf, type: 3}
+  fungus_mushroom:
+    free: {fileID: 2800000, guid: e2214a5eec201ec4db941159b08ec4bf, type: 3}
+    pro: {fileID: 2800000, guid: fa18890de2be71749a638fe6c0556ef7, type: 3}
+  up:
+    free: {fileID: 2800000, guid: d86d71581f669b444b72ed6895a3bc58, type: 3}
+    pro: {fileID: 2800000, guid: 890975ea9791c314a97ed76c30cdfad4, type: 3}
+  bullet_point:
+    free: {fileID: 2800000, guid: a5a64cd440e9a9d45b15d42a9a2e2b64, type: 3}
+    pro: {fileID: 0}
+  choice_node_off:
+    free: {fileID: 2800000, guid: a2d9634592f60f942b2f7e498187c076, type: 3}
+    pro: {fileID: 0}
+  choice_node_on:
+    free: {fileID: 2800000, guid: 289f6cf822b456246839d2f833197785, type: 3}
+    pro: {fileID: 0}
+  command_background:
+    free: {fileID: 2800000, guid: 26cb9a137e7381c409d9747e1d2994c7, type: 3}
+    pro: {fileID: 0}
+  event_node_off:
+    free: {fileID: 2800000, guid: 9ed66356bb4801f4d89d579205bec244, type: 3}
+    pro: {fileID: 0}
+  event_node_on:
+    free: {fileID: 2800000, guid: 102b02f7de0474a40bab71800ba657fd, type: 3}
+    pro: {fileID: 0}
+  play_big:
+    free: {fileID: 2800000, guid: 7a14bea129a08e64583db42695d20fef, type: 3}
+    pro: {fileID: 0}
+  play_small:
+    free: {fileID: 2800000, guid: ee9ea97a3b515cb41b72b2708aac004d, type: 3}
+    pro: {fileID: 0}
+  process_node_off:
+    free: {fileID: 2800000, guid: bae56f48c4d67f74aade2b0130faec52, type: 3}
+    pro: {fileID: 0}
+  process_node_on:
+    free: {fileID: 2800000, guid: 9833391de9891df4e8bd8b1d319fa36b, type: 3}
+    pro: {fileID: 0}
+  _fcwConfig: {fileID: 11400000, guid: 07d73872ac6ccb8419431653582305f7, type: 2}

@@ -1,0 +1,17 @@
+{
+    "name": "AtMycelia.Hyphlow.Samples",
+    "rootNamespace": "",
+    "references": [
+        "GUID:315f594c192fac84b811333747e5ecb0",
+        "GUID:3e8446a8987ac8a47ba6568ab3ce29f4"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
