@@ -2,6 +2,7 @@ using AtMycelia.Events;
 using System;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityCollision = UnityEngine.Collision;
 
 namespace AtMycelia.Hyphlow
 {
@@ -52,7 +53,7 @@ namespace AtMycelia.Hyphlow
 			_notifier = toAttachTo.GetOrAddComponent<PhysicsEventNotifier>();
 		}
 
-		private PhysicsEventNotifier _notifier;
+		protected PhysicsEventNotifier _notifier;
 
 		protected bool PassesTagFilter(string tag)
 		{
@@ -84,6 +85,14 @@ namespace AtMycelia.Hyphlow
 				_notifier.TriggerEnter2D += OnTriggerEnterTwoDResponse;
 				_notifier.TriggerStay2D += OnTriggerStayTwoDResponse;
 				_notifier.TriggerExit2D += OnTriggerExitTwoDResponse;
+
+				_notifier.CollisionEnter += OnCollisionEnterResponse;
+				_notifier.CollisionStay += OnCollisionStayResponse;
+				_notifier.CollisionExit += OnCollisionExitResponse;
+
+				_notifier.CollisionEnter2D += OnCollisionEnterTwoDResponse;
+				_notifier.CollisionStay2D += OnCollisionStayTwoDResponse;
+				_notifier.CollisionExit2D += OnCollisionExitTwoDResponse;
 			}
 			else
 			{
@@ -94,6 +103,14 @@ namespace AtMycelia.Hyphlow
 				_notifier.TriggerEnter2D -= OnTriggerEnterTwoDResponse;
 				_notifier.TriggerStay2D -= OnTriggerStayTwoDResponse;
 				_notifier.TriggerExit2D -= OnTriggerExitTwoDResponse;
+
+				_notifier.CollisionEnter -= OnCollisionEnterResponse;
+				_notifier.CollisionStay -= OnCollisionStayResponse;
+				_notifier.CollisionExit -= OnCollisionExitResponse;
+
+				_notifier.CollisionEnter2D -= OnCollisionEnterTwoDResponse;
+				_notifier.CollisionStay2D -= OnCollisionStayTwoDResponse;
+				_notifier.CollisionExit2D -= OnCollisionExitTwoDResponse;
 			}
 		}
 
@@ -114,6 +131,17 @@ namespace AtMycelia.Hyphlow
 			
 		}
 
+		protected virtual void OnCollisionEnterResponse(UnityCollision col)
+		{
+		}
+
+		protected virtual void OnCollisionStayResponse(UnityCollision col)
+		{
+		}
+
+		protected virtual void OnCollisionExitResponse(UnityCollision col)
+		{
+		}
 		#endregion
 
 		#region TwoD
@@ -129,6 +157,18 @@ namespace AtMycelia.Hyphlow
 		protected virtual void OnTriggerEnterTwoDResponse(Collider2D col)
 		{
 			
+		}
+
+		protected virtual void OnCollisionEnterTwoDResponse(Collision2D col)
+		{
+		}
+
+		protected virtual void OnCollisionStayTwoDResponse(Collision2D col)
+		{
+		}
+
+		protected virtual void OnCollisionExitTwoDResponse(Collision2D col)
+		{
 		}
 		#endregion
 

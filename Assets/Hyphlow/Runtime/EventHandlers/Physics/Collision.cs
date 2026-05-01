@@ -21,17 +21,17 @@ namespace AtMycelia.Hyphlow
 
         #region ThreeD
 
-        protected virtual void OnCollisionEnterResponse(UnityCollision col)
+        protected override void OnCollisionEnterResponse(UnityCollision col)
         {
             ProcessCollision(PhysicsMessageType.Enter, col);
         }
 
-        protected virtual void OnCollisionStayResponse(UnityCollision col)
+        protected override void OnCollisionStayResponse(UnityCollision col)
         {
             ProcessCollision(PhysicsMessageType.Stay, col);
         }
 
-        protected virtual void OnCollisionExitResponse(UnityCollision col)
+        protected override void OnCollisionExitResponse(UnityCollision col)
         {
             ProcessCollision(PhysicsMessageType.Exit, col);
         }
@@ -53,17 +53,17 @@ namespace AtMycelia.Hyphlow
 
         #region TwoD
 
-        protected virtual void OnCollisionEnterTwoDResponse(Collision2D col)
+        protected override void OnCollisionEnterTwoDResponse(Collision2D col)
         {
             ProcessCollision(PhysicsMessageType.Enter, col);
         }
 
-        protected virtual void OnCollisionStayTwoDResponse(Collision2D col)
+        protected override void OnCollisionStayTwoDResponse(Collision2D col)
         {
             ProcessCollision(PhysicsMessageType.Stay, col);
         }
 
-        protected virtual void OnCollisionExitTwoDResponse(Collision2D col)
+        protected override void OnCollisionExitTwoDResponse(Collision2D col)
         {
             ProcessCollision(PhysicsMessageType.Exit, col);
         }
@@ -154,7 +154,6 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private PhysicsEventNotifier _notifier;
 
         [SerializeField] [HideInInspector] protected CollisionVariable collisionVar;
     }

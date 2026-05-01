@@ -8,6 +8,7 @@ namespace AtMycelia.Hyphlow
     /// In charge of handling the essential MonoBehaviours and GameObjects for the Hyphlow system,
     /// such as TweenManager.
     /// </summary>
+    [ExecuteInEditMode]
     public sealed class HyphlowManager : MonoBehaviour
     {
         [SerializeField, HideInInspector] private GameObject _tweenAnchorHolder;
@@ -26,7 +27,18 @@ namespace AtMycelia.Hyphlow
         {
             if (_s != null && _s != this)
             {
-                Destroy(this.gameObject);
+                string warningMessage = $"Another instance of HyphlowManager already exists: {_s.gameObject.name}." +
+                    $"Destroying this one: {this.gameObject.name}";
+                Debug.LogWarning(warningMessage);
+                if (Application.isPlaying)
+                {
+                    Destroy(this.gameObject);
+                }
+                else
+                {
+                    DestroyImmediate(this.gameObject);
+                }
+
                 return;
             }
 

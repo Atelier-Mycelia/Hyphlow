@@ -163,7 +163,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static bool IsFlowchartInAllowedContext(Flowchart flowchart)
         {
-            if (flowchart == null)
+            if (flowchart == null || flowchart.gameObject == null)
             {
                 return false;
             }
@@ -179,6 +179,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static bool IsFlowchartInPrefabStage(Flowchart flowchart)
         {
+            if (flowchart == null || flowchart.gameObject == null)
+            {
+                return false;
+            }
             PrefabStage prefabStage = PrefabStageUtility.GetPrefabStage(flowchart.gameObject);
             return prefabStage != null;
         }

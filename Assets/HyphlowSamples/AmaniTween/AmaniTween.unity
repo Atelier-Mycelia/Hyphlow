@@ -270,16 +270,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: PingPongMovement
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 1
+  _blockName: PingPongMovement
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 470391095}
   - {fileID: 470391094}
   - {fileID: 470391096}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &470391090
 MonoBehaviour:
@@ -910,15 +910,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 2
-  blockName: SpinnySpin
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 2
+  _blockName: SpinnySpin
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 470391097}
   - {fileID: 470391099}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &470391101
 MonoBehaviour:
@@ -1038,15 +1038,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 9
-  blockName: OnMessageReceived
-  description: 
-  eventHandler: {fileID: 470391101}
-  commandList:
+  _itemId: 9
+  _blockName: OnMessageReceived
+  _description: 
+  _eventHandler: {fileID: 470391101}
+  _commandList:
   - {fileID: 470391103}
   - {fileID: 470391102}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!1 &867076609
 GameObject:
@@ -1174,11 +1174,11 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 23
-  blockName: Test Tween
-  description: 
-  eventHandler: {fileID: 868139016}
-  commandList:
+  _itemId: 23
+  _blockName: Test Tween
+  _description: 
+  _eventHandler: {fileID: 868139016}
+  _commandList:
   - {fileID: 868139032}
   - {fileID: 868139017}
   - {fileID: 868139087}
@@ -1195,8 +1195,8 @@ MonoBehaviour:
   - {fileID: 868139072}
   - {fileID: 868139073}
   - {fileID: 868139039}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &868138993
 MonoBehaviour:
@@ -1559,16 +1559,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 31
-  blockName: PunchMoveRotateScale
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 31
+  _blockName: PunchMoveRotateScale
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139038}
   - {fileID: 868139041}
   - {fileID: 868139040}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139030
 MonoBehaviour:
@@ -1907,17 +1907,17 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 32
-  blockName: FirstTwoShroomsSwitchPlaces
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 32
+  _blockName: FirstTwoShroomsSwitchPlaces
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139034}
   - {fileID: 868139031}
   - {fileID: 868139030}
   - {fileID: 868139033}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139038
 MonoBehaviour:
@@ -2542,15 +2542,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 48
-  blockName: SecondShroomSyncRotationToFirst
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 48
+  _blockName: SecondShroomSyncRotationToFirst
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139047}
   - {fileID: 868139046}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139049
 MonoBehaviour:
@@ -2776,16 +2776,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 58
-  blockName: FirstTwoShroomsGoSmall
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 58
+  _blockName: FirstTwoShroomsGoSmall
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139052}
   - {fileID: 868139051}
   - {fileID: 868139050}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139054
 MonoBehaviour:
@@ -3004,15 +3004,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 66
-  blockName: RightShroomFromRotation
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 66
+  _blockName: RightShroomFromRotation
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139057}
   - {fileID: 868139056}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139059
 MonoBehaviour:
@@ -3148,15 +3148,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 65
-  blockName: LeftShroomFromMovement
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 65
+  _blockName: LeftShroomFromMovement
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139060}
   - {fileID: 868139059}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139062
 MonoBehaviour:
@@ -3246,15 +3246,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 76
-  blockName: ThirdShroomFromScale
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 76
+  _blockName: ThirdShroomFromScale
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139064}
   - {fileID: 868139066}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139066
 MonoBehaviour:
@@ -3510,14 +3510,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 81
-  blockName: LeftShroomLookAtMiddle
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 81
+  _blockName: LeftShroomLookAtMiddle
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139070}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139072
 MonoBehaviour:
@@ -3613,17 +3613,17 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 83
-  blockName: RightShroomLookAtLeft_FromThenTo
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 83
+  _blockName: RightShroomLookAtLeft_FromThenTo
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139083}
   - {fileID: 868139085}
   - {fileID: 868139082}
   - {fileID: 868139084}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139076
 MonoBehaviour:
@@ -3774,18 +3774,18 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 82
-  blockName: MiddleShroomLookAtRight_FromThenTo
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _itemId: 82
+  _blockName: MiddleShroomLookAtRight_FromThenTo
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 868139079}
   - {fileID: 868139081}
   - {fileID: 868139086}
   - {fileID: 868139080}
   - {fileID: 868139076}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 1
 --- !u!114 &868139079
 MonoBehaviour:
@@ -4863,43 +4863,11 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1971204863
-GameObject:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1971204865}
-  m_Layer: 0
-  m_Name: _FungusState
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1971204865
-Transform:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1971204863}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 131346346}
   - {fileID: 1749438606}
-  - {fileID: 1971204865}
   - {fileID: 868138994}
   - {fileID: 1188210325}

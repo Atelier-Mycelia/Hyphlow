@@ -158,8 +158,10 @@ namespace AtMycelia.Hyphlow
                     migratedCount++;
                 }
             }
-
-            Debug.Log($"VariableManagerComponent: Migrated variables for {migratedCount} Flowchart(s).");
+            if (migratedCount > 0)
+            {
+                Debug.Log($"VariableManagerComponent: Migrated variables for {migratedCount} Flowchart(s).");
+            }
         }
 
         public void MigrateFromFlowchart(out bool success)
