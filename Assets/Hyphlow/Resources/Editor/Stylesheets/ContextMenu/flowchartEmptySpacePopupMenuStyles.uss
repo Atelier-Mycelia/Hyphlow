@@ -1,6 +1,6 @@
 :root
 {
-    --main-font: resource('Fonts/Exo2/Exo2-Regular');
+    --main-font: resource('Runtime/Fonts/Exo2/Exo2-Regular');
     -unity-font-definition: var(--main-font);
 
     height: 85px;

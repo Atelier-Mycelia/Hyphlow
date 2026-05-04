@@ -16,7 +16,7 @@
 
 .varRowTypeLabel
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular');
     color: rgb(229, 229, 229);
     -unity-text-align: middle-left;
     width: 75px;
@@ -37,7 +37,7 @@
 
 .keyInput > #unity-text-input
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular');
     background-color: rgb(26, 26, 26);
     color: rgb(230, 230, 230);
     border-radius: 2px;
@@ -62,7 +62,7 @@
 
 .scopeRoot 
 {
-    -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+    -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular');
     width: 75px;
     display: flex;
     flex-direction: row;

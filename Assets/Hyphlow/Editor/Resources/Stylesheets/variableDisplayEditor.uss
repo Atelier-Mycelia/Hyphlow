@@ -1,8 +1,8 @@
 /* Individual rows */
 #VariableDisplayEditorRoot
 {
-    /* -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
+    /* -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
+    -unity-font-definition: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
 
     background-color: rgba(0, 0, 255, 0.05);
     max-width: 500px;
