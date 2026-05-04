@@ -1,6 +1,6 @@
 .numericField
 {
-	-unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+	-unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular');
 	color: rgb(229, 229, 229);
 	-unity-text-align: middle-left;
 	width: 100%;
@@ -14,7 +14,7 @@
 
 .numericField > #unity-text-input
 {
-	-unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular');
+	-unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular');
 	color: rgb(229, 229, 229);
 	-unity-text-align: middle-left;
 	width: 100%;
