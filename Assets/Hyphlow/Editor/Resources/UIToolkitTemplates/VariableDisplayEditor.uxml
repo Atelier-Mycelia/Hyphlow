@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Amanita/Editor/Resources/Stylesheets/variableDisplayEditor.uss?fileID=7433441132597879392&amp;guid=9c0e2f55938933348bc8eb8a71cf2058&amp;type=3#variableDisplayEditor" />
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/variableDisplayEditor.uss?fileID=7433441132597879392&amp;guid=9c0e2f55938933348bc8eb8a71cf2058&amp;type=3#variableDisplayEditor" />
     <ui:VisualElement name="VariableDisplayEditorRoot" class="variable-editor">
         <ui:Foldout text="Variables" name="Foldout" style="font-size: 28px; color: rgb(229, 229, 229); margin-top: 15px; margin-right: 0; margin-bottom: 0; margin-left: 0;">
             <ui:VisualElement name="varHeaderBar" view-data-key="varHeaderBar">
