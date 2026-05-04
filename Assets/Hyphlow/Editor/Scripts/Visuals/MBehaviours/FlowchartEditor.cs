@@ -55,7 +55,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return rootElement;
         }
 
-        private static readonly string _pathToUxml = "UIToolkitTemplates/FlowchartInspector";
+        private static readonly string _pathToUxml = "Editor/UIToolkitTemplates/FlowchartInspector";
         private static readonly string _openFlowchartWindowButtonName = "OpenFlowchartWindow";
 
         protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)

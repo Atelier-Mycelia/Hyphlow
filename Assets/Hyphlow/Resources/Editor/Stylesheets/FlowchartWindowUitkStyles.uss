@@ -1,7 +1,7 @@
 :root 
 {
-    /* -unity-font-definition: resource('Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
-    -unity-font-definition: resource('Fonts/Exo2/Exo2-Regular SDF-UITK');
+    /* -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
+    -unity-font-definition: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
     --fc-name-label-color: var(--unity-text-default-color);
 }
 

@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(Color),
         typeDisplayName: "Color",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/ColorVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Graphic/ColorVariableRow")]
     public class ColorRowVisualHandler : RowVisualHandler<Color>
     {
         protected override void RegisterVisualElements()
@@ -64,7 +64,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(Texture),
         typeDisplayName: "Texture",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/TextureVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Graphic/TextureVariableRow")]
     public class TextureRowVisualHandler : RowVisualHandler<Texture>
     {
 
@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(Material),
         typeDisplayName: "Material",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/MaterialVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Graphic/MaterialVariableRow")]
     public class MaterialRowVisualHandler : RowVisualHandler<Material>
     {
 
@@ -82,7 +82,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(Sprite),
         typeDisplayName: "Sprite",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/SpriteVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Graphic/SpriteVariableRow")]
     public class SpriteRowVisualHandler : RowVisualHandler<Sprite>
     {
 
@@ -91,7 +91,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(Animator),
         typeDisplayName: "Animator",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Graphic/AnimatorVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Graphic/AnimatorVariableRow")]
     public class AnimatorRowVisualHandler : RowVisualHandler<Animator>
     {
 

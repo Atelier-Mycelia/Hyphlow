@@ -3,7 +3,7 @@
 :root
 {
 	--block-border-color: rgba(0, 0, 0, 0.5);
-	-unity-font-definition: resource("Fonts/Amaranth/Amaranth-Regular SDF-UITK");
+	-unity-font-definition: resource("Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK");
 	--selected-block-border-color: rgba(0, 250, 0, 1);
 }
 
