@@ -6,7 +6,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "UnityGeneral",
         contentType: typeof(GameObject),
         typeDisplayName: "GameObject",
-        pathToTemplate: "UIToolkitTemplates/VarRows/UnityGeneral/GameObjectVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/UnityGeneral/GameObjectVariableRow")]
     public class GameObjectRowVisualHandler : RowVisualHandler<GameObject>
     {
     }
@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "UnityGeneral",
         contentType: typeof(Transform),
         typeDisplayName: "Transform",
-        pathToTemplate: "UIToolkitTemplates/VarRows/UnityGeneral/TransformVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/UnityGeneral/TransformVariableRow")]
     public class TransformRowVisualHandler : RowVisualHandler<Transform>
     {
     }
@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "UnityGeneral",
         contentType: typeof(UnityObject),
         typeDisplayName: "UnityObject",
-        pathToTemplate: "UIToolkitTemplates/VarRows/UnityGeneral/UnityObjectVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/UnityGeneral/UnityObjectVariableRow")]
     public class UnityObjectRowVisualHandler : RowVisualHandler<UnityObject>
     {
     }

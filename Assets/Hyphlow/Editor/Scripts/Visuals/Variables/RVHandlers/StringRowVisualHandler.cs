@@ -6,7 +6,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(string),
         typeDisplayName: "String",
-        pathToTemplate: "UIToolkitTemplates/VarRows/StringVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/StringVariableRow")]
     public class StringRowVisualHandler : RowVisualHandler<object>
     {
         protected override void RegisterVisualElements()

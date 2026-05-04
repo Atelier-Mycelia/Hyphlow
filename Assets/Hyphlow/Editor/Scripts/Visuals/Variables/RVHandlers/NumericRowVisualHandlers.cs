@@ -50,7 +50,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(float), 
         typeDisplayName: "Float",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/FloatVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/FloatVariableRow")]
     public class FloatRowVisualHandler : NumericRowVisualHandler<float>
     {
         
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(double),
         typeDisplayName: "Double",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/DoubleVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/DoubleVariableRow")]
     public class DoubleRowVisualHandler : NumericRowVisualHandler<double>
     {
 
@@ -68,7 +68,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(int), 
         typeDisplayName: "Integer",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/IntVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/IntVariableRow")]
     public class IntRowVisualHandler : NumericRowVisualHandler<int>
     {
         
@@ -78,7 +78,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(bool),
         typeDisplayName: "Boolean",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/BoolVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/BoolVariableRow")]
     public class BoolRowVisualHandler : RowVisualHandler<bool>
     {
         protected override void RegisterVisualElements()
@@ -127,7 +127,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(Vector2), 
         typeDisplayName: "VectorTwo",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/VectorTwoVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/VectorTwoVariableRow")]
     public class VectorTwoRowVisualHandler : RowVisualHandler<Vector2>
     {
         protected override void RegisterVisualElements()
@@ -176,7 +176,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(Vector3), 
         typeDisplayName: "VectorThree",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/VectorThreeVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/VectorThreeVariableRow")]
     public class VectorThreeRowVisualHandler : RowVisualHandler<Vector3>
     {
         protected override void RegisterVisualElements()
@@ -225,7 +225,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(Vector4),
         typeDisplayName: "VectorFour",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/VectorFourVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/VectorFourVariableRow")]
     public class VectorFourVisualHandler : RowVisualHandler<Vector4>//
     {
         protected override void RegisterVisualElements()
@@ -273,7 +273,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(Matrix4x4),
         typeDisplayName: "MatrixFourByFour",
-        pathToTemplate: "UIToolkitTemplates/VarRows/Numeric/MatrixFourByFourVariableRow")]
+        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Numeric/MatrixFourByFourVariableRow")]
     public class MatrixFourByFourVisualHandler : RowVisualHandler<Matrix4x4>
     {
         protected override void RegisterVisualElements()

@@ -2,6 +2,7 @@ using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using UnityEngine;
 using AtMycelia.AmaniTween;
+using Debug = UnityEngine.Debug;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -45,6 +46,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 if (all.Length > 0)
                 {
                     assets = all[0];
+                }
+                else
+                {
+                    Debug.LogWarning($"Couldn't find an instance of {nameof(HyphlowRuntimeSysAssets)} in the Resources folder. Will create one.");
                 }
             }
 
