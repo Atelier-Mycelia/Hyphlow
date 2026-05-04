@@ -7,7 +7,7 @@
 	--text-field-font-size: 18px;
 	--text-field-border-radius: 5px;
 	--normal-row-height: 30px;
-	--rainbow-tex: resource("Textures/rainbowTex");
+	--rainbow-tex: resource("Editor/Textures/rainbowTex");
 	--slight-left-padding-only: 0px 0px 0px 5px;
 	--slight-bottom-margin-only: 0px 0px 3px 0px;
 	--slightly-rounded: 3px;
