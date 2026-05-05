@@ -128,8 +128,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 44481361}
-  - component: {fileID: 44481360}
   - component: {fileID: 44481359}
+  - component: {fileID: 44481360}
   - component: {fileID: 44481358}
   - component: {fileID: 44481357}
   - component: {fileID: 44481356}
@@ -289,10 +289,8 @@ MonoBehaviour:
   _otherSettings: []
   description: 
   uiModel:
-    _selectedBlocks:
-    - {fileID: 44481358}
-    _selectedCommands:
-    - {fileID: 44481356}
+    _selectedBlocks: []
+    _selectedCommands: []
     _owner: {fileID: 44481355}
     <ScrollPos>k__BackingField: {x: -352, y: 1.6666665}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}

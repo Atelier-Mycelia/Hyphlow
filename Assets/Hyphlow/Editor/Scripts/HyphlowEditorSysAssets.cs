@@ -31,16 +31,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
         [SerializeField] private EditorTexture duplicate;
         [SerializeField] private EditorTexture fungus_mushroom;
         [SerializeField] private EditorTexture up;
-        [SerializeField] private EditorTexture bullet_point;
-        [SerializeField] private EditorTexture choice_node_off;
-        [SerializeField] private EditorTexture choice_node_on;
         [SerializeField] private EditorTexture command_background;
-        [SerializeField] private EditorTexture event_node_off;
-        [SerializeField] private EditorTexture event_node_on;
         [SerializeField] private EditorTexture play_big;
         [SerializeField] private EditorTexture play_small;
-        [SerializeField] private EditorTexture process_node_off;
-        [SerializeField] private EditorTexture process_node_on;
         [SerializeField] private FlowchartWindowConfig _fcwConfig;
 
         private static HyphlowEditorSysAssets instance;
@@ -83,16 +76,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public static Texture2D Duplicate { get { return S.duplicate.Texture2D; } }
         public static Texture2D FungusMushroom { get { return S.fungus_mushroom.Texture2D; } }
         public static Texture2D Up { get { return S.up.Texture2D; } }
-        public static Texture2D BulletPoint { get { return S.bullet_point.Texture2D; } }
-        public static Texture2D ChoiceNodeOff { get { return S.choice_node_off.Texture2D; } }
-        public static Texture2D ChoiceNodeOn { get { return S.choice_node_on.Texture2D; } }
         public static Texture2D CommandBackground { get { return S.command_background.Texture2D; } }
-        public static Texture2D EventNodeOff { get { return S.event_node_off.Texture2D; } }
-        public static Texture2D EventNodeOn { get { return S.event_node_on.Texture2D; } }
         public static Texture2D PlayBig { get { return S.play_big.Texture2D; } }
         public static Texture2D PlaySmall { get { return S.play_small.Texture2D; } }
-        public static Texture2D ProcessNodeOff { get { return S.process_node_off.Texture2D; } }
-        public static Texture2D ProcessNodeOn { get { return S.process_node_on.Texture2D; } }
         public static FlowchartWindowConfig FcwConfig { get { return S._fcwConfig; } }
     }
 }
