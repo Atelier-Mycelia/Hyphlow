@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
+using AtMycelia.Collections;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -16,7 +18,7 @@ namespace AtMycelia.Hyphlow
     public sealed class VariableRegistryService : IDisposable
     {
         public VariableRegistryService(Func<IReadOnlyList<VariableSourceAsset>> globalSourcesProvider,
-            VariableRegistryConfig config)
+            IReadOnlyList<VariableRegistryConfig> configs)
         {
             if (globalSourcesProvider == null)
             {
@@ -24,14 +26,29 @@ namespace AtMycelia.Hyphlow
             }
 
             _globalSourcesProvider = globalSourcesProvider;
-            _config = config;
+
+            RegisterConfigs();
+            void RegisterConfigs()
+            {
+                _configs.Clear();
+
+                for (int i = 0; i < configs.Count; i++)
+                {
+                    VariableRegistryConfig config = configs[i];
+                    if (config != null)
+                    {
+                        _configs.Add(config);
+                    }
+                }
+            }
+
             _registry = new VariableRegistry(_globalSourcesProvider);
 
             ToggleSubs(true);
         }
 
         private readonly Func<IReadOnlyList<VariableSourceAsset>> _globalSourcesProvider;
-        private readonly VariableRegistryConfig _config;
+        private readonly IList<VariableRegistryConfig> _configs = new List<VariableRegistryConfig>();
         private readonly VariableRegistry _registry;
 
         public VariableRegistry LocalRegistry => _registry;
@@ -61,9 +78,13 @@ namespace AtMycelia.Hyphlow
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
 
-                if (_config != null)
+                for (int i = 0; i < _configs.Count; i++)
                 {
-                    _config.Changed += OnConfigChanged;
+                    VariableRegistryConfig config = _configs[i];
+                    if (config != null)
+                    {
+                        config.Changed += OnConfigChanged;
+                    }
                 }
             }
             else
@@ -86,9 +107,13 @@ namespace AtMycelia.Hyphlow
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
 
-                if (_config != null)
+                for (int i = 0; i < _configs.Count; i++)
                 {
-                    _config.Changed -= OnConfigChanged;
+                    VariableRegistryConfig config = _configs[i];
+                    if (config != null)
+                    {
+                        config.Changed -= OnConfigChanged;
+                    }
                 }
             }
         }
@@ -190,12 +215,36 @@ namespace AtMycelia.Hyphlow
                 return Current;
             }
 
-            VariableRegistryConfig config = LoadDefaultConfig();
-            Func<IReadOnlyList<VariableSourceAsset>> provider = () => config != null ? 
-            config.GlobalSources : 
-            emptySources;
+            IReadOnlyList<VariableRegistryConfig> configs = LoadDefaultConfig();
+            Func<IReadOnlyList<VariableSourceAsset>> provider = () =>
+            {
+                IList<VariableSourceAsset> results = new List<VariableSourceAsset>();
+                if (configs != null && configs.Count > 0)
+                {
+                    for (int i = 0; i < configs.Count; i++)
+                    {
+                        VariableRegistryConfig config = configs[i];
+                        if (config == null)
+                        {
+                            continue;
+                        }
+                        IReadOnlyList<VariableSourceAsset> configSources = config.GlobalSources;
+                        for (int j = 0; j < configSources.Count; j++)
+                        {
+                            VariableSourceAsset source = configSources[j];
+                            if (source != null)
+                            {
+                                results.Add(source);
+                            }
+                        }
+                    }
+                }
+                return results.Count > 0 ? 
+                new List<VariableSourceAsset>(results) : 
+                emptySources;
+            };
 
-            VariableRegistryService service = new VariableRegistryService(provider, config);
+            VariableRegistryService service = new VariableRegistryService(provider, configs);
             SetCurrent(service);
             return service;
         }
@@ -226,20 +275,19 @@ namespace AtMycelia.Hyphlow
             Current = null;
         }
 
-        public static VariableRegistryConfig LoadDefaultConfig()
+        public static IReadOnlyList<VariableRegistryConfig> LoadDefaultConfig()
         {
             HyphlowRuntimeSysAssets.EnsureExists();
             if (HyphlowRuntimeSysAssets.S == null)
             {
                 return null;
             }
-            if (HyphlowRuntimeSysAssets.S != null && HyphlowRuntimeSysAssets.S.VariableRegistryConfig == null)
+            if (HyphlowRuntimeSysAssets.S != null && HyphlowRuntimeSysAssets.S.VariableRegistryConfigs == null)
             {
-                HyphlowRuntimeSysAssets.S.VariableRegistryConfig =
-                    Resources.Load<VariableRegistryConfig>(DefaultConfigResourcesPath);
+                HyphlowRuntimeSysAssets.S.VariableRegistryConfigs = Resources.LoadAll<VariableRegistryConfig>("");
             }
 
-            return HyphlowRuntimeSysAssets.S.VariableRegistryConfig;
+            return HyphlowRuntimeSysAssets.S.VariableRegistryConfigs;
         }
 
         private void OnConfigChanged()
@@ -248,7 +296,7 @@ namespace AtMycelia.Hyphlow
         }
 
         private static readonly IReadOnlyList<VariableSourceAsset> emptySources = new List<VariableSourceAsset>();
-        private const string DefaultConfigResourcesPath = "AtMycelia/Amanita/VariableRegistryConfig";
+        private const string DefaultConfigResourcesFolder = "AtMycelia";
 
         public static VariableRegistry Registry
         {
@@ -262,10 +310,28 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                VariableRegistryConfig config = LoadDefaultConfig();
-                if (config != null)
+                var configs = LoadDefaultConfig();
+                if (configs != null && configs.Count > 0)
                 {
-                    return config.GlobalSources;
+                    HashSet<VariableSourceAsset> sources = new HashSet<VariableSourceAsset>();
+                    for (int i = 0; i < configs.Count; i++)
+                    {
+                        VariableRegistryConfig config = configs[i];
+                        if (config == null)
+                        {
+                            continue;
+                        }
+                        IReadOnlyList<VariableSourceAsset> configSources = config.GlobalSources;
+                        for (int j = 0; j < configSources.Count; j++)
+                        {
+                            VariableSourceAsset source = configSources[j];
+                            if (source != null)
+                            {
+                                sources.Add(source);
+                            }
+                        }
+                    }
+                    return new List<VariableSourceAsset>(sources);
                 }
 
                 return emptySources;

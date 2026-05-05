@@ -1,3 +1,4 @@
+using AtMycelia.Collections;
 using AtMycelia.Hyphlow.Sys;
 using System;
 using System.Collections.Generic;
@@ -111,17 +112,38 @@ namespace AtMycelia.Hyphlow
 
         private bool TryGetVariableFromGlobalSources(string key, out IVariable variable)
         {
-            VariableRegistryConfig registryConfig = HyphlowRuntimeSysAssets.S.VariableRegistryConfig;
-            if (registryConfig == null)
+            IReadOnlyList<VariableRegistryConfig> registryConfigs = HyphlowRuntimeSysAssets.S.VariableRegistryConfigs;
+            if (registryConfigs == null || registryConfigs.Count == 0)
             {
                 variable = null;
                 return false;
             }
 
-            IReadOnlyList<VariableSourceAsset> sources = registryConfig.GlobalSources;
-            for (int i = 0; i < sources.Count; i++)
+            HashSet<VariableSourceAsset> sources = new HashSet<VariableSourceAsset>();
+            for (int i = 0; i < registryConfigs.Count; i++)
             {
-                VariableSourceAsset source = sources[i];
+                VariableRegistryConfig config = registryConfigs[i];
+                if (config == null || config.GlobalSources == null)
+                {
+                    continue;
+                }
+                
+                for (int j = 0; j < config.GlobalSources.Count; j++)
+                {
+                    VariableSourceAsset source = config.GlobalSources[j];
+                    if (source != null)
+                    {
+                        sources.Add(source);
+                    }
+                }
+                break;
+            }
+
+            VariableSourceAsset[] sourcesArray = new VariableSourceAsset[sources.Count];
+            sources.CopyTo(sourcesArray);
+            for (int i = 0; i < sourcesArray.Length; i++)
+            {
+                VariableSourceAsset source = sourcesArray[i];
                 if (source == null)
                 {
                     continue;

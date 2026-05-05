@@ -6,7 +6,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Amanita;
 
 namespace VScriptingTests.VariableOperations
 {

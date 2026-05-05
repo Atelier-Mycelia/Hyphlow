@@ -3,6 +3,8 @@ using UnityEditor;
 using UnityEngine;
 using AtMycelia.AmaniTween;
 using Debug = UnityEngine.Debug;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -31,9 +33,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
-            EnsureHyphlowRuntimeSysAssets();
+            EnsureHyphlowRuntimeSysAssets();//
             EnsureDefaultTweenAdapter();
-            EnsureVariableRegistryConfig();
+            EnsureVariableRegistryConfigs();
         }
 
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
@@ -49,13 +51,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 }
                 else
                 {
-                    Debug.LogWarning($"Couldn't find an instance of {nameof(HyphlowRuntimeSysAssets)} in the Resources folder. Will create one.");
+                    Debug.LogWarning($"Couldn't find an instance of {nameof(HyphlowRuntimeSysAssets)} " +
+                        $"in the Resources folder. Will create one.");
                 }
             }
 
             if (assets == null)
             {
-                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToRuntimeResourceFolder,
+                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToAtMyceliaResourceFolder,
                     "HyphlowRuntimeSysAssets");
             }
             HyphlowRuntimeSysAssets.S = assets;
@@ -63,7 +66,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         private static readonly string _pathToRuntimeResourceFolder = "Runtime"; // Relative to Resources
-
+        private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia"; // Relative to Resources under Assets/
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
         {
             DefaultTweenAdapter adaptor = HyphlowRuntimeSysAssets.S.TweenAdapter;
@@ -77,17 +80,24 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return adaptor;
         }
 
-        public static VariableRegistryConfig EnsureVariableRegistryConfig()
+        public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
         {
-            VariableRegistryConfig config = HyphlowRuntimeSysAssets.S.VariableRegistryConfig;
-            if (config == null)
+            var sysAssets = HyphlowRuntimeSysAssets.S;
+            var configsFound = Resources.LoadAll<VariableRegistryConfig>("");
+            if (configsFound.Length > 0)
             {
-                config = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToRuntimeResourceFolder,
-                    "VariableRegistryConfig");
+                sysAssets.AddMultiVrcs(configsFound);
             }
-
-            HyphlowRuntimeSysAssets.S.VariableRegistryConfig = config;
-            return config;
+            else
+            {
+                Debug.LogWarning($"Couldn't find any instances of {nameof(VariableRegistryConfig)} " +
+                    $"in the Resources folder. Will create a default one.");
+                var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToAtMyceliaResourceFolder,
+                "VariableRegistryConfig");
+                sysAssets.AddVrc(defaultConfig);
+            }
+                
+            return sysAssets.VariableRegistryConfigs;
         }
     }
 }
