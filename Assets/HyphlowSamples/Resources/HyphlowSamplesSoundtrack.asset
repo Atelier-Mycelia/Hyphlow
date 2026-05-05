@@ -29,12 +29,12 @@ MonoBehaviour:
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
-        _key: Var
+        _key: defenderBgm
         _itemId: 1
         scope: 0
         key: 
         itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
-        _value: {fileID: 0}
+        _value: {fileID: 8300000, guid: ea9cfd17eb785574e80afa71e95c4087, type: 3}
         startValue: {fileID: 0}
