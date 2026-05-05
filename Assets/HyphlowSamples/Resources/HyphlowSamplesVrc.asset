@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd0d9ea5d89c01e4a802268533d8d236, type: 3}
-  m_Name: HyphlowRuntimeSysAssets
+  m_Script: {fileID: 11500000, guid: 6f62e7fcdc8add74eacd53b6dd5ae5f7, type: 3}
+  m_Name: HyphlowSamplesVrc
   m_EditorClassIdentifier: 
-  _tweenAdapter: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
-  _variableRegistryConfig: {fileID: 11400000, guid: 9be06ea628dc76f48be705330aba6a06, type: 2}
+  _globalSources:
+  - {fileID: 11400000, guid: 76b2728329dee1645b62312bb61e7814, type: 2}
+  - {fileID: 11400000, guid: a10882296ac7326439553c3834267cb3, type: 2}

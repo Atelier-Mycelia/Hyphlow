@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AtMycelia.AmaniTween;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace AtMycelia.Hyphlow.Sys
     public sealed class HyphlowRuntimeSysAssets : ScriptableObject
     {
         [SerializeField] private DefaultTweenAdapter _tweenAdapter;
-        [SerializeField] private VariableRegistryConfig _variableRegistryConfig;
+        [SerializeField] private List<VariableRegistryConfig> _variableRegistryConfigs = new List<VariableRegistryConfig>();
 
         public DefaultTweenAdapter TweenAdapter
         {
@@ -39,9 +40,9 @@ namespace AtMycelia.Hyphlow.Sys
             }
         }
 
-        public VariableRegistryConfig VariableRegistryConfig
+        public IReadOnlyList<VariableRegistryConfig> VariableRegistryConfigs
         {
-            get => _variableRegistryConfig;
+            get => _variableRegistryConfigs;
             set
             {
                 if (Application.isPlaying)
@@ -50,14 +51,45 @@ namespace AtMycelia.Hyphlow.Sys
                     return;
                 }
 
-                if (_variableRegistryConfig == value)
+                if (_variableRegistryConfigs == value)
                 {
                     return;
                 }
 
-                _variableRegistryConfig = value;
+                _variableRegistryConfigs.Clear();
+                _variableRegistryConfigs.AddRange(value);
                 this.MarkDirtyAndSave();
             }
+        }
+
+        public void AddMultiVrcs(IList<VariableRegistryConfig> toAdd)
+        {
+            for (int i = 0; i < toAdd.Count; i++)
+            {
+                AddVrc(toAdd[i]);
+            }
+        }
+
+        public void AddVrc(VariableRegistryConfig toAdd)
+        {
+            if (_variableRegistryConfigs.Contains(toAdd))
+            {
+                return;
+            }
+            _variableRegistryConfigs.Add(toAdd);
+        }
+
+        public void RemoveMultiVrcs(IList<VariableRegistryConfig> toRemove)
+        {
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                RemoveVrc(toRemove[i]);
+            }
+        }
+
+        public void RemoveVrc(VariableRegistryConfig toRemove)
+        {
+            _variableRegistryConfigs.Remove(toRemove);
         }
 
         private static void ShowWarningAboutPlayModeMutations()

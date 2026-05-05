@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
+    [CreateAssetMenu(fileName = "NewVariableRegistryConfig", 
+        menuName = "Atelier Mycelia/Hyphlow/Variable Registry Config")]
     public sealed class VariableRegistryConfig : ScriptableObject
     {
         [SerializeField]

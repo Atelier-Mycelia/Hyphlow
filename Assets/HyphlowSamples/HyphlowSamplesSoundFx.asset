@@ -10,59 +10,45 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
-  m_Name: SoundFX
+  m_Name: HyphlowSamplesSoundFx
   m_EditorClassIdentifier: 
   _includeInSaves: 1
-  _uniqueId: 369aa3d0-522e-4c51-be33-fc9f4e61e380
+  _uniqueId: a49d980e-8a6d-4a86-9202-5709d008f444
   _alwaysKeepGuid: 1
   _varManager:
     _muscariables:
-    - rid: 3688520209775198766
-    - rid: 3688520209775198767
-    - rid: 3688520209775198768
+    - rid: 7589700201743908864
+    - rid: 7589700201743908865
     _legacyVariables: []
-    _nextValidVarID: 4
+    _nextValidVarID: 3
     _isInitted: 0
   _nextVarID: 1
   references:
     version: 2
     RefIds:
-    - rid: 3688520209775198766
+    - rid: 7589700201743908864
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
-        _key: uiHover
+        _key: laserShot
         _itemId: 1
         scope: 0
         key: 
         itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
-        _value: {fileID: 0}
+        _value: {fileID: 8300000, guid: 35d69fe4f9e4c7845b7525429840e784, type: 3}
         startValue: {fileID: 0}
-    - rid: 3688520209775198767
+    - rid: 7589700201743908865
       type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
-        _key: uiSelect
+        _key: hit
         _itemId: 2
         scope: 0
         key: 
         itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
-        _value: {fileID: 0}
-        startValue: {fileID: 0}
-    - rid: 3688520209775198768
-      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: uiInvalidSelect
-        _itemId: 3
-        scope: 0
-        key: 
-        itemID: 0
-        value: {fileID: 0}
-        _startValue: {fileID: 0}
-        _value: {fileID: 0}
+        _value: {fileID: 8300000, guid: 4e731185c337f974aabfa2e18721f501, type: 3}
         startValue: {fileID: 0}
