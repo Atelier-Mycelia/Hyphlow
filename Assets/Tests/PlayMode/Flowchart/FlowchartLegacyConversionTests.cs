@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Hyphlow;
-using AtMycelia.Amanita;
 
 namespace VScriptingTests
 {

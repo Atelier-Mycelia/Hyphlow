@@ -1,9 +1,11 @@
-using AtMycelia.Hyphlow.Sys;
+using System.Collections.Generic;
 using AtMycelia.AmaniTween;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UitkLabel = UnityEngine.UIElements.Label;
+using AtMycelia.Hyphlow.Sys;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -11,6 +13,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     {
         private const string ResourcesSubfolderPath = "Runtime";
         private const string AssetName = "HyphlowRuntimeSysAssets";
+        private const float VariableRegistryConfigItemHeight = 22f;
 
         [MenuItem("Window/Atelier Mycelia/Hyphlow/Hyphlow Runtime Sys Resources")]
         public static void Open()
@@ -85,15 +88,24 @@ namespace AtMycelia.Hyphlow.EditorUtils
             };
             _tweenAdapterField.RegisterValueChangedCallback(OnTweenAdapterChanged);
 
-            _variableRegistryConfigField = new ObjectField("Variable Registry Config")
+            _addVariableRegistryConfigButton = new Button(OnAddVariableRegistryConfig)
             {
-                objectType = typeof(VariableRegistryConfig),
-                allowSceneObjects = false
+                text = "Add Registry Config"
             };
-            _variableRegistryConfigField.RegisterValueChangedCallback(OnVariableRegistryConfigChanged);
+
+            _variableRegistryConfigListView = new ListView(_variableRegistryConfigBuffer,
+                VariableRegistryConfigItemHeight,
+                MakeVariableRegistryConfigItem,
+                BindVariableRegistryConfigItem)
+            {
+                selectionType = SelectionType.Single
+            };
+            _variableRegistryConfigListView.style.minHeight = 120f;
 
             content.Add(_tweenAdapterField);
-            content.Add(_variableRegistryConfigField);
+            content.Add(new UitkLabel("Variable Registry Configs"));
+            content.Add(_addVariableRegistryConfigButton);
+            content.Add(_variableRegistryConfigListView);
 
             rootVisualElement.Add(content);
 
@@ -101,7 +113,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         private ObjectField _tweenAdapterField;
-        private ObjectField _variableRegistryConfigField;
+        private ListView _variableRegistryConfigListView;
+        private Button _addVariableRegistryConfigButton;
+        private readonly List<VariableRegistryConfig> _variableRegistryConfigBuffer = new List<VariableRegistryConfig>();
 
         private void RefreshFields()
         {
@@ -115,10 +129,141 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 _tweenAdapterField.SetValueWithoutNotify(_assets.TweenAdapter);
             }
 
-            if (_variableRegistryConfigField != null)
+            RefreshVariableRegistryConfigList();
+        }
+
+        private void RefreshVariableRegistryConfigList()
+        {
+            _variableRegistryConfigBuffer.Clear();
+
+            if (_assets != null && _assets.VariableRegistryConfigs != null)
             {
-                _variableRegistryConfigField.SetValueWithoutNotify(_assets.VariableRegistryConfig);
+                _variableRegistryConfigBuffer.AddRange(_assets.VariableRegistryConfigs);
             }
+
+            _variableRegistryConfigListView?.Rebuild();
+        }
+
+        private VisualElement MakeVariableRegistryConfigItem()
+        {
+            VisualElement row = new VisualElement();
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.alignItems = Align.Center;
+
+            ObjectField field = new ObjectField
+            {
+                objectType = typeof(VariableRegistryConfig),
+                allowSceneObjects = false
+            };
+            field.style.flexGrow = 1f;
+
+            Button editButton = new Button
+            {
+                text = "Edit"
+            };
+
+            Button removeButton = new Button
+            {
+                text = "Remove"
+            };
+
+            row.Add(field);
+            row.Add(editButton);
+            row.Add(removeButton);
+
+            VariableRegistryConfigRow rowData = new VariableRegistryConfigRow(field, editButton, removeButton);
+            row.userData = rowData;
+
+            field.RegisterValueChangedCallback(evt => OnVariableRegistryConfigItemChanged(rowData, evt));
+            editButton.clicked += () => OnEditVariableRegistryConfig(rowData);
+            removeButton.clicked += () => OnRemoveVariableRegistryConfig(rowData);
+
+            return row;
+        }
+
+        private void BindVariableRegistryConfigItem(VisualElement element, int index)
+        {
+            if (element.userData is not VariableRegistryConfigRow rowData)
+            {
+                return;
+            }
+
+            rowData.Index = index;
+            VariableRegistryConfig config = index >= 0 && index < _variableRegistryConfigBuffer.Count
+                ? _variableRegistryConfigBuffer[index]
+                : null;
+
+            rowData.Field.SetValueWithoutNotify(config);
+        }
+
+        private void OnAddVariableRegistryConfig()
+        {
+            if (_assets == null)
+            {
+                return;
+            }
+
+            _variableRegistryConfigBuffer.Add(null);
+            ApplyVariableRegistryConfigs();
+            _variableRegistryConfigListView.Rebuild();
+        }
+
+        private void OnVariableRegistryConfigItemChanged(VariableRegistryConfigRow rowData, ChangeEvent<Object> evt)
+        {
+            if (!TryGetVariableRegistryConfigIndex(rowData, out int index))
+            {
+                return;
+            }
+
+            _variableRegistryConfigBuffer[index] = evt.newValue as VariableRegistryConfig;
+            ApplyVariableRegistryConfigs();
+            _variableRegistryConfigListView.Rebuild();
+        }
+
+        private void OnEditVariableRegistryConfig(VariableRegistryConfigRow rowData)
+        {
+            if (!TryGetVariableRegistryConfigIndex(rowData, out int index))
+            {
+                return;
+            }
+
+            VariableRegistryConfig config = _variableRegistryConfigBuffer[index];
+            if (config == null)
+            {
+                return;
+            }
+
+            Selection.activeObject = config;
+            EditorGUIUtility.PingObject(config);
+        }
+
+        private void OnRemoveVariableRegistryConfig(VariableRegistryConfigRow rowData)
+        {
+            if (!TryGetVariableRegistryConfigIndex(rowData, out int index))
+            {
+                return;
+            }
+
+            _variableRegistryConfigBuffer.RemoveAt(index);
+            ApplyVariableRegistryConfigs();
+            _variableRegistryConfigListView.Rebuild();
+        }
+
+        private bool TryGetVariableRegistryConfigIndex(VariableRegistryConfigRow rowData, out int index)
+        {
+            index = rowData.Index;
+            return _assets != null && index >= 0 && index < _variableRegistryConfigBuffer.Count;
+        }
+
+        private void ApplyVariableRegistryConfigs()
+        {
+            if (_assets == null)
+            {
+                return;
+            }
+
+            List<VariableRegistryConfig> configs = new List<VariableRegistryConfig>(_variableRegistryConfigBuffer);
+            _assets.VariableRegistryConfigs = configs;
         }
 
         private void OnTweenAdapterChanged(ChangeEvent<Object> evt)
@@ -132,15 +277,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
             _tweenAdapterField.SetValueWithoutNotify(_assets.TweenAdapter);
         }
 
-        private void OnVariableRegistryConfigChanged(ChangeEvent<Object> evt)
+        private sealed class VariableRegistryConfigRow
         {
-            if (_assets == null)
+            public VariableRegistryConfigRow(ObjectField field, Button editButton, Button removeButton)
             {
-                return;
+                Field = field;
+                EditButton = editButton;
+                RemoveButton = removeButton;
             }
 
-            _assets.VariableRegistryConfig = evt.newValue as VariableRegistryConfig;
-            _variableRegistryConfigField.SetValueWithoutNotify(_assets.VariableRegistryConfig);
+            public ObjectField Field { get; }
+            public Button EditButton { get; }
+            public Button RemoveButton { get; }
+            public int Index { get; set; }
         }
     }
 }

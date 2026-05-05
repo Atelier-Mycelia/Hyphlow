@@ -39,11 +39,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected RowVisualHandlerPool handlerPool;
         protected VariableRowPool rowPool;
         protected VisualTreeAsset uxml;
-        protected readonly string pathToUxml = "UIToolkitTemplates/VariableDisplayEditor";
+        protected readonly string pathToUxml = "Editor/UIToolkitTemplates/VariableDisplayEditor";
         protected VisualElement rootElement;
         protected TemplateContainer inspectorRoot;
         protected Button _registerGlobalButton;
         protected Button _unregisterGlobalButton;
+        protected DropdownField _registryConfigDropdown;
+        protected IReadOnlyList<VariableRegistryConfig> _registryConfigs;
+        protected readonly List<string> _registryConfigLabels = new List<string>();
+        protected int _selectedRegistryConfigIndex = -1;
 
         protected void BuildManager(VisualElement rootElem)
         {
@@ -168,6 +172,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             var container = new VisualElement();
 
+            _registryConfigDropdown = new DropdownField("Registry Config");
+            _registryConfigDropdown.RegisterValueChangedCallback(OnRegistryConfigDropdownChanged);
+
             _registerGlobalButton = new Button(OnRegisterGlobalSourceClicked)
             {
                 text = "Register as Global Source",
@@ -186,10 +193,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             _registerGlobalButton.style.fontSize = _unregisterGlobalButton.style.fontSize = 14;
 
+            container.Add(_registryConfigDropdown);
             container.Add(_registerGlobalButton);
             container.Add(_unregisterGlobalButton);
             rootElem.Add(container);
 
+            RefreshRegistryConfigDropdown();
             RefreshGlobalSourceButtons();
         }
 
@@ -214,7 +223,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            VariableRegistryConfig config = VariableRegistryService.LoadDefaultConfig();
+            RefreshRegistryConfigDropdown();
+
+            VariableRegistryConfig config = GetSelectedRegistryConfig();
             if (config == null)
             {
                 Debug.LogWarning("VariableSourceInspector: VariableRegistryConfig not found in Resources.");
@@ -254,7 +265,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            VariableRegistryConfig config = VariableRegistryService.LoadDefaultConfig();
+            RefreshRegistryConfigDropdown();
+
+            VariableRegistryConfig config = GetSelectedRegistryConfig();
             bool isRegistered = false;
 
             if (config != null)
@@ -266,6 +279,68 @@ namespace AtMycelia.Hyphlow.EditorUtils
             _registerGlobalButton?.SetEnabled(config != null && !isRegistered);
 
             _unregisterGlobalButton?.SetEnabled(config != null && isRegistered);
+        }
+
+        private void RefreshRegistryConfigDropdown()
+        {
+            _registryConfigs = VariableRegistryService.LoadDefaultConfig();
+            _registryConfigLabels.Clear();
+
+            if (_registryConfigs != null)
+            {
+                for (int i = 0; i < _registryConfigs.Count; i++)
+                {
+                    _registryConfigLabels.Add(GetRegistryConfigLabel(_registryConfigs[i], i));
+                }
+            }
+
+            if (_registryConfigDropdown == null)
+            {
+                return;
+            }
+
+            _registryConfigDropdown.choices = _registryConfigLabels;
+
+            if (_registryConfigLabels.Count == 0)
+            {
+                _selectedRegistryConfigIndex = -1;
+                _registryConfigDropdown.SetValueWithoutNotify(string.Empty);
+                return;
+            }
+
+            if (_selectedRegistryConfigIndex < 0 || _selectedRegistryConfigIndex >= _registryConfigLabels.Count)
+            {
+                _selectedRegistryConfigIndex = 0;
+            }
+
+            _registryConfigDropdown.SetValueWithoutNotify(_registryConfigLabels[_selectedRegistryConfigIndex]);
+        }
+
+        private void OnRegistryConfigDropdownChanged(ChangeEvent<string> evt)
+        {
+            int index = _registryConfigLabels.IndexOf(evt.newValue);
+            _selectedRegistryConfigIndex = index;
+            RefreshGlobalSourceButtons();
+        }
+
+        private VariableRegistryConfig GetSelectedRegistryConfig()
+        {
+            if (_registryConfigs == null || _registryConfigs.Count == 0)
+            {
+                return null;
+            }
+
+            if (_selectedRegistryConfigIndex < 0 || _selectedRegistryConfigIndex >= _registryConfigs.Count)
+            {
+                return null;
+            }
+
+            return _registryConfigs[_selectedRegistryConfigIndex];
+        }
+
+        private static string GetRegistryConfigLabel(VariableRegistryConfig config, int index)
+        {
+            return config != null ? config.name : $"Missing Config {index + 1}";
         }
     }
 }

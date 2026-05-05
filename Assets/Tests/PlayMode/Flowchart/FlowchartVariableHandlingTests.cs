@@ -7,7 +7,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using AtMycelia.Hyphlow;
-using AtMycelia.Amanita;
 using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.FlowchartLifecycle

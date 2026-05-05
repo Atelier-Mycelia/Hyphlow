@@ -8,7 +8,6 @@ using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.EditorUtils;
 using UnityObject = UnityEngine.Object;
-using AtMycelia.Amanita;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using System.Collections;
