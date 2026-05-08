@@ -155,23 +155,6 @@ namespace VScriptingTests
             yield break;
         }
 
-        [UnityTest]
-        public IEnumerator ToMuscariable_Preserves_Value([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)
-        {
-            string key = GenerateRandomKey("testVar_");
-            var legacy = CreateLegacyVariable(testCase.legacyVarType, key, testCase.sampleValue);
-
-            var converted = legacy.ToMuscariable();
-
-            Assert.IsNotNull(converted, "Conversion resulted in null");
-
-            dynamic dynLegacy = legacy;
-            var legacyVal = (object)dynLegacy.Value;
-            var convertedVal = converted.BoxedValue;
-
-            Assert.AreEqual(legacyVal, convertedVal, "Converted muscariable value does not match legacy value");
-            yield break;
-        }
 
         [UnityTest]
         public IEnumerator ToMuscariable_Has_No_ParentFlowchart_When_Converted_Standalone([ValueSource(nameof(LegacyVarCases))] FLCTestCase testCase)

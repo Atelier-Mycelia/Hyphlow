@@ -198,7 +198,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             HandleRemainingSubs();
             void HandleRemainingSubs()
             {
-                _listDisplay.canStartDrag += OnCanStartDrag;
+                _listDisplay.reorderable = true;
                 _listDisplay.itemIndexChanged += OnItemReordered;
                 Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
                 Undo.undoRedoPerformed += HandleUndoRedoPerformed;
@@ -211,12 +211,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected readonly List<IVariable> varsToDisplay = new();
         // ^Meant to be separate from that held by the source or FC
-
-        protected virtual bool OnCanStartDrag(CanStartDragArgs args)
-        {
-            if (Application.isPlaying) return false;
-            return true;
-        }
 
         protected virtual void OnItemReordered(int from, int to)
         {
@@ -373,7 +367,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     _listDisplay.unbindItem = null;
                     _listDisplay.destroyItem = null;
                     _listDisplay.itemIndexChanged -= OnItemReordered;
-                    _listDisplay.canStartDrag -= OnCanStartDrag;
                     _listDisplay.Clear();
                     _listDisplay = null;
                 }
