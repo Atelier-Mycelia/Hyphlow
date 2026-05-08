@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "com.unity.textmeshpro": "3.0.6",
-    "com.ateliermycelia.unityutils": "1.1.0"
+    "com.ateliermycelia.unityutils": "1.1.0",
+    "com.unity.inputsystem": "1.7.0"
   }
 }
