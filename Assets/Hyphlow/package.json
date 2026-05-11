@@ -1,6 +1,6 @@
 {
   "name": "com.ateliermycelia.hyphlow",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "displayName": "Hyphlow: Alchemic Logic Engine",
   "description": "Visual Scripting Sys based on Fungus by Snozbot.",
   "unity": "2022.3",
