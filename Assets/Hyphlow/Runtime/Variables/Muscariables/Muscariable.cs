@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.UIElements;
 
 namespace AtMycelia.Hyphlow
 {
@@ -9,8 +10,8 @@ namespace AtMycelia.Hyphlow
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
-    [MovedFrom(true, 
-        "AtMycelia.Hyphlow", 
+    [MovedFrom(true,
+        "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core", "Muscariable")]
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
     {
@@ -19,7 +20,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField]
         protected string _key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte _itemId = InvalidId; 
+        [SerializeField] protected byte _itemId = InvalidId;
         // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidId = 0;
@@ -86,14 +87,14 @@ namespace AtMycelia.Hyphlow
         public Muscariable() : base() { }
 
         // We want to check for semantic equality mainly
-        public static bool operator == (Muscariable left, Muscariable right)
+        public static bool operator ==(Muscariable left, Muscariable right)
         {
             if (ReferenceEquals(left, right)) return true; // In case both are null or same ref
             bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
             return sameValue;
         }
 
-        public static bool operator != (Muscariable left, Muscariable right)
+        public static bool operator !=(Muscariable left, Muscariable right)
         {
             if (ReferenceEquals(left, right)) return false; // In case both are null or same ref
             bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
@@ -118,7 +119,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public Muscariable (IVariable otherVar)
+        public Muscariable(IVariable otherVar)
         {
             _key = otherVar.Key;
             _scope = otherVar.Scope;
@@ -212,40 +213,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public TVal GetValueAs<TVal>()
         {
-            object val = BoxedValue;
-            if (val == null)
-            {
-                return default;
-            }
-
-            var targetType = typeof(TVal);
-            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-            // If already the right runtime type
-            if (underlying.IsInstanceOfType(val))
-            {
-                return (TVal)val;
-            }
-
-            // Enums
-            if (underlying.IsEnum)
-            {
-                if (val is string enumStr)
-                {
-                    return (TVal)Enum.Parse(underlying, enumStr);
-                }
-                return (TVal)Enum.ToObject(underlying, val);
-            }
-
-            // Use IConvertible / Convert.ChangeType for primitives
-            if (val is IConvertible)
-            {
-                object changed = Convert.ChangeType(val, underlying);
-                return (TVal)changed;
-            }
-
-            // Last resort - try direct cast (may throw)
-            return (TVal)val;
+            TVal result = ConvertToValue<TVal>(BoxedValue);
+            return result;
         }
 
         public virtual IVariableSource Owner
@@ -277,11 +246,46 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
+        protected virtual T ConvertToValue<T>(object value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                return default;
+            }
+
+            if (value is T typedValue)
+            {
+                return typedValue;
+            }
+
+            var targetType = typeof(T);
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (underlying.IsEnum)
+            {
+                if (value is string enumString)
+                {
+                    return (T)Enum.Parse(underlying, enumString);
+                }
+
+                object enumValue = Enum.ToObject(underlying, value);
+                return (T)enumValue;
+            }
+
+            if (value is IConvertible)
+            {
+                object changedValue = Convert.ChangeType(value, underlying);
+                return (T)changedValue;
+            }
+
+            return (T)value;
+        }
+
     }
 
     [Serializable]
-    [MovedFrom(true, 
-        "AtMycelia.Hyphlow", 
+    [MovedFrom(true,
+        "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
@@ -333,7 +337,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Init(T startValue = default)
         {
-            this._startValue = startValue; 
+            this._startValue = startValue;
             this.Value = startValue;
         }
 
@@ -355,7 +359,7 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                this._value = (T)value; 
+                this._value = (T)value;
                 // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();
             }
@@ -373,45 +377,12 @@ namespace AtMycelia.Hyphlow
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
-                this._value = ConvertToValue(filteredValue);
+                this._value = ConvertToValue<T>(filteredValue);
                 TriggerOnValueChanged();
             }
         }
 
-        protected virtual T ConvertToValue(object value)
-        {
-            if (ReferenceEquals(value, null))
-            {
-                return default;
-            }
 
-            if (value is T typedValue)
-            {
-                return typedValue;
-            }
-
-            var targetType = typeof(T);
-            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-            if (underlying.IsEnum)
-            {
-                if (value is string enumString)
-                {
-                    return (T)Enum.Parse(underlying, enumString);
-                }
-
-                object enumValue = Enum.ToObject(underlying, value);
-                return (T)enumValue;
-            }
-
-            if (value is IConvertible)
-            {
-                object changedValue = Convert.ChangeType(value, underlying);
-                return (T)changedValue;
-            }
-
-            return (T)value;
-        }
 
         public override void Apply(SetOperator setOperator, object toApply)
         {
@@ -421,7 +392,7 @@ namespace AtMycelia.Hyphlow
                 throw new Exception(errorMessage);
             }
 
-            Apply(setOperator, ConvertToValue(toApply));
+            Apply(setOperator, ConvertToValue<T>(toApply));
         }
 
         public virtual void Apply(SetOperator setOperator, T toApply)
@@ -432,7 +403,8 @@ namespace AtMycelia.Hyphlow
                     this.Value = toApply;
                     break;
                 default:
-                    Debug.LogError($"The {setOperator} set operator is not valid for {ContentType.Name} variable {Key}.");
+                    Debug.LogError($"The {setOperator} set operator is not valid for " +
+                        $"{ContentType.Name} variable {Key}.");
                     break;
             }
 
@@ -441,19 +413,37 @@ namespace AtMycelia.Hyphlow
         public override bool Evaluate(CompareOperator op, object value)
         {
             bool result = false;
-            if (value is T || value == null)
+            if (value == null)
             {
-                result = Evaluate(op, (T)value);
+                result = EvaluateForNull(op);
             }
-            else if (value is Muscariable<T> varOfType)
+            else if (TypeUtils.TypesCompatible(typeof(T), value.GetType()))
             {
-                result = Evaluate(op, varOfType.Value);
+                result = Evaluate(op, ConvertToValue<T>(value));
             }
             else
             {
-                Debug.LogError("Cannot do Evaluate on variable, as object type: " + value.GetType().Name + " is incompatible with " + typeof(T).Name);
+                Debug.LogError($"Cannot do Evaluate on variable, as object type: {value.GetType().Name} " +
+                    $"is incompatible with  + {typeof(T).Name}");
             }
 
+            return result;
+        }
+
+        protected virtual bool EvaluateForNull(CompareOperator op)
+        {
+            bool result;
+            switch (op)
+            {
+                case CompareOperator.Equals:
+                    result = this.Value == null; break;
+                case CompareOperator.NotEquals:
+                    result = this.Value != null; break;
+                default:
+                    string errorMessage = $"Muscariable<{typeof(T).Name}> {Key} not" +
+                        $"compatible with CompareOperator {op}";
+                    throw new ArgumentException(errorMessage);
+            }
             return result;
         }
 
@@ -509,9 +499,9 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("NoShow", 
-        "", 
-        typeof(object), 
+    [VariableInfo("NoShow",
+        "",
+        typeof(object),
         showInMenu: false)]
     public class GenericMuscariable : Muscariable<object>
     {

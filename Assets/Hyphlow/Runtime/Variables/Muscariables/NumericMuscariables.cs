@@ -5,8 +5,8 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     [Serializable]
-    [MovedFrom(true, 
-        "AtMycelia.Hyphlow", 
+    [MovedFrom(true,
+        "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core")]
     public abstract class NumericMuscariable<T> : Muscariable<T>, IComparable<T>, IComparable<NumericMuscariable<T>>
         where T : IComparable<T>, IEquatable<T>
@@ -20,22 +20,44 @@ namespace AtMycelia.Hyphlow
             switch (setOperator)
             {
                 case SetOperator.Assign:
-                    Value = toApply; break;
+                    Value = toApply;
+                    break;
+
                 case SetOperator.Add:
-                    Value = (dynamic)Value + toApply; break;
+                    Value = Add(Value, toApply);
+                    break;
+
                 case SetOperator.Subtract:
-                    Value = (dynamic)Value - toApply; break;
+                    Value = Sub(Value, toApply);
+                    break;
+
                 case SetOperator.Multiply:
-                    Value = (dynamic)Value * toApply; break;
+                    Value = Mul(Value, toApply);
+                    break;
+
                 case SetOperator.Divide:
-                    Value = (dynamic)Value / toApply; break;
+                    Value = Div(Value, toApply);
+                    break;
+
                 case SetOperator.Negate:
-                    Value = (dynamic)Value * -1; break;
+                    Value = Neg(Value);
+                    break;
+
                 default:
                     Debug.LogError($"The {setOperator} set operator is not valid for {ContentType.Name} variable {Key}.");
                     break;
             }
         }
+
+        // Need these funcs so that we can perform the arithmetic operations
+        // in Apply without needing to know the specific type of T (or use
+        // the dynamic keyword, which is something we want to avoid for
+        // the sake of supporting Unity 2022.3).
+        protected static Func<T, T, T> Add;
+        protected static Func<T, T, T> Sub;
+        protected static Func<T, T, T> Mul;
+        protected static Func<T, T, T> Div;
+        protected static Func<T, T> Neg;
 
         public override bool Evaluate(CompareOperator op, T otherNumericValue)
         {
@@ -78,12 +100,21 @@ namespace AtMycelia.Hyphlow
 
     [Serializable]
     [VariableInfo("Numeric", "Integer", typeof(int))]
-    [MovedFrom(true, 
-        "AtMycelia.Hyphlow", 
-        "AtMycelia.Amanita.Core", 
+    [MovedFrom(true,
+        "AtMycelia.Hyphlow",
+        "AtMycelia.Amanita.Core",
         "IntMuscariable")]
     public class IntMuscariable : NumericMuscariable<int>, IVariable<int>
     {
+        static IntMuscariable()
+        {
+            Add = (a, b) => a + b;
+            Sub = (a, b) => a - b;
+            Mul = (a, b) => a * b;
+            Div = (a, b) => a / b;
+            Neg = a => -a;
+        }
+
         public IntMuscariable() : base() { }
 
         public static IntMuscariable operator +(IntMuscariable a, IntMuscariable b)
@@ -129,12 +160,21 @@ namespace AtMycelia.Hyphlow
 
     [Serializable]
     [VariableInfo("Numeric", "Float", typeof(float))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", 
-        "AtMycelia.Amanita.Core", 
+    [MovedFrom(true, "AtMycelia.Hyphlow",
+        "AtMycelia.Amanita.Core",
         "FloatMuscariable")]
     public class FloatMuscariable : NumericMuscariable<float>
     {
-        public FloatMuscariable(): base() { }
+        static FloatMuscariable()
+        {
+            Add = (a, b) => a + b;
+            Sub = (a, b) => a - b;
+            Mul = (a, b) => a * b;
+            Div = (a, b) => a / b;
+            Neg = a => -a;
+        }
+
+        public FloatMuscariable() : base() { }
 
         public static FloatMuscariable operator +(FloatMuscariable a, FloatMuscariable b)
             => new FloatMuscariable { Value = a.Value + b.Value };
@@ -179,12 +219,31 @@ namespace AtMycelia.Hyphlow
 
     [Serializable]
     [VariableInfo("Numeric", "Boolean", typeof(bool))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", 
-        "AtMycelia.Amanita.Core", 
+    [MovedFrom(true, "AtMycelia.Hyphlow",
+        "AtMycelia.Amanita.Core",
         "BoolMuscariable")]
     public class BoolMuscariable : NumericMuscariable<bool>
     {
+        public override bool IsArithmeticSupported(SetOperator op) => false;
+
         public BoolMuscariable() : base() { }
+
+        public override void Apply(SetOperator setOperator, bool toApply)
+        {
+            switch (setOperator)
+            {
+                case SetOperator.Assign:
+                    Value = toApply;
+                    break;
+                case SetOperator.Negate:
+                    Value = !toApply;
+                    break;
+
+                default:
+                    Debug.LogError($"The {setOperator} set operator is not valid for {ContentType.Name} variable {Key}.");
+                    break;
+            }
+        }
 
         public static bool operator ==(BoolMuscariable a, BoolMuscariable b)
         {
@@ -216,11 +275,20 @@ namespace AtMycelia.Hyphlow
 
     [Serializable]
     [VariableInfo("Numeric", "Double", typeof(double))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", 
-        "AtMycelia.Amanita.Core", 
+    [MovedFrom(true, "AtMycelia.Hyphlow",
+        "AtMycelia.Amanita.Core",
         "DoubleMuscariable")]
     public class DoubleMuscariable : NumericMuscariable<double>
     {
+        static DoubleMuscariable()
+        {
+            Add = (a, b) => a + b;
+            Sub = (a, b) => a - b;
+            Mul = (a, b) => a * b;
+            Div = (a, b) => a / b;
+            Neg = a => -a;
+        }
+
         public DoubleMuscariable() : base() { }
 
         public static DoubleMuscariable operator +(DoubleMuscariable a, DoubleMuscariable b)
@@ -265,8 +333,8 @@ namespace AtMycelia.Hyphlow
 
     [Serializable]
     [VariableInfo("Numeric/Structured", "VectorTwo", typeof(Vector2))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", 
-        "AtMycelia.Amanita.Core", 
+    [MovedFrom(true, "AtMycelia.Hyphlow",
+        "AtMycelia.Amanita.Core",
         "VectorTwoMuscariable")]
     public class VectorTwoMuscariable : Muscariable<Vector2>
     {
@@ -409,8 +477,8 @@ namespace AtMycelia.Hyphlow
 
     [Serializable]
     [VariableInfo("Numeric/Structured", "VectorThree", typeof(Vector3))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", 
-        "AtMycelia.Amanita.Core", 
+    [MovedFrom(true, "AtMycelia.Hyphlow",
+        "AtMycelia.Amanita.Core",
         "VectorThreeMuscariable")]
     public class VectorThreeMuscariable : Muscariable<Vector3>
     {

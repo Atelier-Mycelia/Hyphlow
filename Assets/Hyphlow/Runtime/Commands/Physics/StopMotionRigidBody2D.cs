@@ -32,22 +32,14 @@ namespace AtMycelia.Hyphlow
             switch (_motionToStop)
             {
                 case Motion.Velocity:
-                    #if UNITY_6000
-                    _rb.Value.linearVelocity = Vector2.zero;
-                    #else
-                    rb.Value.velocity = Vector2.zero;
-                    #endif
+                    Velocity = Vector2.zero;
                     break;
                 case Motion.AngularVelocity:
-                    _rb.Value.angularVelocity = 0;
+                    AngularVelocity = 0;
                     break;
                 case Motion.AngularAndLinearVelocity:
-                    _rb.Value.angularVelocity = 0;
-                    #if UNITY_6000
-                    _rb.Value.linearVelocity = Vector2.zero;
-                    #else
-                    rb.Value.velocity = Vector2.zero;
-                    #endif
+                    AngularVelocity = 0;
+                    Velocity = Vector2.zero;
                     break;
                 default:
                     break;
@@ -56,9 +48,67 @@ namespace AtMycelia.Hyphlow
             Continue();
         }
 
+        private Vector2 Velocity
+        {
+            get
+            {
+                #if UNITY_6000
+                    return _rb.Value.linearVelocity;
+                #else
+                    return _rb.Value.velocity;
+                #endif
+            }
+            set
+            {
+                #if UNITY_6000
+                    _rb.Value.linearVelocity = value;
+                #else
+                    _rb.Value.velocity = value;
+                #endif
+            }
+        }
+
+        private float AngularVelocity
+        {
+            get => _rb.Value.angularVelocity;
+            set => _rb.Value.angularVelocity = value;
+        }
+
         public override string GetSummary()
         {
+            string result;
+            bool weHaveRb = _rb.rigidbody2DRef != null;
+            if (!weHaveRb)
+            {
+                result = "Error: No Rigidbody2D referenced";
+            }
+            else
+            {
+                result = $"{_motionToStop} on {GetRbTwoDSummary()}";
+            }
             return _motionToStop.ToString();
+        }
+
+        private string GetRbTwoDSummary()
+        {
+            string result;
+            if (_rb.rigidbody2DRef == null)
+            {
+                result = "No Rigidbody2D referenced";
+            }
+            else
+            {
+                if (_rb.RepresentingVar)
+                {
+                    result = $"{_rb.VarRef.Key}";
+                }
+                else
+                {
+                    result = $"{_rb.Value.name}"; 
+                }
+            }
+
+            return result;
         }
 
         public override Color GetButtonColor()

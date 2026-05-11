@@ -4,7 +4,6 @@ using UnityEngine;
 using AtMycelia.AmaniTween;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -44,15 +43,21 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (assets == null)
             {
-                var all = Resources.LoadAll<HyphlowRuntimeSysAssets>("");
-                if (all.Length > 0)
+                string[] guids = AssetDatabase.FindAssets($"t:{nameof(HyphlowRuntimeSysAssets)}");
+                if (guids.Length > 0)
                 {
-                    assets = all[0];
+                    if (guids.Length > 1)
+                    {
+                        Debug.LogWarning($"Multiple {nameof(HyphlowRuntimeSysAssets)} assets found. Using the first.");
+                    }
+
+                    string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                    assets = AssetDatabase.LoadAssetAtPath<HyphlowRuntimeSysAssets>(path);
                 }
                 else
                 {
                     Debug.LogWarning($"Couldn't find an instance of {nameof(HyphlowRuntimeSysAssets)} " +
-                        $"in the Resources folder. Will create one.");
+                        $"in the Assets folder. Will create one.");
                 }
             }
 
@@ -61,19 +66,36 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToAtMyceliaResourceFolder,
                     "HyphlowRuntimeSysAssets");
             }
+
             HyphlowRuntimeSysAssets.S = assets;
             return assets;
         }
 
         private static readonly string _pathToRuntimeResourceFolder = "Runtime"; // Relative to Resources
         private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia"; // Relative to Resources under Assets/
+
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
         {
             DefaultTweenAdapter adaptor = HyphlowRuntimeSysAssets.S.TweenAdapter;
             if (adaptor == null)
             {
-                adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(_pathToRuntimeResourceFolder,
-                    "DefaultTweenAdapter");
+                string[] guids = AssetDatabase.FindAssets($"t:{nameof(DefaultTweenAdapter)}");
+                if (guids.Length > 0)
+                {
+                    if (guids.Length > 1)
+                    {
+                        Debug.LogWarning($"Multiple {nameof(DefaultTweenAdapter)} assets found. Using the first.");
+                    }
+
+                    string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                    adaptor = AssetDatabase.LoadAssetAtPath<DefaultTweenAdapter>(path);
+                }
+
+                if (adaptor == null)
+                {
+                    adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(_pathToRuntimeResourceFolder,
+                        "DefaultTweenAdapter");
+                }
             }
 
             HyphlowRuntimeSysAssets.S.TweenAdapter = adaptor;
@@ -83,20 +105,32 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
         {
             var sysAssets = HyphlowRuntimeSysAssets.S;
-            var configsFound = Resources.LoadAll<VariableRegistryConfig>("");
-            if (configsFound.Length > 0)
+
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(VariableRegistryConfig)}");
+            if (guids.Length > 0)
             {
+                List<VariableRegistryConfig> configsFound = new List<VariableRegistryConfig>(guids.Length);
+                for (int i = 0; i < guids.Length; i++)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                    VariableRegistryConfig config = AssetDatabase.LoadAssetAtPath<VariableRegistryConfig>(path);
+                    if (config != null)
+                    {
+                        configsFound.Add(config);
+                    }
+                }
+
                 sysAssets.AddMultiVrcs(configsFound);
             }
             else
             {
                 Debug.LogWarning($"Couldn't find any instances of {nameof(VariableRegistryConfig)} " +
-                    $"in the Resources folder. Will create a default one.");
+                    $"in the Assets folder. Will create a default one.");
                 var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToAtMyceliaResourceFolder,
-                "VariableRegistryConfig");
+                    "VariableRegistryConfig");
                 sysAssets.AddVrc(defaultConfig);
             }
-                
+
             return sysAssets.VariableRegistryConfigs;
         }
     }
