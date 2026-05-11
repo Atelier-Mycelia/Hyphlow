@@ -9,8 +9,8 @@ namespace AtMycelia.Hyphlow
     /// Base class for a more lightweight reimplementation of Fungus Variables.
     /// </summary>
     [Serializable]
-    [MovedFrom(true, 
-        "AtMycelia.Hyphlow", 
+    [MovedFrom(true,
+        "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core", "Muscariable")]
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
     {
@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField]
         protected string _key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte _itemId = InvalidId; 
+        [SerializeField] protected byte _itemId = InvalidId;
         // ^Default to invalid ID to avoid accidental collisions with valid variables. See VariableDataCache for more.
 
         public static readonly byte InvalidId = 0;
@@ -86,14 +86,14 @@ namespace AtMycelia.Hyphlow
         public Muscariable() : base() { }
 
         // We want to check for semantic equality mainly
-        public static bool operator == (Muscariable left, Muscariable right)
+        public static bool operator ==(Muscariable left, Muscariable right)
         {
             if (ReferenceEquals(left, right)) return true; // In case both are null or same ref
             bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
             return sameValue;
         }
 
-        public static bool operator != (Muscariable left, Muscariable right)
+        public static bool operator !=(Muscariable left, Muscariable right)
         {
             if (ReferenceEquals(left, right)) return false; // In case both are null or same ref
             bool sameValue = !ReferenceEquals(left, null) && left.Equals(right);
@@ -118,7 +118,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public Muscariable (IVariable otherVar)
+        public Muscariable(IVariable otherVar)
         {
             _key = otherVar.Key;
             _scope = otherVar.Scope;
@@ -280,8 +280,8 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [MovedFrom(true, 
-        "AtMycelia.Hyphlow", 
+    [MovedFrom(true,
+        "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core")]
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
@@ -333,7 +333,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Init(T startValue = default)
         {
-            this._startValue = startValue; 
+            this._startValue = startValue;
             this.Value = startValue;
         }
 
@@ -355,7 +355,7 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                this._value = (T)value; 
+                this._value = (T)value;
                 // ^Need to cast here for the sake of numeric types. Can't do an "as" cast with those.
                 TriggerOnValueChanged();
             }
@@ -448,7 +448,7 @@ namespace AtMycelia.Hyphlow
             }
             else if (TypeUtils.TypesCompatible(typeof(T), value.GetType()))
             {
-                result =  Evaluate(op, (T)value);
+                result = Evaluate(op, (T)value);
             }
             else
             {
@@ -528,9 +528,9 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("NoShow", 
-        "", 
-        typeof(object), 
+    [VariableInfo("NoShow",
+        "",
+        typeof(object),
         showInMenu: false)]
     public class GenericMuscariable : Muscariable<object>
     {
