@@ -432,7 +432,8 @@ namespace AtMycelia.Hyphlow
                     this.Value = toApply;
                     break;
                 default:
-                    Debug.LogError($"The {setOperator} set operator is not valid for {ContentType.Name} variable {Key}.");
+                    Debug.LogError($"The {setOperator} set operator is not valid for " +
+                        $"{ContentType.Name} variable {Key}.");
                     break;
             }
 
@@ -441,19 +442,37 @@ namespace AtMycelia.Hyphlow
         public override bool Evaluate(CompareOperator op, object value)
         {
             bool result = false;
-            if (value is T || value == null)
+            if (value == null)
             {
-                result = Evaluate(op, (T)value);
+                result = EvaluateForNull(op);
             }
-            else if (value is Muscariable<T> varOfType)
+            else if (TypeUtils.TypesCompatible(typeof(T), value.GetType()))
             {
-                result = Evaluate(op, varOfType.Value);
+                result =  Evaluate(op, (T)value);
             }
             else
             {
-                Debug.LogError("Cannot do Evaluate on variable, as object type: " + value.GetType().Name + " is incompatible with " + typeof(T).Name);
+                Debug.LogError($"Cannot do Evaluate on variable, as object type: {value.GetType().Name} " +
+                    $"is incompatible with  + {typeof(T).Name}");
             }
 
+            return result;
+        }
+
+        protected virtual bool EvaluateForNull(CompareOperator op)
+        {
+            bool result;
+            switch (op)
+            {
+                case CompareOperator.Equals:
+                    result = this.Value == null; break;
+                case CompareOperator.NotEquals:
+                    result = this.Value != null; break;
+                default:
+                    string errorMessage = $"Muscariable<{typeof(T).Name}> {Key} not" +
+                        $"compatible with CompareOperator {op}";
+                    throw new ArgumentException(errorMessage);
+            }
             return result;
         }
 
