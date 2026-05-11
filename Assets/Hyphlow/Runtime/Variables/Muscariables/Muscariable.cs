@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.UIElements;
 
 namespace AtMycelia.Hyphlow
 {
@@ -212,40 +213,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public TVal GetValueAs<TVal>()
         {
-            object val = BoxedValue;
-            if (val == null)
-            {
-                return default;
-            }
-
-            var targetType = typeof(TVal);
-            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-            // If already the right runtime type
-            if (underlying.IsInstanceOfType(val))
-            {
-                return (TVal)val;
-            }
-
-            // Enums
-            if (underlying.IsEnum)
-            {
-                if (val is string enumStr)
-                {
-                    return (TVal)Enum.Parse(underlying, enumStr);
-                }
-                return (TVal)Enum.ToObject(underlying, val);
-            }
-
-            // Use IConvertible / Convert.ChangeType for primitives
-            if (val is IConvertible)
-            {
-                object changed = Convert.ChangeType(val, underlying);
-                return (TVal)changed;
-            }
-
-            // Last resort - try direct cast (may throw)
-            return (TVal)val;
+            TVal result = ConvertToValue<TVal>(BoxedValue);
+            return result;
         }
 
         public virtual IVariableSource Owner
@@ -275,6 +244,41 @@ namespace AtMycelia.Hyphlow
         {
             string result = $"{this.GetType().Name} w/ val: {BoxedValue})";
             return result;
+        }
+
+        protected virtual T ConvertToValue<T>(object value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                return default;
+            }
+
+            if (value is T typedValue)
+            {
+                return typedValue;
+            }
+
+            var targetType = typeof(T);
+            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (underlying.IsEnum)
+            {
+                if (value is string enumString)
+                {
+                    return (T)Enum.Parse(underlying, enumString);
+                }
+
+                object enumValue = Enum.ToObject(underlying, value);
+                return (T)enumValue;
+            }
+
+            if (value is IConvertible)
+            {
+                object changedValue = Convert.ChangeType(value, underlying);
+                return (T)changedValue;
+            }
+
+            return (T)value;
         }
 
     }
@@ -373,45 +377,12 @@ namespace AtMycelia.Hyphlow
                     throw new ArgumentException(errorMessage);
                 }
                 object filteredValue = this.FilterForValueSet(value);
-                this._value = ConvertToValue(filteredValue);
+                this._value = ConvertToValue<T>(filteredValue);
                 TriggerOnValueChanged();
             }
         }
 
-        protected virtual T ConvertToValue(object value)
-        {
-            if (ReferenceEquals(value, null))
-            {
-                return default;
-            }
 
-            if (value is T typedValue)
-            {
-                return typedValue;
-            }
-
-            var targetType = typeof(T);
-            var underlying = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
-            if (underlying.IsEnum)
-            {
-                if (value is string enumString)
-                {
-                    return (T)Enum.Parse(underlying, enumString);
-                }
-
-                object enumValue = Enum.ToObject(underlying, value);
-                return (T)enumValue;
-            }
-
-            if (value is IConvertible)
-            {
-                object changedValue = Convert.ChangeType(value, underlying);
-                return (T)changedValue;
-            }
-
-            return (T)value;
-        }
 
         public override void Apply(SetOperator setOperator, object toApply)
         {
@@ -421,7 +392,7 @@ namespace AtMycelia.Hyphlow
                 throw new Exception(errorMessage);
             }
 
-            Apply(setOperator, ConvertToValue(toApply));
+            Apply(setOperator, ConvertToValue<T>(toApply));
         }
 
         public virtual void Apply(SetOperator setOperator, T toApply)
@@ -448,7 +419,7 @@ namespace AtMycelia.Hyphlow
             }
             else if (TypeUtils.TypesCompatible(typeof(T), value.GetType()))
             {
-                result = Evaluate(op, (T)value);
+                result = Evaluate(op, ConvertToValue<T>(value));
             }
             else
             {
