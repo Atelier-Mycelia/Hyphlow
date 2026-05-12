@@ -622,11 +622,6 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        protected virtual Block CreateBlockComponent(GameObject parent)
-        {
-            Block block = parent.AddComponent<Block>();
-            return block;
-        }
 
         #region Public members
 
@@ -927,7 +922,7 @@ namespace AtMycelia.Hyphlow
         public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
             blockName ??= HyphlowConstants.DefaultBlockName;
-            Block created = CreateBlockComponent(gameObject);
+            Block created = gameObject.AddComponent<Block>();
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
 #endif
