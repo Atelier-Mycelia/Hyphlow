@@ -4,7 +4,7 @@
 A community‑driven evolution of [Fungus](https://github.com/snozbot/fungus/)‑style visual scripting.
 Hyphlow is a free, open‑source visual scripting system built as a modern evolution of the Fungus workflow. It keeps the spirit and accessibility of its predecessor while updating the architecture, UI, and extensibility for today’s Unity ecosystem.
 If you’re comfortable with Fungus, you’ll feel right at home. However, Hyphlow isn’t a drop‑in replacement. Dialogue, localization, and other such features will be released as separate plugins, keeping the core clean and modular.
-We’re currently in open beta, and we welcome feedback, issues, and contributions.
+We’re currently in open beta, and we welcome feedback, issues, and contributions. Also, feel free to contact us at atelierMycelia@gmail.com.
 
 # ✨ Key Improvements Over Fungus
 - Modernized codebase
