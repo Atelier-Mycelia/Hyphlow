@@ -1,5 +1,4 @@
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -43,7 +42,7 @@ namespace AtMycelia.Hyphlow
     }
 
     /// <summary>
-    /// Container for an float variable reference or constant value.
+    /// Container for a float variable reference or constant value.
     /// </summary>
     [VariableData(typeof(float), typeof(IVariable<float>))]
     [System.Serializable]
@@ -76,6 +75,27 @@ namespace AtMycelia.Hyphlow
         public FloatData() : base(default) { }
 
         public FloatData(float startVal) : base(startVal)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Container for a double variable reference or constant value.
+    /// </summary>
+    [VariableData(typeof(double), typeof(IVariable<double>))]
+    [System.Serializable]
+    public class DoubleData : VariableData<double>
+    {
+        [SerializeField]
+        public double doubleVal;
+
+        protected override double LegacyLiteralVal
+        {
+            get => doubleVal;
+            set => doubleVal = value;
+        }
+        public DoubleData() : base(default) { }
+        public DoubleData(double startVal) : base(startVal)
         {
         }
     }

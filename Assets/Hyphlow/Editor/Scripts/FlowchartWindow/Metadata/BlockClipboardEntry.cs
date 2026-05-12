@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#define DEBUG
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -57,25 +58,336 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             while (prop.NextVisible(true))
             {
-                // Skip excluded types
-                if (excludeTypes.Contains(prop.propertyType))
-                    continue;
-
-                var destProp = destSO.FindProperty(prop.propertyPath);
-                if (destProp == null)
-                    continue;
-
-                // Managed reference safety
-                if (prop.propertyType == SerializedPropertyType.ManagedReference)
+                if (ShouldSkipSourceProperty(prop, excludeTypes))
                 {
-                    if (prop.managedReferenceFullTypename != destProp.managedReferenceFullTypename)
-                        continue;
+                    continue;
                 }
 
-                destSO.CopyFromSerializedProperty(prop);
+                if (!TryGetDestinationProperty(destSO, prop, out var destProp))
+                {
+                    continue;
+                }
+
+                if (TryCopyManagedReferenceProperty(prop, destProp))
+                {
+                    continue;
+                }
+
+                if (!IsCompatiblePropertyPair(prop, destProp))
+                {
+                    continue;
+                }
+
+                CopySerializedPropertyWithContext(destSO, prop, destProp);
             }
 
             destSO.ApplyModifiedProperties();
+        }
+
+        private static bool ShouldSkipSourceProperty(SerializedProperty sourceProp, 
+            SerializedPropertyType[] excludeTypes)
+        {
+            if (excludeTypes.Contains(sourceProp.propertyType))
+            {
+                LogSkippedProperty(sourceProp, null, "ExcludedType");
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryGetDestinationProperty(SerializedObject destSO, SerializedProperty sourceProp, 
+            out SerializedProperty destProp)
+        {
+            destProp = destSO.FindProperty(sourceProp.propertyPath);
+            if (destProp == null)
+            {
+                LogSkippedProperty(sourceProp, null, "DestinationNotFound");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TryCopyManagedReferenceProperty(SerializedProperty sourceProp, SerializedProperty destProp)
+        {
+            if (sourceProp.propertyType != SerializedPropertyType.ManagedReference ||
+                destProp.propertyType != SerializedPropertyType.ManagedReference)
+            {
+                return false;
+            }
+
+            if (!TryCopyManagedReference(sourceProp, destProp))
+            {
+                LogSkippedProperty(sourceProp, destProp, "ManagedReferenceCopyFailed");
+            }
+
+            return true;
+        }
+
+        private static bool IsCompatiblePropertyPair(SerializedProperty sourceProp, SerializedProperty destProp)
+        {
+            if (destProp.propertyType != sourceProp.propertyType)
+            {
+                LogSkippedProperty(sourceProp, destProp, "PropertyTypeMismatch");
+                return false;
+            }
+
+            if (destProp.type != sourceProp.type)
+            {
+                LogSkippedProperty(sourceProp, destProp, "UnderlyingTypeMismatch");
+                return false;
+            }
+
+            return true;
+        }
+
+        private static void CopySerializedPropertyWithContext(
+            SerializedObject destSO,
+            SerializedProperty sourceProp,
+            SerializedProperty destProp)
+        {
+            try
+            {
+                if (ShouldUseJsonFallbackForTargetButton(sourceProp))
+                {
+                    CopyObjectWithJson(sourceProp.serializedObject.targetObject, destSO.targetObject);
+                    LogJsonFallback(sourceProp);
+                    return;
+                }
+
+                if (sourceProp.type == nameof(AnyVariableData))
+                {
+                    LogAnyVariableDataDetails(sourceProp, destProp);
+                }
+
+                LogCopyAttempt(sourceProp, destProp);
+                BeginCopyContext(sourceProp, destProp, destSO.targetObject);
+                destSO.CopyFromSerializedProperty(sourceProp);
+            }
+            catch (System.Exception ex)
+            {
+                LogCopyFailed(sourceProp, destProp, ex);
+            }
+            finally
+            {
+                EndCopyContext();
+            }
+        }
+
+        private static bool ShouldUseJsonFallbackForTargetButton(SerializedProperty sourceProp)
+        {
+            return sourceProp != null &&
+                   sourceProp.type == nameof(AnyVariableData) &&
+                   sourceProp.propertyPath == "_targetButton";
+        }
+
+        private static void CopyObjectWithJson(Object source, Object dest)
+        {
+            if (source == null || dest == null)
+            {
+                return;
+            }
+
+            var json = EditorJsonUtility.ToJson(source);
+            EditorJsonUtility.FromJsonOverwrite(json, dest);
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void LogJsonFallback(SerializedProperty sourceProp)
+        {
+            if (sourceProp == null)
+            {
+                return;
+            }
+
+            Debug.Log($"[Hyphlow] JSON fallback used for '{sourceProp.propertyPath}'.");
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void LogAnyVariableDataDetails(SerializedProperty sourceProp, SerializedProperty destProp)
+        {
+            if (sourceProp == null)
+            {
+                return;
+            }
+
+            var sourceDataProp = sourceProp.FindPropertyRelative("_data");
+            var destDataProp = destProp != null ? destProp.FindPropertyRelative("_data") : null;
+
+            var sourceBacking = sourceProp.FindPropertyRelative("_backingVarRef");
+            var destBacking = destProp != null ? destProp.FindPropertyRelative("_backingVarRef") : null;
+
+            var sourceDataType = sourceDataProp != null ? sourceDataProp.managedReferenceFullTypename : "null";
+            var destDataType = destDataProp != null ? destDataProp.managedReferenceFullTypename : "null";
+
+            var sourceVarRef = FormatVarRef(sourceBacking);
+            var destVarRef = FormatVarRef(destBacking);
+
+            Debug.Log(
+                $"[Hyphlow] AnyVariableData '{sourceProp.propertyPath}' " +
+                $"_data: {sourceDataType} -> {destDataType} " +
+                $"_backingVarRef: {sourceVarRef} -> {destVarRef}");
+        }
+
+        private static string FormatVarRef(SerializedProperty varRefProp)
+        {
+            if (varRefProp == null)
+            {
+                return "null";
+            }
+
+            var itemIdProp = varRefProp.FindPropertyRelative("_itemId");
+            var ownerProp = varRefProp.FindPropertyRelative("_owningSource");
+
+            var itemId = itemIdProp != null ? itemIdProp.intValue.ToString() : "null";
+            var owner = ownerProp != null ? ownerProp.objectReferenceValue : null;
+            var ownerName = owner != null ? owner.name : "null";
+            var ownerType = owner != null ? owner.GetType().Name : "null";
+
+            return $"itemId={itemId}, owner={ownerName} ({ownerType})";
+        }
+
+        private static bool logHookInstalled;
+        private static bool captureCopyErrors;
+        private static string currentCopyPropertyPath;
+        private static string currentCopyPropertyType;
+        private static string currentCopyFieldType;
+        private static string currentCopyDestPropertyType;
+        private static string currentCopyDestFieldType;
+        private static string currentCopyTargetType;
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void BeginCopyContext(SerializedProperty sourceProp, SerializedProperty destProp, Object target)
+        {
+            EnsureLogHookInstalled();
+
+            captureCopyErrors = true;
+            currentCopyPropertyPath = sourceProp.propertyPath;
+            currentCopyPropertyType = sourceProp.propertyType.ToString();
+            currentCopyFieldType = sourceProp.type;
+            currentCopyDestPropertyType = destProp != null ? destProp.propertyType.ToString() : "null";
+            currentCopyDestFieldType = destProp != null ? destProp.type : "null";
+            currentCopyTargetType = target != null ? target.GetType().FullName : "null";
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void EndCopyContext()
+        {
+            captureCopyErrors = false;
+            currentCopyPropertyPath = null;
+            currentCopyPropertyType = null;
+            currentCopyFieldType = null;
+            currentCopyDestPropertyType = null;
+            currentCopyDestFieldType = null;
+            currentCopyTargetType = null;
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void EnsureLogHookInstalled()
+        {
+            if (logHookInstalled)
+            {
+                return;
+            }
+
+            Application.logMessageReceived += OnLogMessageReceived;
+            logHookInstalled = true;
+        }
+
+        private static void OnLogMessageReceived(string condition, string stackTrace, LogType type)
+        {
+            if (!captureCopyErrors || type != LogType.Error)
+            {
+                return;
+            }
+
+            if (!condition.Contains("Destination property underlying types does not match the given one"))
+            {
+                return;
+            }
+
+            Debug.Log(
+                $"[Hyphlow] Unity copy error at '{currentCopyPropertyPath}' " +
+                $"({currentCopyPropertyType}, {currentCopyFieldType}) -> ({currentCopyDestPropertyType}, " +
+                $"{currentCopyDestFieldType}) " +
+                $"Target: {currentCopyTargetType}");
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void LogCopyAttempt(SerializedProperty sourceProp, SerializedProperty destProp)
+        {
+            if (sourceProp == null)
+            {
+                return;
+            }
+
+            var destPropertyType = destProp != null ? destProp.propertyType.ToString() : "null";
+            var destFieldType = destProp != null ? destProp.type : "null";
+
+            Debug.Log(
+                $"[Hyphlow] Copy attempt '{sourceProp.propertyPath}' " +
+                $"({sourceProp.propertyType}, {sourceProp.type}) -> ({destPropertyType}, {destFieldType})");
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void LogCopyFailed(SerializedProperty sourceProp, SerializedProperty destProp, System.Exception ex)
+        {
+            if (sourceProp == null)
+            {
+                return;
+            }
+
+            var destPropertyType = destProp != null ? destProp.propertyType.ToString() : "null";
+            var destFieldType = destProp != null ? destProp.type : "null";
+
+            Debug.Log(
+                $"[Hyphlow] Copy failed '{sourceProp.propertyPath}' " +
+                $"({sourceProp.propertyType}, {sourceProp.type}) -> ({destPropertyType}, {destFieldType}) " +
+                $"Exception: {ex.GetType().Name} - {ex.Message}");
+        }
+
+        private static bool TryCopyManagedReference(SerializedProperty sourceProp, SerializedProperty destProp)
+        {
+            if (sourceProp == null || destProp == null)
+            {
+                return false;
+            }
+
+            var sourceValue = sourceProp.managedReferenceValue;
+            if (sourceValue == null)
+            {
+                destProp.managedReferenceValue = null;
+                return true;
+            }
+
+            if (destProp.managedReferenceValue == null ||
+                destProp.managedReferenceValue.GetType() != sourceValue.GetType())
+            {
+                destProp.managedReferenceValue = System.Activator.CreateInstance(sourceValue.GetType());
+            }
+
+            var json = EditorJsonUtility.ToJson(sourceValue);
+            EditorJsonUtility.FromJsonOverwrite(json, destProp.managedReferenceValue);
+            return true;
+        }
+
+        [System.Diagnostics.Conditional("DEBUG")]
+        private static void LogSkippedProperty(SerializedProperty sourceProp, SerializedProperty destProp, 
+            string reason)
+        {
+            if (sourceProp == null)
+            {
+                return;
+            }
+
+            var destPropertyType = destProp != null ? destProp.propertyType.ToString() : "null";
+            var destFieldType = destProp != null ? destProp.type : "null";
+
+            Debug.Log(
+                $"[Hyphlow] Skipped property '{sourceProp.propertyPath}' " +
+                $"({sourceProp.propertyType}, {sourceProp.type}) -> ({destPropertyType}, {destFieldType}) " +
+                $"Reason: {reason}");
         }
 
         internal Block PasteBlock(IFlowchartHostCore flowWind, Flowchart flowchart)
@@ -130,7 +442,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return newBlock;
         }
 
-        internal void RestoreObjectReferences(Block pastedBlock, Flowchart flowchart, IDictionary<ushort, Block> pastedBlockLookup)
+        internal void RestoreObjectReferences(Block pastedBlock, Flowchart flowchart, 
+            IDictionary<ushort, Block> pastedBlockLookup)
         {
             if (pastedBlock == null || flowchart == null)
             {
@@ -140,12 +453,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
             int commandCount = Mathf.Min(commands.Count, pastedBlock.CommandList.Count);
             for (int i = 0; i < commandCount; i++)
             {
-                ApplyObjectReferences(commands[i], pastedBlock.CommandList[i], flowchart, pastedBlockLookup);
+                ApplyObjectReferences(commands[i], pastedBlock.CommandList[i], 
+                    flowchart, pastedBlockLookup);
             }
 
             if (eventHandler != null && pastedBlock._EventHandler != null)
             {
-                ApplyObjectReferences(eventHandler, pastedBlock._EventHandler, flowchart, pastedBlockLookup);
+                ApplyObjectReferences(eventHandler, pastedBlock._EventHandler, 
+                    flowchart, pastedBlockLookup);
             }
         }
 
@@ -222,7 +537,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 var snapshot = source.objectReferences[i];
                 var destProp = destSO.FindProperty(snapshot.PropertyPath);
-                bool propDoesNotApply = destProp == null || destProp.propertyType != SerializedPropertyType.ObjectReference;
+                bool propDoesNotApply = destProp == null || 
+                    destProp.propertyType != SerializedPropertyType.ObjectReference;
                 if (propDoesNotApply)
                 {
                     continue;
