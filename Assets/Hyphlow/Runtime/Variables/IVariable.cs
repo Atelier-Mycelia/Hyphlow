@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow
         void Init(object startValue = default);
         new string Key { get; set; }
         object BoxedValue { get; set; }
-        VariableScope Scope { get; set; }
+        AccessScope Scope { get; set; }
 
         /// <summary>
         /// The type of the value that this is meant to represent. It's like how Fungus

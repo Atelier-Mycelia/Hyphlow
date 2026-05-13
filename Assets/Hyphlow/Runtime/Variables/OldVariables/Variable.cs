@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField]
         [FormerlySerializedAs("scope")]
-        protected VariableScope _scope;
+        protected AccessScope _scope;
 
         [SerializeField]
         [FormerlySerializedAs("key")]
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Visibility scope for the variable.
         /// </summary>
-        public virtual VariableScope Scope { get { return _scope; } set { _scope = value; } }
+        public virtual AccessScope Scope { get { return _scope; } set { _scope = value; } }
 
         /// <summary>
         /// String identifier for the variable.

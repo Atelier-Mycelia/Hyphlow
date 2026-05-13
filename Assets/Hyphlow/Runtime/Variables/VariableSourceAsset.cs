@@ -98,14 +98,14 @@ namespace AtMycelia.Hyphlow
         /// have (functionally) global scopes for their vars.
         /// </summary>
         public virtual Muscariable<TContent> AddNewVariableOfContentType<TContent>(string key,
-            TContent startingVal = default, VariableScope scope = VariableScope.Private)
+            TContent startingVal = default, AccessScope scope = AccessScope.Private)
         {
-            var result = _varManager.AddNewVariable(key, startingVal, VariableScope.Public);
+            var result = _varManager.AddNewVariable(key, startingVal, AccessScope.Public);
             return (Muscariable<TContent>)result; 
         }
 
         public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key, object defaultVal,
-            VariableScope scope = VariableScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             var result = _varManager.AddNewVariableOfContentType(contentType, key, defaultVal, scope);
             return result;
@@ -460,7 +460,7 @@ namespace AtMycelia.Hyphlow
 
 #if UNITY_EDITOR
 
-        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, VariableScope scope)
+        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, AccessScope scope)
         {
             return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(k, defaultVal, scope);
         }

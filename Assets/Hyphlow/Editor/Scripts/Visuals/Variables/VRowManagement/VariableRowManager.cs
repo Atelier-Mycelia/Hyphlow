@@ -479,7 +479,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
+        protected virtual void OnScopeFieldChanged(VariableRow row, AccessScope scope)
         {
             if (!WeAreManaging(row))
             {

@@ -32,7 +32,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Flowchart flowchart = null;
             if (targetFlowchartProp.objectReferenceValue == null)
             {
-                flowchart = (Flowchart)t.GetFlowchart();
+                flowchart = t.GetFlowchart();
             }
             else
             {

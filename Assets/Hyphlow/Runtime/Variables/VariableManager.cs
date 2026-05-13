@@ -503,13 +503,13 @@ namespace AtMycelia.Hyphlow
         }
 
         public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue, 
-            VariableScope scope = VariableScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             return AddNewVariableOfContentType(typeof(T), key, defaultValue, scope);
         }
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key, 
-            object defaultValue, VariableScope scope = VariableScope.Private)
+            object defaultValue, AccessScope scope = AccessScope.Private)
         {
             EnsureInitialized();
             Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
@@ -592,7 +592,7 @@ namespace AtMycelia.Hyphlow
         }
 
         public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
-            VariableScope scope = VariableScope.Private) where TVarType : Muscariable<TValueType>, new()
+            AccessScope scope = AccessScope.Private) where TVarType : Muscariable<TValueType>, new()
         {
             EnsureInitialized();
             TVarType result = new TVarType();
@@ -632,7 +632,7 @@ namespace AtMycelia.Hyphlow
 
         public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
-            VariableScope scope = VariableScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             EnsureInitialized();
             Type valueType = typeof(TValHeld);
