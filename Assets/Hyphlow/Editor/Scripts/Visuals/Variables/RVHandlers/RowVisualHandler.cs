@@ -104,7 +104,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected virtual IRowVisualSynchronizer VisualSynchronizer => RowVisualSynchronizerRegistry.Current;
 
         public event Action<TextField> KeyFieldChanged = delegate { };
-        public event Action<VScriptScope> ScopeFieldChanged = delegate { };
+        public event Action<AccessScope> ScopeFieldChanged = delegate { };
         public event Action<object> ValueFieldChanged = delegate { };
 
         protected virtual void TriggerValueFieldChanged(object newValue)
@@ -195,11 +195,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             Enum currentValue = ScopeField.value;
-            if (currentValue == null || currentValue.GetType() != typeof(VScriptScope))
+            if (currentValue == null || currentValue.GetType() != typeof(AccessScope))
             {
-                VScriptScope initValue = _currentVariable != null ? 
+                AccessScope initValue = _currentVariable != null ? 
                     _currentVariable.Scope : 
-                    VScriptScope.Private;
+                    AccessScope.Private;
                 ScopeField.Init(initValue);
             }
         }

@@ -283,7 +283,7 @@ namespace AtMycelia.Hyphlow
         }
 
         public Muscariable AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
-            VScriptScope scope = VScriptScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
         }
@@ -312,7 +312,7 @@ namespace AtMycelia.Hyphlow
             var globalVars = vManager.Variables.Where(VarIsGlobal).ToList();//
             foreach (var globalVar in globalVars)
             {
-                globalVar.Scope = VScriptScope.Public;
+                globalVar.Scope = AccessScope.Public;
             }
         }
 
@@ -326,7 +326,7 @@ namespace AtMycelia.Hyphlow
                 Debug.LogError(errorMessage);
                 return false;
             }
-            bool result = var.Scope == VScriptScope.Global;
+            bool result = var.Scope == AccessScope.Global;
             return result;
         }
 #endif

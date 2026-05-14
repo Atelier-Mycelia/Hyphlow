@@ -72,7 +72,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 if (!isManagedRef && selectedLegacy != null &&
                     flowchartBelongingToCommand != null &&
                     selectedLegacy.gameObject != flowchartBelongingToCommand.gameObject &&
-                    selectedLegacy.Scope == VScriptScope.Private)
+                    selectedLegacy.Scope == AccessScope.Private)
                 {
                     property.objectReferenceValue = null;
                     selectedLegacy = null;
@@ -232,7 +232,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static bool IsVarPublic(IVariable elem)
         {
-            return elem.Scope == VScriptScope.Public;
+            return elem.Scope == AccessScope.Public;
         }
 
         private static string ComputeSiblingLegacyPath(string path)

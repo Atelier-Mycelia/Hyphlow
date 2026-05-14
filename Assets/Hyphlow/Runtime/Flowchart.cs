@@ -1714,7 +1714,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual TVarType AddNewMuscariable<TContentType, TVarType>(string key,
             TContentType defaultValue = default,
-            VScriptScope scope = VScriptScope.Private)
+            AccessScope scope = AccessScope.Private)
             where TVarType : Muscariable<TContentType>, new()
         {
             var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as TVarType;
@@ -1728,7 +1728,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual IVariable<TContentType> AddNewVariable<TContentType>(string key,
             TContentType defaultValue = default,
-            VScriptScope scope = VScriptScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as IVariable<TContentType>;
             if (result != null)
@@ -1740,7 +1740,7 @@ namespace AtMycelia.Hyphlow
         }
 
         public Muscariable AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal,
-            VScriptScope scope = VScriptScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             return _varManager.AddNewVariableOfContentType(k, defaultVal, scope);
         }

@@ -25,7 +25,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EnumField scopeField,
             VisualElement valueField,
             Action<TextField> keyFieldChanged,
-            Action<VScriptScope> scopeFieldChanged,
+            Action<AccessScope> scopeFieldChanged,
             Action applyValueFromModel)
         {
             Variable = variable;
@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public EnumField ScopeField { get; }
         public VisualElement ValueField { get; }
         public Action<TextField> KeyFieldChanged { get; }
-        public Action<VScriptScope> ScopeFieldChanged { get; }
+        public Action<AccessScope> ScopeFieldChanged { get; }
         public Action ApplyValueFromModel { get; }
         public bool IsValid => Variable != null && KeyField != null && ScopeField != null;
     }
@@ -151,7 +151,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             private void OnScopeChanged(ChangeEvent<Enum> evt)
             {
-                _context.ScopeFieldChanged?.Invoke((VScriptScope)evt.newValue);
+                _context.ScopeFieldChanged?.Invoke((AccessScope)evt.newValue);
             }
 
             private void OnMuscariableValueChanged(Muscariable changedVar)

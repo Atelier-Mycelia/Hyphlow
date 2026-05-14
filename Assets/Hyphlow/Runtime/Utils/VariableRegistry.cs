@@ -78,7 +78,7 @@ namespace AtMycelia.Hyphlow
                 {
                     foreach (var toRegister in otherFc.Variables)
                     {
-                        if (toRegister.Scope != VScriptScope.Public)
+                        if (toRegister.Scope != AccessScope.Public)
                         {
                             continue;
                         }

@@ -29,6 +29,8 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Block : Node, IEquatable<Block>
     {
+        [SerializeField] protected AccessScope _scope = AccessScope.Private;
+
         [FormerlySerializedAs("itemId")]
         [SerializeField] protected ushort _itemId = 0; 
 
@@ -58,6 +60,12 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected int _loadPriority;
 
         public static readonly ushort InvalidId = 0;
+
+        public virtual AccessScope Scope
+        {
+            get { return _scope; }
+            set { _scope = value; }
+        }
 
         public virtual bool IncludeInSaves
         {

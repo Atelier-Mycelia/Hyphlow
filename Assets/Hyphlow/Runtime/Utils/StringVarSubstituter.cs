@@ -96,7 +96,7 @@ namespace AtMycelia.Hyphlow
                 }
 
                 IVariable candidate = flowchart.GetVariable(key, StringComparison.Ordinal);
-                if (candidate == null || candidate.Scope != VScriptScope.Public)
+                if (candidate == null || candidate.Scope != AccessScope.Public)
                 {
                     continue;
                 }

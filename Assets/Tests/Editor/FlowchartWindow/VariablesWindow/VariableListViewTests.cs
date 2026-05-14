@@ -646,9 +646,9 @@ namespace VScriptingTests.VariableOperations
             }
 
             // IVariable.Scope (readonly)
-            public VScriptScope Scope
+            public AccessScope Scope
             {
-                get => VScriptScope.Private;
+                get => AccessScope.Private;
                 set { } // no-op
             }
 
