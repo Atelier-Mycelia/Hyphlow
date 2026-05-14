@@ -24,7 +24,7 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
-        IBackwardsCompatibilityApplier
+        IBackwardsCompatibilityApplier, IBlockSource
     {
         [SerializeField, HideInInspector] private VariableManagerComponent _varManager;
 
@@ -102,16 +102,20 @@ namespace AtMycelia.Hyphlow
 
         #region Save Sys Involvement
         [Tooltip("Whether or not the save system should save (and when appropriate, load) this Flowchart's variables.")]
-        [SerializeField] protected bool includeInSaves = true;
+        [FormerlySerializedAs("includeInSaves")]
+        [SerializeField] protected bool _includeInSaves = true;
 
         [Tooltip("Whether or not the execution state of this FC's Blocks should be considered for saving.")]
-        [SerializeField] protected bool saveBlocks = true;
+        [FormerlySerializedAs("saveBlocks")]
+        [SerializeField] protected bool _saveBlocks = true;
 
         [Tooltip("Whether or not this FC's vars should be saved or loaded.")]
-        [SerializeField] protected bool saveVariables = true;
+        [FormerlySerializedAs("saveVariables")]
+        [SerializeField] protected bool _saveVariables = true;
 
         [Tooltip("Affects the order this FC will get loaded relative to others. Lower number, earlier loading.")]
-        [SerializeField] protected int loadPriority = 0;
+        [FormerlySerializedAs("loadPriority")]
+        [SerializeField] protected int _loadPriority = 0;
         #endregion
 
         [FormerlySerializedAs("alwaysKeepGuid")]
@@ -119,35 +123,33 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool IncludeInSaves
         {
-            get { return includeInSaves; }
-            set { includeInSaves = value; }
+            get { return _includeInSaves; }
+            set { _includeInSaves = value; }
         }
 
         #region SaveSys Involvement
         public virtual bool SaveBlocks
         {
-            get { return saveBlocks; }
-            set { saveBlocks = value; }
+            get { return _saveBlocks; }
+            set { _saveBlocks = value; }
         }
 
         public virtual bool SaveVariables
         {
-            get { return saveVariables; }
-            set { saveVariables = value; }
+            get { return _saveVariables; }
+            set { _saveVariables = value; }
         }
 
         public virtual int LoadPriority
         {
-            get { return loadPriority; }
-            set { loadPriority = value; }
+            get { return _loadPriority; }
+            set { _loadPriority = value; }
         }
         #endregion
 
-        protected static bool eventSystemPresent;
+        protected StringSubstituter _stringSubstituter;
 
-        protected StringSubstituter stringSubstituter;
-
-        public IReadOnlyCollection<Block> Blocks
+        public IReadOnlyList<Block> Blocks
         {
             get
             {
@@ -964,7 +966,7 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
-        public virtual Block FindBlockByItemId(uint itemId)
+        public virtual Block GetBlockWithId(ushort itemId)
         {
             _blocks.TryGetValue(itemId, out Block result);
             return result;
@@ -1556,7 +1558,6 @@ namespace AtMycelia.Hyphlow
 
         public static void ResetStaticsForTest()
         {
-            eventSystemPresent = false;
         }
 
 
@@ -1713,7 +1714,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual TVarType AddNewMuscariable<TContentType, TVarType>(string key,
             TContentType defaultValue = default,
-            VariableScope scope = VariableScope.Private)
+            VScriptScope scope = VScriptScope.Private)
             where TVarType : Muscariable<TContentType>, new()
         {
             var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as TVarType;
@@ -1727,7 +1728,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual IVariable<TContentType> AddNewVariable<TContentType>(string key,
             TContentType defaultValue = default,
-            VariableScope scope = VariableScope.Private)
+            VScriptScope scope = VScriptScope.Private)
         {
             var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as IVariable<TContentType>;
             if (result != null)
@@ -1739,7 +1740,7 @@ namespace AtMycelia.Hyphlow
         }
 
         public Muscariable AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal,
-            VariableScope scope = VariableScope.Private)
+            VScriptScope scope = VScriptScope.Private)
         {
             return _varManager.AddNewVariableOfContentType(k, defaultVal, scope);
         }
@@ -1747,6 +1748,47 @@ namespace AtMycelia.Hyphlow
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             return _varManager.AddNewVariableOfContentType(contentType, key);
+        }
+
+        public bool Contains(Block block)
+        {
+            for (int i = 0; i < _blockListCache.Count; i++)
+            {
+                if (_blockListCache[i] == block)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void Add(Block block)
+        {
+            if (block == null)
+            {
+                Debug.LogError("Cannot add null block to flowchart.");
+                return;
+            }
+
+            bool alreadyContains = Contains(block);
+            if (alreadyContains)
+            {
+                Debug.LogWarning("Flowchart already contains block " + block.BlockName);
+                return;
+            }
+
+            _blockListCache.Add(block);
+            _blocks[block.ItemId] = block;
+        }
+
+        public void Remove(Block block)
+        {
+            if (_blocks[block.ItemId] == block)
+            {
+                _blocks.Remove(block.ItemId);
+                _blockListCache.Remove(block);
+            }
         }
     }
     

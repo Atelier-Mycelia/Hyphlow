@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     {
         event Action<IRowVisualHandler> RemoveButtonClicked;
         event Action<TextField> KeyFieldChanged;
-        event Action<VariableScope> ScopeFieldChanged;
+        event Action<VScriptScope> ScopeFieldChanged;
         event Action<object> ValueFieldChanged;
     }
 }

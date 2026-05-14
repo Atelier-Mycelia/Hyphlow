@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public static Action<BaseObj> ControlValueChanged = delegate { };
         public static Action<VariableRow, string> KeyFieldChanged = delegate { };
-        public static Action<VariableRow, VariableScope> ScopeFieldChanged = delegate { };
+        public static Action<VariableRow, VScriptScope> ScopeFieldChanged = delegate { };
         public static Action<VariableRow, object> ValueFieldChanged = delegate { };
 
     }

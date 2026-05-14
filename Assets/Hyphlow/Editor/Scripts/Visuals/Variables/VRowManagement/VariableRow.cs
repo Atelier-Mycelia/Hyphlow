@@ -69,7 +69,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             HyphlowEditorSignals.KeyFieldChanged(this, field.value);
         }
 
-        protected virtual void OnScopeFieldChanged(VariableScope scope)
+        protected virtual void OnScopeFieldChanged(VScriptScope scope)
         {
             HyphlowEditorSignals.ScopeFieldChanged(this, scope);
         }

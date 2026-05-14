@@ -58,7 +58,7 @@ namespace AtMycelia.Hyphlow
     public interface IMuscariableSource : IVariableSource<Muscariable>
     {
         Muscariable AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal,
-            VariableScope scope = VariableScope.Private);
+            VScriptScope scope = VScriptScope.Private);
 
         /// <summary>
         /// Adds a new Muscariable with the given content type and key. 

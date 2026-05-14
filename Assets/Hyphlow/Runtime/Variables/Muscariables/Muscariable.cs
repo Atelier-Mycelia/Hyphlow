@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        protected VariableScope _scope = VariableScope.Private;
+        protected VScriptScope _scope = VScriptScope.Private;
         [SerializeField]
         protected string _key = string.Empty;
         [HideInInspector]
@@ -26,7 +26,7 @@ namespace AtMycelia.Hyphlow
 
         #region Legacy stuff
         [SerializeField]
-        protected VariableScope scope = VariableScope.Private;
+        protected VScriptScope scope = VScriptScope.Private;
         [SerializeField]
         protected string key = string.Empty;
         [HideInInspector]
@@ -65,7 +65,7 @@ namespace AtMycelia.Hyphlow
             scope = default;
         }
 
-        public virtual VariableScope Scope
+        public virtual VScriptScope Scope
         {
             get => _scope;
             set => _scope = value;
@@ -126,7 +126,7 @@ namespace AtMycelia.Hyphlow
             BoxedValue = otherVar.BoxedValue;
         }
 
-        public Muscariable(string key, byte itemID, VariableScope scope)
+        public Muscariable(string key, byte itemID, VScriptScope scope)
         {
             this._key = key;
             this._itemId = itemID;

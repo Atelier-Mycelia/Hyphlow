@@ -199,7 +199,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 {
                     Key = key,
                     BoxedValue = spriteRenderer.gameObject,
-                    Scope = VariableScope.Private
+                    Scope = VScriptScope.Private
                 };
                 flowchart.AddVariable(existing);
             }

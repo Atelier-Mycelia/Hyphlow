@@ -57,6 +57,8 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("loadPriority")]
         [SerializeField] protected int _loadPriority;
 
+        public static readonly ushort InvalidId = 0;
+
         public virtual bool IncludeInSaves
         {
             get { return _includeInSaves; }
