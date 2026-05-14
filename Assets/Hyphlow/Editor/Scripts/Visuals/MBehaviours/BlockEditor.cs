@@ -457,13 +457,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		}
 
 
-		public static void BlockField(SerializedProperty property, GUIContent label, GUIContent nullLabel, Flowchart flowchart)
+		public static void BlockField(SerializedProperty property, GUIContent label, GUIContent nullLabel,
+			Flowchart flowchart)
 		{
 			if (flowchart == null)
 			{
 				return;
 			}
-
+			Debug.Log($"Drawing BlockField for Flowchart {flowchart.name}");
 			var block = property.objectReferenceValue as Block;
 
 			// Build dictionary of child blocks
@@ -471,13 +472,30 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			int selectedIndex = 0;
 			blockNames.Add(nullLabel);
-			var blocks = flowchart.GetComponents<Block>();
-			blocks = blocks.OrderBy(x => x.BlockName).ToArray();
+			var blocks = flowchart.Blocks;
 
-			for (int i = 0; i < blocks.Length; ++i)
+			var sortedBlocks = new List<Block>(blocks.Count);
+			for (int i = 0; i < blocks.Count; i++)
 			{
-				blockNames.Add(new GUIContent(blocks[i].BlockName));
+				sortedBlocks.Add(blocks[i]);
+			}
 
+			for (int i = 0; i < sortedBlocks.Count - 1; i++)
+			{
+				for (int j = i + 1; j < sortedBlocks.Count; j++)
+				{
+					if (string.Compare(sortedBlocks[i].BlockName, sortedBlocks[j].BlockName, StringComparison.Ordinal) > 0)
+					{
+						(sortedBlocks[i], sortedBlocks[j]) = (sortedBlocks[j], sortedBlocks[i]);
+					}
+				}
+			}
+
+			blocks = sortedBlocks;
+
+			for (int i = 0; i < blocks.Count; ++i)
+			{
+				var currentBlock = blocks[i];
 				if (block == blocks[i])
 				{
 					selectedIndex = i + 1;
@@ -496,6 +514,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			property.objectReferenceValue = block;
 		}
+
+		private static readonly AccessScope _visibleToOutsiders = AccessScope.Public | AccessScope.ReadOnly
+			| AccessScope.Global;
 
 		public static Block BlockField(Rect position, GUIContent nullLabel, Flowchart flowchart, Block block)
 		{
