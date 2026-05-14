@@ -34,7 +34,7 @@ We’re currently in open beta, and we welcome feedback, issues, and contributio
 
 ## Unity 6+ (Git URL)
 Add these two packages via Package Manager, going with Add Package From Git Url instead of Add Package From Disk:
-1. https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils
+1. https://github.com/Atelier-Mycelia/UnityUtils.git?path=Assets/AtMyceliaCommonLib
 2. https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow
 
 # 🤖 AI Use Disclosure
