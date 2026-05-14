@@ -340,7 +340,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Populates a list with the Blocks that this command references.
         /// </summary>
-        public virtual void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public virtual void GetConnectedBlocks(ref List<Block> toPopulate)
         {}
 
         /// <summary>

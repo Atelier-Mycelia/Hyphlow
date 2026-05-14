@@ -41,6 +41,7 @@ namespace AtMycelia.Hyphlow
         /// We might at some point implement the option to make Flowcharts that inherit from other
         /// Flowcharts, and this would be the scope for things that are meant to be inherited but
         /// otherwise not accessed from other contexts.
+        /// For now, though, this does nothing.
         /// </summary>
         Protected = 3, 
 
@@ -50,8 +51,7 @@ namespace AtMycelia.Hyphlow
         ReadOnly = 4,
 
         /// <summary>
-        /// In case we ever need it for something. This is not used anywhere in the codebase
-        /// (at the time of this writing), but it is here for completeness.
+        /// For miscellaneous use cases that don't fit into the other categories.
         /// </summary>
         Null = 99,
     }

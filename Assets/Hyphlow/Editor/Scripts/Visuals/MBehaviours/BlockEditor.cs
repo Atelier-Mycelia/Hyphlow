@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace AtMycelia.Hyphlow.EditorUtils
@@ -58,21 +57,24 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		protected void CacheCallerString()
 		{
 			if (!string.IsNullOrEmpty(callersString))
+			{
 				return;
+			}
 
 			var targetBlock = target as Block;
-			
-			var callers = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None)
-				.Where(x => x is IBlockCaller)
-				.Select(x => x as IBlockCaller)
-				.Where(x => x.MayCallBlock(targetBlock))
-				.Select(x => x.GetLocationIdentifier()).ToArray();
+			var monoBehaviours = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+			var callerNames = new List<string>();
 
-			if (callers != null && callers.Length > 0)
-				callersString = string.Join("\n", callers);
-			else
-				callersString = "None";
+			for (int i = 0; i < monoBehaviours.Length; i++)
+			{
+				if (monoBehaviours[i] is IBlockCaller blockCaller &&
+					blockCaller.MayCallBlock(targetBlock))
+				{
+					callerNames.Add(blockCaller.GetLocationIdentifier());
+				}
+			}
 
+			callersString = callerNames.Count > 0 ? string.Join("\n", callerNames) : "None";
 		}
 
 		public virtual void DrawBlockName(Flowchart flowchart)
@@ -112,197 +114,213 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			var block = target as Block;
 
-			// Execute any queued cut, copy, paste, etc. operations from the prevous GUI update
-			// We need to defer applying these operations until the following update because
-			// the ReorderableList control emits GUI errors if you clear the list in the same frame
-			// as drawing the control (e.g. select all and then delete)
-			if (Event.current.type == EventType.Layout)
-			{
-				foreach (Action action in actionList)
-				{
-					if (action != null)
-					{
-						action();
-					}
-				}
-				actionList.Clear();
-			}
-
+			ExecuteQueuedActions();
 
 			EditorGUI.BeginChangeCheck();
 
 			if (block == flowchart.SelectedBlock)
 			{
-				// Custom tinting
-				SerializedProperty useCustomTintProp = serializedObject.FindProperty("useCustomTint");
-				SerializedProperty tintProp = serializedObject.FindProperty("tint");
-				SerializedProperty includeInSavesProp = serializedObject.FindProperty("_includeInSaves");
-				SerializedProperty loadPriorityProp = serializedObject.FindProperty("_loadPriority");
+				DrawSelectedBlockDetails(flowchart, block);
+			}
 
-				EditorGUILayout.BeginHorizontal();
+			RemoveNullCommandEntries();
 
-				useCustomTintProp.boolValue = GUILayout.Toggle(useCustomTintProp.boolValue, " Custom Tint",
-					GUILayout.Width(120));
-				if (useCustomTintProp.boolValue)
+			if (EditorGUI.EndChangeCheck())
+			{
+				SelectedBlockDataStale = true;
+			}
+
+			serializedObject.ApplyModifiedProperties();
+		}
+
+		private void ExecuteQueuedActions()
+		{
+			// Execute any queued cut, copy, paste, etc. operations from the prevous GUI update
+			// We need to defer applying these operations until the following update because
+			// the ReorderableList control emits GUI errors if you clear the list in the same frame
+			// as drawing the control (e.g. select all and then delete)
+			if (Event.current.type != EventType.Layout)
+			{
+				return;
+			}
+
+			for (int i = 0; i < actionList.Count; i++)
+			{
+				Action action = actionList[i];
+				if (action != null)
 				{
-					EditorGUILayout.PropertyField(tintProp, GUIContent.none);
+					action();
 				}
+			}
+			actionList.Clear();
+		}
 
-				EditorGUILayout.EndHorizontal();
+		private void DrawSelectedBlockDetails(Flowchart flowchart, Block block)
+		{
+			DrawCustomTintSettings();
+			DrawSaveSettings();
 
-				EditorGUILayout.Space();
+			EditorGUILayout.Space();
 
-				EditorGUILayout.BeginHorizontal();
-				includeInSavesProp.boolValue = GUILayout.Toggle(includeInSavesProp.boolValue, " Include in Saves",
-					GUILayout.Width(150));
-				EditorGUILayout.LabelField("Load Priority", GUILayout.Width(78));
-				loadPriorityProp.intValue = EditorGUILayout.IntField(loadPriorityProp.intValue, GUILayout.Width(50));
-				EditorGUILayout.EndHorizontal();
+			DrawDescription();
+			DrawAutoSelectionSuppression();
 
-				EditorGUILayout.Space();
+			DrawCallersSection();
 
-				SerializedProperty descriptionProp = serializedObject.FindProperty("_description");
-				EditorGUILayout.PropertyField(descriptionProp);
+			EditorGUILayout.Space();
 
+			DrawEventHandlerGUI(flowchart);
 
-				SerializedProperty suppressProp = serializedObject.FindProperty("suppressAllAutoSelections");
-				EditorGUILayout.PropertyField(suppressProp);
-				
-				EditorGUI.indentLevel++;
-				if (callersFoldout = EditorGUILayout.Foldout(callersFoldout, "Callers"))
+			block.UpdateIndentLevels();
+			EnsureCommandParentReferences(block);
+
+			EditorGUILayout.Space();
+
+			commandListAdaptor.DrawCommandList();
+
+			HandleContextMenuInput();
+			HandleKeyboardShortcuts(flowchart);
+		}
+
+		private void DrawCustomTintSettings()
+		{
+			SerializedProperty useCustomTintProp = serializedObject.FindProperty("useCustomTint");
+			SerializedProperty tintProp = serializedObject.FindProperty("tint");
+
+			EditorGUILayout.BeginHorizontal();
+
+			useCustomTintProp.boolValue = GUILayout.Toggle(useCustomTintProp.boolValue, " Custom Tint",
+				GUILayout.Width(120));
+			if (useCustomTintProp.boolValue)
+			{
+				EditorGUILayout.PropertyField(tintProp, GUIContent.none);
+			}
+
+			EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.Space();
+		}
+
+		private void DrawSaveSettings()
+		{
+			SerializedProperty includeInSavesProp = serializedObject.FindProperty("_includeInSaves");
+			SerializedProperty loadPriorityProp = serializedObject.FindProperty("_loadPriority");
+
+			EditorGUILayout.BeginHorizontal();
+			includeInSavesProp.boolValue = GUILayout.Toggle(includeInSavesProp.boolValue, " Include in Saves",
+				GUILayout.Width(150));
+			EditorGUILayout.LabelField("Load Priority", GUILayout.Width(78));
+			loadPriorityProp.intValue = EditorGUILayout.IntField(loadPriorityProp.intValue, GUILayout.Width(50));
+			EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.Space();
+		}
+
+		private void DrawDescription()
+		{
+			SerializedProperty descriptionProp = serializedObject.FindProperty("_description");
+			EditorGUILayout.PropertyField(descriptionProp);
+		}
+
+		private void DrawAutoSelectionSuppression()
+		{
+			SerializedProperty suppressProp = serializedObject.FindProperty("suppressAllAutoSelections");
+			EditorGUILayout.PropertyField(suppressProp);
+		}
+
+		private void DrawCallersSection()
+		{
+			EditorGUI.indentLevel++;
+			if (callersFoldout = EditorGUILayout.Foldout(callersFoldout, "Callers"))
+			{
+				CacheCallerString();
+				GUI.enabled = false;
+				EditorGUILayout.TextArea(callersString);
+				GUI.enabled = true;
+			}
+			EditorGUI.indentLevel--;
+		}
+
+		private static void EnsureCommandParentReferences(Block block)
+		{
+			// Make sure each command has a reference to its parent block
+			for (int i = 0; i < block.CommandList.Count; i++)
+			{
+				var command = block.CommandList[i];
+				if (command == null) // Will be deleted from the list later on
 				{
-					CacheCallerString();
-					GUI.enabled = false;
-					EditorGUILayout.TextArea(callersString);
-					GUI.enabled = true;
+					continue;
 				}
-				EditorGUI.indentLevel--;
-				
-				EditorGUILayout.Space();
-				
-				DrawEventHandlerGUI(flowchart);
+				command.ParentBlock = block;
+			}
+		}
 
-				block.UpdateIndentLevels();
+		private void HandleContextMenuInput()
+		{
+			// EventType.contextClick doesn't register since we moved the Block Editor to be inside
+			// a GUI Area, no idea why. As a workaround we just check for right click instead.
+			if (Event.current.type == EventType.MouseUp &&
+				Event.current.button == 1)
+			{
+				ShowContextMenu();
+				Event.current.Use();
+			}
+		}
 
-				// Make sure each command has a reference to its parent block
-				foreach (var command in block.CommandList)
+		private void HandleKeyboardShortcuts(Flowchart flowchart)
+		{
+			if (GUIUtility.keyboardControl != 0) //Only call keyboard shortcuts when not typing in a text field
+			{
+				return;
+			}
+
+			Event e = Event.current;
+
+			bool ShouldHandle(EventType type, string commandName) =>
+				e.type == type && e.commandName == commandName;
+
+			void HandleValidate(string commandName, bool canExecute)
+			{
+				if (ShouldHandle(EventType.ValidateCommand, commandName) && canExecute)
 				{
-					if (command == null) // Will be deleted from the list later on
-					{
-						continue;
-					}
-					command.ParentBlock = block;
-				}
-
-
-				EditorGUILayout.Space();
-
-				commandListAdaptor.DrawCommandList();
-
-				// EventType.contextClick doesn't register since we moved the Block Editor to be inside
-				// a GUI Area, no idea why. As a workaround we just check for right click instead.
-				if (Event.current.type == EventType.MouseUp &&
-					Event.current.button == 1)
-				{
-					ShowContextMenu();
-					Event.current.Use();
-				}
-
-				if (GUIUtility.keyboardControl == 0) //Only call keyboard shortcuts when not typing in a text field
-				{
-					Event e = Event.current;
-
-					// Copy keyboard shortcut
-					if (e.type == EventType.ValidateCommand && e.commandName == "Copy")
-					{
-						if (flowchart.SelectedCommandCount > 0)
-						{
-							e.Use();
-						}
-					}
-
-					if (e.type == EventType.ExecuteCommand && e.commandName == "Copy")
-					{
-						actionList.Add(Copy);
-						e.Use();
-					}
-
-					// Cut keyboard shortcut
-					if (e.type == EventType.ValidateCommand && e.commandName == "Cut")
-					{
-						if (flowchart.SelectedCommandCount > 0)
-						{
-							e.Use();
-						}
-					}
-
-					if (e.type == EventType.ExecuteCommand && e.commandName == "Cut")
-					{
-						actionList.Add(Cut);
-						e.Use();
-					}
-
-					// Paste keyboard shortcut
-					if (e.type == EventType.ValidateCommand && e.commandName == "Paste")
-					{
-						CommandCopyBuffer commandCopyBuffer = CommandCopyBuffer.GetInstance();
-						if (commandCopyBuffer.HasCommands())
-						{
-							e.Use();
-						}
-					}
-
-					if (e.type == EventType.ExecuteCommand && e.commandName == "Paste")
-					{
-						actionList.Add(Paste);
-						e.Use();
-					}
-
-					// Duplicate keyboard shortcut
-					if (e.type == EventType.ValidateCommand && e.commandName == "Duplicate")
-					{
-						if (flowchart.SelectedCommandCount > 0)
-						{
-							e.Use();
-						}
-					}
-
-					if (e.type == EventType.ExecuteCommand && e.commandName == "Duplicate")
-					{
-						actionList.Add(Copy);
-						actionList.Add(Paste);
-						e.Use();
-					}
-
-					// Delete keyboard shortcut
-					if (e.type == EventType.ValidateCommand && e.commandName == "Delete")
-					{
-						if (flowchart.SelectedCommandCount > 0)
-						{
-							e.Use();
-						}
-					}
-
-					if (e.type == EventType.ExecuteCommand && e.commandName == "Delete")
-					{
-						actionList.Add(Delete);
-						e.Use();
-					}
-
-					// SelectAll keyboard shortcut
-					if (e.type == EventType.ValidateCommand && e.commandName == "SelectAll")
-					{
-						e.Use();
-					}
-
-					if (e.type == EventType.ExecuteCommand && e.commandName == "SelectAll")
-					{
-						actionList.Add(SelectAll);
-						e.Use();
-					}
+					e.Use();
 				}
 			}
 
+			void HandleExecute(string commandName, Action action)
+			{
+				if (ShouldHandle(EventType.ExecuteCommand, commandName))
+				{
+					action();
+					e.Use();
+				}
+			}
+
+			HandleValidate("Copy", flowchart.SelectedCommandCount > 0);
+			HandleExecute("Copy", () => actionList.Add(Copy));
+
+			HandleValidate("Cut", flowchart.SelectedCommandCount > 0);
+			HandleExecute("Cut", () => actionList.Add(Cut));
+
+			HandleValidate("Paste", CommandCopyBuffer.GetInstance().HasCommands());
+			HandleExecute("Paste", () => actionList.Add(Paste));
+
+			HandleValidate("Duplicate", flowchart.SelectedCommandCount > 0);
+			HandleExecute("Duplicate", () =>
+			{
+				actionList.Add(Copy);
+				actionList.Add(Paste);
+			});
+
+			HandleValidate("Delete", flowchart.SelectedCommandCount > 0);
+			HandleExecute("Delete", () => actionList.Add(Delete));
+
+			HandleValidate("SelectAll", true);
+			HandleExecute("SelectAll", () => actionList.Add(SelectAll));
+		}
+
+		private void RemoveNullCommandEntries()
+		{
 			// Remove any null entries in the command list.
 			// This can happen when a command class is deleted or renamed.
 			for (int i = commandListProperty.arraySize - 1; i >= 0; --i)
@@ -313,14 +331,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
 					commandListProperty.DeleteArrayElementAtIndex(i);
 				}
 			}
-
-
-			if (EditorGUI.EndChangeCheck())
-			{
-				SelectedBlockDataStale = true;
-			}
-
-			serializedObject.ApplyModifiedProperties();
 		}
 
 		public virtual void DrawButtonToolbar()
@@ -457,7 +467,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		}
 
 
-		public static void BlockField(SerializedProperty property, GUIContent label, GUIContent nullLabel, Flowchart flowchart)
+		public static void BlockField(SerializedProperty property, GUIContent label, GUIContent nullLabel,
+			Flowchart flowchart, AccessScope allowedScope = AccessScope.Null)
 		{
 			if (flowchart == null)
 			{
@@ -471,14 +482,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			int selectedIndex = 0;
 			blockNames.Add(nullLabel);
-			var blocks = flowchart.GetComponents<Block>();
-			blocks = blocks.OrderBy(x => x.BlockName).ToArray();
+			var blocks = GetSortedBlocks((IList<Block>)flowchart.Blocks);
 
-			for (int i = 0; i < blocks.Length; ++i)
+			for (int i = 0; i < blocks.Count; ++i)
 			{
-				blockNames.Add(new GUIContent(blocks[i].BlockName));
-
-				if (block == blocks[i])
+				var currentBlock = blocks[i];
+				blockNames.Add(new GUIContent(currentBlock.BlockName));
+				if (block == currentBlock)
 				{
 					selectedIndex = i + 1;
 				}
@@ -497,6 +507,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			property.objectReferenceValue = block;
 		}
 
+
 		public static Block BlockField(Rect position, GUIContent nullLabel, Flowchart flowchart, Block block)
 		{
 			if (flowchart == null)
@@ -511,10 +522,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			int selectedIndex = 0;
 			blockNames.Add(nullLabel);
-			Block[] blocks = flowchart.GetComponents<Block>();
-			blocks = blocks.OrderBy(x => x.BlockName).ToArray();
+			var blocks = GetSortedBlocks(flowchart.GetComponents<Block>());
 
-			for (int i = 0; i < blocks.Length; ++i)
+			for (int i = 0; i < blocks.Count; ++i)
 			{
 				blockNames.Add(new GUIContent(blocks[i].BlockName));
 
@@ -625,11 +635,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 		protected void SelectAll()
 		{
-			var block = target as Block;
-			var flowchart = (Flowchart)block.GetFlowchart();
-
-			if (flowchart == null ||
-				flowchart.SelectedBlock == null)
+			if (!TryGetSelectedBlockFlowchart(out Block block, out Flowchart flowchart))
 			{
 				return;
 			}
@@ -646,11 +652,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 		protected void SelectNone()
 		{
-			var block = target as Block;
-			var flowchart = (Flowchart)block.GetFlowchart();
-
-			if (flowchart == null ||
-				flowchart.SelectedBlock == null)
+			if (!TryGetSelectedBlockFlowchart(out Block block, out Flowchart flowchart))
 			{
 				return;
 			}
@@ -669,11 +671,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 		protected void Copy()
 		{
-			var block = target as Block;
-			var flowchart = (Flowchart)block.GetFlowchart();
-
-			if (flowchart == null ||
-				flowchart.SelectedBlock == null)
+			if (!TryGetSelectedBlockFlowchart(out Block block, out Flowchart flowchart))
 			{
 				return;
 			}
@@ -682,20 +680,22 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			commandCopyBuffer.Clear();
 
 			// Scan through all commands in execution order to see if each needs to be copied
-			foreach (Command command in flowchart.SelectedBlock.CommandList)
+			var commandList = flowchart.SelectedBlock.CommandList;
+			var selectedCommands = flowchart.SelectedCommands;
+			foreach (Command command in commandList)
 			{
-				if (flowchart.SelectedCommands.Contains(command))
+				if (selectedCommands.Contains(command))
 				{
 					var type = command.GetType();
 					Command newCommand = Undo.AddComponent(commandCopyBuffer.gameObject, type) as Command;
-					var fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+					var fields = type.GetFields(_commandBindingFlags);
 					foreach (var field in fields)
 					{
 						// Copy all public fields
 						bool copy = field.IsPublic;
 
 						// Copy non-public fields that have the SerializeField attribute
-						var attributes = field.GetCustomAttributes(typeof(SerializeField), true);
+						var attributes = field.GetCustomAttributes(_serializeFieldType, true);
 						if (attributes.Length > 0)
 						{
 							copy = true;
@@ -710,13 +710,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			}
 		}
 
+		private static readonly BindingFlags _commandBindingFlags = BindingFlags.Instance | 
+			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+		private static readonly Type _serializeFieldType = typeof(SerializeField);
+
 		protected void Paste()
 		{
-			var block = target as Block;
-			var flowchart = (Flowchart)block.GetFlowchart();
-
-			if (flowchart == null ||
-				flowchart.SelectedBlock == null)
+			if (!TryGetSelectedBlockFlowchart(out Block block, out Flowchart flowchart))
 			{
 				return;
 			}
@@ -724,14 +724,16 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			CommandCopyBuffer commandCopyBuffer = CommandCopyBuffer.GetInstance();
 
 			// Find where to paste commands in block (either at end or after last selected command)
-			int pasteIndex = flowchart.SelectedBlock.CommandList.Count;
+			var commandList = flowchart.SelectedBlock.CommandList;
+			var selectedCommands = flowchart.SelectedCommands;
+			int pasteIndex = commandList.Count;
 			if (flowchart.SelectedCommandCount > 0)
 			{
-				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; ++i)
+				for (int i = 0; i < commandList.Count; ++i)
 				{
-					Command command = flowchart.SelectedBlock.CommandList[i];
+					Command command = commandList[i];
 
-					foreach (Command selectedCommand in flowchart.SelectedCommands)
+					foreach (Command selectedCommand in selectedCommands)
 					{
 						if (command == selectedCommand)
 						{
@@ -750,7 +752,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 					if (ComponentUtility.PasteComponentAsNew(flowchart.gameObject))
 					{
 						Command[] commands = flowchart.GetComponents<Command>();
-						Command pastedCommand = commands.Last<Command>();
+						Command pastedCommand = commands.Length > 0 ? 
+							commands[commands.Length - 1] : 
+							null;
 						if (pastedCommand != null)
 						{
 							pastedCommand.ItemId = flowchart.NextItemId();
@@ -771,18 +775,16 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 		protected void Delete()
 		{
-			var block = target as Block;
-			var flowchart = (Flowchart)block.GetFlowchart();
-
-			if (flowchart == null ||
-				flowchart.SelectedBlock == null)
+			if (!TryGetSelectedBlockFlowchart(out Block block, out Flowchart flowchart))
 			{
 				return;
 			}
+
 			int lastSelectedIndex = 0;
-			for (int i = flowchart.SelectedBlock.CommandList.Count - 1; i >= 0; --i)
+			var commandList = flowchart.SelectedBlock.CommandList;
+			for (int i = commandList.Count - 1; i >= 0; --i)
 			{
-				Command command = flowchart.SelectedBlock.CommandList[i];
+				Command command = commandList[i];
 				foreach (Command selectedCommand in flowchart.SelectedCommands)
 				{
 					if (command == selectedCommand)
@@ -792,8 +794,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 						// Order of destruction is important here for undo to work
 						Undo.DestroyObjectImmediate(command);
 
-						Undo.RecordObject((Block)flowchart.SelectedBlock, "Delete");
-						flowchart.SelectedBlock.CommandList.RemoveAt(i);
+						Undo.RecordObject(flowchart.SelectedBlock, "Delete");
+						commandList.RemoveAt(i);
 
 						lastSelectedIndex = i;
 
@@ -814,10 +816,20 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			Repaint();
 		}
 
+		private bool TryGetSelectedBlockFlowchart(out Block block, out Flowchart flowchart)
+		{
+			block = target as Block;
+			flowchart = block != null ? 
+				block.GetFlowchart() : 
+				null;
+
+			return flowchart != null && flowchart.SelectedBlock != null;
+		}
+
 		protected void PlayCommand()
 		{
 			var targetBlock = target as Block;
-			var flowchart = (Flowchart)targetBlock.GetFlowchart();
+			var flowchart = targetBlock.GetFlowchart();
 			Command command = flowchart.SelectedCommands[0];
 			if (targetBlock.IsExecuting())
 			{
@@ -837,7 +849,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		protected void StopAllPlayCommand()
 		{
 			var targetBlock = target as Block;
-			var flowchart = (Flowchart)targetBlock.GetFlowchart();
+			var flowchart = targetBlock.GetFlowchart();
 			Command command = flowchart.SelectedCommands[0];
 
 			// Stop all active blocks then run the selected block.
@@ -895,13 +907,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		{
 			var block = target as Block;
 			var flowchart = (Flowchart)block.GetFlowchart();
-
+			var commandList = flowchart.SelectedBlock.CommandList;
 			int lastSelectedIndex = -1;
 			if (flowchart.SelectedCommandCount > 0)
 			{
-				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; i++)
+				for (int i = 0; i < commandList.Count; i++)
 				{
-					Command commandInBlock = flowchart.SelectedBlock.CommandList[i];
+					Command commandInBlock = commandList[i];
 
 					foreach (Command selectedCommand in flowchart.SelectedCommands)
 					{
@@ -912,13 +924,51 @@ namespace AtMycelia.Hyphlow.EditorUtils
 					}
 				}
 			}
-			if (lastSelectedIndex < flowchart.SelectedBlock.CommandList.Count - 1)
+			if (lastSelectedIndex < commandList.Count - 1)
 			{
 				flowchart.ClearSelectedCommands();
-				flowchart.AddSelectedCommand(flowchart.SelectedBlock.CommandList[lastSelectedIndex + 1]);
+				flowchart.AddSelectedCommand(commandList[lastSelectedIndex + 1]);
 			}
 
 			Repaint();
+		}
+
+		private static List<Block> GetSortedBlocks(IList<Block> blocks, AccessScope allowedScopes)
+		{
+			bool includeAllBlocks = allowedScopes == AccessScope.Null;
+			var sortedBlocks = new List<Block>(blocks.Count);
+			for (int i = 0; i < blocks.Count; i++)
+			{
+				if (includeAllBlocks || allowedScopes.HasFlag(blocks[i].Scope))
+				{
+					sortedBlocks.Add(blocks[i]);
+				}
+			}
+
+			SortBlocksByName(sortedBlocks);
+			return sortedBlocks;
+		}
+
+		private static List<Block> GetSortedBlocks(IList<Block> blocks)
+		{
+			var sortedBlocks = new List<Block>(blocks.Count);
+			for (int i = 0; i < blocks.Count; i++)
+			{
+				sortedBlocks.Add(blocks[i]);
+			}
+
+			SortBlocksByName(sortedBlocks);
+			return sortedBlocks;
+		}
+
+		private static void SortBlocksByName(List<Block> blocks)
+		{
+			blocks.Sort(CompareBlocksByName);
+		}
+
+		private static int CompareBlocksByName(Block left, Block right)
+		{
+			return string.Compare(left.BlockName, right.BlockName, StringComparison.Ordinal);
 		}
 
 		public static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredCommandInfoAttribute(List<System.Type> menuTypes)
@@ -949,7 +999,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 					}
 				}
 			}
-			return filteredAttributes.Values.ToList<KeyValuePair<System.Type, CommandInfoAttribute>>();
+
+			return new List<KeyValuePair<System.Type, CommandInfoAttribute>>(filteredAttributes.Values);
 		}
 
 		// Compare delegate for sorting the list of command attributes

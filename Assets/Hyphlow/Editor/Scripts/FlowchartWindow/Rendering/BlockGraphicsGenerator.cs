@@ -21,7 +21,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             else
             {
                 // Count the number of unique connections (excluding self references)
-                block.GetConnectedBlocks(ref blockGraphicsConnectedWorkSpace);
+                block.RefreshConnectedBlockCache(ref blockGraphicsConnectedWorkSpace);
                 foreach (var connectedBlock in blockGraphicsConnectedWorkSpace)
                 {
                     if (connectedBlock == block ||

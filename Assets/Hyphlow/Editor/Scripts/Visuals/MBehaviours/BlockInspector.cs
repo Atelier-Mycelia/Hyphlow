@@ -114,6 +114,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 }
             }
 
+            DrawBlockScopeField();
+            void DrawBlockScopeField()
+            {
+                EditorGUI.BeginChangeCheck();
+                AccessScope scope = (AccessScope)EditorGUILayout.EnumPopup("Scope", block.Scope);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    Undo.RecordObject(block, "Change Block Scope");
+                    block.Scope = scope;
+                    EditorUtility.SetDirty(block);
+                }
+            }
+
             UpdateWindowHeight();
 
             float width = EditorGUIUtility.currentViewWidth;

@@ -25,7 +25,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 Block toDelete = selected[0];
 
-                fChart.RemoveBlock(toDelete);
+                fChart.Remove(toDelete);
 
                 ushort id = toDelete.ItemId;
 
