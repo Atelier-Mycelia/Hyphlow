@@ -951,23 +951,115 @@ namespace AtMycelia.Hyphlow
         #region Block-Handling
 
         /// <summary>
-        /// Create a new block node which you can then add commands to.
+        /// Create a new block node which you can then add Commands to.
         /// </summary>
         public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
-            blockName ??= HyphlowConstants.DefaultBlockName;
+            bool creatingFirstBlock = _blockListCache.Count == 0;
+
+            if (creatingFirstBlock)
+            {
+                blockName ??= DefaultConfig.FirstBlockName;
+            }
+            else
+            {
+                blockName ??= DefaultConfig.NewBlockName;
+            }
+
             Block created = gameObject.AddComponent<Block>();
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
 #endif
             created.BlockName = GetUniqueBlockKey(blockName, created);
+            created.Scope = DefaultConfig.NewBlockScope;
             created.ItemId = NextItemId();
             _blockDict.Add(created.ItemId, created);
             _blockListCache.Add(created);
+
+            if (creatingFirstBlock)
+            {
+                ApplyConfiguredEventHandlerToFirstBlock(created);
+            }
+
             BlockSignals.BlockCreated(created);
             return created;
         }
 
+        public virtual void ApplyDefaultConfigToFirstBlock()
+        {
+            RefreshBlockAndCommandCache();
+            if (_blockListCache == null || _blockListCache.Count == 0)
+            {
+                return;
+            }
+
+            Block firstBlock = _blockListCache
+                .Where(block => block != null)
+                .OrderBy(block => block.ItemId)
+                .FirstOrDefault();
+
+            if (firstBlock == null)
+            {
+                return;
+            }
+
+            firstBlock.Scope = DefaultConfig.NewBlockScope;
+            firstBlock.BlockName = GetUniqueBlockKey(DefaultConfig.FirstBlockName, firstBlock);
+            ApplyConfiguredEventHandlerToFirstBlock(firstBlock);
+        }
+
+        private void ApplyConfiguredEventHandlerToFirstBlock(Block block)
+        {
+            if (block == null)
+            {
+                return;
+            }
+
+            Type configuredType = DefaultConfig.FirstBlockEventHandlerType;
+            bool noHandlerConfigured = configuredType == null;
+            if (noHandlerConfigured)
+            {
+                return;
+            }
+
+            bool invalidType =
+                !typeof(EventHandler).IsAssignableFrom(configuredType) ||
+                configuredType.IsAbstract ||
+                configuredType.IsInterface;
+            if (invalidType)
+            {
+                Debug.LogError($"Configured first-block event handler type is invalid: {configuredType}");
+                return;
+            }
+
+            bool needsReplacement = block._EventHandler == null || block._EventHandler.GetType() != configuredType;
+            if (!needsReplacement)
+            {
+                return;
+            }
+
+            if (block._EventHandler != null)
+            {
+                if (Application.isPlaying)
+                {
+                    Destroy(block._EventHandler);
+                }
+                else
+                {
+                    DestroyImmediate(block._EventHandler);
+                }
+            }
+
+            EventHandler newHandler = gameObject.AddComponent(configuredType) as EventHandler;
+            if (newHandler == null)
+            {
+                Debug.LogError($"Failed to add EventHandler of type {configuredType} to Flowchart {name}.");
+                return;
+            }
+
+            newHandler.ParentBlock = block;
+            block._EventHandler = newHandler;
+        }
         protected static Vector2 defaultBlockSize = new Vector2(300, 100);
 
         public virtual IList<Block> CreateMultiBlocks(IList<Vector2> positions)
@@ -1116,6 +1208,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        protected static FlowchartDefaultConfig DefaultConfig => FlowchartDefaultConfig.S;
         /// <summary>
         /// Returns a new Block key that is guaranteed not to clash with any existing Block in the Flowchart.
         /// </summary>
@@ -1127,7 +1220,7 @@ namespace AtMycelia.Hyphlow
             // No empty keys allowed
             if (baseKey.Length == 0)
             {
-                baseKey = HyphlowConstants.DefaultBlockName;
+                baseKey = DefaultConfig.NewBlockName;
             }
 
             var blocks = GetComponents<Block>();
