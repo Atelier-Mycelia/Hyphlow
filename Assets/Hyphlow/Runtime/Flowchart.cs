@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
+using TMPro;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -24,7 +26,7 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class Flowchart : MonoBehaviour, ISubstitutionHandler, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
-        IBackwardsCompatibilityApplier, IBlockSource
+        IBackwardsCompatibilityApplier, IBlockSource, ICommandSource
     {
         [SerializeField, HideInInspector] private VariableManagerComponent _varManager;
 
@@ -191,6 +193,7 @@ namespace AtMycelia.Hyphlow
 
             AssertOwnership();
             RefreshBlockAndCommandCache();
+            RefreshBlocks();
             _varManager.Refresh();
 #if UNITY_EDITOR
             UIModel.Owner = this.gameObject;
@@ -202,12 +205,12 @@ namespace AtMycelia.Hyphlow
         private void RefreshBlockAndCommandCache()
         {
             _blockListCache ??= new List<Block>();
-            _blocks ??= new Dictionary<uint, Block>();
+            _blockDict ??= new Dictionary<uint, Block>();
             _commands ??= new List<Command>();
             // ^Despite the initializers in this class, weird things can happen with Unity
 
             _blockListCache.Clear();
-            _blocks.Clear();
+            _blockDict.Clear();
             _commands.Clear();
 
             var blocksFound = GetComponents<Block>();
@@ -219,22 +222,36 @@ namespace AtMycelia.Hyphlow
                     continue;
                 }
 
-                if (currentBlock.ItemId == 0 || _blocks.ContainsKey(currentBlock.ItemId))
+                if (currentBlock.ItemId == 0 || _blockDict.ContainsKey(currentBlock.ItemId))
                 {
                     currentBlock.ItemId = NextItemId();
                 }
 
                 _blockListCache.Add(currentBlock);
-                _blocks[currentBlock.ItemId] = currentBlock;
+                _blockDict[currentBlock.ItemId] = currentBlock;
             }
 
             var commandsFound = GetComponents<Command>();
             _commands.AddRange(commandsFound);
         }
 
-        [SerializeField][HideInInspector] private List<Block> _blockListCache = new List<Block>();
-        private IDictionary<uint, Block> _blocks = new Dictionary<uint, Block>();
-        [SerializeField][HideInInspector] private List<Command> _commands = new List<Command>();
+        private void RefreshBlocks()
+        {
+            for (int i = 0; i < _blockListCache.Count; i++)
+            {
+                var block = _blockListCache[i];
+                if (block == null)
+                {
+                    continue;
+                }
+                block.Refresh();
+            }
+        }
+        [SerializeField] [HideInInspector] private List<Block> _blockListCache = new List<Block>();
+        private IDictionary<uint, Block> _blockDict = new Dictionary<uint, Block>();
+        // ^Maps the Blocks' IDs to the Block objects themselves for quick lookup by the former.
+        // Should always be in sync with _blockListCache.
+        [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
 
         protected virtual void Start()
         {
@@ -259,7 +276,6 @@ namespace AtMycelia.Hyphlow
             }
 
         }
-
 
         protected virtual void OnEnable()
         {
@@ -296,19 +312,37 @@ namespace AtMycelia.Hyphlow
 
         private void OnVarAdded(IVariable added)
         {
-            VariableAdded(added);
             FlowchartSignals.VariableAdded(this, added);
         }
 
-        public event Action<IVariable> VariableAdded = delegate { };
+        public event Action<IVariable> VariableAdded
+        {
+            add
+            {
+                _varManager.VariableAdded += value;
+            }
+            remove
+            {
+                _varManager.VariableAdded -= value;
+            }
+        }
 
         private void OnVarRemoved(IVariable removed)
         {
-            VariableRemoved(removed);
             FlowchartSignals.VariableRemoved(this, removed);
         }
 
-        public event Action<IVariable> VariableRemoved = delegate { };
+        public event Action<IVariable> VariableRemoved
+        {
+            add
+            {
+                _varManager.VariableRemoved += value;
+            }
+            remove
+            {
+                _varManager.VariableRemoved -= value;
+            }
+        }
 
         public int VariableCount
         {
@@ -432,8 +466,6 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnDestroy()
         {
-            VariableAdded = delegate { };
-            VariableRemoved = delegate { };
             FlowchartSignals.FlowchartDestroyed(this);
         }
 
@@ -468,7 +500,7 @@ namespace AtMycelia.Hyphlow
             CheckForBlocks();
             void CheckForBlocks()
             {
-                foreach (var blockEl in _blocks.Values)
+                foreach (var blockEl in _blockDict.Values)
                 {
                     if (blockEl == null) continue;
 
@@ -545,7 +577,7 @@ namespace AtMycelia.Hyphlow
             {
                 var command = _commands[i];
                 bool found = false;
-                foreach (Block block in _blocks.Values)
+                foreach (Block block in _blockDict.Values)
                 {
                     if (block.CommandList.Contains(command))
                     {
@@ -568,7 +600,7 @@ namespace AtMycelia.Hyphlow
             {
                 var eventHandler = eventHandlers[i];
                 bool found = false;
-                foreach (Block block in _blocks.Values)
+                foreach (Block block in _blockDict.Values)
                 {
                     if (block._EventHandler == eventHandler)
                     {
@@ -605,7 +637,7 @@ namespace AtMycelia.Hyphlow
                 }
             }
 
-            foreach (Block block in _blocks.Values)
+            foreach (Block block in _blockDict.Values)
             {
                 if (block == null || block._EventHandler != null)
                 {
@@ -746,7 +778,7 @@ namespace AtMycelia.Hyphlow
         {
             if (hideComponents)
             {
-                var blocks = _blocks;
+                var blocks = _blockDict;
                 foreach (var block in blocks.Values)
                 {
                     block.hideFlags = HideFlags.HideInInspector;
@@ -930,7 +962,7 @@ namespace AtMycelia.Hyphlow
 #endif
             created.BlockName = GetUniqueBlockKey(blockName, created);
             created.ItemId = NextItemId();
-            _blocks.Add(created.ItemId, created);
+            _blockDict.Add(created.ItemId, created);
             _blockListCache.Add(created);
             BlockSignals.BlockCreated(created);
             return created;
@@ -955,7 +987,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Block FindBlock(string blockName)
         {
-            foreach (var blockEl in _blocks.Values)
+            foreach (var blockEl in _blockDict.Values)
             {
                 if (blockEl.BlockName == blockName)
                 {
@@ -968,7 +1000,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual Block GetBlockWithId(ushort itemId)
         {
-            _blocks.TryGetValue(itemId, out Block result);
+            _blockDict.TryGetValue(itemId, out Block result);
             return result;
         }
 
@@ -1411,7 +1443,8 @@ namespace AtMycelia.Hyphlow
         [HideInInspector]
         [SerializeField] private string uniqueId = string.Empty;
         /// <summary>
-        /// Unique identifier not specific to localization. Don't assign to this unless you know what you're doing.
+        /// Unique identifier not specific to localization. Don't assign to this 
+        /// unless you know what you're doing.
         /// </summary>
         public string UniqueId
         {
@@ -1420,9 +1453,10 @@ namespace AtMycelia.Hyphlow
             {
                 if (!string.IsNullOrEmpty(uniqueId))
                 {
-                    Debug.LogWarning($"Assigning a new unique ID to {this.name}, a Flowchart that already has one. " +
-                        $"Old ID: {uniqueId}, New ID: {value}. If this was intentional, make sure you " +
-                        $"know what you're doing.");
+                    Debug.LogWarning($"Assigning a new unique ID to {this.name}, a " +
+                        $"Flowchart that already has one. Old ID: {uniqueId}, New ID: " +
+                        $"{value}. If this was intentional, make sure you know what " +
+                        $"you're doing.");
                 }
 
                 string prevId = uniqueId;
@@ -1529,6 +1563,8 @@ namespace AtMycelia.Hyphlow
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => ((IVariableSource<Muscariable>)_varManager).Variables;
 
+        IReadOnlyList<Command> ICommandSource.Commands => _commands;
+
         private void EnsureVariableManagerComponent()
         {
             if (_varManager != null)
@@ -1631,25 +1667,17 @@ namespace AtMycelia.Hyphlow
         /// without destroying them. This is used for operations like deleting multiple blocks, where we
         /// want to remove the blocks from the flowchart's list of blocks before destroying them,
         /// to avoid null references in the flowchart's list of blocks.
+        /// 
+        /// Returns true if any blocks were removed, false if the input list was null or empty.
         /// </summary>
-        public virtual void RemoveMultiBlocks(IList<Block> toUnregister)
+        public virtual bool RemoveMultiBlocks(IList<Block> toUnregister)
         {
+            bool success = false;
             for (int i = 0; i < toUnregister.Count; i++)
             {
-                RemoveBlock(toUnregister[i]);
+                success = success | Remove(toUnregister[i]);
             }
-        }
-
-        /// <summary>
-        /// For editor operations only. Removes the block from the list of blocks in the flowchart, 
-        /// without destroying it. This is used for operations like deleting a block, where we 
-        /// want to remove the block from the flowchart's list of blocks before destroying it, 
-        /// to avoid null references in the flowchart's list of blocks.
-        /// </summary>
-        public virtual void RemoveBlock(Block toUnregister)
-        {
-            _blocks.Remove(toUnregister.ItemId);
-            _blockListCache.Remove(toUnregister);
+            return success;
         }
 
         public virtual void ApplyBackwardsCompatibility()
@@ -1779,16 +1807,119 @@ namespace AtMycelia.Hyphlow
             }
 
             _blockListCache.Add(block);
-            _blocks[block.ItemId] = block;
+            _blockDict[block.ItemId] = block;
         }
 
-        public void Remove(Block block)
+        public bool Remove(Block block)
         {
-            if (_blocks[block.ItemId] == block)
+            bool success = false;
+            if (_blockDict[block.ItemId] == block)
             {
-                _blocks.Remove(block.ItemId);
-                _blockListCache.Remove(block);
+                _blockDict.Remove(block.ItemId);
+                success = _blockListCache.Remove(block);
             }
+            return success;
+        }
+
+        public bool RemoveBlockWithId(ushort id)
+        {
+            bool success = false;
+            if (_blockDict.TryGetValue(id, out Block block))
+            {
+                _blockDict.Remove(id);
+                success = _blockListCache.Remove(block);
+            }
+            return success;
+        }
+
+        public bool Contains(Command cmd)
+        {
+            bool result = _commands.Contains(cmd);
+            return result;
+        }
+
+        public Command GetCommandWithId(ushort id)
+        {
+            Command result = null;
+            for (int i = 0; i < _commands.Count; i++)
+            {
+                var command = _commands[i];
+                if (command.ItemId == id)
+                {
+                    result = command;
+                    break;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Adds the Command to the Flowchart's list of Commands. This is meant to be used
+        /// by the ICommandSources that this Flowchart owns. If whatever's calling this
+        /// doesn't fit that criteria, please make sure you know what you're doing.
+        /// </summary>
+        public void Add(Command cmd)
+        {
+            _commands.Add(cmd);
+        }
+
+        public bool Remove(Command cmd)
+        {
+            bool success = false;
+            Block ourBlock = null;
+            bool belongsToUs = cmd.ParentBlock != null && 
+                _blockDict.TryGetValue(cmd.ParentBlock.ItemId, out ourBlock) &&
+                ourBlock == cmd.ParentBlock;
+            if (belongsToUs)
+            {
+                success = true;
+                _commands.Remove(cmd);
+                ourBlock.Remove(cmd);
+            }
+            else
+            {
+                string warningMessage = $"Trying to remove Command {cmd.name} from " +
+                    $"Flowchart {this.name}, but its ParentBlock does not belong to " +
+                    $"this Flowchart. This Command will not be removed.";
+                Debug.LogWarning(warningMessage);
+            }
+
+            return success;
+        }
+
+        /// <summary>
+        /// Removes all Commands from this Flowchart. Returns true
+        /// if any Commands were removed, false if there weren't any to remove.
+        /// </summary>
+        public virtual bool RemoveAllCommands()
+        {
+            bool anyRemoved = false;
+            for (int i = 0; i < _blockListCache.Count; i++)
+            {
+                var block = _blockListCache[i];
+                var commandList = block.CommandList;
+                _commands.RemoveAllIn(commandList);
+                // ^We do this so we make sure to get rid of the Commands that
+                // weren't registered under any of our Blocks, not just 
+                // the ones that are.
+                anyRemoved = block.RemoveAllCommands() | anyRemoved;
+            }
+            return anyRemoved;
+        }
+
+        public bool RemoveCommandWithId(ushort id)
+        {
+            bool success = false;
+            for (int i = 0; i < _commands.Count; i++)
+            {
+                var command = _commands[i];
+                if (command.ItemId == id)
+                {
+                    success = Remove(command);
+                    break;
+                }
+            }
+            return success;
         }
     }
     

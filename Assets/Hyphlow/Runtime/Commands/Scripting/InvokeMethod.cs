@@ -473,7 +473,7 @@ namespace AtMycelia.Hyphlow
             default:
                 var objType = ReflectionHelper.GetType(typeAssemblyname);
 
-                if (objType.IsSubclassOf(typeof(UnityEngine.Object)))
+                if (objType.IsSubclassOf(typeof(UnityObj)))
                 {
                     return objectValue;
                 }
@@ -487,16 +487,16 @@ namespace AtMycelia.Hyphlow
         }
     }
 
-    
-
     public static class ReflectionHelper
     {
-        static Dictionary<string, System.Type> types = new Dictionary<string, System.Type>();
+        static Dictionary<string, Type> types = new Dictionary<string, Type>();
 
-        public static System.Type GetType(string AssemblyQualifiedNameTypeName)
+        public static Type GetType(string AssemblyQualifiedNameTypeName)
         {
-            if (types.ContainsKey(AssemblyQualifiedNameTypeName) && types[AssemblyQualifiedNameTypeName] != null)
-                return types[AssemblyQualifiedNameTypeName];
+            bool valueAssignedToTypeName = types.TryGetValue(AssemblyQualifiedNameTypeName, out Type type)
+                && type != null;
+            if (valueAssignedToTypeName)
+                return type;
 
             types[AssemblyQualifiedNameTypeName] = AppDomain.CurrentDomain.GetAssemblies().
                 SelectMany(x => x.GetTypes())

@@ -78,7 +78,8 @@ namespace AtMycelia.Hyphlow
                 {
                     foreach (var toRegister in otherFc.Variables)
                     {
-                        if (toRegister.Scope != AccessScope.Public)
+                        bool isVisible = (toRegister.Scope & AccessScopeDefaults.VisibleToOutsiders) != 0;
+                        if (!isVisible)
                         {
                             continue;
                         }

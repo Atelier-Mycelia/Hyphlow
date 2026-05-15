@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine.Scripting.APIUpdating;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow
 {
@@ -26,10 +27,10 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Block : Node, IEquatable<Block>
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    public class Block : Node, IEquatable<Block>, ICommandSource, IRefreshable
     {
-        [SerializeField] protected AccessScope _scope = AccessScope.Private;
+        [SerializeField] protected AccessScope _scope = AccessScope.Public;
 
         [FormerlySerializedAs("itemId")]
         [SerializeField] protected ushort _itemId = 0; 
@@ -79,29 +80,29 @@ namespace AtMycelia.Hyphlow
             set { _loadPriority = value; }
         }
 
-        protected ExecutionState executionState;
+        protected ExecutionState _executionState;
 
-        protected Command activeCommand;
+        protected Command _activeCommand;
 
-        protected Action lastOnCompleteAction;
+        protected Action _lastOnCompleteAction;
 
         /// <summary>
         // Index of last command executed before the current one.
         // -1 indicates no previous command.
         /// </summary>
-        protected int previousActiveCommandIndex = -1;
+        protected int _previousActiveCommandIndex = -1;
 
-        public int PreviousActiveCommandIndex { get { return previousActiveCommandIndex; } }
+        public int PreviousActiveCommandIndex { get { return _previousActiveCommandIndex; } }
 
-        protected int jumpToCommandIndex = -1;
+        protected int _jumpToCommandIndex = -1;
 
-        protected int executionCount;
+        protected int _executionCount;
 
-        protected bool executionInfoSet = false;
+        protected bool _executionInfoSet = false;
 
         /// <summary>
-        /// If set, flowchart will not auto select when it is next executed, used by eventhandlers.
-        /// Only effects the editor.
+        /// If set, flowchart will not auto select when it is next executed, 
+        /// used by eventhandlers. Only affects the editor.
         /// </summary>
         public bool SuppressNextAutoSelection { get; set; } = true;
 
@@ -110,13 +111,20 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void Awake()
         {
-            SetExecutionInfo();
+            Refresh();
         }
 
-        /// <summary>
-        /// Populate the command metadata used to control execution.
-        /// </summary>
-        protected virtual void SetExecutionInfo()
+        public virtual void Refresh()
+        {
+            AssertOwnershipAndUpdateIndexes();
+            RefreshCommandListDict();
+            RefreshCommands();
+            UpdateIndentLevels();
+
+            _executionInfoSet = true;
+        }
+
+        private void AssertOwnershipAndUpdateIndexes()
         {
             // Give each child command a reference back to its parent block
             // and tell each command its index in the list.
@@ -131,34 +139,54 @@ namespace AtMycelia.Hyphlow
                 command.ParentBlock = this;
                 command.CommandIndex = index++;
             }
+        }
 
-            // Ensure all commands are at their correct indent level
-            // This should have already happened in the editor, but may be necessary
-            // if commands are added to the Block at runtime.
-            UpdateIndentLevels();
+        private void RefreshCommandListDict()
+        {
+            _commandListDict.Clear();
+            for (int i = 0; i < _commandList.Count; i++)
+            {
+                var command = _commandList[i];
+                if (command != null)
+                {
+                    _commandListDict[command.ItemId] = command;
+                }
+            }
+        }
 
-            executionInfoSet = true;
+        private IDictionary<ushort, Command> _commandListDict = new Dictionary<ushort, Command>();
+        // ^This is used to speed up lookup of Commands by their unique Ids, which
+        // things such as the editor may want to do frequently.
+
+        private void RefreshCommands()
+        {
+            for (int i = 0; i < _commandList.Count; i++)
+            {
+                var command = _commandList[i];
+                if (command != null)
+                {
+                    command.Refresh();
+                }
+            }
         }
 
 #if UNITY_EDITOR
         // The user can modify the command list order while playing in the editor,
         // so we keep the command indices updated every frame. There's no need to
-        // do this in player builds so we compile this bit out for those builds.
+        // do this in player builds, so we compile this bit out for those.
         protected virtual void Update()
         {
             byte index = 0;
             for (byte i = 0; i < _commandList.Count; i++)
             {
                 var command = _commandList[i];
-                if (command == null)// Null entry will be deleted automatically later
-                
+                if (command == null) // Null entry will be deleted automatically later
                 {
                     continue;
                 }
                 command.CommandIndex = index++;
             }
         }
-
 #endif
         //editor only state for speeding up flowchart window drawing
         public bool IsSelected { get; set; }    //local cache of selectedness
@@ -171,7 +199,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// The execution state of the Block.
         /// </summary>
-        public virtual ExecutionState State { get { return executionState; } }
+        public virtual ExecutionState State { get { return _executionState; } }
 
         /// <summary>
         /// Unique identifier for the Block.
@@ -190,14 +218,15 @@ namespace AtMycelia.Hyphlow
 
         /// <summary>
         /// An optional Event Handler which can execute the block when an event occurs.
-        /// Note: Using the concrete class instead of the interface here because of weird editor behaviour.
+        /// Note: Using the concrete class instead of the interface here because 
+        /// of weird editor behaviour.
         /// </summary>
         public virtual EventHandler _EventHandler { get { return _eventHandler; } set { _eventHandler = value; } }
 
         /// <summary>
         /// The currently executing command.
         /// </summary>
-        public virtual Command ActiveCommand { get { return activeCommand; } }
+        public virtual Command ActiveCommand { get { return _activeCommand; } }
 
         /// <summary>
         /// Timer for fading Block execution icon.
@@ -212,7 +241,9 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Controls the next command to execute in the block execution coroutine.
         /// </summary>
-        public virtual int JumpToCommandIndex { set { jumpToCommandIndex = value; } }
+        public virtual int JumpToCommandIndex { set { _jumpToCommandIndex = value; } }
+
+        public IReadOnlyList<Command> Commands => _commandList;
 
         /// <summary>
         /// Returns the parent Flowchart for this Block.
@@ -223,15 +254,37 @@ namespace AtMycelia.Hyphlow
             {
                 return null;
             }
-            return GetComponent<Flowchart>();
+            if (_owner == null)
+            {
+                _owner = GetComponent<Flowchart>();
+            }
+            return _owner as Flowchart;
         }
+
+        public virtual UnityObj Owner
+        {
+            get
+            {
+                if (_owner == null)
+                {
+                    _owner = GetComponent<Flowchart>();
+                }
+                return _owner;
+            }
+            set
+            {
+                _owner = value;
+            }
+        }
+
+        private UnityObj _owner;
 
         /// <summary>
         /// Returns true if the Block is executing a command.
         /// </summary>
         public virtual bool IsExecuting()
         {
-            return (executionState == ExecutionState.Executing);
+            return (_executionState == ExecutionState.Executing);
         }
 
         /// <summary>
@@ -239,11 +292,12 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual int GetExecutionCount()
         {
-            return executionCount;
+            return _executionCount;
         }
 
         /// <summary>
-        /// Start a coroutine which executes all commands in the Block. Only one running instance of each Block is permitted.
+        /// Start a coroutine which executes all commands in the Block. Only one running 
+        /// instance of each Block is permitted.
         /// </summary>
         public virtual void StartExecution()
         {
@@ -251,30 +305,31 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// A coroutine method that executes all commands in the Block. Only one running instance of each Block is permitted.
+        /// A coroutine method that executes all commands in the Block. Only one 
+        /// running instance of each Block is permitted.
         /// </summary>
         /// <param name="commandIndex">Index of command to start execution at</param>
         /// <param name="onComplete">Delegate function to call when execution completes</param>
         public virtual IEnumerator Execute(int commandIndex = 0, Action onComplete = null)
         {
-            if (executionState != ExecutionState.Idle)
+            if (_executionState != ExecutionState.Idle)
             {
                 Debug.LogWarning(BlockName + " cannot be executed, it is already running.");
                 yield break;
             }
 
-            lastOnCompleteAction = onComplete;
+            _lastOnCompleteAction = onComplete;
 
-            if (!executionInfoSet)
+            if (!_executionInfoSet)
             {
-                SetExecutionInfo();
+                Refresh();
             }
 
-            executionCount++;
-            var executionCountAtStart = executionCount;
+            _executionCount++;
+            var executionCountAtStart = _executionCount;
 
             var flowchart = GetFlowchart();
-            executionState = ExecutionState.Executing;
+            _executionState = ExecutionState.Executing;
             BlockSignals.DoBlockStart(this);
 
             bool suppressSelectionChanges = false;
@@ -297,17 +352,17 @@ namespace AtMycelia.Hyphlow
             }
             #endif
 
-            jumpToCommandIndex = commandIndex;
+            _jumpToCommandIndex = commandIndex;
 
             int i = 0;
             while (true)
             {
                 // Executing commands specify the next command to skip to by setting
                 // jumpToCommandIndex using Command.Continue()
-                if (jumpToCommandIndex > -1)
+                if (_jumpToCommandIndex > -1)
                 {
-                    i = jumpToCommandIndex;
-                    jumpToCommandIndex = -1;
+                    i = _jumpToCommandIndex;
+                    _jumpToCommandIndex = -1;
                 }
 
                 // Skip disabled commands, comments and labels
@@ -326,23 +381,23 @@ namespace AtMycelia.Hyphlow
                 }
 
                 // The previous active command is needed for if / else / else if commands
-                if (activeCommand == null)
+                if (_activeCommand == null)
                 {
-                    previousActiveCommandIndex = -1;
+                    _previousActiveCommandIndex = -1;
                 }
                 else
                 {
-                    previousActiveCommandIndex = activeCommand.CommandIndex;
+                    _previousActiveCommandIndex = _activeCommand.CommandIndex;
                 }
 
                 var command = _commandList[i];
-                activeCommand = command;
+                _activeCommand = command;
 
                 if (Selection.activeGameObject == flowchart.gameObject && flowchart.IsActive() && !suppressSelectionChanges)
                 {
                     // Auto select a command in some situations
                     if ((flowchart.SelectedCommandCount == 0 && i == 0) ||
-                        (flowchart.SelectedCommandCount == 1 && flowchart.SelectedCommands[0].CommandIndex == previousActiveCommandIndex))
+                        (flowchart.SelectedCommandCount == 1 && flowchart.SelectedCommands[0].CommandIndex == _previousActiveCommandIndex))
                     {
                         flowchart.ClearSelectedCommands();
                         flowchart.AddSelectedCommand(_commandList[i]);
@@ -370,7 +425,7 @@ namespace AtMycelia.Hyphlow
 #endif
 
                 // Wait until the executing command sets another command to jump to via Command.Continue()
-                while (jumpToCommandIndex == -1)
+                while (_jumpToCommandIndex == -1)
                 {
                     yield return null;
                 }
@@ -387,7 +442,7 @@ namespace AtMycelia.Hyphlow
 
             if(State == ExecutionState.Executing &&
                 //ensure we aren't dangling from a previous stopage and stopping a future run
-                executionCountAtStart == executionCount)
+                executionCountAtStart == _executionCount)
             {
                 ReturnToIdle();
             }
@@ -395,15 +450,15 @@ namespace AtMycelia.Hyphlow
 
         private void ReturnToIdle()
         {
-            executionState = ExecutionState.Idle;
-            activeCommand = null;
+            _executionState = ExecutionState.Idle;
+            _activeCommand = null;
             BlockSignals.DoBlockEnd(this);
 
-            if (lastOnCompleteAction != null)
+            if (_lastOnCompleteAction != null)
             {
-                lastOnCompleteAction();
+                _lastOnCompleteAction();
             }
-            lastOnCompleteAction = null;
+            _lastOnCompleteAction = null;
         }
 
         /// <summary>
@@ -412,14 +467,14 @@ namespace AtMycelia.Hyphlow
         public virtual void Stop()
         {
             // Tell the executing command to stop immediately
-            if (activeCommand != null)
+            if (_activeCommand != null)
             {
-                activeCommand.IsExecuting = false;
-                activeCommand.OnStopExecuting();
+                _activeCommand.IsExecuting = false;
+                _activeCommand.OnStopExecuting();
             }
 
             // This will cause the execution loop to break on the next iteration
-            jumpToCommandIndex = int.MaxValue;
+            _jumpToCommandIndex = int.MaxValue;
 
             //force idle here so other commands that rely on block not executing are informed this frame rather than next
             ReturnToIdle();
@@ -431,11 +486,11 @@ namespace AtMycelia.Hyphlow
         public virtual List<Block> GetConnectedBlocks()
         {
             var connectedBlocks = new List<Block>();
-            GetConnectedBlocks(ref connectedBlocks);
+            RefreshConnectedBlockCache(ref connectedBlocks);
             return connectedBlocks;
         }
 
-        public virtual void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public virtual void RefreshConnectedBlockCache(ref List<Block> toRefresh)
         {
             if (_commandList == null)
             {
@@ -446,21 +501,23 @@ namespace AtMycelia.Hyphlow
                 var command = _commandList[i];
                 if (command != null)
                 {
-                    command.GetConnectedBlocks(ref connectedBlocks);
+                    command.GetConnectedBlocks(ref toRefresh);
                 }
             }
         }
+
+        protected IList<Block> _connectedBlocks = new List<Block>();
 
         /// <summary>
         /// Returns the type of the previously executing command.
         /// </summary>
         /// <returns>The previous active command type.</returns>
-        public virtual System.Type GetPreviousActiveCommandType()
+        public virtual Type GetPreviousActiveCommandType()
         {
-            if (previousActiveCommandIndex >= 0 &&
-                previousActiveCommandIndex < _commandList.Count)
+            if (_previousActiveCommandIndex >= 0 &&
+                _previousActiveCommandIndex < _commandList.Count)
             {
-                return _commandList[previousActiveCommandIndex].GetType();
+                return _commandList[_previousActiveCommandIndex].GetType();
             }
 
             return null;
@@ -468,10 +525,10 @@ namespace AtMycelia.Hyphlow
 
         public virtual int GetPreviousActiveCommandIndent()
         {
-            if (previousActiveCommandIndex >= 0 &&
-                previousActiveCommandIndex < _commandList.Count)
+            if (_previousActiveCommandIndex >= 0 &&
+                _previousActiveCommandIndex < _commandList.Count)
             {
-                return _commandList[previousActiveCommandIndex].IndentLevel;
+                return _commandList[_previousActiveCommandIndex].IndentLevel;
             }
 
             return -1;
@@ -479,10 +536,10 @@ namespace AtMycelia.Hyphlow
 
         public virtual Command GetPreviousActiveCommand()
         {
-            if (previousActiveCommandIndex >= 0 &&
-                previousActiveCommandIndex < _commandList.Count)
+            if (_previousActiveCommandIndex >= 0 &&
+                _previousActiveCommandIndex < _commandList.Count)
             {
-                return _commandList[previousActiveCommandIndex];
+                return _commandList[_previousActiveCommandIndex];
             }
 
             return null;
@@ -529,7 +586,8 @@ namespace AtMycelia.Hyphlow
             {
                 var command = _commandList[i];
                 var labelCommand = command as Label;
-                if (labelCommand != null && String.Compare(labelCommand.Key, labelKey, true) == 0)
+                bool foundIt = labelCommand != null && String.Compare(labelCommand.Key, labelKey, true) == 0;
+                if (foundIt)
                 {
                     return i;
                 }
@@ -540,23 +598,6 @@ namespace AtMycelia.Hyphlow
 
         #endregion
 
-        public virtual Command FindCommandByID(int id)
-        {
-            Command result = (from commandEl in _commandList
-                              where commandEl != null && commandEl.ItemId == id
-                              select commandEl).FirstOrDefault();
-            return result;
-        }
-
-        public virtual Command FindCommandByIndex(int index)
-        {
-            if (index < 0 || index >= _commandList.Count)
-            {
-                return null;
-            }
-            return _commandList[index];
-        }
-
         public virtual bool Equals(Block other)
         {
             return this != null && other != null &&
@@ -564,5 +605,73 @@ namespace AtMycelia.Hyphlow
                 this.GetFlowchart().UniqueId == other.GetFlowchart().UniqueId &&
                 this.BlockName == other.BlockName;
         }
+
+        public bool Contains(Command cmd)
+        {
+            bool result = _commandListDict[cmd.ItemId] == cmd;
+            return result;
+        }
+
+        public Command GetCommandWithId(ushort id)
+        {
+            Command result = _commandListDict[id];
+            return result;
+        }
+
+        /// <summary>
+        /// Add a command to the end of the command list. If a command with the same unique ID 
+        /// already exists in the list, we won't re-add it.
+        /// </summary>
+        public void Add(Command cmd)
+        {
+            bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out Command existingCmd) && existingCmd == cmd;
+            if (alreadyRegistered)
+            {
+                string warningMessage = $"Command with id {cmd.ItemId} is already " +
+                    $"registered to block {BlockName}";
+                Debug.LogWarning(warningMessage);
+                return;
+            }
+            _commandList.Add(cmd);
+            _commandListDict[cmd.ItemId] = cmd;
+            cmd.ParentBlock = this;
+            if (_owner is Flowchart fc)
+            {
+                fc.Add(cmd);
+                // ^To keep the FC's cache updated
+            }
+            cmd.OnCommandAdded(this);
+        }
+
+        public virtual bool RemoveCommandWithId(ushort id)
+        {
+            Command toRemove = _commandListDict[id];
+            bool successfulRemoval = Remove(toRemove);
+            return successfulRemoval;
+        }
+
+        public virtual bool Remove(Command cmd)
+        {
+            bool successfulRemoval = _commandList.Remove(cmd);
+            if (successfulRemoval)
+            {
+                _commandList.Remove(cmd);
+                _commandListDict.Remove(cmd.ItemId);
+                cmd.OnCommandRemoved(this);
+            }
+            return successfulRemoval;
+        }
+
+        public virtual bool RemoveAllCommands()
+        {
+            bool anyToRemove = _commandList.Count > 0;
+            while (_commandList.Count > 0)
+            {
+                var cmd = _commandList[0];
+                Remove(cmd);
+            }
+            return anyToRemove;
+        }
+
     }
 }

@@ -51,8 +51,7 @@ namespace AtMycelia.Hyphlow
         ReadOnly = 4,
 
         /// <summary>
-        /// In case we ever need it for something. This is not used anywhere in the codebase
-        /// (at the time of this writing), but it is here for completeness.
+        /// For miscellaneous use cases that don't fit into the other categories.
         /// </summary>
         Null = 99,
     }

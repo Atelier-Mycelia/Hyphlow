@@ -16,12 +16,22 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     [MovedFrom(true, "AtMycelia.Hyphlow", 
         "AtMycelia.Amanita.Core")]
-    public class VariableManagerComponent : MonoBehaviour, IReorderableMuscariableSource
+    /// <summary>
+    /// A MonoBehaviour wrapper for the VariableManager class, which allows it to be 
+    /// used as a component on a GameObject. This is useful for things such as 
+    /// Flowcharts, which can delegate their variable-management to another module.
+    /// </summary>
+    public class VariableManagerComponent : MonoBehaviour, IReorderableMuscariableSource, IDisposable
     {
         [SerializeField, HideInInspector] private UnityObj _unityObjOwner;
         [SerializeField, HideInInspector] private VariableManager _variableManager = new VariableManager();
         [SerializeField, HideInInspector] private Flowchart _cachedFlowchart;
 
+        /// <summary>
+        /// The owner of the variables in this manager. Note that this 
+        /// property's setter will update said variables' Owner fields
+        /// based on the value passed.
+        /// </summary>
         public IVariableSource Owner
         {
             get
@@ -330,6 +340,18 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 #endif
+
+        public void Dispose()
+        {
+            _unityObjOwner = null;
+            _cachedFlowchart = null;
+            _variableManager.Dispose();
+        }
+
+        protected void OnDestroy()
+        {
+            Dispose();
+        }
     }
 
 }

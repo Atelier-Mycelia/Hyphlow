@@ -15,9 +15,9 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     [Serializable]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public sealed class VariableManager : IVariableSource, IMuscariableSource,
-        IReorderableVariableSource, IReorderableMuscariableSource
+        IReorderableVariableSource, IReorderableMuscariableSource, IDisposable
     {
         // Note: Unity does not serialize readonly fields, even if they're plain 
         // old Lists of types it otherwise serializes just fine. So, we have
@@ -49,21 +49,32 @@ namespace AtMycelia.Hyphlow
             private set => _isInitted = value;
         }
 
-        public void Clear()
+        /// <summary>
+        /// Removes all variables from this manager. Note that this will fire the 
+        /// appropriate events for each variable removed, so if you have any listeners
+        /// for those events, they will be notified of each individual removal.
+        /// If you just want to clear the variables without 
+        /// firing events, you can clear the _legacyVariables and _muscariables lists 
+        /// directly and then call Refresh() to update the lookup and ensure valid IDs, 
+        /// but be aware that doing so will not send any signals about the variables 
+        /// being removed, which could lead to issues if you have other parts of your 
+        /// code that rely on those signals.
+        /// </summary>
+        public void Clear(bool triggerSignals = true)
         {
             // Remove them one by one so the right events fire
             while (_legacyVariables.Count > 0)
             {
-                RemoveLegacyVarAtIndex(0);
+                RemoveLegacyVarAtIndex(0, triggerSignals);
             }
 
             while (_muscariables.Count > 0)
             {
-                RemoveMuscariAtIndex(0);
+                RemoveMuscariAtIndex(0, triggerSignals);
             }
         }
 
-        public IVariable RemoveLegacyVarAtIndex(int index)
+        public IVariable RemoveLegacyVarAtIndex(int index, bool triggerSignals = true)
         {
             if (index < 0 || index >= _legacyVariables.Count)
             {
@@ -74,20 +85,29 @@ namespace AtMycelia.Hyphlow
             }
 
             Variable toRemove = _legacyVariables[index];
-            RemoveFromCachesThenSignal(toRemove);
+            if (triggerSignals)
+            {
+                RemoveFromCaches(toRemove, triggerSignals);
+            }
             return toRemove;
         }
 
-        private void RemoveFromCachesThenSignal(IVariable toRemove)
+        private void RemoveFromCaches(IVariable toRemove, bool triggerSignals = true)
         {
-            PreVariableRemoved(toRemove);
+            if (triggerSignals)
+            {
+                PreVariableRemoved(toRemove);
+            }
             _legacyVariables.RemoveByReference(toRemove as Variable);
             _muscariables.RemoveByReference(toRemove as Muscariable);
 
             _lookup.Remove(toRemove.ItemId);
             MarkOwnerAsDirty();
-            VariableRemoved(toRemove);
-            VariableSignals.VariableRemoved(toRemove);
+            if (triggerSignals)
+            {
+                VariableRemoved(toRemove);
+                VariableSignals.VariableRemoved(toRemove);
+            }
         }
 
         private Dictionary<byte, IVariable> _lookup = new();
@@ -96,7 +116,7 @@ namespace AtMycelia.Hyphlow
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
-        public IVariable RemoveMuscariAtIndex(int index)
+        public IVariable RemoveMuscariAtIndex(int index, bool triggerSignals = true)
         {
             if (index < 0 || index >= _muscariables.Count)
             {
@@ -105,7 +125,7 @@ namespace AtMycelia.Hyphlow
                 throw new IndexOutOfRangeException(errorMessage);
             }
             Muscariable toRemove = _muscariables[index];
-            RemoveFromCachesThenSignal(toRemove);
+            RemoveFromCaches(toRemove);
             return toRemove;
         }
 
@@ -282,9 +302,12 @@ namespace AtMycelia.Hyphlow
             AddToCachesThenSignal(toAdd);
         }
 
-        private void AddToCachesThenSignal(IVariable toAdd)
+        private void AddToCachesThenSignal(IVariable toAdd, bool triggerSignals = true)
         {
-            PreVariableAdded(toAdd);
+            if (triggerSignals)
+            {
+                PreVariableAdded(toAdd);
+            }
             if (toAdd is Muscariable)
             {
                 _muscariables.Add(toAdd as Muscariable);
@@ -293,10 +316,21 @@ namespace AtMycelia.Hyphlow
             {
                 _legacyVariables.Add(toAdd as Variable);
             }
+
+            bool idAlreadyTaken = _lookup.TryGetValue(toAdd.ItemId, out IVariable alreadyThere) 
+                && alreadyThere != toAdd;
+            if (idAlreadyTaken)
+            {
+                toAdd.ItemId = NextValidVarID();
+            }
             _lookup[toAdd.ItemId] = toAdd;
             MarkOwnerAsDirty();
-            VariableAdded(toAdd);
-            VariableSignals.VariableAdded(toAdd);
+
+            if (triggerSignals)
+            {
+                VariableAdded(toAdd);
+                VariableSignals.VariableAdded(toAdd);
+            }
         }
 
         public event Action<IVariable> PreVariableAdded = delegate { };
@@ -410,6 +444,12 @@ namespace AtMycelia.Hyphlow
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns a defensive copy of the list of variables in this manager. Modifying
+        /// the returned list will not modify this manager's internal list. However, you
+        /// can still modify the variables themselves, since the ones in the returned
+        /// list are the same instances as the ones in this manager.
+        /// </summary>
         public IReadOnlyList<IVariable> Variables
         {
             get
@@ -421,6 +461,16 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        /// <summary>
+        /// The owner of the variables this manager handles. This is used for determining things like
+        /// which Flowchart a variable belongs to, and for sending signals about variable changes.
+        /// By default, this is set to the manager itself, but it can be set to something else if
+        /// needed (for example, if this here is being used as a sub-manager for another object
+        /// that should be considered the real owner).
+        /// <br></br><br></br>
+        /// This property's setter makes sure to update the variables' Owner fields to that of the
+        /// value you're setting. Bookkeeping and whatnot.
+        /// </summary>
         public IVariableSource VarOwner
         {
             get
@@ -456,7 +506,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            RemoveFromCachesThenSignal(toRemove);
+            RemoveFromCaches(toRemove);
         }
 
         public void RemoveVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
@@ -502,13 +552,13 @@ namespace AtMycelia.Hyphlow
             return result as IVariable<TContent>;
         }
 
-        public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue, 
+        public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue,
             AccessScope scope = AccessScope.Private)
         {
             return AddNewVariableOfContentType(typeof(T), key, defaultValue, scope);
         }
 
-        public Muscariable AddNewVariableOfContentType(Type contentType, string key, 
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key,
             object defaultValue, AccessScope scope = AccessScope.Private)
         {
             EnsureInitialized();
@@ -530,7 +580,10 @@ namespace AtMycelia.Hyphlow
             RemoveVariable(toRemove as IVariable);
         }
 
-
+        /// <summary>
+        /// Gets a variable by its ID, returning it as the specified generic type 
+        /// if it is of that type. Null otherwise.
+        /// </summary>
         public T GetVariable<T>(byte itemId) where T : class, IVariable
         {
             _lookup.TryGetValue(itemId, out IVariable found);
@@ -539,9 +592,9 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// Returns a list of the variables this manager has that are of the specified variable
-        /// type. If you just want to get variables of a certain content type, use 
-        /// GetMultiVariablesOfContentType instead.
+        /// Returns a list of the variables this manager has that are of the 
+        /// specified variable type. If you just want to get variables of a
+        /// certain <i>content</i> type, use GetMultiVariablesOfContentType instead.
         /// </summary>
         public IList<T> GetMultiVariablesOfType<T>(bool strict = false) where T : IVariable
         {
@@ -551,6 +604,16 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
+        /// <summary>
+        /// Returns a list of the variables this manager has that are of the 
+        /// specified variable type. If strict is true, only variables whose 
+        /// type is <i>exactly</i> varType will be returned. If strict is false, 
+        /// variables whose type is varType or any subclass thereof will 
+        /// be returned.
+        /// <br></br> <br></br>
+        /// If you just want to get variables of a certain <i>content</i> type,
+        /// use GetMultiVariablesOfContentType instead.
+        /// </summary>
         public IList<IVariable> GetMultiVariablesOfType(Type varType, bool strict = false)
         {
             var result = _lookup.Values.Where(IsMatch).ToList();
@@ -620,6 +683,12 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        /// <summary>
+        /// Returns the total number of variables in this manager. You'd best use this instead of Variables.Count,
+        /// since that property returns a defensive list instead of the actual one. Using that to get the 
+        /// var-count can get expensive if this have a lot of variables and are calling it frequently.
+        /// This property gets you the count without the extra overhead.
+        /// </summary>
         public int VariableCount => _lookup.Count;
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
@@ -763,11 +832,10 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-
         public void RemoveAll(Predicate<IVariable> match)
         {
             var toRemove = _lookup.Values.Where(var => match(var)).ToList();
-            
+
             foreach (var elem in toRemove)
             {
                 RemoveVariable(elem);
@@ -790,6 +858,22 @@ namespace AtMycelia.Hyphlow
                 EditorUtility.SetDirty(unityObj);
             }
 #endif
+        }
+
+        public void Dispose()
+        {
+            Clear();
+            GetRidOfEvents();
+        }
+
+        private void GetRidOfEvents()
+        {
+            VariableAdded = null;
+            VariableRemoved = null;
+            PreVariableAdded = null;
+            PreVariableRemoved = null;
+            Refreshed = null;
+            Reordered = null;
         }
     }
 }
