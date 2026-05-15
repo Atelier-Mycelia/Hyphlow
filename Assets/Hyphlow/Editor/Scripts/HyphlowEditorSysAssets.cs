@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -24,20 +25,42 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        [SerializeField] private EditorTexture add;
-        [SerializeField] private EditorTexture add_small;
-        [SerializeField] private EditorTexture delete;
-        [SerializeField] private EditorTexture down;
-        [SerializeField] private EditorTexture duplicate;
-        [SerializeField] private EditorTexture fungus_mushroom;
-        [SerializeField] private EditorTexture up;
-        [SerializeField] private EditorTexture command_background;
-        [SerializeField] private EditorTexture play_big;
-        [SerializeField] private EditorTexture play_small;
+        [SerializeField]
+        [FormerlySerializedAs("add")]
+        private EditorTexture _add;
+        [SerializeField]
+        [FormerlySerializedAs("add_small")]
+        private EditorTexture _add_small;
+        [SerializeField]
+        [FormerlySerializedAs("delete")]
+        private EditorTexture _delete;
+        [SerializeField]
+        [FormerlySerializedAs("down")]
+        private EditorTexture _down;
+        [SerializeField]
+        [FormerlySerializedAs("duplicate")]
+        private EditorTexture _duplicate;
+        [SerializeField]
+        [FormerlySerializedAs("fungus_mushroom")]
+        private EditorTexture _mushroomIcon;
+        [SerializeField]
+        [FormerlySerializedAs("up")]
+        private EditorTexture _up;
+        [SerializeField]
+        [FormerlySerializedAs("command_background")]
+        private EditorTexture _command_background;
+        [SerializeField]
+        [FormerlySerializedAs("play_big")]
+        private EditorTexture _play_big;
+        [SerializeField]
+        [FormerlySerializedAs("play_small")]
+        private EditorTexture _play_small;
+        [SerializeField]
+        private EditorTexture _hyphlow_logo;
         [SerializeField] private FlowchartWindowConfig _fcwConfig;
 
-        private static HyphlowEditorSysAssets instance;
-        private static readonly string subfolderLocation = "Editor"; // Relative to Resources folder
+        private static HyphlowEditorSysAssets _instance;
+        private static readonly string _subfolderLocation = "Editor"; // Relative to Resources folder
         private static readonly string _searchFilter = "t:HyphlowEditorSysAssets";
         private static readonly string _assetName = "HyphlowEditorSysAssets";
 
@@ -45,13 +68,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             get
             {
-                if (instance == null)
+                if (_instance == null)
                 {
                     string[] guids = AssetDatabase.FindAssets(_searchFilter);
 
                     if (guids.Length == 0)
                     {
-                        instance = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(subfolderLocation, _assetName);
+                        _instance = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_subfolderLocation, _assetName);
                     }
                     else
                     {
@@ -61,24 +84,25 @@ namespace AtMycelia.Hyphlow.EditorUtils
                         }
 
                         string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                        instance = AssetDatabase.LoadAssetAtPath(path, typeof(HyphlowEditorSysAssets)) as HyphlowEditorSysAssets;
+                        _instance = AssetDatabase.LoadAssetAtPath(path, typeof(HyphlowEditorSysAssets)) as HyphlowEditorSysAssets;
                     }
                 }
 
-                return instance;
+                return _instance;
             }
         }
 
-        public static Texture2D Add { get { return S.add.Texture2D; } }
-        public static Texture2D AddSmall { get { return S.add_small.Texture2D; } }
-        public static Texture2D Delete { get { return S.delete.Texture2D; } }
-        public static Texture2D Down { get { return S.down.Texture2D; } }
-        public static Texture2D Duplicate { get { return S.duplicate.Texture2D; } }
-        public static Texture2D FungusMushroom { get { return S.fungus_mushroom.Texture2D; } }
-        public static Texture2D Up { get { return S.up.Texture2D; } }
-        public static Texture2D CommandBackground { get { return S.command_background.Texture2D; } }
-        public static Texture2D PlayBig { get { return S.play_big.Texture2D; } }
-        public static Texture2D PlaySmall { get { return S.play_small.Texture2D; } }
+        public static Texture2D Add { get { return S._add.Texture2D; } }
+        public static Texture2D AddSmall { get { return S._add_small.Texture2D; } }
+        public static Texture2D Delete { get { return S._delete.Texture2D; } }
+        public static Texture2D Down { get { return S._down.Texture2D; } }
+        public static Texture2D Duplicate { get { return S._duplicate.Texture2D; } }
+        public static Texture2D FungusMushroom { get { return S._mushroomIcon.Texture2D; } }
+        public static Texture2D Up { get { return S._up.Texture2D; } }
+        public static Texture2D CommandBackground { get { return S._command_background.Texture2D; } }
+        public static Texture2D PlayBig { get { return S._play_big.Texture2D; } }
+        public static Texture2D PlaySmall { get { return S._play_small.Texture2D; } }
+        public static Texture2D HyphlowLogo { get { return S._hyphlow_logo.Texture2D; } }
         public static FlowchartWindowConfig FcwConfig { get { return S._fcwConfig; } }
     }
 }

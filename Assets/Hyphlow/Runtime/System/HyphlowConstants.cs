@@ -18,11 +18,6 @@ namespace AtMycelia.Hyphlow
         public const int CurrentVersion = 1;
 
         /// <summary>
-        /// The name of the initial block in a new flowchart.
-        /// </summary>
-        public const string DefaultBlockName = "New Block";
-
-        /// <summary>
         /// The default choice block color.
         /// </summary>
         public static Color DefaultChoiceBlockTint = new Color(1.0f, 0.627f, 0.313f, 1.0f);

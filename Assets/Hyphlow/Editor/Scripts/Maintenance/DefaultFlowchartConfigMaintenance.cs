@@ -1,0 +1,132 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+
+namespace AtMycelia.Hyphlow.EditorUtils
+{
+    [InitializeOnLoad]
+    public static class DefaultFlowchartConfigMaintenance
+    {
+        private const string ResourcesRootPath = "Assets/Resources";
+        private const string RelativeResourcesFolderPath = "AtMycelia/Hyphlow";
+        private const string AssetName = "FcDefaultConfig";
+        private const string SearchFilter = "t:FlowchartDefaultConfig";
+
+        private static readonly string _defaultAssetPath =
+            $"{ResourcesRootPath}/{RelativeResourcesFolderPath}/{AssetName}.asset";
+
+        static DefaultFlowchartConfigMaintenance()
+        {
+            AssemblyReloadEvents.afterAssemblyReload -= EnsureDefaultFlowchartConfigAsset;
+            AssemblyReloadEvents.afterAssemblyReload += EnsureDefaultFlowchartConfigAsset;
+
+            EditorApplication.delayCall += EnsureDefaultFlowchartConfigAsset;
+        }
+
+        private static void EnsureDefaultFlowchartConfigAsset()
+        {
+            string[] guids = AssetDatabase.FindAssets(SearchFilter);
+            List<string> foundPaths = new List<string>(guids.Length);
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    foundPaths.Add(path);
+                }
+            }
+
+            if (foundPaths.Count == 0)
+            {
+                FlowchartDefaultConfig created = CreateDefaultConfigAsset();
+                FlowchartDefaultConfig.S = created;
+                return;
+            }
+
+            string primaryPath = ChoosePrimaryPath(foundPaths);
+            DeleteExtras(foundPaths, primaryPath);
+
+            FlowchartDefaultConfig primary =
+                AssetDatabase.LoadAssetAtPath<FlowchartDefaultConfig>(primaryPath);
+
+            if (primary == null)
+            {
+                primary = CreateDefaultConfigAsset();
+            }
+
+            FlowchartDefaultConfig.S = primary;
+        }
+
+        private static string ChoosePrimaryPath(IList<string> paths)
+        {
+            if (paths.Contains(_defaultAssetPath))
+            {
+                return _defaultAssetPath;
+            }
+
+            return paths.OrderBy(path => path).First();
+        }
+
+        private static void DeleteExtras(IList<string> allPaths, string keepPath)
+        {
+            bool deletedAny = false;
+
+            for (int i = 0; i < allPaths.Count; i++)
+            {
+                string path = allPaths[i];
+                if (path == keepPath)
+                {
+                    continue;
+                }
+
+                bool deleted = AssetDatabase.DeleteAsset(path);
+                if (deleted)
+                {
+                    deletedAny = true;
+                }
+            }
+
+            if (deletedAny)
+            {
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
+
+        private static FlowchartDefaultConfig CreateDefaultConfigAsset()
+        {
+            EnsureFolderPath($"{ResourcesRootPath}/{RelativeResourcesFolderPath}");
+
+            FlowchartDefaultConfig config = ScriptableObject.CreateInstance<FlowchartDefaultConfig>();
+            AssetDatabase.CreateAsset(config, _defaultAssetPath);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            return AssetDatabase.LoadAssetAtPath<FlowchartDefaultConfig>(_defaultAssetPath);
+        }
+
+        private static void EnsureFolderPath(string absoluteFolderPath)
+        {
+            string normalized = absoluteFolderPath.Replace("\\", "/");
+            string[] parts = normalized.Split('/');
+            if (parts.Length == 0)
+            {
+                return;
+            }
+
+            string current = parts[0];
+            for (int i = 1; i < parts.Length; i++)
+            {
+                string next = $"{current}/{parts[i]}";
+                if (!AssetDatabase.IsValidFolder(next))
+                {
+                    AssetDatabase.CreateFolder(current, parts[i]);
+                }
+
+                current = next;
+            }
+        }
+    }
+}
