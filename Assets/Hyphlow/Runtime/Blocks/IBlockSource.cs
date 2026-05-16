@@ -7,7 +7,8 @@ namespace AtMycelia.Hyphlow
         IReadOnlyList<Block> Blocks { get; }
 
         bool Contains(Block block);
-        Block GetBlockWithId(ushort id);
+        Block GetBlock(string name);
+        Block GetBlock(ushort id);
 
         /// <summary>
         /// Returns true if the Block was successfully added, false otherwise.

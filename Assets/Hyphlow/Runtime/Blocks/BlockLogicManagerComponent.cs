@@ -216,7 +216,7 @@ namespace AtMycelia.Hyphlow
         public IReadOnlyList<Block> GetExecutingBlocks() => _manager.GetExecutingBlocks();
 
         public bool Contains(Block block) => _manager.Contains(block);
-        public Block GetBlockWithId(ushort id) => _manager.GetBlockWithId(id);
+        public Block GetBlock(ushort id) => _manager.GetBlock(id);
         public void Add(Block block) => _manager.Add(block);
         public bool Remove(Block block) => _manager.Remove(block);
         public bool RemoveBlockWithId(ushort id) => _manager.RemoveBlockWithId(id);
@@ -303,6 +303,11 @@ namespace AtMycelia.Hyphlow
         public bool ClearBlocks(bool triggerSignals)
         {
             return _manager.ClearBlocks(triggerSignals);
+        }
+
+        public Block GetBlock(string name)
+        {
+            return _manager.GetBlock(name);
         }
     }
 }

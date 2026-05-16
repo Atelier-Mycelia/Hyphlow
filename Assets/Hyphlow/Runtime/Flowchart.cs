@@ -18,7 +18,8 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     /// <summary>
-    /// Visual scripting controller for the Flowchart programming language.
+    /// Hyphlow's main visual programming component. A Flowchart is a collection of 
+    /// Blocks and Commands that define a program's logic.
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
@@ -29,12 +30,14 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField, HideInInspector] private VariableManagerComponent _varManager;
         [SerializeField, HideInInspector] private BlockLogicManagerComponent _blockLogicManager;
+        [SerializeField, HideInInspector] private BlockManagerComponent _blockManager;
 
         [FormerlySerializedAs("variableManager")]
         [SerializeField, HideInInspector] private VariableManager legacyVariableManager = new VariableManager();
 
         [HideInInspector]
-        [SerializeField] protected int version = 0; // Default to 0 to always trigger an update for older versions of Amanita.
+        [SerializeField] protected int version = 0; 
+        // ^Default to 0 to always trigger an update for older versions of Hyphlow.
 
         [HideInInspector]
         [FormerlySerializedAs("variables")]
@@ -58,7 +61,6 @@ namespace AtMycelia.Hyphlow
         {
             this.UniqueId = Guid.NewGuid().ToString();
         }
-
 
 #if UNITY_EDITOR
 
@@ -168,13 +170,13 @@ namespace AtMycelia.Hyphlow
             get
             {
                 // Refresh if cache is empty or contains null entries.
-                if (_blockListCache == null || _blockListCache.Count == 0 ||
-                    _blockListCache.Any(block => block == null))
+                EnsureBlockManagerComponent();
+                if (_blockManager.BlockCount == 0 || _blockManager.Contains(null))
                 {
                     RefreshBlockAndCommandCache();
                 }
 
-                return _blockListCache;
+                return _blockManager.Blocks;
             }
         }
         public IReadOnlyCollection<Command> Commands => _commands;
@@ -216,32 +218,14 @@ namespace AtMycelia.Hyphlow
 
         private void RefreshBlockAndCommandCache()
         {
-            _blockListCache ??= new List<Block>();
-            _blockDict ??= new Dictionary<uint, Block>();
             _commands ??= new List<Command>();
             // ^Despite the initializers in this class, weird things can happen with Unity
 
-            _blockListCache.Clear();
-            _blockDict.Clear();
+            EnsureBlockManagerComponent();
+            _blockManager.Owner = this;
+            _blockManager.Refresh();
+
             _commands.Clear();
-
-            var blocksFound = GetComponents<Block>();
-            for (int i = 0; i < blocksFound.Length; i++)
-            {
-                var currentBlock = blocksFound[i];
-                if (currentBlock == null)
-                {
-                    continue;
-                }
-
-                if (currentBlock.ItemId == 0 || _blockDict.ContainsKey(currentBlock.ItemId))
-                {
-                    currentBlock.ItemId = NextItemId();
-                }
-
-                _blockListCache.Add(currentBlock);
-                _blockDict[currentBlock.ItemId] = currentBlock;
-            }
 
             var commandsFound = GetComponents<Command>();
             _commands.AddRange(commandsFound);
@@ -249,20 +233,9 @@ namespace AtMycelia.Hyphlow
 
         private void RefreshBlocks()
         {
-            for (int i = 0; i < _blockListCache.Count; i++)
-            {
-                var block = _blockListCache[i];
-                if (block == null)
-                {
-                    continue;
-                }
-                block.Refresh();
-            }
+            _blockManager.Refresh();
         }
-        [SerializeField] [HideInInspector] private List<Block> _blockListCache = new List<Block>();
-        private IDictionary<uint, Block> _blockDict = new Dictionary<uint, Block>();
-        // ^Maps the Blocks' IDs to the Block objects themselves for quick lookup by the former.
-        // Should always be in sync with _blockListCache.
+
         [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
 
         protected virtual void Start()
@@ -466,6 +439,9 @@ namespace AtMycelia.Hyphlow
             // Legacy variables automatically get their owner-registration done;
             // it's always the Flowchart they're attached to.
 
+            EnsureBlockManagerComponent();
+            _blockManager.Owner = this;
+
             EnsureBlockLogicManagerComponent();
             _blockLogicManager.Owner = this;
         }
@@ -479,6 +455,20 @@ namespace AtMycelia.Hyphlow
                 {
                     _blockLogicManager = gameObject.AddComponent<BlockLogicManagerComponent>();
                 }
+            }
+        }
+
+        private void EnsureBlockManagerComponent()
+        {
+            if (_blockManager != null)
+            {
+                return;
+            }
+
+            _blockManager = GetComponent<BlockManagerComponent>();
+            if (_blockManager == null)
+            {
+                _blockManager = gameObject.AddComponent<BlockManagerComponent>();
             }
         }
 
@@ -527,7 +517,7 @@ namespace AtMycelia.Hyphlow
             CheckForBlocks();
             void CheckForBlocks()
             {
-                foreach (var blockEl in _blockDict.Values)
+                foreach (var blockEl in Blocks)
                 {
                     if (blockEl == null) continue;
 
@@ -604,7 +594,7 @@ namespace AtMycelia.Hyphlow
             {
                 var command = _commands[i];
                 bool found = false;
-                foreach (Block block in _blockDict.Values)
+                foreach (Block block in Blocks)
                 {
                     if (block.CommandList.Contains(command))
                     {
@@ -627,7 +617,7 @@ namespace AtMycelia.Hyphlow
             {
                 var eventHandler = eventHandlers[i];
                 bool found = false;
-                foreach (Block block in _blockDict.Values)
+                foreach (Block block in _blockManager.Blocks)
                 {
                     if (block._EventHandler == eventHandler)
                     {
@@ -664,9 +654,9 @@ namespace AtMycelia.Hyphlow
                 }
             }
 
-            foreach (Block block in _blockDict.Values)
+            foreach (Block blockEl in Blocks)
             {
-                if (block == null || block._EventHandler != null)
+                if (blockEl == null || blockEl._EventHandler != null)
                 {
                     continue;
                 }
@@ -674,9 +664,9 @@ namespace AtMycelia.Hyphlow
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
                     var eventHandler = eventHandlers[i];
-                    if (eventHandler != null && eventHandler.ParentBlock == block)
+                    if (eventHandler != null && eventHandler.ParentBlock == blockEl)
                     {
-                        block._EventHandler = eventHandler;
+                        blockEl._EventHandler = eventHandler;
                         break;
                     }
                 }
@@ -805,21 +795,21 @@ namespace AtMycelia.Hyphlow
         {
             if (_hideComponents)
             {
-                var blocks = _blockDict;
-                foreach (var block in blocks.Values)
+                foreach (var elem in Blocks)
                 {
-                    block.hideFlags = HideFlags.HideInInspector;
-                    if (block.gameObject != gameObject)
+                    elem.hideFlags = HideFlags.HideInInspector;
+                    if (elem.gameObject != gameObject)
                     {
-                        block.hideFlags = HideFlags.HideInHierarchy;
+                        elem.hideFlags = HideFlags.HideInHierarchy;
                     }
                 }
 
                 var commands = _commands;
-                foreach (var command in commands)
+                foreach (var elem in commands)
                 {
-                    command.hideFlags = HideFlags.HideInInspector;
+                    elem.hideFlags = HideFlags.HideInInspector;
                 }
+
                 var eventHandlers = GetComponents<EventHandler>();
                 for (int i = 0; i < eventHandlers.Length; i++)
                 {
@@ -957,10 +947,10 @@ namespace AtMycelia.Hyphlow
             // without worrying about ID conflicts, but variables added to a Flowchart are
             // supposed to forever be with that same Flowchart.
             ushort maxId = 0;
-            _blockListCache.RemoveAll(item => item == null);
-            for (int i = 0; i < _blockListCache.Count; i++)
+            _blockManager.Refresh();
+            for (int i = 0; i < Blocks.Count; i++)
             {
-                var block = _blockListCache[i];
+                var block = Blocks[i];
                 maxId = Math.Max(maxId, block.ItemId);
             }
 
@@ -982,7 +972,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Block CreateBlock(Vector2 position, string blockName = null)
         {
-            bool creatingFirstBlock = _blockListCache.Count == 0;
+            bool creatingFirstBlock = _blockManager.BlockCount == 0;
 
             if (creatingFirstBlock)
             {
@@ -1000,8 +990,10 @@ namespace AtMycelia.Hyphlow
             created.BlockName = GetUniqueBlockKey(blockName, created);
             created.Scope = DefaultConfig.NewBlockScope;
             created.ItemId = NextItemId();
-            _blockDict.Add(created.ItemId, created);
-            _blockListCache.Add(created);
+
+            EnsureBlockManagerComponent();
+            _blockManager.Owner = this;
+            _blockManager.Add(created, false);
 
             if (creatingFirstBlock)
             {
@@ -1015,15 +1007,12 @@ namespace AtMycelia.Hyphlow
         public virtual void ApplyDefaultConfigToFirstBlock()
         {
             RefreshBlockAndCommandCache();
-            if (_blockListCache == null || _blockListCache.Count == 0)
+            if (_blockManager.BlockCount == 0)
             {
                 return;
             }
 
-            Block firstBlock = _blockListCache
-                .Where(block => block != null)
-                .OrderBy(block => block.ItemId)
-                .FirstOrDefault();
+            Block firstBlock = _blockManager.Blocks[0];
 
             if (firstBlock == null)
             {
@@ -1104,31 +1093,34 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Returns the named Block in the flowchart, or null if not found.
         /// </summary>
-        public virtual Block FindBlock(string blockName)
+        public virtual Block GetBlock(string blockName)
         {
-            foreach (var blockEl in _blockDict.Values)
+            EnsureBlockManagerComponent();
+            var blocks = _blockManager.Blocks;
+            for (int i = 0; i < blocks.Count; i++)
             {
-                if (blockEl.BlockName == blockName)
+                var block = blocks[i];
+                if (block != null && block.BlockName == blockName)
                 {
-                    return blockEl;
+                    return block;
                 }
             }
 
             return null;
         }
 
-        public virtual Block GetBlockWithId(ushort itemId)
+        public virtual Block GetBlock(ushort itemId)
         {
-            _blockDict.TryGetValue(itemId, out Block result);
+            Block result = _blockManager.GetBlock(itemId);
             return result;
         }
 
         /// <summary>
         /// Checks availability of the block in the Flowchart.
         /// You can use this method in a UI event. e.g. to test availability block, before handle it.
-        public virtual bool HasBlock(string blockName)
+        public virtual bool ContainsBlockNamed(string blockName)
         {
-            var block = FindBlock(blockName);
+            var block = _blockManager.GetBlock(blockName);
             return block != null;
         }
 
@@ -1137,7 +1129,7 @@ namespace AtMycelia.Hyphlow
         /// You can use this method in a UI event. e.g. to try executing block without confidence in its existence.
         public virtual bool ExecuteIfHasBlock(string blockName)
         {
-            if (HasBlock(blockName))
+            if (ContainsBlockNamed(blockName))
             {
                 ExecuteBlock(blockName);
                 return true;
@@ -1153,7 +1145,7 @@ namespace AtMycelia.Hyphlow
         /// You can use this method in a UI event. e.g. to handle a button click.
         public virtual void ExecuteBlock(string blockName)
         {
-            var block = FindBlock(blockName);
+            var block = GetBlock(blockName);
 
             if (block == null)
             {
@@ -1172,7 +1164,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void StopBlock(string blockName)
         {
-            var block = FindBlock(blockName);
+            var block = GetBlock(blockName);
 
             if (block == null)
             {
@@ -1727,7 +1719,7 @@ namespace AtMycelia.Hyphlow
 
         public bool Contains(IVariable var)
         {
-            return _legacyVariables.Contains(var) || _oldMuscariables.Contains(var);
+            return _varManager.Contains(var);
         }
 
         public virtual void OnBeforeSerialize()
@@ -1898,60 +1890,38 @@ namespace AtMycelia.Hyphlow
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             return _varManager.AddNewVariableOfContentType(contentType, key);
-        }
+        }//
 
         public bool Contains(Block block)
         {
-            for (int i = 0; i < _blockListCache.Count; i++)
-            {
-                if (_blockListCache[i] == block)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            EnsureBlockManagerComponent();
+            return _blockManager.Contains(block);
         }
 
-        public void Add(Block block)
-        {
-            if (block == null)
-            {
-                Debug.LogError("Cannot add null block to flowchart.");
-                return;
-            }
-
-            bool alreadyContains = Contains(block);
-            if (alreadyContains)
-            {
-                Debug.LogWarning("Flowchart already contains block " + block.BlockName);
-                return;
-            }
-
-            _blockListCache.Add(block);
-            _blockDict[block.ItemId] = block;
-        }
-
-        public bool Remove(Block block)
+        public bool Add(Block block, bool triggerSignals = true)
         {
             bool success = false;
-            if (_blockDict[block.ItemId] == block)
+            if (Contains(block))
             {
-                _blockDict.Remove(block.ItemId);
-                success = _blockListCache.Remove(block);
+                Debug.LogWarning($"Flowchart {this.name} already contains Block {block.BlockName}");
             }
+            else
+            {
+                success = _blockManager.Add(block, triggerSignals);
+            }
+                
             return success;
         }
 
-        public bool RemoveBlockWithId(ushort id)
+        public bool Remove(Block block, bool triggerSignals = true)
         {
-            bool success = false;
-            if (_blockDict.TryGetValue(id, out Block block))
-            {
-                _blockDict.Remove(id);
-                success = _blockListCache.Remove(block);
-            }
-            return success;
+            return _blockManager.Remove(block, triggerSignals);
+        }
+
+        public bool RemoveBlockWithId(ushort id, bool triggerSignals = true)
+        {
+            EnsureBlockLogicManagerComponent();
+            return _blockManager.RemoveBlockWithId(id, triggerSignals);
         }
 
         public bool Contains(Command cmd)
@@ -1985,12 +1955,12 @@ namespace AtMycelia.Hyphlow
             _commands.Add(cmd);
         }
 
-        public bool Remove(Command cmd)
+        public bool Remove(Command cmd)//
         {
             bool success = false;
             Block ourBlock = null;
             bool belongsToUs = cmd.ParentBlock != null && 
-                _blockDict.TryGetValue(cmd.ParentBlock.ItemId, out ourBlock) &&
+                _blockManager.Contains(cmd.ParentBlock) &&
                 ourBlock == cmd.ParentBlock;
             if (belongsToUs)
             {
@@ -2016,9 +1986,10 @@ namespace AtMycelia.Hyphlow
         public virtual bool RemoveAllCommands()
         {
             bool anyRemoved = false;
-            for (int i = 0; i < _blockListCache.Count; i++)
+            var blocksToRemoveFrom = _blockManager.Blocks;
+            for (int i = 0; i < _blockManager.BlockCount; i++)
             {
-                var block = _blockListCache[i];
+                var block = blocksToRemoveFrom[i];
                 var commandList = block.CommandList;
                 _commands.RemoveAllIn(commandList);
                 // ^We do this so we make sure to get rid of the Commands that
@@ -2044,24 +2015,11 @@ namespace AtMycelia.Hyphlow
             return success;
         }
 
-        public bool Add(Block block, bool triggerSignals)
-        {
-            return ((IBlockSource)_blockLogicManager).Add(block, triggerSignals);
-        }
-
-        public bool Remove(Block block, bool triggerSignals)
-        {
-            return ((IBlockSource)_blockLogicManager).Remove(block, triggerSignals);
-        }
-
-        public bool RemoveBlockWithId(ushort id, bool triggerSignals)
-        {
-            return ((IBlockSource)_blockLogicManager).RemoveBlockWithId(id, triggerSignals);
-        }
-
         public bool ClearBlocks(bool triggerSignals)
         {
-            return ((IBlockSource)_blockLogicManager).ClearBlocks(triggerSignals);
+            EnsureBlockManagerComponent();
+            bool anyRemoved = _blockManager.ClearBlocks(triggerSignals);
+            return anyRemoved;
         }
     }
     
