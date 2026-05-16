@@ -12,6 +12,7 @@ using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using StringComparison = System.StringComparison;
 using AtMycelia.EditorUtils;
+using AtMycelia;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -663,6 +664,20 @@ namespace VScriptingTests.VariableOperations
             public Type ContentType => typeof(object);
 
             public bool IsRelationalSupported => false;
+
+            object IHasItemId.ItemId
+            {
+                get => ItemId;
+                set
+                {
+                    if (value is byte b)
+                        ItemId = b;
+                    else
+                    {
+                        throw new System.ArgumentException("ItemId must be a byte.");
+                    }
+                }
+            }
 
             // Init is a no-op for test helper
             public void Init() { }

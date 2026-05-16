@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
-using TMPro;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -29,6 +28,7 @@ namespace AtMycelia.Hyphlow
         IBackwardsCompatibilityApplier, IBlockSource, ICommandSource
     {
         [SerializeField, HideInInspector] private VariableManagerComponent _varManager;
+        [SerializeField, HideInInspector] private BlockLogicManagerComponent _blockLogicManager;
 
         [FormerlySerializedAs("variableManager")]
         [SerializeField, HideInInspector] private VariableManager legacyVariableManager = new VariableManager();
@@ -67,7 +67,7 @@ namespace AtMycelia.Hyphlow
         [TextArea(3, 5)]
         [Tooltip("Description text displayed in the Flowchart editor window")]
         [FormerlySerializedAs("description")]
-        [SerializeField] protected string description = "";
+        [SerializeField] protected string _description = "";
 
         /// <summary>
         /// What the editor utils should use to decide how to render this FC's data in the 
@@ -75,31 +75,43 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual FlowchartUIModel UIModel
         {
-            get { return uiModel; }
+            get { return _uiModel; }
         }
 
         [HideInInspector]
         [SerializeField]
-        protected FlowchartUIModel uiModel = new FlowchartUIModel();
+        [FormerlySerializedAs("uiModel")]
+        protected FlowchartUIModel _uiModel = new FlowchartUIModel();
 
         [Range(0f, 5f)]
-        [Tooltip("Adds a pause after each execution step to make it easier to visualise program flow. Editor only, has no effect in platform builds.")]
-        [SerializeField] protected float stepPause = 0f;
+        [Tooltip("Adds a pause after each execution step to make it easier to visualise " +
+            "program flow. Editor only, has no effect in platform builds.")]
+        [FormerlySerializedAs("stepPause")]
+        [SerializeField] protected float _stepPause = 0f;
 
-        [Tooltip("Use command color when displaying the command list in the Fungus Editor window")]
-        [SerializeField] protected bool colorCommands = true;
+        [Tooltip("Use command color when displaying the command list in the Hyphlow " +
+            "Editor window")]
+        [FormerlySerializedAs("colorCommands")]
+        [SerializeField] protected bool _colorCommands = true;
 
-        [Tooltip("Hides the Flowchart block and command components in the inspector. Deselect to inspect the block and command components that make up the Flowchart.")]
-        [SerializeField] protected bool hideComponents = true;
+        [Tooltip("Hides the Flowchart block and command components in the inspector. " +
+            "Deselect to inspect the block and command components that make up the Flowchart.")]
+        [FormerlySerializedAs("hideComponents")]
+        [SerializeField] protected bool _hideComponents = true;
 
-        [Tooltip("Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.")]
-        [SerializeField] protected bool saveSelection = true;
+        [Tooltip("Saves the selected block and commands when saving the scene. Helps " +
+            "avoid version control conflicts if you've only changed the active selection.")]
+        [FormerlySerializedAs("saveSelection")]
+        [SerializeField] protected bool _saveSelection = true;
 
         [Tooltip("Display line numbers in the command list in the Block inspector.")]
-        [SerializeField] protected bool showLineNumbers = false;
+        [FormerlySerializedAs("showLineNumbers")]
+        [SerializeField] protected bool _showLineNumbers = false;
 
-        [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict the set of commands available when editing a Flowchart.")]
-        [SerializeField] protected List<string> hideCommands = new List<string>();
+        [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict " +
+            "the set of commands available when editing a Flowchart.")]
+        [FormerlySerializedAs("hideCommands")]
+        [SerializeField] protected List<string> _hideCommands = new List<string>();
 #endif
 
         #region Save Sys Involvement
@@ -453,6 +465,21 @@ namespace AtMycelia.Hyphlow
             _varManager.Owner = this;
             // Legacy variables automatically get their owner-registration done;
             // it's always the Flowchart they're attached to.
+
+            EnsureBlockLogicManagerComponent();
+            _blockLogicManager.Owner = this;
+        }
+
+        private void EnsureBlockLogicManagerComponent()
+        {
+            if (_blockLogicManager == null)
+            {
+                _blockLogicManager = GetComponent<BlockLogicManagerComponent>();
+                if (_blockLogicManager == null)
+                {
+                    _blockLogicManager = gameObject.AddComponent<BlockLogicManagerComponent>();
+                }
+            }
         }
 
         protected virtual void OnDisable()
@@ -673,14 +700,14 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Vector2 ScrollPos
         {
-            get => uiModel.ScrollPos;
-            set => uiModel.ScrollPos = value;
+            get => _uiModel.ScrollPos;
+            set => _uiModel.ScrollPos = value;
         }
 
         public virtual float Zoom
         {
-            get => uiModel.Zoom;
-            set => uiModel.Zoom = value;
+            get => _uiModel.Zoom;
+            set => _uiModel.Zoom = value;
         }
 
         /// <summary>
@@ -688,8 +715,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Rect ScrollViewRect
         {
-            get => uiModel.ScrollViewRect;
-            set => uiModel.ScrollViewRect = value;
+            get => _uiModel.ScrollViewRect;
+            set => _uiModel.ScrollViewRect = value;
         }
 
         /// <summary>
@@ -697,14 +724,14 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Block SelectedBlock
         {
-            get => uiModel.SelectedBlock;
-            set => uiModel.SelectedBlock = value;
+            get => _uiModel.SelectedBlock;
+            set => _uiModel.SelectedBlock = value;
         }
 
         public virtual IList<Block> SelectedBlocks
         {
-            get => uiModel.SelectedBlocks;
-            set => uiModel.SelectedBlocks = value;
+            get => _uiModel.SelectedBlocks;
+            set => _uiModel.SelectedBlocks = value;
         }
 
         /// <summary>
@@ -712,18 +739,18 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual IList<Command> SelectedCommands
         {
-            get => uiModel.SelectedCommands; // Returns a copy
-            set => uiModel.SelectedCommands = value;
+            get => _uiModel.SelectedCommands; // Returns a copy
+            set => _uiModel.SelectedCommands = value;
         }
 
         public virtual int SelectedCommandCount
         {
-            get { return uiModel.CommandCount; }
+            get { return _uiModel.CommandCount; }
         }
 
         public virtual int SelectedBlockCount
         {
-            get { return uiModel.BlockCount; }
+            get { return _uiModel.BlockCount; }
         }
 
         public virtual void UpdateSelectedCache()
@@ -776,7 +803,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void UpdateHideFlags()
         {
-            if (hideComponents)
+            if (_hideComponents)
             {
                 var blocks = _blockDict;
                 foreach (var block in blocks.Values)
@@ -821,10 +848,10 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
         {
-            for (int i = 0; i < hideCommands.Count; i++)
+            for (int i = 0; i < _hideCommands.Count; i++)
             {
                 // Match on category or command name (case insensitive)
-                var key = hideCommands[i];
+                var key = _hideCommands[i];
                 if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     return false;
@@ -850,7 +877,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void AddSelectedCommand(Command command)
         {
-            if (!uiModel.Contains(command))
+            if (!_uiModel.Contains(command))
             {
                 // The SelectedCommands getter returns a defensive decoy. Thus, rather than something
                 // like SelectedCommands.Add, we call the ui model's method specifically for registering
@@ -876,29 +903,29 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Slow down execution in the editor to make it easier to visualise program flow.
         /// </summary>
-        public virtual float StepPause { get { return stepPause; } }
+        public virtual float StepPause { get { return _stepPause; } }
 
         /// <summary>
         /// Use command color when displaying the command list in the inspector.
         /// </summary>
-        public virtual bool ColorCommands { get { return colorCommands; } }
+        public virtual bool ColorCommands { get { return _colorCommands; } }
 
         /// <summary>
         /// Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.
         /// </summary>
-        public virtual bool SaveSelection { get { return saveSelection; } }
+        public virtual bool SaveSelection { get { return _saveSelection; } }
 
         /// <summary>
         /// Display line numbers in the command list in the Block inspector.
         /// </summary>
-        public virtual bool ShowLineNumbers { get { return showLineNumbers; } }
+        public virtual bool ShowLineNumbers { get { return _showLineNumbers; } }
 
 #endif
 
         /// <summary>
         /// Description text displayed in the Flowchart editor window
         /// </summary>
-        public virtual string Description { get { return description; } }
+        public virtual string Description { get { return _description; } }
 
         /// <summary>
         /// Position in the center of all blocks in the flowchart.
@@ -1575,14 +1602,15 @@ namespace AtMycelia.Hyphlow
                 }
 
                 EnsureVariableManagerComponent();
-                
+                EnsureBlockLogicManagerComponent();
+
                 _legacyVariables.RemoveAll((elem) => elem == null);
                 _oldMuscariables.RemoveAll((elem) => elem == null);
 
-                uiModel ??= new FlowchartUIModel();
-                if (uiModel.Owner == null)
+                _uiModel ??= new FlowchartUIModel();
+                if (_uiModel.Owner == null)
                 {
-                    uiModel.Owner = this.gameObject;
+                    _uiModel.Owner = this.gameObject;
                 }
 
                 Refresh();
@@ -1649,6 +1677,7 @@ namespace AtMycelia.Hyphlow
                 }
 #endif
                 EnsureVariableManagerComponent();
+                EnsureBlockLogicManagerComponent();
                 _varManager.Owner = this;
                 return VariableManager.Variables;
             }
@@ -2013,6 +2042,26 @@ namespace AtMycelia.Hyphlow
                 }
             }
             return success;
+        }
+
+        public bool Add(Block block, bool triggerSignals)
+        {
+            return ((IBlockSource)_blockLogicManager).Add(block, triggerSignals);
+        }
+
+        public bool Remove(Block block, bool triggerSignals)
+        {
+            return ((IBlockSource)_blockLogicManager).Remove(block, triggerSignals);
+        }
+
+        public bool RemoveBlockWithId(ushort id, bool triggerSignals)
+        {
+            return ((IBlockSource)_blockLogicManager).RemoveBlockWithId(id, triggerSignals);
+        }
+
+        public bool ClearBlocks(bool triggerSignals)
+        {
+            return ((IBlockSource)_blockLogicManager).ClearBlocks(triggerSignals);
         }
     }
     

@@ -140,7 +140,7 @@ namespace AtMycelia.Hyphlow
 
             Flowchart[] flowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             int migratedCount = 0;
-
+            string fcsMigratedFor = "";
             for (int i = 0; i < flowcharts.Length; i++)
             {
                 Flowchart flowchart = flowcharts[i];
@@ -165,12 +165,15 @@ namespace AtMycelia.Hyphlow
                 component.SetGlobalVarsToPublic();
                 if (success)
                 {
+                    fcsMigratedFor += flowchart.name + ", ";
                     migratedCount++;
                 }
             }
             if (migratedCount > 0)
             {
-                Debug.Log($"VariableManagerComponent: Migrated variables for {migratedCount} Flowchart(s).");
+                string logMessage = $"VariableManagerComponent: Migrated variables " +
+                    $"for {migratedCount} Flowchart(s): {fcsMigratedFor}";
+                Debug.Log(logMessage);
             }
         }
 

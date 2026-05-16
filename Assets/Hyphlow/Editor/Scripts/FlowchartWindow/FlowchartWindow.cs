@@ -27,6 +27,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 GetWindow<FlowchartWindow>();
             wnd.titleContent = new GUIContent(Config.FlowchartWindowTitle);
             wnd.minSize = Config.WindowMinSize;
+            wnd.Show();
             wnd.Focus();
         }
 
