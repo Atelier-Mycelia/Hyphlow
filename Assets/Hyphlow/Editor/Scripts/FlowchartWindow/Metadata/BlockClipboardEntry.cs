@@ -554,10 +554,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     }
                     else if (flowchart != null)
                     {
-                        resolved = flowchart.GetBlockWithId(snapshot.BlockId);
+                        resolved = flowchart.GetBlock(snapshot.BlockId);
                         if (resolved == null)
                         {
-                            resolved = flowchart.FindBlock(snapshot.BlockName);
+                            resolved = flowchart.GetBlock(snapshot.BlockName);
                         }
                         
                     }

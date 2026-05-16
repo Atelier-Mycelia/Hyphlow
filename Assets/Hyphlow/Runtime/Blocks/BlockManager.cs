@@ -14,11 +14,7 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField] private List<Block> _blocks = new List<Block>();
         [SerializeField] private ushort _nextValidBlockId = 1;
-        [NonSerialized] private Dictionary<ushort, Block> _lookup = new Dictionary<ushort, Block>();
-        [NonSerialized] private IBlockSource _blockOwner;
-
-        private static readonly string _defaultName = "BlockManager";
-
+        
         /// <summary>
         /// Optional owner for naming/context (e.g., Flowchart or BlockLogicManagerComponent).
         /// </summary>
@@ -27,6 +23,8 @@ namespace AtMycelia.Hyphlow
             get => _blockOwner;
             set => _blockOwner = value;
         }
+
+        private IBlockSource _blockOwner;
 
         public IReadOnlyList<Block> Blocks
         {
@@ -41,15 +39,21 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        private Dictionary<ushort, Block> _lookup = new Dictionary<ushort, Block>();
+
         public void Refresh()
         {
             _blocks ??= new List<Block>();
             _lookup ??= new Dictionary<ushort, Block>();
             _lookup.Clear();
 
-            while (_blocks.Contains(null))
+            for (int i = _blocks.Count - 1; i >= 0; i--)
             {
-                _blocks.Remove(null);
+                if (_blocks[i] == null)
+                {
+                    _blocks.RemoveAt(i);
+                    i--;
+                }
             }
 
             for (int i = 0; i < _blocks.Count; i++)
@@ -67,11 +71,9 @@ namespace AtMycelia.Hyphlow
                 Debug.LogError("Cannot ensure valid Block ID for a null Block.");
                 return;
             }
-            if (IsRegistered(block))
-            {
-                return;
-            }
 
+            // During Refresh() we rebuild lookup from scratch, so we only need to ensure
+            // the ID is valid and not already claimed by another block we've processed.
             while (block.ItemId == Block.InvalidId || _lookup.ContainsKey(block.ItemId))
             {
                 block.ItemId = NextValidBlockId();
@@ -80,12 +82,17 @@ namespace AtMycelia.Hyphlow
 
         private bool IsRegistered(Block block)
         {
-            if (block == null)
+            if (block == null || _lookup == null)
             {
                 return false;
             }
-            bool result = _lookup != null && _lookup.ContainsKey(block.ItemId);
-            return result;
+
+            if (_lookup.TryGetValue(block.ItemId, out Block registered))
+            {
+                return ReferenceEquals(registered, block);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -124,8 +131,26 @@ namespace AtMycelia.Hyphlow
             while (_blocks.Count > 0)
             {
                 Block toRemove = _blocks[0];
-                Remove(toRemove, triggerSignals);
+                if (!Remove(toRemove, triggerSignals))
+                {
+                    // Safety fallback to avoid infinite loops on stale/invalid registrations.
+                    _blocks.RemoveAt(0);
+
+                    if (toRemove != null)
+                    {
+                        if (_lookup.TryGetValue(toRemove.ItemId, out Block registered) &&
+                            ReferenceEquals(registered, toRemove))
+                        {
+                            _lookup.Remove(toRemove.ItemId);
+                        }
+                        else
+                        {
+                            RemoveLookupEntryByReference(toRemove);
+                        }
+                    }
+                }
             }
+
             return anyRemoved;
         }
 
@@ -136,11 +161,37 @@ namespace AtMycelia.Hyphlow
                 return false;
             }
 
-            bool result = _lookup != null && _lookup.ContainsKey(block.ItemId);
-            return result;
+            if (_blocks != null && _blocks.Contains(block))
+            {
+                return true;
+            }
+
+            if (_lookup != null && _lookup.TryGetValue(block.ItemId, out Block registered))
+            {
+                return ReferenceEquals(registered, block);
+            }
+
+            return false;
         }
 
-        public Block GetBlockWithId(ushort id)
+        public Block GetBlock(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            foreach (Block block in _blocks)
+            {
+                if (block != null && block.BlockName == name)
+                {
+                    return block;
+                }
+            }
+            return null;
+        }
+
+        public Block GetBlock(ushort id)
         {
             _lookup.TryGetValue(id, out Block result);
             return result;
@@ -177,11 +228,13 @@ namespace AtMycelia.Hyphlow
             {
                 PreBlockAdded(toAdd);
             }
+
             _blocks.Add(toAdd);
             _lookup[toAdd.ItemId] = toAdd;
-            MarkOwnerAsDirty();
+
             if (triggerSignals)
             {
+                MarkOwnerAsDirty();
                 BlockAdded(toAdd);
             }
         }
@@ -197,24 +250,36 @@ namespace AtMycelia.Hyphlow
 
         private bool RemoveFromCaches(Block toRemove, bool triggerSignals)
         {
-            if (!IsRegistered(toRemove))
+            if (toRemove == null)
             {
                 return false;
             }
+
+            bool removedFromList = _blocks.Remove(toRemove);
+
+            bool removedFromLookup = false;
+            if (_lookup.TryGetValue(toRemove.ItemId, out Block registered) &&
+                ReferenceEquals(registered, toRemove))
+            {
+                removedFromLookup = _lookup.Remove(toRemove.ItemId);
+            }
+            else
+            {
+                removedFromLookup = RemoveLookupEntryByReference(toRemove);
+            }
+
+            if (!removedFromList && !removedFromLookup)
+            {
+                return false;
+            }
+
             if (triggerSignals)
             {
                 PreBlockRemoved(toRemove);
-            }
-
-            _blocks.Remove(toRemove);
-            _lookup.Remove(toRemove.ItemId);
-
-            MarkOwnerAsDirty();
-
-            if (triggerSignals)
-            {
+                MarkOwnerAsDirty();
                 BlockRemoved(toRemove);
             }
+
             return true;
         }
 
@@ -234,13 +299,37 @@ namespace AtMycelia.Hyphlow
 
         public bool RemoveBlockWithId(ushort id, bool triggerSignals)
         {
-            bool found = _lookup.TryGetValue(id, out Block blockToRemove);
-            if (!found || blockToRemove == null)
+            _lookup.TryGetValue(id, out Block blockToRemove);
+            if (blockToRemove == null)
             {
                 return false;
             }
 
             return Remove(blockToRemove, triggerSignals);
+        }
+
+        private bool RemoveLookupEntryByReference(Block block)
+        {
+            ushort keyToRemove = 0;
+            bool found = false;
+
+            foreach (var pair in _lookup)
+            {
+                if (ReferenceEquals(pair.Value, block))
+                {
+                    keyToRemove = pair.Key;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                return false;
+            }
+
+            _lookup.Remove(keyToRemove);
+            return true;
         }
 
         public void Dispose()
@@ -249,8 +338,6 @@ namespace AtMycelia.Hyphlow
             _lookup?.Clear();
             _blockOwner = null;
         }
-
-        
 
         public string Name
         {
@@ -268,6 +355,11 @@ namespace AtMycelia.Hyphlow
                 Debug.LogWarning("BlockManager.Name is read-only and cannot be set.");
             }
         }
+
+        private static readonly string _defaultName = "BlockManager";
+        public int BlockCount => _blocks.Count;
+        // ^This may seem unnecessary now, but we'll expand this after we implement poco versions of
+        // Blocks. 
 
     }
 }

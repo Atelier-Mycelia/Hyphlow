@@ -51,7 +51,7 @@ namespace AtMycelia.Hyphlow
                     return null;
                 }
 
-                return _blockOwner.GetBlockWithId(_itemId);
+                return _blockOwner.GetBlock(_itemId);
             }
             set
             {

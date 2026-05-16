@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow
                 flowchart = (Flowchart)GetFlowchart();
             }
 
-            var block = flowchart.FindBlock(blockName.Value);
+            var block = flowchart.GetBlock(blockName.Value);
             if (block == null ||
                 !block.IsExecuting())
             {
@@ -63,7 +63,7 @@ namespace AtMycelia.Hyphlow
         public bool MayCallBlock(Block block)
         {
             if(flowchart != null)
-                return block == flowchart.FindBlock(blockName.Value);
+                return block == flowchart.GetBlock(blockName.Value);
             return false;
         }
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,9 +10,6 @@ namespace AtMycelia.Hyphlow
         [SerializeField] [HideInInspector] private BlockManager _blocks = new BlockManager();
         [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
         [SerializeField] [HideInInspector] private MonoBehaviour _owner;
-
-        private static readonly string _defaultName = "UnownedBlockLogicManager";
-
         [SerializeField] private ushort _nextItemId = 1;
 
         public BlockLogicManager()
@@ -50,6 +46,8 @@ namespace AtMycelia.Hyphlow
             }
             set => Debug.LogWarning("BlockLogicManager.Name is read-only and cannot be set.");
         }
+
+        private static readonly string _defaultName = "UnownedBlockLogicManager";
 
         public IReadOnlyList<Command> Commands => _commands;
         public IReadOnlyDictionary<ushort, Block> BlockLookup
@@ -293,7 +291,7 @@ namespace AtMycelia.Hyphlow
         #region IBlockSource Implementation
         public IReadOnlyList<Block> Blocks => _blocks.Blocks;
         public bool Contains(Block block) => _blocks.Contains(block);
-        public Block GetBlockWithId(ushort id) => _blocks.GetBlockWithId(id);
+        public Block GetBlock(ushort id) => _blocks.GetBlock(id);
         public bool Add(Block block, bool triggerSignals = true) => _blocks.Add(block, triggerSignals);
         public bool Remove(Block block, bool triggerSignals = true) => _blocks.Remove(block, triggerSignals);
         public bool RemoveBlockWithId(ushort id, bool triggerSignals = true) => _blocks.RemoveBlockWithId(id, triggerSignals);
@@ -337,7 +335,7 @@ namespace AtMycelia.Hyphlow
 
             Block ourBlock = null;
             bool belongsToUs = cmd.ParentBlock != null &&
-                               _blocks.GetBlockWithId(cmd.ParentBlock.ItemId) == cmd.ParentBlock;
+                               _blocks.GetBlock(cmd.ParentBlock.ItemId) == cmd.ParentBlock;
 
             if (!belongsToUs)
             {
@@ -381,5 +379,9 @@ namespace AtMycelia.Hyphlow
             _blocks?.Dispose();
         }
 
+        public Block GetBlock(string name)
+        {
+            return _blocks.GetBlock(name);
+        }
     }
 }
