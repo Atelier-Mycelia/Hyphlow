@@ -35,11 +35,11 @@ namespace AtMycelia.Hyphlow
         {
             if (IsInitted)
             {
-                Debug.LogWarning($"VariableManager for {Name} is already initialized. Reinitializing will clear " +
-                    "all variables and reset the manager. Proceeding with reinitialization.");
+                Debug.LogWarning($"VariableManager for {Name} is already initialized. " +
+                    $"Reinitializing will clear all variables and reset the manager. " +
+                    $"Proceeding with reinitialization.");
             }
             Clear();
-            _nextValidVarID = 1;
             IsInitted = true;
         }
 
@@ -52,7 +52,8 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Removes all variables from this manager. Note that this will fire the 
         /// appropriate events for each variable removed, so if you have any listeners
-        /// for those events, they will be notified of each individual removal.
+        /// for those events, they will be notified of each individual removal. 
+        /// <br></br> <br></br>
         /// If you just want to clear the variables without 
         /// firing events, you can clear the _legacyVariables and _muscariables lists 
         /// directly and then call Refresh() to update the lookup and ensure valid IDs, 
@@ -72,6 +73,8 @@ namespace AtMycelia.Hyphlow
             {
                 RemoveMuscariAtIndex(0, triggerSignals);
             }
+
+            _nextValidVarID = 1;
         }
 
         public IVariable RemoveLegacyVarAtIndex(int index, bool triggerSignals = true)
@@ -142,24 +145,6 @@ namespace AtMycelia.Hyphlow
                 _legacyVariables.Add(legacy);
                 RegisterIntoVarLookup(new[] { legacy });
             }
-
-            UpdateNextValidId();
-            void UpdateNextValidId()
-            {
-                // We want it set to one more than the max ID currently in use, so that the next
-                // variable added will get an ID that is not already taken.
-                byte maxIdInUse = 0;
-                foreach (var elem in _lookup.Values)
-                {
-                    if (elem.ItemId > maxIdInUse)
-                    {
-                        maxIdInUse = elem.ItemId;
-                    }
-                }
-                _nextValidVarID = (byte)(maxIdInUse + 1);
-            }
-
-            EnsureValidIds();
         }
 
         public void AddMultiVars(IEnumerable<IVariable> toAdd)
@@ -202,10 +187,7 @@ namespace AtMycelia.Hyphlow
                         continue;
                     }
 
-                    if (legacyVar.ItemId == Muscariable.InvalidId || _lookup.ContainsKey(legacyVar.ItemId))
-                    {
-                        legacyVar.ItemId = NextValidVarID();
-                    }
+                    EnsureValidIdFor(legacyVar);
 
                     _legacyVariables.Add(legacyVar);
                     _lookup[legacyVar.ItemId] = legacyVar;
@@ -258,9 +240,7 @@ namespace AtMycelia.Hyphlow
         public Muscariable AddAsMuscari(IVariable toAdd)
         {
             EnsureInitialized();
-            bool alreadyRegistered = _legacyVariables.ContainsReference(toAdd) ||
-                _muscariables.ContainsReference(toAdd);
-            if (alreadyRegistered)
+            if (IsRegistered(toAdd))
             {
                 return null;
             }
@@ -276,38 +256,22 @@ namespace AtMycelia.Hyphlow
         /// and setting its owner and parent flowchart references. Also sends the signal
         /// for var-adding.
         /// </summary>
-        void Integrate(Muscariable toAdd)
+        private void Integrate(Muscariable toAdd)
         {
-            UpdateNextValidId();
-            #region Ensure valid id and key
-            bool duplicateId = _lookup.ContainsKey(toAdd.ItemId);
-            if (toAdd.ItemId == Muscariable.InvalidId)
-            {
-                toAdd.ItemId = NextValidVarID();
-            }
-            else if (duplicateId)
-            {
-                Debug.LogWarning($"Duplicate variable ID {toAdd.ItemId} found for {_varOwner?.Name}. Reassigning.");
-                toAdd.ItemId = NextValidVarID();
-            }
-
-            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
-            #endregion
-
-            #region Establish ownership and parent flowchart references
+            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, Variables, null);
             toAdd.ParentFlowchart = VarOwner as Flowchart;
             toAdd.Owner = _varOwner;
-            #endregion
 
-            AddToCachesThenSignal(toAdd);
+            AddToCaches(toAdd);
         }
 
-        private void AddToCachesThenSignal(IVariable toAdd, bool triggerSignals = true)
+        private void AddToCaches(IVariable toAdd, bool triggerSignals = true)
         {
             if (triggerSignals)
             {
                 PreVariableAdded(toAdd);
             }
+
             if (toAdd is Muscariable)
             {
                 _muscariables.Add(toAdd as Muscariable);
@@ -317,12 +281,7 @@ namespace AtMycelia.Hyphlow
                 _legacyVariables.Add(toAdd as Variable);
             }
 
-            bool idAlreadyTaken = _lookup.TryGetValue(toAdd.ItemId, out IVariable alreadyThere) 
-                && alreadyThere != toAdd;
-            if (idAlreadyTaken)
-            {
-                toAdd.ItemId = NextValidVarID();
-            }
+            EnsureValidIdFor(toAdd);
             _lookup[toAdd.ItemId] = toAdd;
             MarkOwnerAsDirty();
 
@@ -350,7 +309,7 @@ namespace AtMycelia.Hyphlow
         {
             if (VarOwner is UnityObj ownerUnityObj)
             {
-                EnsureValidIds();
+                EnsureValidAndUniqueIdsForAllOurVars();
                 foreach (var elem in _lookup.Values)
                 {
                     elem.Init(elem.BoxedValue);
@@ -380,7 +339,7 @@ namespace AtMycelia.Hyphlow
             _lookup.Clear();
             RegisterIntoVarLookup(_muscariables);
             RegisterIntoVarLookup(_legacyVariables);
-            EnsureValidIds();
+            EnsureValidAndUniqueIdsForAllOurVars();
             Refreshed();
         }
 
@@ -396,49 +355,54 @@ namespace AtMycelia.Hyphlow
         {
             foreach (var elem in varsToRegister)
             {
-                if (elem.ItemId == Muscariable.InvalidId)
-                {
-                    elem.ItemId = NextValidVarID();
-                }
-                else if (_lookup.ContainsKey(elem.ItemId))
-                {
-                    Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found for {_varOwner?.Name}. Reassigning.");
-                    elem.ItemId = NextValidVarID();
-                }
+                EnsureValidIdFor(elem);
+                _lookup[elem.ItemId] = elem;
+            }
+        }
+
+        private void EnsureValidIdFor(IVariable iVar)
+        {
+            // It is possible that the var we're given is already registered under a valid ID.
+            // In that case, we want to ignore it.
+            _lookup.TryGetValue(iVar.ItemId, out IVariable varWithThatId);
+            bool alreadyRegistered = varWithThatId != null && ReferenceEquals(varWithThatId, iVar);
+            if (alreadyRegistered)
+            {
+                return;
+            }
+
+            while (iVar.ItemId == Muscariable.InvalidId || _lookup.ContainsKey(iVar.ItemId))
+            {
+                iVar.ItemId = NextValidVarID();
+            }
+        }
+
+        /// <summary>
+        /// Validates the IDs of all variables in this manager, ensuring that each 
+        /// one has a unique and valid ID.
+        /// </summary>
+        public void EnsureValidAndUniqueIdsForAllOurVars()
+        {
+            var varsToCheck = Variables;
+            for (int i = 0; i < varsToCheck.Count; i++)
+            {
+                var elem = varsToCheck[i];
+                EnsureValidIdFor(elem);
                 _lookup[elem.ItemId] = elem;
             }
         }
 
         /// <summary>
-        /// Checks for duplicate IDs and reassigns them if necessary
+        /// Returns the next valid variable ID for a new variable,
+        /// incrementing the internal counter for the next valid ID in the process.
         /// </summary>
-        public void EnsureValidIds()
-        {
-            var idGroups = _lookup.Values.GroupBy(elem => elem.ItemId);
-            foreach (var group in idGroups)
-            {
-                if (group.Count() > 1)
-                {
-                    Debug.LogWarning($"Duplicate variable ID {group.Key} found for {_varOwner?.Name}. Reassigning IDs.");
-                    foreach (var elem in group)
-                    {
-                        elem.ItemId = NextValidVarID();
-                    }
-                }
-            }
-
-            // Find the vars that have an itemId of 0, then reassign them valid IDs. We have to do
-            // this separately from the duplicate ID check because 0 is a valid byte value, so it
-            // won't be caught by the duplicate ID check even though it's not a valid ID for our purposes.
-            var zeroIdVars = _lookup.Values.Where(elem => elem.ItemId == Muscariable.InvalidId).ToList();
-            foreach (var elem in zeroIdVars)
-            {
-                elem.ItemId = NextValidVarID();
-            }
-        }
-
         private byte NextValidVarID()
         {
+            if (_nextValidVarID == byte.MaxValue)
+            {
+                _nextValidVarID = 1;
+            }
+
             byte toReturn = _nextValidVarID;
             _nextValidVarID++;
             return toReturn;
@@ -696,7 +660,13 @@ namespace AtMycelia.Hyphlow
         public string Name
         {
             get => _varOwner.Name;
-            set => _varOwner.Name = value;
+            set
+            {
+                string warningMessage = $"Attempted to set the name of VariableManager for {_varOwner?.Name}. " +
+                    "This is not allowed, since the manager's name is determined by its owner. " +
+                    "The name will remain unchanged.";
+                Debug.LogWarning(warningMessage);
+            }
         }
 
         public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
@@ -708,7 +678,7 @@ namespace AtMycelia.Hyphlow
 
             IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
 
-            newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
+            newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, Variables);
             newVar.Value = value;
             newVar.Scope = scope;
             newVar.ItemId = NextValidVarID();

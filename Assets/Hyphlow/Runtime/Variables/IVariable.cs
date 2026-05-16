@@ -2,7 +2,7 @@ using System;
 
 namespace AtMycelia.Hyphlow
 {
-    public interface IVariable : IHasKey, IHasItemID
+    public interface IVariable : IHasKey, IHasItemId<byte>
     {
         void Init(object startValue = default);
         new string Key { get; set; }

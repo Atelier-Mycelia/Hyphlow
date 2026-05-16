@@ -28,7 +28,7 @@ namespace AtMycelia.Hyphlow
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Block : Node, IEquatable<Block>, ICommandSource, IRefreshable
+    public class Block : Node, IBlock, IEquatable<Block>, ICommandSource, IRefreshable, IHasKey
     {
         [SerializeField] protected AccessScope _scope = AccessScope.Public;
 
@@ -61,6 +61,14 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected int _loadPriority;
 
         public static readonly ushort InvalidId = 0;
+
+        /// <summary>
+        /// Alias for BlockName, used for IHasKey interface.
+        /// </summary>
+        public virtual string Key
+        {
+            get { return BlockName; }
+        }
 
         public virtual AccessScope Scope
         {
@@ -274,6 +282,22 @@ namespace AtMycelia.Hyphlow
             set
             {
                 _owner = value;
+            }
+        }
+
+        object IHasItemId.ItemId
+        { 
+            get => ItemId; 
+            set
+            {
+                if (value is ushort ushortValue)
+                {
+                    ItemId = ushortValue;
+                }
+                else
+                {
+                    throw new ArgumentException("Blocks' ItemIds must be of type ushort.");
+                }
             }
         }
 

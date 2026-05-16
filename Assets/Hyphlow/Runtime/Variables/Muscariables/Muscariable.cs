@@ -224,6 +224,23 @@ namespace AtMycelia.Hyphlow
                 _owner = value;
             }
         }
+
+        object IHasItemId.ItemId
+        {
+            get => ItemId;
+            set
+            {
+                if (value is byte byteValue)
+                {
+                    ItemId = byteValue;
+                }
+                else
+                {
+                    throw new ArgumentException($"ItemId must be of type byte, but was {value.GetType().Name}");
+                }
+            }
+        }
+
         protected IVariableSource _owner;
 
         public abstract Muscariable Clone();

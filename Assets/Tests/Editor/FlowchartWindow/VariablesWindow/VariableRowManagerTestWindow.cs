@@ -13,6 +13,7 @@ using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.EditorUtils;
 using AtMycelia.EditorUtils;
 using AtMycelia.Collections;
+using AtMycelia;
 
 // if you keep helpers here
 
@@ -438,7 +439,8 @@ namespace VScriptingTests.VariableOperations
                     var desired = $"var_{var.GetType().Name}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                     try
                     {
-                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, (IList<IVariable>)_flowchart.Variables);
+                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, 
+                            _flowchart.Variables);
                     }
                     catch
                     {

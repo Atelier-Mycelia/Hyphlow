@@ -166,6 +166,23 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool IsRelationalSupported => false;
 
+        object IHasItemId.ItemId
+        {
+            get => ItemId;
+            set
+            {
+                if (value is byte b)
+                {
+                    ItemId = b;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Cannot assign value of type " +
+                        $"{value?.GetType().Name ?? "null"} to ItemId of type byte.");
+                }
+            }
+        }
+
         protected virtual void OnValidate()
         {
             _owner ??= GetComponent<Flowchart>();
