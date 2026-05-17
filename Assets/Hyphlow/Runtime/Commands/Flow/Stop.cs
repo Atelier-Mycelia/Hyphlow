@@ -18,7 +18,8 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            StopParentBlock();
+            OnExit();
+            ParentBlock.Stop();
         }
 
         public override Color GetButtonColor()

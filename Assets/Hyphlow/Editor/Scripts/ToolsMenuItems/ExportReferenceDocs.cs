@@ -30,7 +30,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             // Dump command info
             List<System.Type> menuTypes = EditorExtensions.FindDerivedTypes(typeof(Command)).ToList();
-            List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(menuTypes);
+            List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(menuTypes)
+                .ToList();
             filteredAttributes.Sort(BlockEditor.CompareCommandAttributes);
 
             // Build list of command categories

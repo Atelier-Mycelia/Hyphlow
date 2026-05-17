@@ -145,7 +145,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Command commandToInspect = null;
             if (flowchart.SelectedCommandCount == 1)
             {
-                commandToInspect = flowchart.SelectedCommands[0];
+                commandToInspect = flowchart.SelectedCommands[0] as Command;
             }
 
             if (Application.isPlaying &&
@@ -167,7 +167,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private void DrawMultiBlockFields(Flowchart flowchart)
         {
-            List<Block> blocks = flowchart.SelectedBlocks
+            IList<IBlock> blocks = flowchart.SelectedBlocks
                 .Where(selected => selected != null && selected.GetFlowchart() == flowchart)
                 .ToList();
 
@@ -186,10 +186,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EditorGUILayout.Space();
         }
 
-        private void DrawMultiBlockEnabledToggle(IList<Block> blocks)
+        private void DrawMultiBlockEnabledToggle(IList<IBlock> blocks)
         {
-            bool enabled = blocks[0].enabled;
-            bool isMixed = blocks.Any(block => block.enabled != enabled);
+            bool enabled = blocks[0].Enabled;
+            bool isMixed = blocks.Any(block => block.Enabled != enabled);
 
             EditorGUI.showMixedValue = isMixed;
             EditorGUI.BeginChangeCheck();
@@ -199,14 +199,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 Undo.RecordObjects(blocks.Cast<UnityObj>().ToArray(), "Toggle Block Enabled");
                 for (int i = 0; i < blocks.Count; i++)
                 {
-                    blocks[i].enabled = newEnabled;
-                    EditorUtility.SetDirty(blocks[i]);
+                    IBlock blockEl = blocks[i];
+                    blockEl.Enabled = newEnabled;
+                    EditorUtility.SetDirty(blockEl.Owner);
                 }
             }
             EditorGUI.showMixedValue = false;
         }
 
-        private void DrawMultiBlockScopeField(IList<Block> blocks)
+        private void DrawMultiBlockScopeField(IList<IBlock> blocks)
         {
             AccessScope scope = blocks[0].Scope;
             bool isMixed = blocks.Any(block => block.Scope != scope);
@@ -219,14 +220,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 Undo.RecordObjects(blocks.Cast<UnityObj>().ToArray(), "Change Block Scope");
                 for (int i = 0; i < blocks.Count; i++)
                 {
-                    blocks[i].Scope = newScope;
-                    EditorUtility.SetDirty(blocks[i]);
+                    IBlock blockEl = blocks[i];
+                    blockEl.Scope = newScope;
+                    EditorUtility.SetDirty(blockEl.Owner);
                 }
             }
             EditorGUI.showMixedValue = false;
         }
 
-        private void DrawMultiBlockCustomTintField(IList<Block> blocks)
+        private void DrawMultiBlockCustomTintField(IList<IBlock> blocks)
         {
             bool useCustomTint = blocks[0].UseCustomTint;
             bool useCustomTintMixed = blocks.Any(block => block.UseCustomTint != useCustomTint);
@@ -242,7 +244,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 for (int i = 0; i < blocks.Count; i++)
                 {
                     blocks[i].UseCustomTint = newUseCustomTint;
-                    EditorUtility.SetDirty(blocks[i]);
+                    EditorUtility.SetDirty(blocks[i].Owner);
                 }
             }
             EditorGUI.showMixedValue = false;
@@ -261,7 +263,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     for (int i = 0; i < blocks.Count; i++)
                     {
                         blocks[i].Tint = newTint;
-                        EditorUtility.SetDirty(blocks[i]);
+                        EditorUtility.SetDirty(blocks[i].Owner);
                     }
                 }
                 EditorGUI.showMixedValue = false;
@@ -271,7 +273,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EditorGUILayout.Space();
         }
 
-        private void DrawMultiBlockLoadPriorityField(IList<Block> blocks)
+        private void DrawMultiBlockLoadPriorityField(IList<IBlock> blocks)
         {
             int loadPriority = blocks[0].LoadPriority;
             bool isMixed = blocks.Any(block => block.LoadPriority != loadPriority);
@@ -285,13 +287,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 for (int i = 0; i < blocks.Count; i++)
                 {
                     blocks[i].LoadPriority = newLoadPriority;
-                    EditorUtility.SetDirty(blocks[i]);
+                    EditorUtility.SetDirty(blocks[i].Owner);
                 }
             }
             EditorGUI.showMixedValue = false;
         }
 
-        private void DrawMultiBlockSuppressAutoSelectionField(IList<Block> blocks)
+        private void DrawMultiBlockSuppressAutoSelectionField(IList<IBlock> blocks)
         {
             SerializedObject serializedBlocks = new SerializedObject(blocks.Cast<UnityObj>().ToArray());
             SerializedProperty suppressProp = serializedBlocks.FindProperty("suppressAllAutoSelections");
@@ -304,7 +306,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 serializedBlocks.ApplyModifiedProperties();
                 for (int i = 0; i < blocks.Count; i++)
                 {
-                    EditorUtility.SetDirty(blocks[i]);
+                    EditorUtility.SetDirty(blocks[i].Owner);
                 }
             }
         }

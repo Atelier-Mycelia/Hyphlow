@@ -31,6 +31,7 @@ GameObject:
   - component: {fileID: 4609871670555540586}
   - component: {fileID: 177005780822076029}
   - component: {fileID: 3443296570077136578}
+  - component: {fileID: -209679555554931635}
   m_Layer: 0
   m_Name: FlowTest
   m_TagString: Untagged
@@ -66,6 +67,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 3443296570077136578}
+  _blockLogicManager: {fileID: -209679555554931635}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -75,8 +77,9 @@ MonoBehaviour:
   _legacyVariables:
   - {fileID: 1899702518119212923}
   _oldMuscariables: []
-  description: 
-  uiModel:
+  _otherSettings: []
+  _description: 
+  _uiModel:
     _selectedBlocks: []
     _selectedCommands: []
     _owner: {fileID: 0}
@@ -92,19 +95,17 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 0
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  localizationId: 
-  luaBindingName: flowchart
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
-  alwaysKeepGuid: 0
+  _stepPause: 0
+  _colorCommands: 1
+  _hideComponents: 1
+  _saveSelection: 1
+  _showLineNumbers: 0
+  _hideCommands: []
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
+  _alwaysKeepGuid: 0
   _blockListCache: []
   _commands: []
   nextValidVarID: 2
@@ -132,11 +133,12 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 19
-  blockName: NestedIf
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _scope: 1
+  _itemId: 19
+  _blockName: NestedIf
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 87959489459996888}
   - {fileID: 4606284581858767047}
   - {fileID: 1238067881879420812}
@@ -155,8 +157,8 @@ MonoBehaviour:
   - {fileID: 3087442754994311981}
   - {fileID: 7621839359048070760}
   - {fileID: 2954645303775605044}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &87959489459996888
 MonoBehaviour:
@@ -172,173 +174,173 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 1
   indentLevel: 0
-  anyOrAllConditions: 0
-  conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 0
+    _anyVar:
+      _varRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        data:
+        _data:
           rid: -2
       variable: {fileID: 0}
-  compareOperator: 0
-  anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
   floatData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   stringData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   animatorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
   audioSourceData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   materialData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
   objectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
   spriteData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   textureData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
   transformData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   vector2Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   vector3Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
+    _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   references:
@@ -372,12 +374,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scope: 0
-  key: Var
-  itemID: 1
+  _scope: 0
+  _key: Var
+  _itemId: 1
   oldItemID: 0
   _owner: {fileID: 3850397277397727160}
-  value: 1
+  _value: 1
 --- !u!114 &3087442754994311981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,173 +408,173 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 4
   indentLevel: 0
-  anyOrAllConditions: 0
-  conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 0
+    _anyVar:
+      _varRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        data:
+        _data:
           rid: -2
       variable: {fileID: 0}
-  compareOperator: 0
-  anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
   floatData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   stringData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   animatorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
   audioSourceData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   materialData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
   objectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
   spriteData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   textureData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
   transformData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   vector2Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   vector3Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
+    _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   references:
@@ -595,12 +597,12 @@ MonoBehaviour:
   itemId: 5
   indentLevel: 1
   message:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
 --- !u!114 &7621839359048070760
@@ -618,12 +620,12 @@ MonoBehaviour:
   itemId: 6
   indentLevel: 1
   message:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
 --- !u!114 &1326477007613712269
@@ -642,21 +644,36 @@ MonoBehaviour:
   indentLevel: 1
   _setOperator: 0
   _anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   _oldVariable: {fileID: 0}
+  _oldAnyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
+        legacyOwningFc: {fileID: 0}
+        legacyOwningVsa: {fileID: 0}
+      _data:
+        rid: -2
+    variable: {fileID: 0}
   references:
     version: 2
     RefIds:
@@ -676,173 +693,173 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 8
   indentLevel: 0
-  anyOrAllConditions: 0
-  conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 0
+    _anyVar:
+      _varRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        data:
+        _data:
           rid: -2
       variable: {fileID: 0}
-  compareOperator: 0
-  anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
   floatData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   stringData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   animatorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
   audioSourceData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   materialData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
   objectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
   spriteData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   textureData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
   transformData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   vector2Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   vector3Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
+    _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   references:
@@ -865,12 +882,12 @@ MonoBehaviour:
   itemId: 9
   indentLevel: 1
   message:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
 --- !u!114 &248897192821599427
@@ -904,173 +921,173 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 11
   indentLevel: 1
-  anyOrAllConditions: 0
-  conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 0
+    _anyVar:
+      _varRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        data:
+        _data:
           rid: -2
       variable: {fileID: 0}
-  compareOperator: 0
-  anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
   floatData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   stringData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   animatorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
   audioSourceData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   materialData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
   objectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
   spriteData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   textureData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
   transformData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   vector2Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   vector3Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
+    _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   references:
@@ -1122,173 +1139,173 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 14
   indentLevel: 1
-  anyOrAllConditions: 0
-  conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 0
+    _anyVar:
+      _varRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        data:
+        _data:
           rid: -2
       variable: {fileID: 0}
-  compareOperator: 0
-  anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
   floatData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   stringData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   animatorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
   audioSourceData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   materialData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
   objectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
   spriteData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   textureData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
   transformData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   vector2Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   vector3Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
+    _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   references:
@@ -1310,173 +1327,173 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemId: 15
   indentLevel: 1
-  anyOrAllConditions: 0
-  conditions:
-  - compareOperator: 0
-    anyVar:
-      varRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+  _anyOrAllConditions: 0
+  _conditions:
+  - _compareOperator: 0
+    _anyVar:
+      _varRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
-        backingVarRef:
-          itemId: 0
-          owningSource: {fileID: 0}
+      _data:
+        _backingVarRef:
+          _itemId: 0
+          _owningSource: {fileID: 0}
           legacyOwningFc: {fileID: 0}
           legacyOwningVsa: {fileID: 0}
-        data:
+        _data:
           rid: -2
       variable: {fileID: 0}
-  compareOperator: 0
-  anyVar:
-    varRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+  _compareOperator: 0
+  _anyVar:
+    _varRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    data:
-      backingVarRef:
-        itemId: 0
-        owningSource: {fileID: 0}
+    _data:
+      _backingVarRef:
+        _itemId: 0
+        _owningSource: {fileID: 0}
         legacyOwningFc: {fileID: 0}
         legacyOwningVsa: {fileID: 0}
-      data:
+      _data:
         rid: -2
     variable: {fileID: 0}
   variable: {fileID: 0}
   booleanData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   integerData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
   floatData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 0
+    _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
   stringData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
   animatorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
   audioSourceData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {r: 0, g: 0, b: 0, a: 0}
+    _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
   gameObjectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
   materialData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
   objectData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
   spriteData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
   textureData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
   transformData:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {fileID: 0}
+    _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   vector2Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0}
+    _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
   vector3Data:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: {x: 0, y: 0, z: 0}
+    _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   references:
@@ -1529,12 +1546,12 @@ MonoBehaviour:
   itemId: 18
   indentLevel: 2
   message:
-    backingVarRef:
-      itemId: 0
-      owningSource: {fileID: 0}
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
-    value: 
+    _value: 
     stringRef: {fileID: 0}
     stringVal: 
 --- !u!114 &3443296570077136578
@@ -1559,3 +1576,23 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &-209679555554931635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758424169659455326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _blocks:
+      _blocks: []
+      _nextValidBlockId: 1
+    _commands: []
+    _owner: {fileID: 0}
+    _nextItemId: 1

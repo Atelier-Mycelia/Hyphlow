@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 416379780770169585}
   - component: {fileID: 8960144669321678861}
   - component: {fileID: 2938136129897735517}
+  - component: {fileID: -5802371578969906704}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -48,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 416379780770169585}
+  _blockLogicManager: {fileID: -5802371578969906704}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -57,8 +59,8 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
+  _description: 
+  _uiModel:
     _selectedBlocks:
     - {fileID: 8960144669321678861}
     _selectedCommands: []
@@ -75,16 +77,16 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _stepPause: 0
+  _colorCommands: 1
+  _hideComponents: 1
+  _saveSelection: 1
+  _showLineNumbers: 0
+  _hideCommands: []
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 1
   _blockListCache:
   - {fileID: 8960144669321678861}
@@ -136,6 +138,7 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
+  _scope: 1
   _itemId: 1
   _blockName: Init
   _description: 
@@ -159,3 +162,23 @@ MonoBehaviour:
   _parentBlock: {fileID: 8960144669321678861}
   _suppressBlockAutoSelect: 0
   waitForFrames: 1
+--- !u!114 &-5802371578969906704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624740992974776359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _blocks:
+      _blocks: []
+      _nextValidBlockId: 1
+    _commands: []
+    _owner: {fileID: 0}
+    _nextItemId: 1

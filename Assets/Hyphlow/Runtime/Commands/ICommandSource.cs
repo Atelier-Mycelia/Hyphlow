@@ -4,18 +4,18 @@ namespace AtMycelia.Hyphlow
 {
     public interface ICommandSource 
     {
-        IReadOnlyList<Command> Commands { get; }
+        IReadOnlyList<ICommand> Commands { get; }
 
-        bool Contains(Command cmd);
-        Command GetCommandWithId(ushort id);
+        bool Contains(ICommand cmd);
+        ICommand GetCommandWithId(ushort id);
 
-        void Add(Command cmd);
+        void Add(ICommand cmd);
 
         /// <summary>
         /// Returns true if the Command was successfully removed, false if it 
         /// was not found in this source.
         /// </summary>
-        bool Remove(Command cmd);
+        bool Remove(ICommand cmd);
 
         /// <summary>
         /// Returns true if the Command was successfully removed, false if one

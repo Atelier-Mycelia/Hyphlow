@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void NotifyFlowchartChanged(Flowchart prev, Flowchart current) =>
             Broadcast<IFlowchartChangeResponder>(res => res.OnFlowchartChanged(prev, current));
 
-        public void NotifyCommandSelected(Command command) =>
+        public void NotifyCommandSelected(ICommand command) =>
             Broadcast<ICommandSelectionResponder>(res => res.OnCommandSelected(command));
 
         public void NotifyWindowPanned() =>

@@ -89,7 +89,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public override void OnCommandAdded(Block parentBlock)
+        public override void OnCommandAdded(IBlock parentBlock)
         {
             // Add an empty slot by default. Saves an unnecessary user click.
             if (targetObjects.Count == 0)

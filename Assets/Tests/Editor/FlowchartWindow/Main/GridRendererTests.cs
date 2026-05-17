@@ -5,6 +5,7 @@ using UnityEngine;
 using AtMycelia.Hyphlow.EditorUtils;
 using Block = AtMycelia.Hyphlow.Block;
 using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -53,31 +54,31 @@ namespace VScriptingTests.FCWindowOperations
         public void OnBlockSelected_UpdatesLastSelection()
         {
             // Arrange
-            Block selectedBlock = blocks[0];
+            IBlock selectedBlock = blocks[0];
 
             // Act
             _renderer.OnBlockSelected(selectedBlock);
 
             // Assert
-            Block lastSelectedBlock = GetPrivateField<Block>(_renderer, "lastSelectedBlock");
-            IList<Block> lastBlocksSelected = GetPrivateField<IList<Block>>(_renderer, "lastBlocksSelected");
+            IBlock lastSelectedBlock = GetPrivateField<IBlock>(_renderer, "lastSelectedBlock");
+            IList<IBlock> lastBlocksSelected = GetPrivateField<IList<IBlock>>(_renderer, "lastBlocksSelected");
 
             Assert.AreSame(selectedBlock, lastSelectedBlock);
-            CollectionAssert.AreEqual(new Block[] { selectedBlock }, lastBlocksSelected);
+            CollectionAssert.AreEqual(new IBlock[] { selectedBlock }, lastBlocksSelected);
         }
 
         [Test]
         public void OnMultiBlocksSelected_TracksSelectionList()
         {
             // Arrange
-            IList<Block> selectedBlocks = new List<Block> { blocks[0], blocks[1] };
+            IList<IBlock> selectedBlocks = new List<IBlock> { blocks[0], blocks[1] };
 
             // Act
             _renderer.OnMultiBlocksSelected(selectedBlocks);
 
             // Assert
             Block lastSelectedBlock = GetPrivateField<Block>(_renderer, "lastSelectedBlock");
-            IList<Block> lastBlocksSelected = GetPrivateField<IList<Block>>(_renderer, "lastBlocksSelected");
+            IList<IBlock> lastBlocksSelected = GetPrivateField<IList<IBlock>>(_renderer, "lastBlocksSelected");
 
             Assert.IsNull(lastSelectedBlock);
             CollectionAssert.AreEqual(selectedBlocks, lastBlocksSelected);

@@ -117,7 +117,7 @@ namespace AtMycelia.Hyphlow
 
             var f = GetFlowchart();
 
-            f.DetermineSubstituteVariables(key, referencedVariables);
+            f.DetermineSubstituteVariables(key, _referencedVariables);
         }
 #endif
         #endregion Editor caches

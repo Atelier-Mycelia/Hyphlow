@@ -82,8 +82,10 @@ namespace AtMycelia.Hyphlow
             {
                 //nowhere to go, so we assume the block wants to stop but is missing and end, this
                 //  is also ensures back compat
-                Debug.LogWarning("Condition wants to move to end but no End command found, stopping block. " + GetLocationIdentifier());
-                StopParentBlock();
+                string warningMessage = GetLocationIdentifier() + " wants to move to end but no End command found, stopping block.";
+                Debug.LogWarning(warningMessage, this);
+                OnExit();
+                ParentBlock.Stop();
             }
         }
 
@@ -195,7 +197,7 @@ namespace AtMycelia.Hyphlow
             // Find the next Else, ElseIf or End command at the same indent level as this If command
             for (int i = CommandIndex + 1; i < ParentBlock.CommandList.Count; ++i)
             {
-                Command nextCommand = ParentBlock.CommandList[i];
+                ICommand nextCommand = ParentBlock.CommandList[i];
 
                 if (nextCommand == null)
                 {
@@ -204,10 +206,10 @@ namespace AtMycelia.Hyphlow
 
                 // Find next command at same indent level as this If command
                 // Skip disabled commands, comments & labels
-                if (!((Command)nextCommand).enabled || 
+                if (!((Command)nextCommand).Enabled || 
                     nextCommand.GetType() == typeof(Comment) ||
                     nextCommand.GetType() == typeof(Label) ||
-                    nextCommand.IndentLevel != indentLevel)
+                    nextCommand.IndentLevel != _indentLevel)
                 {
                     continue;
                 }
@@ -219,7 +221,8 @@ namespace AtMycelia.Hyphlow
                     if (i >= ParentBlock.CommandList.Count - 1)
                     {
                         // Last command in Block, so stop
-                        StopParentBlock();
+                        OnExit();
+                        ParentBlock.Stop();
                     }
                     else
                     {
@@ -237,7 +240,8 @@ namespace AtMycelia.Hyphlow
             }
 
             // No matching End command found, so just stop the block
-            StopParentBlock();
+            OnExit();
+            ParentBlock.Stop();
         }
 
         /// <summary>

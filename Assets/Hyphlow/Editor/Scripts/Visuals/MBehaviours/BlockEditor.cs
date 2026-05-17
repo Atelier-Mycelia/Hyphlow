@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -118,7 +119,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			EditorGUI.BeginChangeCheck();
 
-			if (block == flowchart.SelectedBlock)
+			if (ReferenceEquals(block, flowchart.SelectedBlock))
 			{
 				DrawSelectedBlockDetails(flowchart, block);
 			}
@@ -418,9 +419,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			// event handler selected.
 			Block block = target as Block;
 			System.Type currentType = null;
-			if (block._EventHandler != null)
+			if (block.EventHandler != null)
 			{
-				currentType = block._EventHandler.GetType();
+				currentType = block.EventHandler.GetType();
 			}
 
 			string currentHandlerName = "<None>";
@@ -448,9 +449,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			}
 			EditorGUILayout.EndHorizontal();
 
-			if (block._EventHandler != null)
+			if (block.EventHandler != null)
 			{
-				EventHandlerEditor eventHandlerEditor = Editor.CreateEditor(block._EventHandler) as EventHandlerEditor;
+				EventHandlerEditor eventHandlerEditor = Editor.CreateEditor(block.EventHandler as UnityObj) 
+					as EventHandlerEditor;
 				if (eventHandlerEditor != null)
 				{
 					EditorGUI.BeginChangeCheck();
@@ -475,20 +477,20 @@ namespace AtMycelia.Hyphlow.EditorUtils
 				return;
 			}
 
-			var block = property.objectReferenceValue as Block;
+			Block block = property.objectReferenceValue as Block;
 
 			// Build dictionary of child blocks
 			List<GUIContent> blockNames = new List<GUIContent>();
 
 			int selectedIndex = 0;
 			blockNames.Add(nullLabel);
-			var blocks = GetSortedBlocks((IList<Block>)flowchart.Blocks);
+			var blocks = GetSortedBlocks((IList<IBlock>)flowchart.Blocks);
 
 			for (int i = 0; i < blocks.Count; ++i)
 			{
 				var currentBlock = blocks[i];
 				blockNames.Add(new GUIContent(currentBlock.BlockName));
-				if (block == currentBlock)
+				if (ReferenceEquals(block, currentBlock))
 				{
 					selectedIndex = i + 1;
 				}
@@ -501,7 +503,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			}
 			else
 			{
-				block = blocks[selectedIndex - 1];
+				block = blocks[selectedIndex - 1] as Block;
 			}
 
 			property.objectReferenceValue = block;
@@ -528,7 +530,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			{
 				blockNames.Add(new GUIContent(blocks[i].BlockName));
 
-				if (block == blocks[i])
+				if (ReferenceEquals(block, blocks[i]))
 				{
 					selectedIndex = i + 1;
 				}
@@ -541,7 +543,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			}
 			else
 			{
-				result = blocks[selectedIndex - 1];
+				result = blocks[selectedIndex - 1] as Block;
 			}
 
 			return result;
@@ -731,9 +733,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			{
 				for (int i = 0; i < commandList.Count; ++i)
 				{
-					Command command = commandList[i];
+					ICommand command = commandList[i];
 
-					foreach (Command selectedCommand in selectedCommands)
+					foreach (ICommand selectedCommand in selectedCommands)
 					{
 						if (command == selectedCommand)
 						{
@@ -784,17 +786,17 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			var commandList = flowchart.SelectedBlock.CommandList;
 			for (int i = commandList.Count - 1; i >= 0; --i)
 			{
-				Command command = commandList[i];
-				foreach (Command selectedCommand in flowchart.SelectedCommands)
+				ICommand command = commandList[i];
+				foreach (ICommand selectedCommand in flowchart.SelectedCommands)
 				{
 					if (command == selectedCommand)
 					{
 						command.OnCommandRemoved(block);
 
 						// Order of destruction is important here for undo to work
-						Undo.DestroyObjectImmediate(command);
+						Undo.DestroyObjectImmediate(selectedCommand as UnityObj);
 
-						Undo.RecordObject(flowchart.SelectedBlock, "Delete");
+						Undo.RecordObject(flowchart.SelectedBlock as UnityObj, "Delete");
 						commandList.RemoveAt(i);
 
 						lastSelectedIndex = i;
@@ -830,7 +832,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		{
 			var targetBlock = target as Block;
 			var flowchart = targetBlock.GetFlowchart();
-			Command command = flowchart.SelectedCommands[0];
+			ICommand command = flowchart.SelectedCommands[0];
 			if (targetBlock.IsExecuting())
 			{
 				// The Block is already executing.
@@ -850,7 +852,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		{
 			var targetBlock = target as Block;
 			var flowchart = targetBlock.GetFlowchart();
-			Command command = flowchart.SelectedCommands[0];
+			ICommand command = flowchart.SelectedCommands[0];
 
 			// Stop all active blocks then run the selected block.
 			flowchart.StopAllBlocks();
@@ -866,7 +868,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 		protected void SelectPrevious()
 		{
 			var block = target as Block;
-			var flowchart = (Flowchart)block.GetFlowchart();
+			var flowchart = block.GetFlowchart();
 
 			int firstSelectedIndex = flowchart.SelectedBlock.CommandList.Count;
 			bool firstSelectedCommandFound = false;
@@ -874,9 +876,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			{
 				for (int i = 0; i < flowchart.SelectedBlock.CommandList.Count; i++)
 				{
-					Command commandInBlock = flowchart.SelectedBlock.CommandList[i];
+					ICommand commandInBlock = flowchart.SelectedBlock.CommandList[i];
 
-					foreach (Command selectedCommand in flowchart.SelectedCommands)
+					foreach (ICommand selectedCommand in flowchart.SelectedCommands)
 					{
 						if (commandInBlock == selectedCommand)
 						{
@@ -913,9 +915,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			{
 				for (int i = 0; i < commandList.Count; i++)
 				{
-					Command commandInBlock = commandList[i];
+					ICommand commandInBlock = commandList[i];
 
-					foreach (Command selectedCommand in flowchart.SelectedCommands)
+					foreach (ICommand selectedCommand in flowchart.SelectedCommands)
 					{
 						if (commandInBlock == selectedCommand)
 						{
@@ -933,10 +935,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			Repaint();
 		}
 
-		private static List<Block> GetSortedBlocks(IList<Block> blocks, AccessScope allowedScopes)
+		private static List<IBlock> GetSortedBlocks(IList<IBlock> blocks, AccessScope allowedScopes)
 		{
 			bool includeAllBlocks = allowedScopes == AccessScope.Null;
-			var sortedBlocks = new List<Block>(blocks.Count);
+			var sortedBlocks = new List<IBlock>(blocks.Count);
 			for (int i = 0; i < blocks.Count; i++)
 			{
 				if (includeAllBlocks || allowedScopes.HasFlag(blocks[i].Scope))
@@ -949,9 +951,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			return sortedBlocks;
 		}
 
-		private static List<Block> GetSortedBlocks(IList<Block> blocks)
+		private static IList<IBlock> GetSortedBlocks(IList<IBlock> blocks)
 		{
-			var sortedBlocks = new List<Block>(blocks.Count);
+			var sortedBlocks = new List<IBlock>(blocks.Count);
 			for (int i = 0; i < blocks.Count; i++)
 			{
 				sortedBlocks.Add(blocks[i]);
@@ -961,21 +963,21 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			return sortedBlocks;
 		}
 
-		private static void SortBlocksByName(List<Block> blocks)
+		private static void SortBlocksByName(List<IBlock> blocks)
 		{
 			blocks.Sort(CompareBlocksByName);
 		}
 
-		private static int CompareBlocksByName(Block left, Block right)
+		private static int CompareBlocksByName(IBlock left, IBlock right)
 		{
 			return string.Compare(left.BlockName, right.BlockName, StringComparison.Ordinal);
 		}
 
-		public static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredCommandInfoAttribute(List<System.Type> menuTypes)
+		public static IList<KeyValuePair<Type, CommandInfoAttribute>> GetFilteredCommandInfoAttribute(IList<Type> menuTypes)
 		{
-			Dictionary<string, KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = new Dictionary<string, KeyValuePair<System.Type, CommandInfoAttribute>>();
+			Dictionary<string, KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = new Dictionary<string, KeyValuePair<Type, CommandInfoAttribute>>();
 
-			foreach (System.Type type in menuTypes)
+			foreach (Type type in menuTypes)
 			{
 				object[] attributes = type.GetCustomAttributes(false);
 				foreach (object obj in attributes)
@@ -993,18 +995,18 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 						if (infoAttr.Priority > existingItemPriority)
 						{
-							KeyValuePair<System.Type, CommandInfoAttribute> keyValuePair = new KeyValuePair<System.Type, CommandInfoAttribute>(type, infoAttr);
+							KeyValuePair<Type, CommandInfoAttribute> keyValuePair = new KeyValuePair<Type, CommandInfoAttribute>(type, infoAttr);
 							filteredAttributes[dictionaryName] = keyValuePair;
 						}
 					}
 				}
 			}
 
-			return new List<KeyValuePair<System.Type, CommandInfoAttribute>>(filteredAttributes.Values);
+			return new List<KeyValuePair<Type, CommandInfoAttribute>>(filteredAttributes.Values);
 		}
 
 		// Compare delegate for sorting the list of command attributes
-		public static int CompareCommandAttributes(KeyValuePair<System.Type, CommandInfoAttribute> x, KeyValuePair<System.Type, CommandInfoAttribute> y)
+		public static int CompareCommandAttributes(KeyValuePair<Type, CommandInfoAttribute> x, KeyValuePair<Type, CommandInfoAttribute> y)
 		{
 			int compare = (x.Value.Category.CompareTo(y.Value.Category));
 			if (compare == 0)

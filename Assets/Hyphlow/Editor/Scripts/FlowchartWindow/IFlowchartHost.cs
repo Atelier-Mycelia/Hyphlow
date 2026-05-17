@@ -12,12 +12,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
         Flowchart Flowchart { get; }
         BlockClipboard Clipboard { get; set; }
         bool HasClipboard { get; }
-        Block CreateBlock(Flowchart fc, Vector2 pos);
+        IBlock CreateBlock(Flowchart fc, Vector2 pos);
         void DeselectAll();
         void UpdateBlockCollection();
         void Repaint();
         T GetComponent<T>() where T : IFcWindowComponent;
-        Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks);
+        Vector2 GetBlockCenter(IReadOnlyCollection<IBlock> blocks);
         VisualElement RootVisualElement { get; }
     }
 
@@ -31,12 +31,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
         DrawGridContext DrawGridCtx { get; }
         DrawBlockContext DrawBlockCtx { get; }
         FlowchartContext FlowchartCtx { get; }
-        IReadOnlyCollection<Block> Blocks { get; }
+        IReadOnlyCollection<IBlock> Blocks { get; }
         Rect Position { get; }
         
         void DoZoom(float delta, Vector2 center);
         void CenterFlowchart();
-        void SelectBlock(Block block);
+        void SelectBlock(IBlock block);
     }
 
     public interface IFlowchartHost : IFlowchartViewHost

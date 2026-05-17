@@ -25,19 +25,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 EventHandler newHandler = newGO.AddComponent(eventHandlerType) as EventHandler;
                 newHandler.ParentBlock = block;
-                block._EventHandler = newHandler;
+                block.EventHandler = newHandler;
             }
 
             //reset head
             blockPos = new Vector2(200, 0);
 
             //adding a block for each category, fill it with its commands
-            var blockComCats = new Dictionary<string, Block>();
+            var blockComCats = new Dictionary<string, IBlock>();
             foreach (var commandType in TypeCache.GetTypesWithAttribute<CommandInfoAttribute>())
             {
                 var commandTypeAttr = commandType.GetCustomAttributes(typeof(CommandInfoAttribute), false)[0] as CommandInfoAttribute;
 
-                blockComCats.TryGetValue(commandTypeAttr.Category, out Block targetBlock);
+                blockComCats.TryGetValue(commandTypeAttr.Category, out IBlock targetBlock);
                 if (targetBlock == null)
                 {
                     targetBlock = flow.CreateBlock(blockPos);

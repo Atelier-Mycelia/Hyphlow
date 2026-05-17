@@ -1,33 +1,22 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow
 {
     [DisallowMultipleComponent]
     [ExecuteInEditMode]
-    public class BlockManagerComponent : MonoBehaviour, IBlockSource, IRefreshable, IDisposable
+    public class BlockManagerComponent : MonoBehaviour, IBlockManager, IDisposable
     {
         [SerializeField, HideInInspector] private MonoBehaviour _owner;
         [SerializeField, HideInInspector] private BlockManager _blockManager = new BlockManager();
         [SerializeField, HideInInspector] private Flowchart _cachedFlowchart;
 
-        public virtual IBlockSource Owner
+        public virtual UnityObj Owner
         {
-            get
-            {
-                if (_owner is IBlockSource blockSource)
-                {
-                    return blockSource;
-                }
-
-                return this;
-            }
-            set
-            {
-                _owner = value as MonoBehaviour;
-                _blockManager.BlockOwner = value;
-            }
+            get => _blockManager.BlockOwner;
+            set => _blockManager.BlockOwner = value;
         }
 
         public virtual string Name
@@ -36,7 +25,7 @@ namespace AtMycelia.Hyphlow
             set => name = value;
         }
 
-        public virtual IReadOnlyList<Block> Blocks => _blockManager.Blocks;
+        public virtual IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
 
         protected virtual void Awake()
         {
@@ -104,16 +93,20 @@ namespace AtMycelia.Hyphlow
             Dispose();
         }
 
-        public Block GetBlock(ushort id)
-        {
-            return _blockManager.GetBlock(id);
-        }
+        public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
 
-        public Block GetBlock(string name)
-        {
-            return _blockManager.GetBlock(name);
-        }
+        public IBlock GetBlock(string name) => _blockManager.GetBlock(name);
+
+        public bool Contains(IBlock block) => _blockManager.Contains(block);
+
+        public bool Add(IBlock block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
+
+        public bool Remove(IBlock block, bool triggerSignals) => _blockManager.Remove(block, triggerSignals);
 
         public int BlockCount => _blockManager.Blocks.Count;
+
+        public UnityObj BlockOwner { get => _blockManager.BlockOwner; set => _blockManager.BlockOwner = value; }
+
+        IReadOnlyList<IBlock> IBlockSource.Blocks => (_blockManager).Blocks;
     }
 }

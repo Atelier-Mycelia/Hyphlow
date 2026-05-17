@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,12 +10,13 @@ using UnityEditor;
 namespace AtMycelia.Hyphlow
 {
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(BlockManagerComponent))]
     [ExecuteInEditMode]
-    public class BlockLogicManagerComponent : MonoBehaviour, IBlockSource, ICommandSource,
-        IRefreshable, IDisposable, IBlockLogicHandler, IBlockCreator
+    public class BlockLogicManagerComponent : MonoBehaviour, IRefreshable, IDisposable, 
+        IBlockLogicHandler
     {
         [SerializeField, HideInInspector] private MonoBehaviour _owner;
-        [SerializeField, HideInInspector] private BlockLogicManager _manager = new BlockLogicManager();
+        [SerializeField, HideInInspector] private BlockLogicManager _manager;
 
         public virtual MonoBehaviour Owner
         {
@@ -39,14 +41,18 @@ namespace AtMycelia.Hyphlow
             set => name = value;
         }
 
-        public virtual IReadOnlyList<Block> Blocks => _manager.Blocks;
-        public virtual IReadOnlyList<Command> Commands => _manager.Commands;
-        public virtual IReadOnlyDictionary<ushort, Block> BlockLookup => _manager.BlockLookup;
+        public virtual IReadOnlyList<IBlock> Blocks => _manager.Blocks;
+        public virtual IReadOnlyList<ICommand> Commands => _manager.Commands;
 
         protected virtual void Awake()
         {
+            _blockManagerComponent = gameObject.GetComponent<BlockManagerComponent>();
+            _manager = new BlockLogicManager();
+            _manager.Initialize(_blockManagerComponent, Owner);
             Refresh();
         }
+
+        [SerializeReference, HideInInspector] private IBlockManager _blockManagerComponent;
 
         protected virtual void OnEnable()
         {
@@ -92,7 +98,7 @@ namespace AtMycelia.Hyphlow
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, new Vector2(300, 100));
 #endif
-            created.BlockName = UniqueKeyGenerator.GetUniqueKeyFor<Block>(blockName, _manager.Blocks, created);
+            created.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(blockName, _manager.Blocks, created);
 
             created.Scope = config.NewBlockScope;
             created.ItemId = _manager.NextItemId();
@@ -107,9 +113,9 @@ namespace AtMycelia.Hyphlow
             return created;
         }
 
-        public IList<Block> CreateMultiBlocks(IList<Vector2> positions)
+        public IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
         {
-            IList<Block> blocksCreated = new Block[positions.Count];
+            IList<IBlock> blocksCreated = new Block[positions.Count];
             for (int i = 0; i < positions.Count; i++)
             {
                 blocksCreated[i] = CreateBlock(positions[i]);
@@ -126,7 +132,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            Block firstBlock = null;
+            IBlock firstBlock = null;
             for (int i = 0; i < _manager.Blocks.Count; i++)
             {
                 var elem = _manager.Blocks[i];
@@ -153,7 +159,7 @@ namespace AtMycelia.Hyphlow
             ApplyConfiguredEventHandlerToFirstBlock(firstBlock);
         }
 
-        private void ApplyConfiguredEventHandlerToFirstBlock(Block block)
+        private void ApplyConfiguredEventHandlerToFirstBlock(IBlock block)
         {
             if (block == null)
             {
@@ -176,25 +182,25 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            bool needsReplacement = block._EventHandler == null || block._EventHandler.GetType() != configuredType;
+            bool needsReplacement = block.EventHandler == null || block.EventHandler.GetType() != configuredType;
             if (!needsReplacement)
             {
                 return;
             }
 
-            if (block._EventHandler != null)
+            if (block.EventHandler != null)
             {
                 if (Application.isPlaying)
                 {
-                    Destroy(block._EventHandler);
+                    Destroy(block.EventHandler as UnityObj);
                 }
                 else
                 {
-                    DestroyImmediate(block._EventHandler);
+                    DestroyImmediate(block.EventHandler as UnityObj);
                 }
             }
 
-            EventHandler newHandler = gameObject.AddComponent(configuredType) as EventHandler;
+            IEventHandler newHandler = gameObject.AddComponent(configuredType) as EventHandler;
             if (newHandler == null)
             {
                 Debug.LogError($"Failed to add EventHandler of type {configuredType} to Flowchart {name}.");
@@ -202,77 +208,16 @@ namespace AtMycelia.Hyphlow
             }
 
             newHandler.ParentBlock = block;
-            block._EventHandler = newHandler;
+            block.EventHandler = newHandler;
         }
 
-        public Block FindBlock(string blockName) => _manager.FindBlock(blockName);
-        public bool HasBlock(string blockName) => _manager.HasBlock(blockName);
         public bool ExecuteIfHasBlock(string blockName) => _manager.ExecuteIfHasBlock(blockName, ExecuteBlock);
         public void ExecuteBlock(string blockName) => _manager.ExecuteBlock(blockName);
         public void StopBlock(string blockName) => _manager.StopBlock(blockName);
         public bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null) => _manager.ExecuteBlock(block, commandIndex, onComplete);
         public void StopAllBlocks() => _manager.StopAllBlocks();
         public bool HasExecutingBlocks() => _manager.HasExecutingBlocks();
-        public IReadOnlyList<Block> GetExecutingBlocks() => _manager.GetExecutingBlocks();
-
-        public bool Contains(Block block) => _manager.Contains(block);
-        public Block GetBlock(ushort id) => _manager.GetBlock(id);
-        public void Add(Block block) => _manager.Add(block);
-        public bool Remove(Block block) => _manager.Remove(block);
-        public bool RemoveBlockWithId(ushort id) => _manager.RemoveBlockWithId(id);
-
-        public bool Contains(Command cmd) => _manager.Contains(cmd);
-        public Command GetCommandWithId(ushort id) => _manager.GetCommandWithId(id);
-        public void Add(Command cmd) => _manager.Add(cmd);
-        public bool Remove(Command cmd) => _manager.Remove(cmd);
-        public bool RemoveCommandWithId(ushort id) => _manager.RemoveCommandWithId(id);
-        public bool RemoveAllCommands() => _manager.RemoveAllCommands();
-
-#if UNITY_EDITOR
-        public T AddCommand<T>(Block toAddTo) where T : Command
-        {
-            return AddCommand(typeof(T), toAddTo) as T;
-        }
-
-        public Command AddCommand(Type commandType, Block toAddTo)
-        {
-            if (!typeof(Command).IsAssignableFrom(commandType))
-            {
-                Debug.LogError($"AddCommand: {commandType} does not inherit from Command.");
-                return null;
-            }
-
-            Undo.RecordObject(this, $"Add {commandType.Name} Command");
-            Undo.RecordObject(this.gameObject, $"Add {commandType.Name} Command Component");
-
-            var added = Undo.AddComponent(this.gameObject, commandType) as Command;
-            if (added == null)
-            {
-                Debug.LogError($"AddCommand: Failed to add component of type {commandType}.");
-                return null;
-            }
-
-            added.ItemId = _manager.NextItemId();
-            _manager.Add(added);
-            toAddTo.CommandList.Add(added);
-            added.OnCommandAdded(toAddTo);
-
-            EditorUtility.SetDirty(this);
-
-            return added;
-        }
-
-        public bool RemoveMultiBlocks(IList<Block> toUnregister)
-        {
-            bool success = false;
-            for (int i = 0; i < toUnregister.Count; i++)
-            {
-                success |= Remove(toUnregister[i]);
-            }
-
-            return success;
-        }
-#endif
+        public IReadOnlyList<IBlock> GetExecutingBlocks() => (IReadOnlyList<IBlock>)_manager.GetExecutingBlocks();
 
         public void Dispose()
         {
@@ -285,29 +230,9 @@ namespace AtMycelia.Hyphlow
             Dispose();
         }
 
-        public bool Add(Block block, bool triggerSignals)
+        public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
         {
-            return _manager.Add(block, triggerSignals);
-        }
-
-        public bool Remove(Block block, bool triggerSignals)
-        {
-            return _manager.Remove(block, triggerSignals);
-        }
-
-        public bool RemoveBlockWithId(ushort id, bool triggerSignals)
-        {
-            return _manager.RemoveBlockWithId(id, triggerSignals);
-        }
-
-        public bool ClearBlocks(bool triggerSignals)
-        {
-            return _manager.ClearBlocks(triggerSignals);
-        }
-
-        public Block GetBlock(string name)
-        {
-            return _manager.GetBlock(name);
+            return _manager.ExecuteBlock(block, commandIndex, onComplete);
         }
     }
 }

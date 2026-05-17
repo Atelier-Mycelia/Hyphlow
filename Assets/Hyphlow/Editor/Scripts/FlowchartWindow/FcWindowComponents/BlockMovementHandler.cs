@@ -63,9 +63,9 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private Flowchart Flowchart => flowchartContext.Flowchart;
         private InteractionState Interaction => flowchartContext.Interaction;
-        private IList<Block> SelectedBlocks => flowchartContext.Selection.Blocks;
+        private IList<IBlock> SelectedBlocks => flowchartContext.Selection.Blocks;
 
-        private void HandleUndoStack(IList<Block> blocks)
+        private void HandleUndoStack(IList<IBlock> blocks)
         {
             bool atTheStartOfADrag = !Interaction.DragUndoRecorded;
             if (atTheStartOfADrag)
@@ -75,16 +75,16 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void RegisterUndoFor(IList<Block> blocks)
+        private void RegisterUndoFor(IList<IBlock> blocks)
         {
-            var undoTargets = blocks.ToArray();
+            var undoTargets = blocks.OfType<Block>().ToArray();
             if (undoTargets.Length > 0)
             {
                 Undo.RegisterCompleteObjectUndo(undoTargets, "Adjust Block Position(s)");
             }
         }
 
-        private void ApplyTheMovement(ref PointerEventInfo info, IList<Block> blocks)
+        private void ApplyTheMovement(ref PointerEventInfo info, IList<IBlock> blocks)
         {
             float zoom = Mathf.Approximately(Flowchart.Zoom, 0f) ?
                 1f :
@@ -99,7 +99,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                     continue;
                 }
 
-                Block blockEl = blocks[i];
+                IBlock blockEl = blocks[i];
                 Rect rect = blockEl._NodeRect;
                 rect.position += movementDelta;
                 blockEl._NodeRect = rect;

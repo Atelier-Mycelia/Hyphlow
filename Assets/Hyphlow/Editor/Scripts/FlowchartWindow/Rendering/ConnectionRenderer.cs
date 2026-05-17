@@ -177,17 +177,17 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt) => RequestRepaint();
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt) => RequestRepaint();
         public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt) => RequestRepaint();
-        public void OnBlockSelected(Block block) => RequestRepaint();
-        public void OnBlockDeselected(Block block) => RequestRepaint();
-        public void OnMultiBlocksSelected(IList<Block> blocks) => RequestRepaint();
-        public void OnMultiBlocksDeselected(IList<Block> blocks) => RequestRepaint();
-        public void OnPreBlockDeletion(IList<Block> blocks) => RequestRepaint();
-        public void OnPreBlockDeletion(Block block) => RequestRepaint();
+        public void OnBlockSelected(IBlock block) => RequestRepaint();
+        public void OnBlockDeselected(IBlock block) => RequestRepaint();
+        public void OnMultiBlocksSelected(IList<IBlock> blocks) => RequestRepaint();
+        public void OnMultiBlocksDeselected(IList<IBlock> blocks) => RequestRepaint();
+        public void OnPreBlockDeletion(IList<IBlock> blocks) => RequestRepaint();
+        public void OnPreBlockDeletion(IBlock block) => RequestRepaint();
         public void OnPostBlockDeletion(ushort blockId) => RequestRepaint();
         public void OnPostMultiBlockDeletion(IList<ushort> blockIds) => RequestRepaint();
-        public void OnBlockCreated(Block block) => RequestRepaint();
-        public void OnBlocksCopied(IList<Block> blocks) => RequestRepaint();
-        public void OnCommandSelected(Command command) => RequestRepaint();
+        public void OnBlockCreated(IBlock block) => RequestRepaint();
+        public void OnBlocksCopied(IList<IBlock> blocks) => RequestRepaint();
+        public void OnCommandSelected(ICommand command) => RequestRepaint();
         #endregion
     }
 }

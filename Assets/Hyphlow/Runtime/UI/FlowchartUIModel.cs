@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow.UI
 {
@@ -10,8 +11,10 @@ namespace AtMycelia.Hyphlow.UI
     [System.Serializable]
     public class FlowchartUIModel : IFlowchartUIModel
     {
-        [SerializeField] protected List<Block> _selectedBlocks = new List<Block>();
-        [SerializeField] protected List<Command> _selectedCommands = new List<Command>();
+        [FormerlySerializedAs("_selectedBlocks")]
+        [SerializeField] protected List<Block> _selectedLegacyBlocks = new List<Block>();
+        [FormerlySerializedAs("_selectedCommands")]
+        [SerializeField] protected List<Command> _selectedLegacyCommands = new List<Command>();
 
         [SerializeField]
         private GameObject _owner;
@@ -49,16 +52,16 @@ namespace AtMycelia.Hyphlow.UI
         /// </summary>
         [field: SerializeField] public virtual Rect ScrollViewRect { get; set; }   
         
-        public virtual Block SelectedBlock
+        public virtual IBlock SelectedBlock
         {
             get
             {
-                if (_selectedBlocks.Count == 0)
+                if (_selectedLegacyBlocks.Count == 0)
                 {
                     return null;
                 }
 
-                return _selectedBlocks[0];
+                return _selectedLegacyBlocks[0];
             }
             set
             {
@@ -67,9 +70,9 @@ namespace AtMycelia.Hyphlow.UI
             }
         }
 
-        public IList<Block> SelectedBlocks
+        public IList<IBlock> SelectedBlocks
         {
-            get => new List<Block>(_selectedBlocks);
+            get => new List<IBlock>(_selectedLegacyBlocks);
             set
             {
                 ClearSelectedBlocks();
@@ -77,16 +80,16 @@ namespace AtMycelia.Hyphlow.UI
             }
         }
 
-        public Command SelectedCommand
+        public ICommand SelectedCommand
         {
             get
             {
-                if (_selectedCommands.Count == 0)
+                if (_selectedLegacyCommands.Count == 0)
                 {
                     return null;
                 }
 
-                return _selectedCommands[0];
+                return _selectedLegacyCommands[0];
             }
             set
             {
@@ -95,9 +98,9 @@ namespace AtMycelia.Hyphlow.UI
             }
         }
 
-        public IList<Command> SelectedCommands
+        public IList<ICommand> SelectedCommands
         {
-            get => new List<Command>(_selectedCommands);
+            get => new List<ICommand>(_selectedLegacyCommands);
             set
             {
                 ClearSelectedCommands();
@@ -107,15 +110,15 @@ namespace AtMycelia.Hyphlow.UI
 
         public virtual void ClearSelectedBlocks()
         {
-            int amountToClear = _selectedBlocks.Count;
+            int amountToClear = _selectedLegacyBlocks.Count;
             if (amountToClear == 0)
             {
                 return;
             }
 
-            Block firstBlock = _selectedBlocks[0];
-            IList<Block> blocksToDeselect = new List<Block>(_selectedBlocks);
-            foreach (var blockEl in _selectedBlocks)
+            Block firstBlock = _selectedLegacyBlocks[0];
+            IList<IBlock> blocksToDeselect = new List<IBlock>(_selectedLegacyBlocks);
+            foreach (var blockEl in _selectedLegacyBlocks)
             {
                 if (blockEl == null)
                 {
@@ -123,7 +126,7 @@ namespace AtMycelia.Hyphlow.UI
                 }
                 blockEl.IsSelected = false;
             }
-            _selectedBlocks.Clear();
+            _selectedLegacyBlocks.Clear();
 
             if (amountToClear > 1)
             {
@@ -137,10 +140,10 @@ namespace AtMycelia.Hyphlow.UI
 
         public virtual void ClearSelectedCommands()
         {
-            _selectedCommands.Clear();
+            _selectedLegacyCommands.Clear();
         }
 
-        public void AddRangeToSelection(IList<Block> toAdd)
+        public void AddRangeToSelection(IList<IBlock> toAdd)
         {
             foreach (var blockEl in toAdd)
             {
@@ -159,25 +162,26 @@ namespace AtMycelia.Hyphlow.UI
             }
         }
 
-        public virtual void AddToSelection(Block block)
+        public virtual void AddToSelection(IBlock block)
         {
-            if (block != null && !_selectedBlocks.Contains(block))
+            if (block != null && !_selectedLegacyBlocks.Contains(block as Block))
             {
                 AddToSelectionWithoutSignal(block);
                 BlockSignals.BlockSelected(block);
             }
         }
 
-        protected virtual void AddToSelectionWithoutSignal(Block block)
+        protected virtual void AddToSelectionWithoutSignal(IBlock block)
         {
-            if (block != null && !_selectedBlocks.Contains(block))
+            Block legBlock = block as Block;
+            if (block != null && !_selectedLegacyBlocks.Contains(legBlock))
             {
                 block.IsSelected = true;
-                _selectedBlocks.Add(block);
+                _selectedLegacyBlocks.Add(legBlock);
             }
         }
 
-        public virtual void AddRangeToSelection(IList<Command> toAdd)
+        public virtual void AddRangeToSelection(IList<ICommand> toAdd)
         {
             foreach (var command in toAdd)
             {
@@ -185,51 +189,52 @@ namespace AtMycelia.Hyphlow.UI
             }
         }
 
-        public virtual void AddToSelection(Command toAdd)
+        public virtual void AddToSelection(ICommand toAdd)
         {
-            if (!_selectedCommands.Contains(toAdd))
+            Command legCommand = toAdd as Command;
+            if (!_selectedLegacyCommands.Contains(legCommand))
             {
-                _selectedCommands.Add(toAdd);
+                _selectedLegacyCommands.Add(legCommand);
             }
         }
 
-        public virtual void Deselect(Command toRemove)
+        public virtual void Deselect(ICommand toRemove)
         {
-            _selectedCommands.Remove(toRemove);
+            _selectedLegacyCommands.Remove(toRemove as Command);
         }
 
-        public virtual void Deselect(Block toDeselect)
+        public virtual void Deselect(IBlock toDeselect)
         {
             DeselectWithoutSignal(toDeselect);
             BlockSignals.BlockDeselected(toDeselect);
         }
 
-        public virtual void DeselectWithoutSignal(Block toDeselect)
+        public virtual void DeselectWithoutSignal(IBlock toDeselect)
         {
             toDeselect.IsSelected = false;
-            _selectedBlocks.Remove(toDeselect);
+            _selectedLegacyBlocks.Remove(toDeselect as Block);
         }
 
         [field: SerializeField] public bool SelectedCommandsStale { get; set; }
 
-        public virtual bool Contains(Command command)
+        public virtual bool Contains(ICommand command)
         {
-            return _selectedCommands.Contains(command);
+            return _selectedLegacyCommands.Contains(command as Command);
         }
 
-        public virtual bool Contains(Block block)
+        public virtual bool Contains(IBlock block)
         {
-            return _selectedBlocks.Contains(block);
+            return _selectedLegacyBlocks.Contains(block as Block);
         }
 
-        public virtual int CommandCount { get { return _selectedCommands.Count; } }
-        public virtual int BlockCount { get { return _selectedBlocks.Count; } }
+        public virtual int CommandCount { get { return _selectedLegacyCommands.Count; } }
+        public virtual int BlockCount { get { return _selectedLegacyBlocks.Count; } }
         public virtual void CleanUp()
         {
             // To get rid of unreferenced Blocks and Commands, which should 
             // mean less memory leaks
-            _selectedBlocks.RemoveAll(item => item == null);
-            _selectedCommands.RemoveAll(item => item == null);
+            _selectedLegacyBlocks.RemoveAll(item => item == null);
+            _selectedLegacyCommands.RemoveAll(item => item == null);
         }
 
     }

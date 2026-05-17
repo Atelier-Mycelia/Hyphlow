@@ -200,7 +200,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 {
                     //Debug.Log("Left mouse down detected");
                     FlowchartWindowSignals.LeftMouseDown(_mouseDownInfo);
-                    Block blockHit = BlockHitTester.FindTopmostBlock(_mouseDownInfo.PanelPosition);
+                    IBlock blockHit = BlockHitTester.FindTopmostBlock(_mouseDownInfo.PanelPosition);
                     bool mouseOverBlock = blockHit != null;
                     if (!mouseOverBlock)
                     {
@@ -374,7 +374,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
 
             FlowchartWindowSignals.RightMouseUp(_pointerUpInfo, guiEvent);
-            Block blockHit = BlockHitTester.FindTopmostBlock(_pointerUpInfo.PanelPosition);
+            IBlock blockHit = BlockHitTester.FindTopmostBlock(_pointerUpInfo.PanelPosition);
             if (blockHit == null)
             {
                 FlowchartWindowSignals.EmptySpaceRightMouseUp(_pointerUpInfo, guiEvent);

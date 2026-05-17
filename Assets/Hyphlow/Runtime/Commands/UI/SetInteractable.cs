@@ -107,7 +107,7 @@ namespace AtMycelia.Hyphlow
             return new Color32(180, 250, 250, 255);
         }
 
-        public override void OnCommandAdded(Block parentBlock)
+        public override void OnCommandAdded(IBlock parentBlock)
         {
             _targetObjects.Add(null);
         }

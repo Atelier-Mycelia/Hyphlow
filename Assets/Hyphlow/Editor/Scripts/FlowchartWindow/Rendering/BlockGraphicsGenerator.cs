@@ -5,14 +5,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
 {
     public class BlockGraphicsGenerator : IBlockGraphicsGenerator
     {
-        public virtual BlockGraphics GenerateFor(Block block)
+        public virtual BlockGraphics GenerateFor(IBlock block)
         {
             var graphics = new BlockGraphics();
 
             blockGraphicsUniqueListWorkSpace.Clear();
             blockGraphicsConnectedWorkSpace.Clear();
             Color defaultTint;
-            if (block._EventHandler != null)
+            if (block.EventHandler != null)
             {
                 //graphics.offTexture = HyphlowEditorSysAssets.EventNodeOff;
                 //graphics.onTexture = HyphlowEditorSysAssets.EventNodeOn;
@@ -53,13 +53,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return graphics;
         }
 
-        static protected IList<Block> blockGraphicsUniqueListWorkSpace = new List<Block>();
-        static protected List<Block> blockGraphicsConnectedWorkSpace = new List<Block>();
+        static protected IList<IBlock> blockGraphicsUniqueListWorkSpace = new List<IBlock>();
+        static protected IList<IBlock> blockGraphicsConnectedWorkSpace = new List<IBlock>();
     }
 
     public interface IBlockGraphicsGenerator
     {
-        BlockGraphics GenerateFor(Block block);
+        BlockGraphics GenerateFor(IBlock block);
     }
 
     public struct BlockGraphics

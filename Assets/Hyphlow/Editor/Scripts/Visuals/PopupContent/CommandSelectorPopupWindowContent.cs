@@ -86,9 +86,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
             DoOlderMenu();
         }
 
-        protected static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
+        protected static List<KeyValuePair<Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
         {
-            List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes);
+            List<KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes)
+                .ToList();
 
             filteredAttributes.Sort(BlockEditor.CompareCommandAttributes);
 

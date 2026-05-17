@@ -31,7 +31,7 @@ namespace VScriptingTests.FCWindowOperations
 
         protected GameObject _host;
         protected Flowchart _flowchart;
-        protected Block _block;
+        protected IBlock _block;
 
         [TearDown]
         public void TearDown()

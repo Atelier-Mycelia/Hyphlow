@@ -150,12 +150,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        public void OnBlockClicked(Block block, Event evt)
+        public void OnBlockClicked(IBlock block, Event evt)
         {
             Forward<IBlockClickResponder>(r => r.OnBlockClicked(block, evt));
         }
 
-        public void OnBlockCreated(Block block)
+        public void OnBlockCreated(IBlock block)
         {
             Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
         }

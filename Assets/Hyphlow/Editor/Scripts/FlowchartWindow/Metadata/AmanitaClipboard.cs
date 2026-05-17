@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            IList<Block> selectedBlocks = context.Selection.Blocks;
+            IList<IBlock> selectedBlocks = context.Selection.Blocks;
             if (selectedBlocks == null || selectedBlocks.Count == 0)
             {
                 return;

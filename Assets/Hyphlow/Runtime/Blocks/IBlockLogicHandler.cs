@@ -13,11 +13,11 @@ namespace AtMycelia.Hyphlow
     public interface IBlockExecutor
     {
         void ExecuteBlock(string blockName);
-        bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null);
+        bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null);
         void StopBlock(string blockName);
         void StopAllBlocks();
         bool HasExecutingBlocks();
-        IReadOnlyList<Block> GetExecutingBlocks();
+        IReadOnlyList<IBlock> GetExecutingBlocks();
     }
 
     public interface IBlockLookup
@@ -31,7 +31,7 @@ namespace AtMycelia.Hyphlow
     public interface IBlockCreator
     {
         Block CreateBlock(Vector2 position, string blockName = null);
-        IList<Block> CreateMultiBlocks(IList<Vector2> positions);
+        IList<IBlock> CreateMultiBlocks(IList<Vector2> positions);
     }
 #endif
 }

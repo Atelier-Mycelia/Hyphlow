@@ -145,10 +145,10 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         #region Block Notifiers
 
-        public void NotifyPreBlockCut(Block block) =>
+        public void NotifyPreBlockCut(IBlock block) =>
             Broadcast<IPreBlockCutResponder>(res => res.OnPreBlockCut(block));
 
-        public void NotifyPreMultiBlockCut(IList<Block> blocks) =>
+        public void NotifyPreMultiBlockCut(IList<IBlock> blocks) =>
             Broadcast<IPreMultiBlockCutResponder>(res => res.OnPreMultiBlockCut(blocks));
 
         public void NotifyPostBlockCut(ushort blockId) =>
@@ -157,13 +157,13 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void NotifyPostMultiBlockCut(IList<ushort> blockIds) =>
             Broadcast<IPostMultiBlockCutResponder>(res => res.OnPostMultiBlockCut(blockIds));
 
-        public void NotifyBlockCreated(Block block) =>
+        public void NotifyBlockCreated(IBlock block) =>
             Broadcast<IBlockCreatedResponder>(res => res.OnBlockCreated(block));
 
-        public void NotifyPreBlockDeleted(Block block) =>
+        public void NotifyPreBlockDeleted(IBlock block) =>
             Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(block));
 
-        public void NotifyPreMultiBlockDeleted(IList<Block> blocks) =>
+        public void NotifyPreMultiBlockDeleted(IList<IBlock> blocks) =>
             Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(blocks));
 
         public void NotifyPostBlockDeleted(ushort blockId) =>
@@ -172,22 +172,22 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void NotifyPostMultiBlockDeleted(IList<ushort> blockIds) =>
             Broadcast<IPostMultiBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blockIds));
 
-        public void NotifyBlockClicked(Block block, Event evt) =>
+        public void NotifyBlockClicked(IBlock block, Event evt) =>
             Broadcast<IBlockClickResponder>(res => res.OnBlockClicked(block, evt));
 
-        public void NotifyBlockSelected(Block block) =>
+        public void NotifyBlockSelected(IBlock block) =>
             Broadcast<IBlockSelectionResponder>(res => res.OnBlockSelected(block));
 
-        public void NotifyMultiBlocksSelected(IList<Block> blocks) =>
+        public void NotifyMultiBlocksSelected(IList<IBlock> blocks) =>
             Broadcast<IMultiBlockSelectionResponder>(res => res.OnMultiBlocksSelected(blocks));
 
-        public void NotifyBlockDeselected(Block block) =>
+        public void NotifyBlockDeselected(IBlock block) =>
             Broadcast<IBlockDeselectionResponder>(res => res.OnBlockDeselected(block));
 
-        public void NotifyMultiBlocksDeselected(IList<Block> blocks) =>
+        public void NotifyMultiBlocksDeselected(IList<IBlock> blocks) =>
             Broadcast<IMultiBlockDeselectionResponder>(res => res.OnMultiBlocksDeselected(blocks));
 
-        public void NotifyBlocksCopied(IList<Block> copiedBlocks) =>
+        public void NotifyBlocksCopied(IList<IBlock> copiedBlocks) =>
             Broadcast<IBlocksCopiedResponder>(res => res.OnBlocksCopied(copiedBlocks));
         #endregion
 

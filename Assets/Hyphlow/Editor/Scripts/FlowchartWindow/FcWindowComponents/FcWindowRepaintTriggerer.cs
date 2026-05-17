@@ -79,12 +79,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             TriggerRepaint();
         }
 
-        public void OnBlockSelected(Block block)
+        public void OnBlockSelected(IBlock block)
         {
             TriggerRepaint();
         }
 
-        public void OnMultiBlocksSelected(IList<Block> blocks)
+        public void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             TriggerRepaint();
         }

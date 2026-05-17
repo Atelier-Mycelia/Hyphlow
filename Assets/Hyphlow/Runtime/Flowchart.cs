@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityObj = UnityEngine.Object;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -165,7 +166,7 @@ namespace AtMycelia.Hyphlow
 
         protected StringSubstituter _stringSubstituter;
 
-        public IReadOnlyList<Block> Blocks
+        public IReadOnlyList<IBlock> Blocks
         {
             get
             {
@@ -179,7 +180,7 @@ namespace AtMycelia.Hyphlow
                 return _blockManager.Blocks;
             }
         }
-        public IReadOnlyCollection<Command> Commands => _commands;
+        public IReadOnlyList<ICommand> Commands => _commands;
 
         protected virtual void Awake()
         {
@@ -619,7 +620,7 @@ namespace AtMycelia.Hyphlow
                 bool found = false;
                 foreach (Block block in _blockManager.Blocks)
                 {
-                    if (block._EventHandler == eventHandler)
+                    if (ReferenceEquals(block.EventHandler, eventHandler))
                     {
                         found = true;
                         break;
@@ -645,18 +646,18 @@ namespace AtMycelia.Hyphlow
                     continue;
                 }
 
-                Block parentBlock = eventHandler.ParentBlock;
+                IBlock parentBlock = eventHandler.ParentBlock;
                 if (parentBlock != null &&
                     parentBlock.GetFlowchart() == this &&
-                    parentBlock._EventHandler != eventHandler)
+                    ReferenceEquals(parentBlock.EventHandler, eventHandler))
                 {
-                    parentBlock._EventHandler = eventHandler;
+                    parentBlock.EventHandler = eventHandler;
                 }
             }
 
-            foreach (Block blockEl in Blocks)
+            foreach (IBlock blockEl in Blocks)
             {
-                if (blockEl == null || blockEl._EventHandler != null)
+                if (blockEl == null || blockEl.EventHandler != null)
                 {
                     continue;
                 }
@@ -666,7 +667,7 @@ namespace AtMycelia.Hyphlow
                     var eventHandler = eventHandlers[i];
                     if (eventHandler != null && eventHandler.ParentBlock == blockEl)
                     {
-                        blockEl._EventHandler = eventHandler;
+                        blockEl.EventHandler = eventHandler;
                         break;
                     }
                 }
@@ -712,13 +713,13 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Current actively selected block in the Flowchart editor.
         /// </summary>
-        public virtual Block SelectedBlock
+        public virtual IBlock SelectedBlock
         {
             get => _uiModel.SelectedBlock;
             set => _uiModel.SelectedBlock = value;
         }
 
-        public virtual IList<Block> SelectedBlocks
+        public virtual IList<IBlock> SelectedBlocks
         {
             get => _uiModel.SelectedBlocks;
             set => _uiModel.SelectedBlocks = value;
@@ -727,7 +728,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Currently selected command in the Flowchart editor.
         /// </summary>
-        public virtual IList<Command> SelectedCommands
+        public virtual IList<ICommand> SelectedCommands
         {
             get => _uiModel.SelectedCommands; // Returns a copy
             set => _uiModel.SelectedCommands = value;
@@ -746,7 +747,7 @@ namespace AtMycelia.Hyphlow
         public virtual void UpdateSelectedCache()
         {
             SelectedBlocks.Clear();
-            var res = gameObject.GetComponents<Block>();
+            var res = gameObject.GetComponents<IBlock>();
             SelectedBlocks = res.Where(x => x.IsSelected).ToList();
         }
 
@@ -766,11 +767,11 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void ClearSelectedBlocks()
         {
-            IList<Block> blocksToSignal = SelectedBlocks;
+            IList<IBlock> blocksToSignal = SelectedBlocks;
             UIModel.ClearSelectedBlocks();
         }
 
-        public virtual void AddRangeToSelection(IList<Block> toSelect)
+        public virtual void AddRangeToSelection(IList<IBlock> toSelect)
         {
             UIModel.AddRangeToSelection(toSelect);
         }
@@ -778,9 +779,9 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Adds a block to the list of selected blocks.
         /// </summary>
-        public virtual void AddToSelection(Block block) => UIModel.AddToSelection(block);
+        public virtual void AddToSelection(IBlock block) => UIModel.AddToSelection(block);
 
-        public virtual void DeselectBlockNoCheck(Block toDeselect) => UIModel.Deselect(toDeselect);
+        public virtual void DeselectBlockNoCheck(IBlock toDeselect) => UIModel.Deselect(toDeselect);
 
         public virtual void DeselectAll()
         {
@@ -797,10 +798,11 @@ namespace AtMycelia.Hyphlow
             {
                 foreach (var elem in Blocks)
                 {
-                    elem.hideFlags = HideFlags.HideInInspector;
-                    if (elem.gameObject != gameObject)
+                    Block legBlock = elem as Block;
+                    legBlock.HideFlags = HideFlags.HideInInspector;
+                    if (legBlock.gameObject != gameObject)
                     {
-                        elem.hideFlags = HideFlags.HideInHierarchy;
+                        elem.HideFlags = HideFlags.HideInHierarchy;
                     }
                 }
 
@@ -842,7 +844,8 @@ namespace AtMycelia.Hyphlow
             {
                 // Match on category or command name (case insensitive)
                 var key = _hideCommands[i];
-                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
+                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 
+                    || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     return false;
                 }
@@ -865,7 +868,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Adds a command to the list of selected commands.
         /// </summary>
-        public virtual void AddSelectedCommand(Command command)
+        public virtual void AddSelectedCommand(ICommand command)
         {
             if (!_uiModel.Contains(command))
             {
@@ -884,7 +887,7 @@ namespace AtMycelia.Hyphlow
         /// For when added through AddSelectedCommand (as opposed to just setting 
         /// the SelectedCommands property or such)
         /// </summary>
-        public event Action<Command> SelectedCommandAdded = delegate { };
+        public event Action<ICommand> SelectedCommandAdded = delegate { };
 
         #endregion
 #endif
@@ -970,7 +973,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Create a new block node which you can then add Commands to.
         /// </summary>
-        public virtual Block CreateBlock(Vector2 position, string blockName = null)
+        public virtual IBlock CreateBlock(Vector2 position, string blockName = null)
         {
             bool creatingFirstBlock = _blockManager.BlockCount == 0;
 
@@ -1012,7 +1015,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            Block firstBlock = _blockManager.Blocks[0];
+            IBlock firstBlock = _blockManager.Blocks[0];
 
             if (firstBlock == null)
             {
@@ -1024,7 +1027,7 @@ namespace AtMycelia.Hyphlow
             ApplyConfiguredEventHandlerToFirstBlock(firstBlock);
         }
 
-        private void ApplyConfiguredEventHandlerToFirstBlock(Block block)
+        private void ApplyConfiguredEventHandlerToFirstBlock(IBlock block)
         {
             if (block == null)
             {
@@ -1048,21 +1051,21 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            bool needsReplacement = block._EventHandler == null || block._EventHandler.GetType() != configuredType;
+            bool needsReplacement = block.EventHandler == null || block.EventHandler.GetType() != configuredType;
             if (!needsReplacement)
             {
                 return;
             }
 
-            if (block._EventHandler != null)
+            if (block.EventHandler != null)
             {
                 if (Application.isPlaying)
                 {
-                    Destroy(block._EventHandler);
+                    Destroy(block.EventHandler as UnityObj);
                 }
                 else
                 {
-                    DestroyImmediate(block._EventHandler);
+                    DestroyImmediate(block.EventHandler as UnityObj);
                 }
             }
 
@@ -1074,17 +1077,17 @@ namespace AtMycelia.Hyphlow
             }
 
             newHandler.ParentBlock = block;
-            block._EventHandler = newHandler;
+            block.EventHandler = newHandler;
         }
         protected static Vector2 defaultBlockSize = new Vector2(300, 100);
 
-        public virtual IList<Block> CreateMultiBlocks(IList<Vector2> positions)
+        public virtual IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
         {
-            IList<Block> blocksCreated = new Block[positions.Count];
+            IList<IBlock> blocksCreated = new Block[positions.Count];
             for (int i = 0; i < positions.Count; i++)
             {
                 Vector2 currentPos = positions[i];
-                Block newBlock = CreateBlock(currentPos);
+                IBlock newBlock = CreateBlock(currentPos);
                 blocksCreated[i] = newBlock;
             }
             return blocksCreated;
@@ -1093,7 +1096,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Returns the named Block in the flowchart, or null if not found.
         /// </summary>
-        public virtual Block GetBlock(string blockName)
+        public virtual IBlock GetBlock(string blockName)
         {
             EnsureBlockManagerComponent();
             var blocks = _blockManager.Blocks;
@@ -1109,9 +1112,9 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
-        public virtual Block GetBlock(ushort itemId)
+        public virtual IBlock GetBlock(ushort itemId)
         {
-            Block result = _blockManager.GetBlock(itemId);
+            IBlock result = _blockManager.GetBlock(itemId);
             return result;
         }
 
@@ -1157,6 +1160,39 @@ namespace AtMycelia.Hyphlow
             {
                 Debug.LogWarning("Block " + blockName + " failed to execute");
             }
+        }
+
+        /// <summary>
+        /// Execute a child block in the flowchart.
+        /// The block must be in an idle state to be executed.
+        /// This version provides extra options to control how the block is executed.
+        /// Returns true if the Block started execution.            
+        /// </summary>
+        public virtual bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
+        {
+            if (block == null)
+            {
+                Debug.LogError("Block must not be null");
+                return false;
+            }
+
+            if (block.Owner == this)
+            {
+                Debug.LogError("Block must belong to the same gameobject as this Flowchart");
+                return false;
+            }
+
+            // Can't restart a running block, have to wait until it's idle again
+            if (block.IsExecuting())
+            {
+                Debug.LogWarning(block.BlockName + " cannot be called/executed, it is already running.");
+                return false;
+            }
+
+            // Start executing the Block as a new coroutine
+            StartCoroutine(block.Execute(commandIndex, onComplete));
+
+            return true;
         }
 
         /// <summary>
@@ -1216,7 +1252,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void StopAllBlocks()
         {
-            var blocks = GetComponents<Block>();
+            var blocks = GetComponents<IBlock>();
             for (int i = 0; i < blocks.Length; i++)
             {
                 var block = blocks[i];
@@ -1231,7 +1267,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Returns a new Block key that is guaranteed not to clash with any existing Block in the Flowchart.
         /// </summary>
-        public virtual string GetUniqueBlockKey(string originalKey, Block ignoreBlock = null)
+        public virtual string GetUniqueBlockKey(string originalKey, IBlock ignoreBlock = null)
         {
             int suffix = 0;
             string baseKey = originalKey.Trim();
@@ -1242,7 +1278,7 @@ namespace AtMycelia.Hyphlow
                 baseKey = DefaultConfig.NewBlockName;
             }
 
-            var blocks = GetComponents<Block>();
+            var blocks = GetComponents<IBlock>();
 
             string key = baseKey;
             while (true)
@@ -1454,7 +1490,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool HasExecutingBlocks()
         {
-            var blocks = GetComponents<Block>();
+            var blocks = GetComponents<IBlock>();
             for (int i = 0; i < blocks.Length; i++)
             {
                 var block = blocks[i];
@@ -1469,10 +1505,10 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Returns a list of all executing blocks in this Flowchart.
         /// </summary>
-        public virtual List<Block> GetExecutingBlocks()
+        public virtual List<IBlock> GetExecutingBlocks()
         {
-            var executingBlocks = new List<Block>();
-            var blocks = GetComponents<Block>();
+            var executingBlocks = new List<IBlock>();
+            var blocks = GetComponents<IBlock>();
             for (int i = 0; i < blocks.Length; i++)
             {
                 var block = blocks[i];
@@ -1609,7 +1645,7 @@ namespace AtMycelia.Hyphlow
                 EnsureBlocksHaveAValidSize();
                 void EnsureBlocksHaveAValidSize()
                 {
-                    IList<Block> blocks = GetComponents<Block>();//
+                    IList<IBlock> blocks = GetComponents<IBlock>();//
                     for (int i = 0; i < blocks.Count; i++)
                     {
                         var currentBlock = blocks[i];
@@ -1677,7 +1713,7 @@ namespace AtMycelia.Hyphlow
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => ((IVariableSource<Muscariable>)_varManager).Variables;
 
-        IReadOnlyList<Command> ICommandSource.Commands => _commands;
+        IReadOnlyList<ICommand> ICommandSource.Commands => _commands;
 
         private void EnsureVariableManagerComponent()
         {
@@ -1732,12 +1768,12 @@ namespace AtMycelia.Hyphlow
 
 
 #if UNITY_EDITOR
-        public T AddCommand<T>(Block toAddTo) where T : Command
+        public T AddCommand<T>(IBlock toAddTo) where T : Command
         {
             return AddCommand(typeof(T), toAddTo) as T;
         }
 
-        public Command AddCommand(Type commandType, Block toAddTo)
+        public ICommand AddCommand(Type commandType, IBlock toAddTo)
         {
             if (!typeof(Command).IsAssignableFrom(commandType))
             {
@@ -1784,7 +1820,7 @@ namespace AtMycelia.Hyphlow
         /// 
         /// Returns true if any blocks were removed, false if the input list was null or empty.
         /// </summary>
-        public virtual bool RemoveMultiBlocks(IList<Block> toUnregister)
+        public virtual bool RemoveMultiBlocks(IList<IBlock> toUnregister)
         {
             bool success = false;
             for (int i = 0; i < toUnregister.Count; i++)
@@ -1913,7 +1949,7 @@ namespace AtMycelia.Hyphlow
             return success;
         }
 
-        public bool Remove(Block block, bool triggerSignals = true)
+        public bool Remove(IBlock block, bool triggerSignals = true)
         {
             return _blockManager.Remove(block, triggerSignals);
         }
@@ -1924,15 +1960,15 @@ namespace AtMycelia.Hyphlow
             return _blockManager.RemoveBlockWithId(id, triggerSignals);
         }
 
-        public bool Contains(Command cmd)
+        public bool Contains(ICommand cmd)
         {
             bool result = _commands.Contains(cmd);
             return result;
         }
 
-        public Command GetCommandWithId(ushort id)
+        public ICommand GetCommandWithId(ushort id)
         {
-            Command result = null;
+            ICommand result = null;
             for (int i = 0; i < _commands.Count; i++)
             {
                 var command = _commands[i];
@@ -1950,27 +1986,27 @@ namespace AtMycelia.Hyphlow
         /// by the ICommandSources that this Flowchart owns. If whatever's calling this
         /// doesn't fit that criteria, please make sure you know what you're doing.
         /// </summary>
-        public void Add(Command cmd)
+        public void Add(ICommand cmd)
         {
-            _commands.Add(cmd);
+            _commands.Add(cmd as Command);
         }
 
-        public bool Remove(Command cmd)//
+        public bool Remove(ICommand cmd)//
         {
             bool success = false;
             Block ourBlock = null;
             bool belongsToUs = cmd.ParentBlock != null && 
                 _blockManager.Contains(cmd.ParentBlock) &&
-                ourBlock == cmd.ParentBlock;
+                ReferenceEquals(ourBlock, cmd.ParentBlock);
             if (belongsToUs)
             {
                 success = true;
-                _commands.Remove(cmd);
+                _commands.Remove(cmd as Command);
                 ourBlock.Remove(cmd);
             }
             else
             {
-                string warningMessage = $"Trying to remove Command {cmd.name} from " +
+                string warningMessage = $"Trying to remove Command {cmd.Name} from " +
                     $"Flowchart {this.name}, but its ParentBlock does not belong to " +
                     $"this Flowchart. This Command will not be removed.";
                 Debug.LogWarning(warningMessage);
@@ -1991,7 +2027,16 @@ namespace AtMycelia.Hyphlow
             {
                 var block = blocksToRemoveFrom[i];
                 var commandList = block.CommandList;
-                _commands.RemoveAllIn(commandList);
+
+                for (int j = 0; j < commandList.Count; j++)
+                {
+                    var command = commandList[j];
+                    if (command != null && commandList.Contains(command))
+                    {
+                        anyRemoved = Remove(command) | anyRemoved;
+                        j--; // Decrement j because the list has shrunk after removal
+                    }
+                }
                 // ^We do this so we make sure to get rid of the Commands that
                 // weren't registered under any of our Blocks, not just 
                 // the ones that are.
@@ -2021,6 +2066,11 @@ namespace AtMycelia.Hyphlow
             bool anyRemoved = _blockManager.ClearBlocks(triggerSignals);
             return anyRemoved;
         }
+
+        public bool Contains(IBlock block) => _blockManager.Contains(block);
+
+        public bool Add(IBlock block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
+
     }
     
 }

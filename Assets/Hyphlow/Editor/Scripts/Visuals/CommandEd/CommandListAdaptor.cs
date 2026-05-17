@@ -39,7 +39,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         protected SerializedProperty _arrayProperty;
-        protected Block block;
+        protected IBlock block;
         protected ReorderableList list;
         protected static readonly int lineHeightPadding = 6;
         private bool suppressSelectCallback;
@@ -201,7 +201,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             float alpha = 1f;
             if (!cmd.IsExecuting)
             {
-                float timeRemaining = cmd.ExecutingIconTimer - Time.realtimeSinceStartup;
+                float timeRemaining = cmd.ExecutionIconTimer - Time.realtimeSinceStartup;
                 alpha = Mathf.Clamp01(timeRemaining / HyphlowConstants.ExecutingIconFadeTime);
             }
 
@@ -218,7 +218,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return false;
             }
 
-            return cmd.IsExecuting || cmd.ExecutingIconTimer > Time.realtimeSinceStartup;
+            return cmd.IsExecuting || cmd.ExecutionIconTimer > Time.realtimeSinceStartup;
         }
 
         protected static readonly int iconWidth = 20;
@@ -387,7 +387,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 if (actionKey)
                 {
-                    IList<Command> newSelection = flowchart.SelectedCommands;
+                    IList<ICommand> newSelection = flowchart.SelectedCommands;
                     if (alreadySelected)
                     {
                         newSelection.Remove(command);
@@ -431,8 +431,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            IList<Command> selectedCommands = flowchart.SelectedCommands;
-            IList<Command> commandList = flowchart.SelectedBlock.CommandList;
+            IList<ICommand> selectedCommands = flowchart.SelectedCommands;
+            IList<ICommand> commandList = flowchart.SelectedBlock.CommandList;
 
             int firstSelectedIndex = -1;
             int lastSelectedIndex = -1;
@@ -477,7 +477,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             for (int i = start; i < end; i++)
             {
-                Command selectedCommand = commandList[i];
+                ICommand selectedCommand = commandList[i];
                 flowchart.AddSelectedCommand(selectedCommand);
             }
         }

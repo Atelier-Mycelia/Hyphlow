@@ -33,9 +33,9 @@ namespace VScriptingTests.FlowchartLifecycle
             toDestroyOnTearDown.Add(fcHolder);
             testFc = fcHolder.AddComponent<Flowchart>();
             testFc.AlwaysKeepGuid = false;
-            Block blockAdded = testFc.CreateBlock(new Vector2(0, 0));
+            Block blockAdded = testFc.CreateBlock(new Vector2(0, 0)) as Block;
             TestGameStarted testGameStarted = fcHolder.AddComponent<TestGameStarted>();
-            blockAdded._EventHandler = testGameStarted;
+            blockAdded.EventHandler = testGameStarted;
             testGameStarted.ParentBlock = blockAdded;
 
         }

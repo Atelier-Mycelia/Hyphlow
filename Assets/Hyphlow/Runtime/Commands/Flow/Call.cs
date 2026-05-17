@@ -44,7 +44,7 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("targetSequence")]
         [Tooltip("Block to start executing")]
         [FormerlySerializedAs("targetBlock")]
-        [SerializeField] protected Block _targetBlock;
+        [SerializeField] protected IBlock _targetBlock;
 
         [Tooltip("Label to start execution at. Takes priority over startIndex.")]
         [FormerlySerializedAs("startLabel")]
@@ -129,7 +129,8 @@ namespace AtMycelia.Hyphlow
                 {
                     if (_callMode == CallMode.StopThenCall)
                     {
-                        StopParentBlock();
+                        OnExit();
+                        ParentBlock.Stop();
                     }
                     StartCoroutine(_targetBlock.Execute(index, onComplete));
                 }
@@ -137,7 +138,8 @@ namespace AtMycelia.Hyphlow
                 {
                     if (_callMode == CallMode.StopThenCall)
                     {
-                        StopParentBlock();
+                        OnExit();
+                        ParentBlock.Stop();
                     }
                     // Execute block in another Flowchart
                     _targetFlowchart.ExecuteBlock(_targetBlock, index, onComplete);
@@ -146,7 +148,8 @@ namespace AtMycelia.Hyphlow
 
             if (_callMode == CallMode.Stop || _callMode == CallMode.Null)
             {
-                StopParentBlock();
+                OnExit();
+                ParentBlock.Stop();
             }
             else if (_callMode == CallMode.Continue)
             {
@@ -154,7 +157,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public override void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public override void GetConnectedBlocks(ref IList<IBlock> connectedBlocks)
         {
             if (_targetBlock != null)
             {
@@ -190,7 +193,7 @@ namespace AtMycelia.Hyphlow
             return ReferenceEquals(_startLabel.VarRef, variable) || base.HasReference(variable);
         }
 
-        public bool MayCallBlock(Block block)
+        public bool MayCallBlock(IBlock block)
         {
             return block == _targetBlock;
         }

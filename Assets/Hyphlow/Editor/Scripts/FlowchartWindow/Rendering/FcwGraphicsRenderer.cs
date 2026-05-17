@@ -132,12 +132,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<IWindowPanResponder>(r => r.OnWindowPanned());
         }
 
-        public void OnBlockSelected(Block block)
+        public void OnBlockSelected(IBlock block)
         {
             Forward<IBlockSelectionResponder>(r => r.OnBlockSelected(block));
         }
 
-        public void OnMultiBlocksSelected(IList<Block> blocks)
+        public void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             Forward<IMultiBlockSelectionResponder>(r => r.OnMultiBlocksSelected(blocks));
         }
@@ -147,12 +147,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<IFlowchartChangeResponder>(r => r.OnFlowchartChanged(previous, next));
         }
 
-        public void OnPreBlockDeletion(IList<Block> blocks)
+        public void OnPreBlockDeletion(IList<IBlock> blocks)
         {
             Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(blocks));
         }
 
-        public void OnPreBlockDeletion(Block block)
+        public void OnPreBlockDeletion(IBlock block)
         {
             Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(block));
         }
@@ -182,22 +182,22 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<ILeftMouseDragEndResponder>(r => r.OnLeftMouseDragEnded(info, evt));
         }
 
-        public void OnBlockDeselected(Block block)
+        public void OnBlockDeselected(IBlock block)
         {
             Forward<IBlockDeselectionResponder>(r => r.OnBlockDeselected(block));
         }
 
-        public void OnMultiBlocksDeselected(IList<Block> blocks)
+        public void OnMultiBlocksDeselected(IList<IBlock> blocks)
         {
             Forward<IMultiBlockDeselectionResponder>(r => r.OnMultiBlocksDeselected(blocks));
         }
 
-        public void OnBlockCreated(Block block)
+        public void OnBlockCreated(IBlock block)
         {
             Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
         }
 
-        public void OnPreBlockCut(Block block)
+        public void OnPreBlockCut(IBlock block)
         {
             Forward<IPreBlockCutResponder>(r => r.OnPreBlockCut(block));
         }
@@ -207,7 +207,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<IPostBlockCutResponder>(r => r.OnPostBlockCut(blockId));
         }
 
-        public void OnPreMultiBlockCut(IList<Block> blocks)
+        public void OnPreMultiBlockCut(IList<IBlock> blocks)
         {
             Forward<IPreMultiBlockCutResponder>(r => r.OnPreMultiBlockCut(blocks));
         }

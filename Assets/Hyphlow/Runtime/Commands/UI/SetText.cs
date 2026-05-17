@@ -108,7 +108,7 @@ namespace AtMycelia.Hyphlow
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-            f.DetermineSubstituteVariables(_text, referencedVariables);
+            f.DetermineSubstituteVariables(_text, _referencedVariables);
         }
 #endif
         #endregion Editor caches
@@ -133,7 +133,7 @@ namespace AtMycelia.Hyphlow
         public virtual string GetStringId()
         {
             // String id for Set Text commands is SETTEXT.<Localization Id>.<Command id>
-            return "SETTEXT." + "." + itemId;
+            return "SETTEXT." + "." + _itemId;
         }
 
         #endregion

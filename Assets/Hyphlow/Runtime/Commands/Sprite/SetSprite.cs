@@ -76,7 +76,7 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public override void OnCommandAdded(Block parentBlock)
+        public override void OnCommandAdded(IBlock parentBlock)
         {
             // Add a default empty entry
             spriteRenderers.Add(null);
