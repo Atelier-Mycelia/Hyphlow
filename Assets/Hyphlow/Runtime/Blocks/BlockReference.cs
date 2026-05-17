@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityObj = UnityEngine.Object;
+using LegacyBlock = AtMycelia.Hyphlow.Block;
 
 namespace AtMycelia.Hyphlow
 {
@@ -17,10 +18,12 @@ namespace AtMycelia.Hyphlow
     public class BlockReference
     {
         [FormerlySerializedAs("block")]
-        [SerializeField] [HideInInspector] private Block _block;
-        [SerializeField] private ushort _itemId = Block.InvalidId;
+        [FormerlySerializedAs("_block")]
+        [SerializeField] [HideInInspector] private LegacyBlock _legacyBlock;
+        [SerializeField] private ushort _itemId = InvalidId;
         [SerializeField] private UnityObj _owningSource;
 
+        private static readonly ushort InvalidId = LegacyBlock.InvalidId;
         public ushort ItemId
         {
             get { return _itemId; }
@@ -37,16 +40,16 @@ namespace AtMycelia.Hyphlow
             {
                 _blockOwner = value;
                 _owningSource = value as UnityObj;
-                _block = null;
+                _legacyBlock = null;
             }
         }
 
-        public Block Block
+        public IBlock Block
         {
             get
             {
                 RefreshOwner();
-                if (_itemId == Block.InvalidId || _blockOwner == null)
+                if (_itemId == InvalidId || _blockOwner == null)
                 {
                     return null;
                 }
@@ -57,7 +60,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (value == null)
                 {
-                    _itemId = Block.InvalidId;
+                    _itemId = InvalidId;
                     BlockOwner = null;
                 }
                 else
@@ -79,11 +82,11 @@ namespace AtMycelia.Hyphlow
 
             if (IsUnityObjectNull(_owningSource))
             {
-                if (!IsUnityObjectNull(_block))
+                if (!IsUnityObjectNull(_legacyBlock))
                 {
-                    _itemId = _block.ItemId;
-                    _owningSource = _block.GetFlowchart();
-                    _block = null;
+                    _itemId = _legacyBlock.ItemId;
+                    _owningSource = _legacyBlock.GetFlowchart();
+                    _legacyBlock = null;
                 }
             }
 

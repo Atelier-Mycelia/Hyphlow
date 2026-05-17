@@ -72,7 +72,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Vector2 mousePosInWindowSpace = flowchartContext.Document.ToWindowSpace(info.FlowchartPosition);
             interaction.StartDragPosition = mousePosInWindowSpace - flowchart.ScrollPos;
 
-            Block blockHit = interaction.BlockHitInLastMouseDown;
+            IBlock blockHit = interaction.BlockHitInLastMouseDown;
             if (blockHit == null)
             {
                 throw new InvalidOperationException("Hit metadata indicated a block, but none was found.");

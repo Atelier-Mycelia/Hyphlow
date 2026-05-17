@@ -5,6 +5,6 @@
     /// </summary>
     public interface IBlockCaller : IStringLocationIdentifier
     {
-        bool MayCallBlock(Block block);
+        bool MayCallBlock(IBlock block);
     }
 }

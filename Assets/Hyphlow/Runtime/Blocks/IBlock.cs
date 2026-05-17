@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,6 +13,15 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     public interface IBlock : IHasKey, IHasItemId<ushort>, ICommandSource, IRefreshable
     {
+        Color Tint { get; set; }
+        bool UseCustomTint { get; set; }
+        bool Enabled { get; set; }
+        bool IsSelected { get; set; }
+        bool IsControlSelected { get; set; }
+
+        FilteredState FilteredState { get; set; }
+        Rect _NodeRect { get; set; }
+        Component Owner { get; set; }
         AccessScope Scope { get; set; }
         bool IncludeInSaves { get; set; }
         int LoadPriority { get; set; }
@@ -19,7 +30,7 @@ namespace AtMycelia.Hyphlow
         string Description { get; }
 
         ExecutionState State { get; }
-        Command ActiveCommand { get; }
+        ICommand ActiveCommand { get; }
         int PreviousActiveCommandIndex { get; }
         float ExecutingIconTimer { get; set; }
 
@@ -27,11 +38,11 @@ namespace AtMycelia.Hyphlow
         /// Current systems still use this concrete list in several places.
         /// Keep for now; can be narrowed later.
         /// </summary>
-        List<Command> CommandList { get; }
+        IList<ICommand> CommandList { get; }
 
         int JumpToCommandIndex { set; }
 
-        EventHandler _EventHandler { get; set; }
+        IEventHandler EventHandler { get; set; }
 
         Flowchart GetFlowchart();
 
@@ -42,8 +53,8 @@ namespace AtMycelia.Hyphlow
         IEnumerator Execute(int commandIndex = 0, Action onComplete = null);
         void Stop();
 
-        List<Block> GetConnectedBlocks();
-        void RefreshConnectedBlockCache(ref List<Block> toRefresh);
+        IList<IBlock> GetConnectedBlocks();
+        void RefreshConnectedBlockCache(ref IList<IBlock> toRefresh);
 
         Type GetPreviousActiveCommandType();
         int GetPreviousActiveCommandIndent();
@@ -51,5 +62,11 @@ namespace AtMycelia.Hyphlow
 
         void UpdateIndentLevels();
         int GetLabelIndex(string labelKey);
+
+        bool SuppressNextAutoSelection { get; set; }
+
+        HideFlags HideFlags { get; set; }
     }
+
+    public enum FilteredState { Full, Partial, None }
 }

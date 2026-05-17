@@ -14,8 +14,6 @@ namespace VScriptingTests.FCWindowOperations
 {
     public class BlockInspectorEditorTests
     {
-        
-        
         protected BlockInspectorTestHostWindow _hostWindow;
 
         // Dummy command to exercise command editor caching
@@ -39,7 +37,7 @@ namespace VScriptingTests.FCWindowOperations
             _secondBlock.BlockName = "Block_B";
 
             _blockInspectorAsset = ScriptableObject.CreateInstance<BlockInspector>();
-            _blockInspectorAsset._block = _firstBlock;
+            _blockInspectorAsset._block = _firstBlock as Block;
 
             _editor = Editor.CreateEditor(_blockInspectorAsset, typeof(BlockInspectorEditor)) as BlockInspectorEditor;
 
@@ -49,8 +47,8 @@ namespace VScriptingTests.FCWindowOperations
 
         protected GameObject _flowchartHolder;
         protected Flowchart _flowchart;
-        protected Block _firstBlock;
-        protected Block _secondBlock;
+        protected IBlock _firstBlock;
+        protected IBlock _secondBlock;
 
         protected BlockInspector _blockInspectorAsset;
         protected BlockInspectorEditor _editor;

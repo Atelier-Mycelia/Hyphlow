@@ -195,7 +195,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             popup.style.top = anchor.y;
         }
 
-        private void OnBlockLeftClicked(Block block, Event @event)
+        private void OnBlockLeftClicked(IBlock block, Event @event)
         {
             if (isDisposed || owner == null)
             {
@@ -206,7 +206,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             HideAllPopups();
         }
 
-        private void OnBlockRightClicked(Block block, PointerEventInfo info)
+        private void OnBlockRightClicked(IBlock block, PointerEventInfo info)
         {
             if (isDisposed || owner == null)
             {
@@ -286,7 +286,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
             Debug.Log("Empty space popup: Add button clicked.");
             FChart.ClearSelectedBlocks();
-            Block newBlock = AddNewBlockToWindowAndFlowchart();
+            Block newBlock = AddNewBlockToWindowAndFlowchart() as Block;
             Undo.RegisterCreatedObjectUndo(newBlock, "Add New Block");
             FChart.AddToSelection(newBlock);
             HideEmptySpacePopup();
@@ -295,7 +295,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         private FlowchartContext FcContext => owner.FcContext;
         private Flowchart FChart => FcContext?.Flowchart;
 
-        Block AddNewBlockToWindowAndFlowchart()
+        IBlock AddNewBlockToWindowAndFlowchart()
         {
             Vector2 blockLocation = DecideWhereToPlaceBlock();
             Vector2 DecideWhereToPlaceBlock()

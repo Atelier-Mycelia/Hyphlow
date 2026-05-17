@@ -31,12 +31,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EditorApplication.quitting += DisposeInspector;
         }
 
-        private static void OnBlockSelected(Block block)
+        private static void OnBlockSelected(IBlock block)
         {
             Show(block);
         }
 
-        public static void Show(Block block)
+        public static void Show(IBlock block)
         {
             if (block == null)
             {
@@ -87,8 +87,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         private static BlockInspector inspectorInstance;
-        private static Block lastShownBlock;
-        public static event Action<Block> InspectorTargetChanged = delegate { };
+        private static IBlock lastShownBlock;
+        public static event Action<IBlock> InspectorTargetChanged = delegate { };
 
 
         private static Flowchart TrackedFlowchart
@@ -96,7 +96,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             set => trackedFlowchart = value;
         }
 
-        private static void ShowInspectorFor(Flowchart flowchart, Block block)
+        private static void ShowInspectorFor(Flowchart flowchart, IBlock block)
         {
             if (flowchart == null || block == null)
             {
@@ -106,12 +106,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             BlockInspector inspector = EnsureInspector();
 
             bool inspectorIsActive = Selection.activeObject == inspector;
-            bool inspectorAlreadyShowing = inspector._block == block;
+            bool inspectorAlreadyShowing = ReferenceEquals(inspector._block, block);
 
             if (!inspectorAlreadyShowing)
             {
                 flowchart.ClearSelectedCommands();
-                inspector._block = block;
+                inspector._block = block as Block;
 
                 if (block.ActiveCommand != null)
                 {
@@ -144,9 +144,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public static BlockInspector Inspector => EnsureInspector();
 
-        public static Block LastShownBlock => lastShownBlock;
+        public static IBlock LastShownBlock => lastShownBlock;
 
-        private static void OnBlockDEselected(Block block)
+        private static void OnBlockDEselected(IBlock block)
         {
             Flowchart flowchart = block != null ? 
                 block.GetFlowchart() : 
@@ -163,7 +163,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            Block selectedBlock = GetPrimarySelectedBlock(flowchart);
+            IBlock selectedBlock = GetPrimarySelectedBlock(flowchart);
             if (selectedBlock != null)
             {
                 ShowInspectorFor(flowchart, selectedBlock);
@@ -174,7 +174,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        private static Block GetPrimarySelectedBlock(Flowchart flowchart)
+        private static IBlock GetPrimarySelectedBlock(Flowchart flowchart)
         {
             if (flowchart == null || flowchart.UIModel == null)
             {
@@ -184,7 +184,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return flowchart.UIModel.SelectedBlock;
         }
 
-        private static void OnMultiBlocksSelected(IList<Block> blocks)
+        private static void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             if (blocks == null)
             {
@@ -194,7 +194,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             for (int i = 0; i < blocks.Count; i++)
             {
-                Block candidate = blocks[i];
+                IBlock candidate = blocks[i];
                 if (candidate != null)
                 {
                     Show(candidate);
@@ -220,7 +220,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            Block selectedBlock = GetPrimarySelectedBlock(next);
+            IBlock selectedBlock = GetPrimarySelectedBlock(next);
             if (selectedBlock != null)
             {
                 ShowInspectorFor(next, selectedBlock);

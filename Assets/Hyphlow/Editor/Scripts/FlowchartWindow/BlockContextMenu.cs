@@ -88,7 +88,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             FlowchartContext = null;
         }
 
-        public Block TargetBlock { get; set; }
+        public IBlock TargetBlock { get; set; }
         public FlowchartContext FlowchartContext { get; set; }
 
     }

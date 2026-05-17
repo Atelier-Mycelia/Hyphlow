@@ -23,7 +23,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             
             if (selected.Count == 1)
             {
-                Block toDelete = selected[0];
+                IBlock toDelete = selected[0];
 
                 fChart.Remove(toDelete);
 
@@ -48,23 +48,26 @@ namespace AtMycelia.Hyphlow.EditorUtils
             ctx.ForceRepaintCount++;
         }
 
-        private void DestroyThoroughly(Block block)
+        private void DestroyThoroughly(IBlock block)
         {
             // Destroy each command on the block
             foreach (var cmd in block.CommandList)
-                if (cmd != null)
-                    Undo.DestroyObjectImmediate(cmd);
+                if (cmd != null && cmd is UnityObjectMuscariable cmdUnityObj)
+                    Undo.DestroyObjectImmediate(cmdUnityObj);
 
             // Destroy any event handler
-            if (block._EventHandler != null)
-                Undo.DestroyObjectImmediate(block._EventHandler);
+            if (block.EventHandler != null && block.EventHandler is UnityObjectMuscariable ehUnityObj)
+                Undo.DestroyObjectImmediate(ehUnityObj);
 
             var fc = block.GetFlowchart();
 
             // Destroy the block itself
+            Block legacyBlock = block as Block;
+            if (legacyBlock != null)
+            {
+                Undo.DestroyObjectImmediate(legacyBlock);
+            }
             
-            Undo.DestroyObjectImmediate(block);
-
             Selection.activeGameObject = fc.gameObject;
 
         }

@@ -365,7 +365,8 @@ namespace AtMycelia.Hyphlow
                 }
                 else if (callMode == CallMode.Stop)
                 {
-                    StopParentBlock();
+                    OnExit();
+                    ParentBlock.Stop();
                 }
             }
         }

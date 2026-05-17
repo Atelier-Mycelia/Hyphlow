@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 1749631385722854176}
   - component: {fileID: 6444787969915162841}
   - component: {fileID: 8840997418231530571}
+  - component: {fileID: 530399796846870525}
   m_Layer: 0
   m_Name: TestFlowchart
   m_TagString: Untagged
@@ -94,6 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 6444787969915162841}
+  _blockLogicManager: {fileID: 530399796846870525}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -103,8 +105,8 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
+  _description: 
+  _uiModel:
     _selectedBlocks:
     - {fileID: 2182094343406819994}
     _selectedCommands: []
@@ -121,16 +123,16 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _stepPause: 0
+  _colorCommands: 1
+  _hideComponents: 1
+  _saveSelection: 1
+  _showLineNumbers: 0
+  _hideCommands: []
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 0
   _blockListCache:
   - {fileID: 3080362346236546621}
@@ -291,15 +293,16 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 6
-  blockName: TestBlock
-  description: 
-  eventHandler: {fileID: 7505458795986732438}
-  commandList:
+  _scope: 1
+  _itemId: 6
+  _blockName: TestBlock
+  _description: 
+  _eventHandler: {fileID: 7505458795986732438}
+  _commandList:
   - {fileID: 1749631385722854176}
   - {fileID: 8840997418231530571}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &7505458795986732438
 MonoBehaviour:
@@ -336,13 +339,14 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 2
-  blockName: NonExecutingButIncludeInSavesTrue
-  description: 
-  eventHandler: {fileID: 0}
-  commandList: []
-  includeInSaves: 1
-  loadPriority: 0
+  _scope: 1
+  _itemId: 2
+  _blockName: NonExecutingButIncludeInSavesTrue
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList: []
+  _includeInSaves: 1
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &2267836562425437019
 MonoBehaviour:
@@ -364,14 +368,15 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 3
-  blockName: ExecutingButIncludeInSavesFalse
-  description: 
-  eventHandler: {fileID: 0}
-  commandList:
+  _scope: 1
+  _itemId: 3
+  _blockName: ExecutingButIncludeInSavesFalse
+  _description: 
+  _eventHandler: {fileID: 0}
+  _commandList:
   - {fileID: 1752780474336798940}
-  includeInSaves: 0
-  loadPriority: 0
+  _includeInSaves: 0
+  _loadPriority: 0
   suppressAllAutoSelections: 0
 --- !u!114 &1752780474336798940
 MonoBehaviour:
@@ -487,6 +492,26 @@ MonoBehaviour:
     floatRef: {fileID: 0}
     floatVal: 0
   durationOLD: 0
+--- !u!114 &530399796846870525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918351469272193397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _blocks:
+      _blocks: []
+      _nextValidBlockId: 1
+    _commands: []
+    _owner: {fileID: 0}
+    _nextItemId: 1
 --- !u!1 &4017282831232097748
 GameObject:
   m_ObjectHideFlags: 0
@@ -551,28 +576,17 @@ MonoBehaviour:
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_MoveAction: {fileID: 3710738434707379630, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_SubmitAction: {fileID: 2064916234097673511, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_CancelAction: {fileID: -1967631576421560919, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_LeftClickAction: {fileID: 8056856818456041789, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_MiddleClickAction: {fileID: 3279352641294131588, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_RightClickAction: {fileID: 3837173908680883260, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_ScrollWheelAction: {fileID: 4502412055082496612, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_TrackedDevicePositionAction: {fileID: 4754684134866288074, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: 1025543830046995696, guid: ca9f5fa95ffab41fb9a615ab714db018,
-    type: 3}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_PointAction: {fileID: 1054132383583890850, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MoveAction: {fileID: 3710738434707379630, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_SubmitAction: {fileID: 2064916234097673511, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_CancelAction: {fileID: -1967631576421560919, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_LeftClickAction: {fileID: 8056856818456041789, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_MiddleClickAction: {fileID: 3279352641294131588, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_RightClickAction: {fileID: 3837173908680883260, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_ScrollWheelAction: {fileID: 4502412055082496612, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 4754684134866288074, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1025543830046995696, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0

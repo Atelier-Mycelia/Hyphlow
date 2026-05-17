@@ -4,24 +4,38 @@ using UnityEngine;
 
 namespace AtMycelia.Hyphlow
 {
-    [Serializable]
-    public sealed class BlockLogicManager : IBlockSource, ICommandSource, IDisposable
+    public interface IBlockLogicManager : ICommandSource, IDisposable, IHasName
     {
-        [SerializeField] [HideInInspector] private BlockManager _blocks = new BlockManager();
-        [SerializeField] [HideInInspector] private List<Command> _commands = new List<Command>();
+        /// <summary>
+        /// The MonoBehaviour that owns this BlockLogicManager. This is used to 
+        /// execute logic that may take more than one frame.
+        /// </summary>
+        MonoBehaviour Owner { get; set; }
+        bool ExecuteIfHasBlock(string blockName, Action<string> executeByName);
+        void ExecuteBlock(string blockName);
+        void StopBlock(string blockName);
+        bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null);
+        void StopAllBlocks();
+        bool HasExecutingBlocks();
+        IList<IBlock> GetExecutingBlocks();
+    }
+
+    [Serializable]
+    public sealed class BlockLogicManager : IBlockLogicManager, IDisposable
+    {
+        [SerializeField] [HideInInspector] private List<Command> _legacyCommands = new List<Command>();
         [SerializeField] [HideInInspector] private MonoBehaviour _owner;
         [SerializeField] private ushort _nextItemId = 1;
 
-        public BlockLogicManager()
+        public void Initialize(IBlockManager blockManager, MonoBehaviour owner)
         {
-            _blocks.BlockOwner = this;
+            _blockManager = blockManager;
+            _blockManager.BlockOwner = owner;
+            Owner = owner;
+            RefreshBlockAndCommandCache();
         }
 
-        public BlockLogicManager(MonoBehaviour blockHolder)
-        {
-            _blocks.BlockOwner = this;
-            Owner = blockHolder;
-        }
+        private IBlockManager _blockManager;
 
         public MonoBehaviour Owner
         {
@@ -49,17 +63,17 @@ namespace AtMycelia.Hyphlow
 
         private static readonly string _defaultName = "UnownedBlockLogicManager";
 
-        public IReadOnlyList<Command> Commands => _commands;
-        public IReadOnlyDictionary<ushort, Block> BlockLookup
+        public IReadOnlyList<ICommand> Commands => _legacyCommands;
+        public IReadOnlyDictionary<ushort, IBlock> BlockLookup
         {
             get
             {
                 // If you later expose lookup in BlockManager publicly, delegate directly.
                 // For now, build from source methods on demand.
-                Dictionary<ushort, Block> dict = new Dictionary<ushort, Block>();
-                for (int i = 0; i < _blocks.Blocks.Count; i++)
+                Dictionary<ushort, IBlock> dict = new Dictionary<ushort, IBlock>();
+                for (int i = 0; i < _blockManager.Blocks.Count; i++)
                 {
-                    var b = _blocks.Blocks[i];
+                    var b = _blockManager.Blocks[i];
                     if (b != null)
                     {
                         dict[b.ItemId] = b;
@@ -72,17 +86,17 @@ namespace AtMycelia.Hyphlow
 
         public void RefreshBlockAndCommandCache()
         {
-            _commands ??= new List<Command>();
+            _legacyCommands ??= new List<Command>();
 
-            _blocks = _blocks ?? new BlockManager();
-            _blocks.BlockOwner = this;
-            _blocks.Refresh();
+            _blockManager = _blockManager ?? new BlockManager();
+            _blockManager.BlockOwner = Owner;
+            _blockManager.Refresh();
 
-            _commands.Clear();
+            _legacyCommands.Clear();
 
             if (_owner == null)
             {
-                _blocks.ClearBlocks(false);
+                _blockManager.ClearBlocks(false);
                 return;
             }
 
@@ -104,11 +118,11 @@ namespace AtMycelia.Hyphlow
                 }
 
                 usedIds.Add(cmd.ItemId);
-                _commands.Add(cmd);
+                _legacyCommands.Add(cmd);
             }
 
             // 2) Rebuild block storage through BlockManager
-            _blocks.ClearBlocks(false);
+            _blockManager.ClearBlocks(false);
             var blocksFound = _owner.GetComponents<Block>();
             for (int i = 0; i < blocksFound.Length; i++)
             {
@@ -124,13 +138,13 @@ namespace AtMycelia.Hyphlow
                 }
 
                 usedIds.Add(block.ItemId);
-                _blocks.Add(block, false);
+                _blockManager.Add(block, false);
             }
         }
 
         public void RefreshBlocks()
         {
-            var blocks = _blocks.Blocks;
+            var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -148,9 +162,9 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public Block FindBlock(string blockName)
+        public IBlock FindBlock(string blockName)
         {
-            var blocks = _blocks.Blocks;
+            var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -209,11 +223,14 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null)
+        public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
         {
-            bool BlockBelongsToOwner(Block candidate)
+            bool BlockBelongsToOwner(IBlock candidate)
             {
-                return _owner != null && candidate != null && candidate.gameObject == _owner.gameObject;
+                bool actualInput = candidate != null && candidate.Owner != null && candidate.Owner.gameObject != null;
+                bool weHaveOwner = Owner != null && Owner.gameObject != null;
+                bool result = weHaveOwner && actualInput && candidate.Owner.gameObject == Owner.gameObject;
+                return result;
             }
 
             if (block == null)
@@ -246,7 +263,7 @@ namespace AtMycelia.Hyphlow
 
         public void StopAllBlocks()
         {
-            var blocks = _blocks.Blocks;
+            var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -259,7 +276,7 @@ namespace AtMycelia.Hyphlow
 
         public bool HasExecutingBlocks()
         {
-            var blocks = _blocks.Blocks;
+            var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -272,10 +289,10 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public List<Block> GetExecutingBlocks()
+        public IList<IBlock> GetExecutingBlocks()
         {
-            var result = new List<Block>();
-            var blocks = _blocks.Blocks;
+            var result = new List<IBlock>();
+            var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -289,26 +306,26 @@ namespace AtMycelia.Hyphlow
         }
 
         #region IBlockSource Implementation
-        public IReadOnlyList<Block> Blocks => _blocks.Blocks;
-        public bool Contains(Block block) => _blocks.Contains(block);
-        public Block GetBlock(ushort id) => _blocks.GetBlock(id);
-        public bool Add(Block block, bool triggerSignals = true) => _blocks.Add(block, triggerSignals);
-        public bool Remove(Block block, bool triggerSignals = true) => _blocks.Remove(block, triggerSignals);
-        public bool RemoveBlockWithId(ushort id, bool triggerSignals = true) => _blocks.RemoveBlockWithId(id, triggerSignals);
+        public IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
+        public bool Contains(IBlock block) => _blockManager.Contains(block);
+        public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
+        public bool Add(IBlock block, bool triggerSignals = true) => _blockManager.Add(block, triggerSignals);
+        public bool Remove(IBlock block, bool triggerSignals = true) => _blockManager.Remove(block, triggerSignals);
+        public bool RemoveBlockWithId(ushort id, bool triggerSignals = true) => _blockManager.RemoveBlockWithId(id, triggerSignals);
 
-        public bool Contains(Command cmd) => _commands.Contains(cmd);
+        public bool Contains(ICommand cmd) => _legacyCommands.Contains(cmd as Command);
 
         public bool ClearBlocks(bool triggerSignals)
         {
-            return _blocks.ClearBlocks(triggerSignals);
+            return _blockManager.ClearBlocks(triggerSignals);
         }
         #endregion
 
-        public Command GetCommandWithId(ushort id)
+        public ICommand GetCommandWithId(ushort id)
         {
-            for (int i = 0; i < _commands.Count; i++)
+            for (int i = 0; i < _legacyCommands.Count; i++)
             {
-                var cmd = _commands[i];
+                var cmd = _legacyCommands[i];
                 if (cmd != null && cmd.ItemId == id)
                 {
                     return cmd;
@@ -318,41 +335,41 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
-        public void Add(Command cmd)
+        public void Add(ICommand cmd)
         {
-            if (cmd != null)
+            if (cmd != null && cmd is Command legacyCommand)
             {
-                _commands.Add(cmd);
+                _legacyCommands.Add(legacyCommand);
             }
         }
 
-        public bool Remove(Command cmd)
+        public bool Remove(ICommand cmd)
         {
             if (cmd == null)
             {
                 return false;
             }
 
-            Block ourBlock = null;
             bool belongsToUs = cmd.ParentBlock != null &&
-                               _blocks.GetBlock(cmd.ParentBlock.ItemId) == cmd.ParentBlock;
+                               _blockManager.GetBlock(cmd.ParentBlock.ItemId) == cmd.ParentBlock;
 
             if (!belongsToUs)
             {
-                Debug.LogWarning($"Trying to remove Command {cmd.name} from Flowchart {Name}, but its ParentBlock does not belong to this Flowchart.");
+                Debug.LogWarning($"Trying to remove Command {cmd.Name} from Flowchart {Name}, " +
+                    $"but its ParentBlock does not belong to this Flowchart.");
                 return false;
             }
 
-            _commands.Remove(cmd);
+            _legacyCommands.Remove(cmd as Command);
             cmd.ParentBlock.Remove(cmd);
             return true;
         }
 
         public bool RemoveAllCommands()
         {
-            bool anyRemoved = _commands.Count > 0;
+            bool anyRemoved = _legacyCommands.Count > 0;
 
-            var blocks = _blocks.Blocks;
+            var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -362,26 +379,25 @@ namespace AtMycelia.Hyphlow
                 }
             }
 
-            _commands.Clear();
+            _legacyCommands.Clear();
             return anyRemoved;
         }
 
         public bool RemoveCommandWithId(ushort id)
         {
-            Command cmd = GetCommandWithId(id);
+            ICommand cmd = GetCommandWithId(id);
             return cmd != null && Remove(cmd);
         }
 
         public void Dispose()
         {
             _owner = null;
-            _commands?.Clear();
-            _blocks?.Dispose();
+            _legacyCommands?.Clear();
         }
 
-        public Block GetBlock(string name)
+        public IBlock GetBlock(string name)
         {
-            return _blocks.GetBlock(name);
+            return _blockManager.GetBlock(name);
         }
     }
 }

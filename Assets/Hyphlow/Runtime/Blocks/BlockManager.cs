@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Collections;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -9,62 +11,66 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-    [Serializable]
-    public sealed class BlockManager : IBlockSource, IDisposable
+    public interface IBlockManager : IBlockSource, IRefreshable
     {
-        [SerializeField] private List<Block> _blocks = new List<Block>();
+        UnityObj BlockOwner { get; set; }
+    }
+
+    [Serializable]
+    public sealed class BlockManager : IBlockManager, IDisposable
+    {
+        [SerializeField] private List<Block> _legacyBlocks = new List<Block>();
         [SerializeField] private ushort _nextValidBlockId = 1;
-        
+        [SerializeField] private UnityObj _blockOwner;
+
         /// <summary>
         /// Optional owner for naming/context (e.g., Flowchart or BlockLogicManagerComponent).
         /// </summary>
-        public IBlockSource BlockOwner
+        public UnityObj BlockOwner
         {
             get => _blockOwner;
             set => _blockOwner = value;
         }
 
-        private IBlockSource _blockOwner;
-
-        public IReadOnlyList<Block> Blocks
+        public IReadOnlyList<IBlock> Blocks
         {
             get
             {
-                if (_blocks == null || _lookup == null || _lookup.Count != _blocks.Count)
+                if (_legacyBlocks == null || _lookup == null || _lookup.Count != _legacyBlocks.Count)
                 {
                     Refresh();
                 }
 
-                return _blocks;
+                return _legacyBlocks;
             }
         }
 
-        private Dictionary<ushort, Block> _lookup = new Dictionary<ushort, Block>();
+        private Dictionary<ushort, IBlock> _lookup = new Dictionary<ushort, IBlock>();
 
         public void Refresh()
         {
-            _blocks ??= new List<Block>();
-            _lookup ??= new Dictionary<ushort, Block>();
+            _legacyBlocks ??= new List<Block>();
+            _lookup ??= new Dictionary<ushort, IBlock>();
             _lookup.Clear();
 
-            for (int i = _blocks.Count - 1; i >= 0; i--)
+            for (int i = _legacyBlocks.Count - 1; i >= 0; i--)
             {
-                if (_blocks[i] == null)
+                if (_legacyBlocks[i] == null)
                 {
-                    _blocks.RemoveAt(i);
+                    _legacyBlocks.RemoveAt(i);
                     i--;
                 }
             }
 
-            for (int i = 0; i < _blocks.Count; i++)
+            for (int i = 0; i < _legacyBlocks.Count; i++)
             {
-                Block current = _blocks[i];
+                Block current = _legacyBlocks[i];
                 EnsureValidIdFor(current);
                 _lookup[current.ItemId] = current;
             }
         }
 
-        private void EnsureValidIdFor(Block block)
+        private void EnsureValidIdFor(IBlock block)
         {
             if (block == null)
             {
@@ -80,14 +86,14 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private bool IsRegistered(Block block)
+        private bool IsRegistered(IBlock block)
         {
             if (block == null || _lookup == null)
             {
                 return false;
             }
 
-            if (_lookup.TryGetValue(block.ItemId, out Block registered))
+            if (_lookup.TryGetValue(block.ItemId, out IBlock registered))
             {
                 return ReferenceEquals(registered, block);
             }
@@ -112,8 +118,8 @@ namespace AtMycelia.Hyphlow
 
         public void Initialize(bool clearExisting = false)
         {
-            _blocks ??= new List<Block>();
-            _lookup ??= new Dictionary<ushort, Block>();
+            _legacyBlocks ??= new List<Block>();
+            _lookup ??= new Dictionary<ushort, IBlock>();
 
             if (clearExisting)
             {
@@ -127,18 +133,18 @@ namespace AtMycelia.Hyphlow
 
         public bool ClearBlocks(bool triggerSignals = true)
         {
-            bool anyRemoved = _blocks.Count > 0;
-            while (_blocks.Count > 0)
+            bool anyRemoved = _legacyBlocks.Count > 0;
+            while (_legacyBlocks.Count > 0)
             {
-                Block toRemove = _blocks[0];
+                Block toRemove = _legacyBlocks[0];
                 if (!Remove(toRemove, triggerSignals))
                 {
                     // Safety fallback to avoid infinite loops on stale/invalid registrations.
-                    _blocks.RemoveAt(0);
+                    _legacyBlocks.RemoveAt(0);
 
                     if (toRemove != null)
                     {
-                        if (_lookup.TryGetValue(toRemove.ItemId, out Block registered) &&
+                        if (_lookup.TryGetValue(toRemove.ItemId, out IBlock registered) &&
                             ReferenceEquals(registered, toRemove))
                         {
                             _lookup.Remove(toRemove.ItemId);
@@ -154,19 +160,19 @@ namespace AtMycelia.Hyphlow
             return anyRemoved;
         }
 
-        public bool Contains(Block block)
+        public bool Contains(IBlock block)
         {
             if (block == null)
             {
                 return false;
             }
 
-            if (_blocks != null && _blocks.Contains(block))
+            if (_legacyBlocks != null && _legacyBlocks.Contains(block as Block))
             {
                 return true;
             }
 
-            if (_lookup != null && _lookup.TryGetValue(block.ItemId, out Block registered))
+            if (_lookup != null && _lookup.TryGetValue(block.ItemId, out IBlock registered))
             {
                 return ReferenceEquals(registered, block);
             }
@@ -174,14 +180,14 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public Block GetBlock(string name)
+        public IBlock GetBlock(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
 
-            foreach (Block block in _blocks)
+            foreach (Block block in _legacyBlocks)
             {
                 if (block != null && block.BlockName == name)
                 {
@@ -191,13 +197,13 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
-        public Block GetBlock(ushort id)
+        public IBlock GetBlock(ushort id)
         {
-            _lookup.TryGetValue(id, out Block result);
+            _lookup.TryGetValue(id, out IBlock result);
             return result;
         }
 
-        public bool Add(Block block, bool triggerSignals = true)
+        public bool Add(IBlock block, bool triggerSignals = true)
         {
             if (block == null)
             {
@@ -215,7 +221,7 @@ namespace AtMycelia.Hyphlow
             return true;
         }
 
-        private void AddToCaches(Block toAdd, bool triggerSignals = true)
+        private void AddToCaches(IBlock toAdd, bool triggerSignals = true)
         {
             if (toAdd == null)
             {
@@ -229,7 +235,12 @@ namespace AtMycelia.Hyphlow
                 PreBlockAdded(toAdd);
             }
 
-            _blocks.Add(toAdd);
+            if (toAdd is Block legBlock)
+            {
+                legBlock.Owner = _blockOwner;
+                _legacyBlocks.Add(legBlock);
+            }
+            
             _lookup[toAdd.ItemId] = toAdd;
 
             if (triggerSignals)
@@ -239,26 +250,33 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public event Action<Block> PreBlockAdded = delegate { };
-        public event Action<Block> BlockAdded = delegate { };
+        public event Action<IBlock> PreBlockAdded = delegate { };
+        public event Action<IBlock> BlockAdded = delegate { };
 
-        public bool Remove(Block block, bool triggerSignals = true)
+        public bool Remove(IBlock block, bool triggerSignals = true)
         {
             bool result = RemoveFromCaches(block, triggerSignals);
             return result;
         }
 
-        private bool RemoveFromCaches(Block toRemove, bool triggerSignals)
+        private bool RemoveFromCaches(IBlock toRemove, bool triggerSignals)
         {
             if (toRemove == null)
             {
                 return false;
             }
 
-            bool removedFromList = _blocks.Remove(toRemove);
+            if (toRemove is not Block legBlock)
+            {
+                string errorMessage = $"Haven't migrated to poco Blocks yet.";
+                Debug.LogError(errorMessage);
+                return false;
+            }
+
+            bool removedFromList = _legacyBlocks.Remove(legBlock);
 
             bool removedFromLookup = false;
-            if (_lookup.TryGetValue(toRemove.ItemId, out Block registered) &&
+            if (_lookup.TryGetValue(toRemove.ItemId, out IBlock registered) &&
                 ReferenceEquals(registered, toRemove))
             {
                 removedFromLookup = _lookup.Remove(toRemove.ItemId);
@@ -283,7 +301,7 @@ namespace AtMycelia.Hyphlow
             return true;
         }
 
-        public event Action<Block> PreBlockRemoved = delegate { };
+        public event Action<IBlock> PreBlockRemoved = delegate { };
 
         private void MarkOwnerAsDirty()
         {
@@ -295,11 +313,11 @@ namespace AtMycelia.Hyphlow
 #endif
         }
 
-        public event Action<Block> BlockRemoved = delegate { };
+        public event Action<IBlock> BlockRemoved = delegate { };
 
         public bool RemoveBlockWithId(ushort id, bool triggerSignals)
         {
-            _lookup.TryGetValue(id, out Block blockToRemove);
+            _lookup.TryGetValue(id, out IBlock blockToRemove);
             if (blockToRemove == null)
             {
                 return false;
@@ -308,7 +326,7 @@ namespace AtMycelia.Hyphlow
             return Remove(blockToRemove, triggerSignals);
         }
 
-        private bool RemoveLookupEntryByReference(Block block)
+        private bool RemoveLookupEntryByReference(IBlock block)
         {
             ushort keyToRemove = 0;
             bool found = false;
@@ -334,7 +352,7 @@ namespace AtMycelia.Hyphlow
 
         public void Dispose()
         {
-            _blocks?.Clear();
+            _legacyBlocks?.Clear();
             _lookup?.Clear();
             _blockOwner = null;
         }
@@ -344,7 +362,7 @@ namespace AtMycelia.Hyphlow
             get
             {
                 string ownerName = _blockOwner != null ?
-                    _blockOwner.Name :
+                    _blockOwner.name :
                     null;
                 return string.IsNullOrEmpty(ownerName) ?
                     _defaultName :
@@ -357,7 +375,7 @@ namespace AtMycelia.Hyphlow
         }
 
         private static readonly string _defaultName = "BlockManager";
-        public int BlockCount => _blocks.Count;
+        public int BlockCount => _legacyBlocks.Count;
         // ^This may seem unnecessary now, but we'll expand this after we implement poco versions of
         // Blocks. 
 

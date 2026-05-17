@@ -58,15 +58,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             for (int b = 0; b < blocks.Length; b++)
             {
-                Block block = blocks[b];
+                IBlock block = blocks[b];
                 if (block == null)
                 {
                     continue;
                 }
 
-                Undo.RecordObject(block, "Replace Fade Sprite Commands");
+                Undo.RecordObject(block as Block, "Replace Fade Sprite Commands");
 
-                List<Command> commands = block.CommandList;
+                IList<ICommand> commands = block.CommandList;
                 for (int i = 0; i < commands.Count; i++)
                 {
                     FadeSprite fadeSprite = commands[i] as FadeSprite;

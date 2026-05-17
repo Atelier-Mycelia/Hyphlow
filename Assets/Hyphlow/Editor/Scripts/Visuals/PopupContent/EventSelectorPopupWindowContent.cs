@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
 using Type = System.Type;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -46,12 +47,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected class SetEventHandlerOperation
         {
-            public Block block;
+            public IBlock block;
             public Type eventHandlerType;
         }
 
-        protected Block _block;
-        public EventSelectorPopupWindowContent(string currentHandlerName, Block block, int width, int height)
+        protected IBlock _block;
+        public EventSelectorPopupWindowContent(string currentHandlerName, IBlock block, int width, int height)
             :base(currentHandlerName, width, height, true)
         {
             this._block = block;
@@ -142,32 +143,33 @@ namespace AtMycelia.Hyphlow.EditorUtils
         static protected void OnSelectEventHandler(object obj)
         {
             SetEventHandlerOperation operation = obj as SetEventHandlerOperation;
-            Block block = operation.block;
+            IBlock block = operation.block;
             Type selectedType = operation.eventHandlerType;
             if (block == null)
             {
                 return;
             }
 
-            Undo.RecordObject(block, "Set Event Handler");
+            Undo.RecordObject(block.Owner, "Set Event Handler");
 
-            if (block._EventHandler != null)
+            if (block.EventHandler != null)
             {
-                Undo.DestroyObjectImmediate(block._EventHandler);
+                Undo.DestroyObjectImmediate(block.EventHandler as UnityObj);
             }
 
             if (selectedType != null)
             {
-                EventHandler newHandler = Undo.AddComponent(block.gameObject, selectedType) as EventHandler;
+                Block legacyBlock = block as Block;
+                EventHandler newHandler = Undo.AddComponent(legacyBlock.gameObject, selectedType) as EventHandler;
                 newHandler.ParentBlock = block;
-                block._EventHandler = newHandler;
-                EditorUtility.SetDirty(block);
+                block.EventHandler = newHandler;
+                EditorUtility.SetDirty(legacyBlock);
             }
 
             BlockEditor.SelectedBlockDataStale = true;
 
             // Because this is an async call, we need to force prefab instances to record changes
-            PrefabUtility.RecordPrefabInstancePropertyModifications(block);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(block as Block);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow.EditorUtils
 {
@@ -59,7 +60,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public BlockClipboard Clipboard { get; set; } = new BlockClipboard(null);
         public bool HasClipboard => Clipboard.HasEntries;
 
-        public Block CreateBlock(Flowchart fc, Vector2 pos)
+        public IBlock CreateBlock(Flowchart fc, Vector2 pos)
         {
             var newBlock = fc.CreateBlock(pos);
             newBlock._NodeRect = new Rect(pos, defaultNodeSize);
@@ -69,19 +70,22 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         protected readonly static Vector2 defaultNodeSize = new Vector2(20, 20);
-        public List<Block> Created { get { return new List<Block>(created); } }
-        protected IList<Block> created = new List<Block>();
+        public IList<IBlock> Created { get { return new List<IBlock>(created); } }
+        protected IList<IBlock> created = new List<IBlock>();
 
         public void DeselectAll() => Flowchart.ClearSelectedBlocks();
 
-        public IList<Block> QueuedForDeletion { get { return new List<Block>(queuedForDeletion); } }
-        protected IList<Block> queuedForDeletion = new List<Block>();
+        public IList<IBlock> QueuedForDeletion { get { return new List<IBlock>(queuedForDeletion); } }
+        protected IList<IBlock> queuedForDeletion = new List<IBlock>();
 
         public void DeleteScheduledBlocks()
         {
             foreach (var block in QueuedForDeletion)
             {
-                GameObject.DestroyImmediate(block.gameObject);
+                if (block is UnityObj blockUobj)
+                {
+                    UnityObj.DestroyImmediate(blockUobj);
+                }
             }
             queuedForDeletion.Clear();
         }
@@ -125,7 +129,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected IList<IFcWindowComponent> components = new List<IFcWindowComponent>();
 
-        public virtual Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
+        public virtual Vector2 GetBlockCenter(IReadOnlyCollection<IBlock> blocks)
         {
             return Vector2.zero;
         }
@@ -163,7 +167,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             FlowchartWindowSignals.WindowPanned();
         }
 
-        public void SelectBlock(Block block)
+        public void SelectBlock(IBlock block)
         {
             if (block == null || Flowchart == null)
             {
@@ -180,9 +184,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public FlowchartContext FlowchartCtx { get; protected set; } = new FlowchartContext();
 
-        public IReadOnlyCollection<Block> Blocks
+        public IReadOnlyCollection<IBlock> Blocks
         {
-            get => Flowchart != null ? Flowchart.Blocks : Array.Empty<Block>();
+            get => Flowchart != null ? 
+                Flowchart.Blocks : 
+                Array.Empty<IBlock>();
         }
 
         public Rect Position => position;
@@ -209,7 +215,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private sealed class FakeBlockDrawerUitk : IBlockDrawerUitk
         {
-            public BlockButton CreateButton(Block block)
+            public BlockButton CreateButton(IBlock block)
             {
                 var button = new BlockButton(new BlockGraphicsGenerator());
                 button.Initialize(block, FlowchartWindow.Config?.BlockUxml,
@@ -217,7 +223,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return button;
             }
 
-            public void UpdateButton(BlockButton button, Block block, float zoom)
+            public void UpdateButton(BlockButton button, IBlock block, float zoom)
             {
                 button?.UpdateVisuals(block, zoom);
             }

@@ -21,7 +21,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         private Vector2 cachedScrollPosition = new Vector2(float.NaN, float.NaN);
         private float cachedZoom = float.NaN;
         private Rect cachedContentRect = Rect.zero;
-        private Block lastSelectedBlock;
+        private IBlock lastSelectedBlock;
         private bool isDisposed;
 
         private static readonly float SpacingScaleAtMinZoom = 0.5f;
@@ -208,7 +208,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             QueueContextAwareRepaint(true);
         }
 
-        public void OnBlockSelected(Block block)
+        public void OnBlockSelected(IBlock block)
         {
             if (ReferenceEquals(block, lastSelectedBlock))
             {
@@ -247,7 +247,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return baseSpacing * spacingMultiplier;
         }
 
-        public void OnMultiBlocksSelected(IList<Block> blocks)
+        public void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             lastSelectedBlock = null; // Since that var is for when just a single one is selected.
             bool alreadySelectedThese = blocks.SequenceEqual(lastBlocksSelected);
@@ -263,7 +263,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private readonly IList<Block> lastBlocksSelected = new List<Block>();
+        private readonly IList<IBlock> lastBlocksSelected = new List<IBlock>();
 
         public void ResetVisuals()
         {

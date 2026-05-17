@@ -148,7 +148,7 @@ namespace AtMycelia.Hyphlow
             {
                 foreach (var item in _conditions)
                 {
-                    item.AnyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+                    item.AnyVar.RefreshVariableCacheHelper(GetFlowchart(), ref _referencedVariables);
                 }
             }
         }

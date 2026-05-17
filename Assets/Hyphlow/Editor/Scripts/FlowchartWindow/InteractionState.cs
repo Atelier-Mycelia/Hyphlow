@@ -19,8 +19,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public Rect SelectionBox { get; set; } = Rect.zero;
 
-        public Block BlockHitInLastMouseDown { get; set; }
-        public Block RootBlockToDrag { get; set; }
+        public IBlock BlockHitInLastMouseDown { get; set; }
+        public IBlock RootBlockToDrag { get; set; }
 
         public bool WeHitBlockInLastMouseDown => BlockHitInLastMouseDown != null;
 

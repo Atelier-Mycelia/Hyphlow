@@ -124,7 +124,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         {
             // 1) MouseDown on block #1 to select + start drag
             Vector2 baseBlockPos = initBlockPositions[blockIndex];
-            Block targetBlock = blocks[blockIndex];
+            IBlock targetBlock = blocks[blockIndex];
             mouseDown.mousePosition = initBlockPositions[blockIndex];
 
             HandleLeftMouseDown(baseBlockPos, mouseDown);
@@ -165,7 +165,7 @@ namespace VScriptingTests.FCWindowOperations.Integration
         public void Drag_UnselectedBlock_DoesNothing()
         {
             // 1) MouseDown on block #0 but do NOT select it first
-            Block targetBlock = blocks[0];
+            IBlock targetBlock = blocks[0];
             Vector2 initBlockPos = initBlockPositions[0];
             mouseDown.mousePosition = initBlockPos;
 

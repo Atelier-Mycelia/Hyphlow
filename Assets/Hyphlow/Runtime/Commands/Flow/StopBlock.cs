@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow
             return ReferenceEquals(blockName.VarRef, variable) || base.HasReference(variable);
         }
 
-        public bool MayCallBlock(Block block)
+        public bool MayCallBlock(IBlock block)
         {
             if(flowchart != null)
                 return block == flowchart.GetBlock(blockName.Value);

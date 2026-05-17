@@ -136,7 +136,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        protected virtual IEnumerable<Block> EnumerateBlocks(FlowchartContext ctx)
+        protected virtual IEnumerable<IBlock> EnumerateBlocks(FlowchartContext ctx)
         {
             var blocks = ctx.Document.AllBlocks;
             if (blocks != null && blocks.Count > 0)

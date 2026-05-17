@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public virtual Rect Position { get; set; }
         public virtual IFlowchartHostCore FcHost { get; set; }
 
-        public IList<Block> QueuedForDeletion
+        public IList<IBlock> QueuedForDeletion
         {
             get { return queuedForDeletion; }
             set
@@ -60,13 +60,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        protected IList<Block> queuedForDeletion = new List<Block>();
+        protected IList<IBlock> queuedForDeletion = new List<IBlock>();
 
         public virtual void SnapBlocksToGrid()
         {
             foreach (var elem in Selection.Blocks)
             {
-                Undo.RecordObject(elem, "Block Position");
+                Undo.RecordObject(elem as Block, "Block Position");
                 elem._NodeRect = elem._NodeRect.SnapPosition(GridObjectSnap);
             }
         }

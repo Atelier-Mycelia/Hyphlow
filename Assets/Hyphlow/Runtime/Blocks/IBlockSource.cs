@@ -4,21 +4,21 @@ namespace AtMycelia.Hyphlow
 {
     public interface IBlockSource : IHasName
     {
-        IReadOnlyList<Block> Blocks { get; }
+        IReadOnlyList<IBlock> Blocks { get; }
 
-        bool Contains(Block block);
-        Block GetBlock(string name);
-        Block GetBlock(ushort id);
+        bool Contains(IBlock block);
+        IBlock GetBlock(string name);
+        IBlock GetBlock(ushort id);
 
         /// <summary>
         /// Returns true if the Block was successfully added, false otherwise.
         /// </summary>
-        bool Add(Block block, bool triggerSignals);
+        bool Add(IBlock block, bool triggerSignals);
 
         /// <summary>
         /// Returns true if the Block was successfully removed, false otherwise.
         /// </summary>
-        bool Remove(Block block, bool triggerSignals);
+        bool Remove(IBlock block, bool triggerSignals);
 
         /// <summary>
         /// Returns true if the Block with the given id was successfully

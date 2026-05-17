@@ -10,16 +10,16 @@ namespace AtMycelia.Hyphlow.EditorUtils
         /// Returns all Blocks whose name or command content contains the query.
         /// Also sets each Block’s FilterState to Full, Partial, or None.
         /// </summary>
-        public static IList<Block> FilterBlocks(IReadOnlyCollection<Block> allBlocks, string query)
+        public static IList<T> FilterBlocks<T>(IReadOnlyCollection<T> allBlocks, string query) where T: IBlock
         {
-            var results = new List<Block>();
+            var results = new List<T>();
 
             // No query ? show everything (reset states to Full)
             if (string.IsNullOrEmpty(query))
             {
                 foreach (var elem in allBlocks)
                 {
-                    elem.FilterState = Block.FilteredState.Full;
+                    elem.FilteredState = FilteredState.Full;
                     results.Add(elem);
                 }
                 return results;
@@ -38,17 +38,17 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 if (nameMatch)
                 {
-                    elem.FilterState = Block.FilteredState.Full;
+                    elem.FilteredState = FilteredState.Full;
                     results.Add(elem);
                 }
                 else if (contentMatch)
                 {
-                    elem.FilterState = Block.FilteredState.Partial;
+                    elem.FilteredState = FilteredState.Partial;
                     results.Add(elem);
                 }
                 else
                 {
-                    elem.FilterState = Block.FilteredState.None;
+                    elem.FilteredState = FilteredState.None;
                 }
             }
 
