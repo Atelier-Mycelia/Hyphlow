@@ -1,4 +1,3 @@
-using AtMycelia.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,7 +33,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected AccessScope _scope = AccessScope.Public;
 
         [FormerlySerializedAs("itemId")]
-        [SerializeField] protected ushort _itemId = 0; 
+        [SerializeField] protected byte _itemId = 0; 
 
         [FormerlySerializedAs("sequenceName")]
         [Tooltip("The name of the block node as displayed in the Flowchart window")]
@@ -64,7 +63,10 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected int _loadPriority;
         [SerializeField, HideInInspector] protected UnityObj _owner;
 
-        public static readonly ushort InvalidId = 0;
+        [SerializeField, HideInInspector] private byte _nextValidCommandId = 1; 
+        // ^Start at 1, since 0 is reserved for InvalidId
+
+        public static readonly byte InvalidId = 0;
 
         /// <summary>
         /// Alias for BlockName, used for IHasKey interface.
@@ -72,6 +74,7 @@ namespace AtMycelia.Hyphlow
         public virtual string Key
         {
             get { return BlockName; }
+            set { BlockName = value; }
         }
 
         public virtual AccessScope Scope
@@ -112,6 +115,7 @@ namespace AtMycelia.Hyphlow
 
         protected bool _executionInfoSet = false;
 
+        
         /// <summary>
         /// If set, flowchart will not auto select when it is next executed, 
         /// used by eventhandlers. Only affects the editor.
@@ -214,9 +218,9 @@ namespace AtMycelia.Hyphlow
         public virtual ExecutionState State { get { return _executionState; } }
 
         /// <summary>
-        /// Unique identifier for the Block.
+        /// Unique identifier for the Block (relative to the others in the same container).
         /// </summary>
-        public virtual ushort ItemId { get { return _itemId; } set { _itemId = value; } }
+        public virtual byte ItemId { get { return _itemId; } set { _itemId = value; } }
 
         /// <summary>
         /// The name of the block node as displayed in the Flowchart window.
@@ -306,31 +310,10 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        object IHasItemId.ItemId
-        { 
-            get => ItemId; 
-            set
-            {
-                if (value is ushort ushortValue)
-                {
-                    ItemId = ushortValue;
-                }
-                else
-                {
-                    throw new ArgumentException("Blocks' ItemIds must be of type ushort.");
-                }
-            }
-        }
-
-        
-
         /// <summary>
-        /// Returns true if the Block is executing a command.
+        /// Returns true if the Block is executing a Command.
         /// </summary>
-        public virtual bool IsExecuting()
-        {
-            return (_executionState == ExecutionState.Executing);
-        }
+        public virtual bool IsExecuting => _executionState == ExecutionState.Executing;
 
         /// <summary>
         /// Returns the number of times this Block has executed.
@@ -675,74 +658,147 @@ namespace AtMycelia.Hyphlow
             set { gameObject.hideFlags = value; }
         }
 
-        Component IBlock.Owner { get => throw new NotImplementedException(); set => Owner = value; }
+        Component IBlock.Owner
+        {
+            get => _owner as Component;
+            set => Owner = value;
+        }
+
         public FilteredState FilteredState
         {
             get => FilterState;
             set => FilterState = value;
         }
+        object IHasItemId.ItemId 
+        { 
+            get => ItemId;
+            set
+            {
+                if (value is byte b)
+                {
+                    ItemId = b;
+                }
+                else
+                {
+                    string errorMessage = $"Cannot set ItemId to a value of type " +
+                        $"{value.GetType().Name}. Expected type: byte.";
+                    throw new InvalidCastException(errorMessage);
+                }
+            }
+        }
 
         /// <summary>
-        /// Add a command to the end of the command list. If a command with the same unique ID 
-        /// already exists in the list, we won't re-add it.
+        /// Add a command to the end of the command list. If it already exists in the list, 
+        /// it will not be added again.
         /// </summary>
-        public void Add(ICommand cmd)
+        public bool Add(ICommand cmd, bool triggerSignals = true)
         {
-            bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd) 
+            return Insert(cmd, (byte)_legacyCommandList.Count, triggerSignals);
+        }
+
+        public bool Insert(ICommand cmd, byte index, bool triggerSignals)
+        {
+            bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd)
                 && existingCmd == cmd;
             if (alreadyRegistered)
             {
                 string warningMessage = $"Command with id {cmd.ItemId} is already " +
                     $"registered to block {BlockName}";
                 Debug.LogWarning(warningMessage);
-                return;
+                return false;
             }
+
+            EnsureValidIdFor(cmd);
+            if (triggerSignals)
+            {
+                CommandSignals.PreCommandAdded(cmd, this);
+            }
+            cmd.ParentBlock = this;
+            _commandListDict[cmd.ItemId] = cmd;
             Command legCommand = cmd as Command;
             if (legCommand != null)
             {
-                _legacyCommandList.Add(legCommand);
+                _legacyCommandList.Insert(index, legCommand);
             }
-            
-            _commandListDict[cmd.ItemId] = cmd;
-            cmd.ParentBlock = this;
-            if (_owner is Flowchart fc)
+
+            legCommand.CommandIndex = (byte)index;
+
+            if (triggerSignals)
             {
-                fc.Add(cmd);
-                // ^To keep the FC's cache updated
+                cmd.OnCommandAdded(this);
+                CommandSignals.CommandAdded(cmd, this);
             }
-            cmd.OnCommandAdded(this);
+            return true;
         }
 
-        public virtual bool RemoveCommandWithId(ushort id)
+        private void EnsureValidIdFor(ICommand cmd)
+        {
+            while (cmd.ItemId == InvalidId || _commandListDict.ContainsKey(cmd.ItemId))
+            {
+                cmd.ItemId = NextValidCommandId();
+            }
+        }
+
+        private byte NextValidCommandId()
+        {
+            byte nextId = _nextValidCommandId;
+            _nextValidCommandId++;
+            if (_nextValidCommandId == InvalidId)
+            {
+                _nextValidCommandId++;
+            }
+            return nextId;
+        }
+
+        public virtual bool RemoveCommandWithId(ushort id, bool triggerSignals = true)
         {
             ICommand toRemove = _commandListDict[id];
-            bool successfulRemoval = Remove(toRemove);
+            bool successfulRemoval = Remove(toRemove, triggerSignals);
             return successfulRemoval;
         }
 
-        public virtual bool Remove(ICommand cmd)
+        public virtual bool Remove(ICommand cmd, bool triggerSignals = true)
         {
+            bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd)
+                && existingCmd == cmd;
+            if (alreadyRegistered)
+            {
+                return false;
+            }
+
+            if (triggerSignals)
+            {
+                CommandSignals.PreCommandRemoved(cmd, this);
+            }
+
             Command legCommand = cmd as Command;
             bool successfulRemoval = _legacyCommandList.Remove(legCommand);
             if (successfulRemoval)
             {
                 _legacyCommandList.Remove(legCommand);
                 _commandListDict.Remove(cmd.ItemId);
-                cmd.OnCommandRemoved(this);
+
+                if (triggerSignals)
+                {
+                    cmd.OnCommandRemoved(this);
+                    CommandSignals.CommandRemoved(cmd, this);
+                }
+                
             }
             return successfulRemoval;
         }
 
-        public virtual bool RemoveAllCommands()
+        public virtual bool RemoveAllCommands(bool triggerSignals = true)
         {
             bool anyToRemove = _legacyCommandList.Count > 0;
             while (_legacyCommandList.Count > 0)
             {
                 var cmd = _legacyCommandList[0];
-                Remove(cmd);
+                Remove(cmd, triggerSignals);
             }
             return anyToRemove;
         }
 
+        
     }
 }

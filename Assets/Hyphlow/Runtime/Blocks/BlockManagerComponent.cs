@@ -5,108 +5,173 @@ using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow
 {
-    [DisallowMultipleComponent]
-    [ExecuteInEditMode]
-    public class BlockManagerComponent : MonoBehaviour, IBlockManager, IDisposable
-    {
-        [SerializeField, HideInInspector] private MonoBehaviour _owner;
-        [SerializeField, HideInInspector] private BlockManager _blockManager = new BlockManager();
-        [SerializeField, HideInInspector] private Flowchart _cachedFlowchart;
+	[DisallowMultipleComponent]
+	[ExecuteInEditMode]
+	public class BlockManagerComponent : MonoBehaviour, IBlockManager, IDisposable, IBlockCreator
+	{
+		[SerializeField, HideInInspector] private BlockManager _blockManager = new BlockManager();
+		[SerializeField, HideInInspector] private Flowchart _cachedFlowchart;
 
-        public virtual UnityObj Owner
-        {
-            get => _blockManager.BlockOwner;
-            set => _blockManager.BlockOwner = value;
-        }
+		protected virtual void Awake()
+		{
+			Refresh();
+		}
 
-        public virtual string Name
-        {
-            get => name;
-            set => name = value;
-        }
+		public virtual void Refresh()
+		{
+			EnsureOwner();
+			_blockManager.BlockOwner = Owner;
 
-        public virtual IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
+			_blockManager.ClearBlocks(false);
 
-        protected virtual void Awake()
-        {
-            Refresh();
-        }
+			RegisterOurBlocksIntoTheManager();
+			void RegisterOurBlocksIntoTheManager()
+			{
+				// At some point, we'll have to change this to take the poco vers into account,
+				// but for now, we just want to make sure that the legacy Blocks on this
+				// GameObject are registered.
+				IList<Block> blocksOnGameObject = GetComponents<Block>();
+				for (int i = 0; i < blocksOnGameObject.Count; i++)
+				{
+					Block block = blocksOnGameObject[i];
+					if (block == null)
+					{
+						continue;
+					}
 
-        protected virtual void OnEnable()
-        {
-            Refresh();
-        }
+					_blockManager.Add(block, false);
+				}
+			}
 
-        protected virtual void EnsureOwner()
-        {
-            if (_owner is IBlockSource)
-            {
-                return;
-            }
+		}
 
-            if (_cachedFlowchart == null)
-            {
-                _cachedFlowchart = GetComponent<Flowchart>();
-            }
+		protected virtual void EnsureOwner()
+		{
+			if (Owner != null)
+			{
+				return;
+			}
 
-            if (_cachedFlowchart != null)
-            {
-                Owner = _cachedFlowchart;
-            }
-        }
+			if (_cachedFlowchart == null)
+			{
+				_cachedFlowchart = GetComponent<Flowchart>();
+			}
 
-        public virtual void Refresh()
-        {
-            EnsureOwner();
-            _blockManager.BlockOwner = Owner;
+			if (_cachedFlowchart != null)
+			{
+				Owner = _cachedFlowchart;
+			}
+		}
 
-            _blockManager.ClearBlocks(false);
+		protected virtual void OnEnable()
+		{
+			Refresh();
+		}
 
-            Block[] blocksOnGameObject = GetComponents<Block>();
-            for (int i = 0; i < blocksOnGameObject.Length; i++)
-            {
-                Block block = blocksOnGameObject[i];
-                if (block == null)
-                {
-                    continue;
-                }
+		#region Delegations to underlying manager
+		public virtual IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
+		public virtual UnityObj Owner
+		{
+			get => _blockManager.BlockOwner;
+			set => _blockManager.BlockOwner = value;
+		}
+		public virtual bool Contains(IBlock block) => 
+			_blockManager.Contains(block);
+		public virtual bool Add(IBlock block, bool triggerSignals) => 
+			_blockManager.Add(block, triggerSignals);
+		public virtual bool Remove(IBlock block, bool triggerSignals) => 
+			_blockManager.Remove(block, triggerSignals);
+		public virtual bool RemoveBlockWithId(ushort id, bool triggerSignals) => 
+			_blockManager.RemoveBlockWithId(id, triggerSignals);
+		public virtual bool ClearBlocks(bool triggerSignals) => 
+			_blockManager.ClearBlocks(triggerSignals);
 
-                _blockManager.Add(block, false);
-            }
-        }
+		public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
+		public IBlock GetBlock(string name) => _blockManager.GetBlock(name);
+		public bool Contains(ICommand cmd) => _blockManager.Contains(cmd);
+		public ICommand GetCommandWithId(ushort id) => _blockManager.GetCommandWithId(id);
 
-        public virtual bool Contains(Block block) => _blockManager.Contains(block);
-        public virtual bool Add(Block block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
-        public virtual bool Remove(Block block, bool triggerSignals) => _blockManager.Remove(block, triggerSignals);
-        public virtual bool RemoveBlockWithId(ushort id, bool triggerSignals) => _blockManager.RemoveBlockWithId(id, triggerSignals);
-        public virtual bool ClearBlocks(bool triggerSignals) => _blockManager.ClearBlocks(triggerSignals);
+		public bool Remove(ICommand cmd, bool triggerSignals = true) => 
+			_blockManager.Remove(cmd, triggerSignals);
+		public bool RemoveAllCommands(bool triggerSignals = true) => _blockManager.RemoveAllCommands(triggerSignals);
+		public bool RemoveCommandWithId(ushort id, bool triggerSignals) =>
+			_blockManager.RemoveCommandWithId(id, triggerSignals);
 
-        public virtual void Dispose()
-        {
-            _owner = null;
-            _cachedFlowchart = null;
-            _blockManager?.Dispose();
-        }
+		public int BlockCount => _blockManager.Blocks.Count;
 
-        protected virtual void OnDestroy()
-        {
-            Dispose();
-        }
+		public UnityObj BlockOwner { get => _blockManager.BlockOwner; set => _blockManager.BlockOwner = value; }
 
-        public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
+		public IReadOnlyList<ICommand> Commands => _blockManager.Commands;
+		#endregion
 
-        public IBlock GetBlock(string name) => _blockManager.GetBlock(name);
+		public virtual void Dispose()
+		{
+			Owner = null;
+			_cachedFlowchart = null;
+			_blockManager?.Dispose();
+		}
 
-        public bool Contains(IBlock block) => _blockManager.Contains(block);
+		protected virtual void OnDestroy()
+		{
+			Dispose();
+		}
 
-        public bool Add(IBlock block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
+		public IBlock CreateBlock(Vector2 position, string blockName = null, bool triggerSignals = true)
+		{
+			bool creatingFirstBlock = _blockManager.BlockCount == 0;
 
-        public bool Remove(IBlock block, bool triggerSignals) => _blockManager.Remove(block, triggerSignals);
+			DecideOnBlockName();
+			void DecideOnBlockName()
+			{
+				if (creatingFirstBlock)
+				{
+					blockName ??= DefaultConfig.FirstBlockName;
+				}
+				else
+				{
+					blockName ??= DefaultConfig.NewBlockName;
+				}
+			}
 
-        public int BlockCount => _blockManager.Blocks.Count;
+			Block created = gameObject.AddComponent<Block>();
+#if UNITY_EDITOR
+			created._NodeRect = new Rect(position, DefaultConfig.BlockSize);
+#endif
+			created.Scope = DefaultConfig.NewBlockScope;
 
-        public UnityObj BlockOwner { get => _blockManager.BlockOwner; set => _blockManager.BlockOwner = value; }
+			_blockManager.Add(created, triggerSignals);
 
-        IReadOnlyList<IBlock> IBlockSource.Blocks => (_blockManager).Blocks;
-    }
+			if (creatingFirstBlock)
+			{
+				ApplyConfiguredEventHandlerToFirstBlock(created);
+			}
+
+			BlockSignals.BlockCreated(created);
+			return created;
+		}
+
+		private void ApplyConfiguredEventHandlerToFirstBlock(IBlock block)
+		{
+			// TODO: Set up the UI so the user can make a proper choice without
+			// needing to get too technical. For now, do nothing.
+		}
+
+		protected static FlowchartDefaultConfig DefaultConfig => FlowchartDefaultConfig.S;
+
+		public IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
+		{
+			throw new NotImplementedException();
+		}
+
+		public byte NextValidId()
+		{
+			return ((IBlockManager)_blockManager).NextValidId();
+		}
+
+		public virtual string Name
+		{
+			get => name;
+			set => name = value;
+		}
+	}
 }

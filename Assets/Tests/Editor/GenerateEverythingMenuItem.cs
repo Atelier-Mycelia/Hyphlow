@@ -49,12 +49,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 
                 var newCommand = newGO.AddComponent(commandType) as Command;
-                newCommand.ParentBlock = targetBlock;
-                newCommand.ItemId = flow.NextItemId();
+                targetBlock.Add(newCommand, true);
 
-                // Let command know it has just been added to the block
-                newCommand.OnCommandAdded(targetBlock);
-                targetBlock.CommandList.Add(newCommand);
             }
 
             //add all variable types

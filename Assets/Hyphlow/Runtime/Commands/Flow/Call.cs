@@ -97,7 +97,7 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (_targetBlock.IsExecuting())
+                if (_targetBlock.IsExecuting)
                 {
                     Debug.LogWarning(_targetBlock.BlockName + " cannot be called/executed, it is already running.");
                     Continue();

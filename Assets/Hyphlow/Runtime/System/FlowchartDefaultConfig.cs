@@ -20,6 +20,9 @@ namespace AtMycelia.Hyphlow
         private string _newBlockName = "New Block";
 
         [SerializeField]
+        private Vector2 _blockSize = new Vector2(300f, 100f);
+
+        [SerializeField]
         private string _firstBlockEventHandlerTypeName = "";
 
         public AccessScope NewBlockScope
@@ -35,6 +38,11 @@ namespace AtMycelia.Hyphlow
         public string NewBlockName
         {
             get => _newBlockName;
+        }
+
+        public Vector2 BlockSize
+        {
+            get => _blockSize;
         }
 
         public string FirstBlockEventHandlerTypeName

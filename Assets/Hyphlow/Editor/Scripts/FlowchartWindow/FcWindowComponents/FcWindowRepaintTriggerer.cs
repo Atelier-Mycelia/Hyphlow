@@ -74,7 +74,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             TriggerRepaint();
         }
 
-        public void OnPostBlockDeletion(ushort blockId)
+        public void OnPostBlockDeletion(byte blockId)
         {
             TriggerRepaint();
         }

@@ -591,7 +591,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             UpdateButtonForBlock(block);
         }
 
-        public void OnPostBlockDeletion(ushort blockId)
+        public void OnPostBlockDeletion(byte blockId)
         {
             // Why do this in post? It's because by the time that the pre signal fires, the
             // block(s) are still registered in the Flowchart. That leads to the
@@ -602,18 +602,18 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             RefreshBlocks();
         }
 
-        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
+        public void OnPostMultiBlockDeletion(IList<byte> blockIds)
         {
             ClearAll();
             RefreshBlocks();
         }
 
-        public void OnPostBlockCut(ushort blockId)
+        public void OnPostBlockCut(byte blockId)
         {
             OnPostBlockDeletion(blockId);
         }
 
-        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        public void OnPostMultiBlockCut(IList<byte> blockIds)
         {
             OnPostMultiBlockDeletion(blockIds);
         }

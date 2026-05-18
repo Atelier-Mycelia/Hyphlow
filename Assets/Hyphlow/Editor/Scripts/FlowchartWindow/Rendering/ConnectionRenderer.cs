@@ -183,8 +183,8 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void OnMultiBlocksDeselected(IList<IBlock> blocks) => RequestRepaint();
         public void OnPreBlockDeletion(IList<IBlock> blocks) => RequestRepaint();
         public void OnPreBlockDeletion(IBlock block) => RequestRepaint();
-        public void OnPostBlockDeletion(ushort blockId) => RequestRepaint();
-        public void OnPostMultiBlockDeletion(IList<ushort> blockIds) => RequestRepaint();
+        public void OnPostBlockDeletion(byte blockId) => RequestRepaint();
+        public void OnPostMultiBlockDeletion(IList<byte> blockIds) => RequestRepaint();
         public void OnBlockCreated(IBlock block) => RequestRepaint();
         public void OnBlocksCopied(IList<IBlock> blocks) => RequestRepaint();
         public void OnCommandSelected(ICommand command) => RequestRepaint();

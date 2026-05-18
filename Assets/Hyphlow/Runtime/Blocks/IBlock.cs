@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,13 +10,16 @@ namespace AtMycelia.Hyphlow
     /// Current MonoBehaviour Block should implement this.
     /// Future POCO blocks can implement this as well.
     /// </summary>
-    public interface IBlock : IHasKey, IHasItemId<ushort>, ICommandSource, IRefreshable
+    public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable
     {
+        new string Key { get; set; }
         Color Tint { get; set; }
         bool UseCustomTint { get; set; }
         bool Enabled { get; set; }
         bool IsSelected { get; set; }
         bool IsControlSelected { get; set; }
+
+        bool Insert(ICommand cmd, byte index, bool triggerSignals);
 
         FilteredState FilteredState { get; set; }
         Rect _NodeRect { get; set; }
@@ -46,7 +48,7 @@ namespace AtMycelia.Hyphlow
 
         Flowchart GetFlowchart();
 
-        bool IsExecuting();
+        bool IsExecuting { get; }
         int GetExecutionCount();
 
         void StartExecution();

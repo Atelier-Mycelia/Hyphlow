@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 
 namespace AtMycelia.Hyphlow.EditorUtils
@@ -35,7 +34,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 fChart.RemoveMultiBlocks(selected);
 
-                IList<ushort> blockIds = selected.Select((elem) => elem.ItemId).ToList();
+                IList<byte> blockIds = new List<byte>();
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    blockIds.Add(selected[i].ItemId);
+                }
 
                 for (int i = 0; i < selected.Count; i++)
                 {

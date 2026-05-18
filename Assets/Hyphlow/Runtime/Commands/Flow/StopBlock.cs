@@ -35,7 +35,7 @@ namespace AtMycelia.Hyphlow
 
             var block = flowchart.GetBlock(blockName.Value);
             if (block == null ||
-                !block.IsExecuting())
+                !block.IsExecuting)
             {
                 Continue();
             }

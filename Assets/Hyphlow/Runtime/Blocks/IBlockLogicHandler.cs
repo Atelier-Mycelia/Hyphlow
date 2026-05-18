@@ -4,12 +4,6 @@ using UnityEngine;
 
 namespace AtMycelia.Hyphlow
 {
-    public interface IBlockLogicHandler : IBlockExecutor, IRefreshable
-    {
-        MonoBehaviour Owner { get; set; }
-        bool ExecuteIfHasBlock(string blockName);
-    }
-
     public interface IBlockExecutor
     {
         void ExecuteBlock(string blockName);
@@ -30,7 +24,7 @@ namespace AtMycelia.Hyphlow
 #if UNITY_EDITOR
     public interface IBlockCreator
     {
-        Block CreateBlock(Vector2 position, string blockName = null);
+        IBlock CreateBlock(Vector2 position, string blockName = null, bool triggerSignals = true);
         IList<IBlock> CreateMultiBlocks(IList<Vector2> positions);
     }
 #endif
