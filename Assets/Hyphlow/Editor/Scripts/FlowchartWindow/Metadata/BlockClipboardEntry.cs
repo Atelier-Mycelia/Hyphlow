@@ -415,7 +415,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     ApplyJson(commandEl, newCommand as UnityObj);
                 }
 
-                newCommand.ItemId = flowchart.NextItemId();
             }
 
             // Copy event handler
@@ -438,7 +437,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             // Copy block properties, but do not copy references because those were just assigned
             ApplyProperties(blockPropertySnapshots, newBlock as Block);
 
-            newBlock.BlockName = flowchart.GetUniqueBlockKey(blockName + " (Copy)");
+            string suggestedNewName = blockName + " (Copy)";
+            newBlock.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(suggestedNewName, flowchart.Blocks, newBlock);
 
             return newBlock;
         }

@@ -142,7 +142,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            var flowchart = (Flowchart)block.GetFlowchart();
+            var flowchart = block.GetFlowchart();
 
             // Use index of last selected command in list, or end of list if nothing selected.
             int index = -1;
@@ -159,13 +159,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             var newCommand = Undo.AddComponent(block.gameObject, commandType) as Command;
-            block.GetFlowchart().AddSelectedCommand(newCommand);
-            newCommand.ParentBlock = block;
-            newCommand.ItemId = flowchart.NextItemId();
-
-            // Let command know it has just been added to the block
-            newCommand.OnCommandAdded(block);
-
+            block.Add(newCommand);
+            flowchart.AddSelectedCommand(newCommand);
+            
             Undo.RecordObject(block, "Set command type");
             if (index < block.CommandList.Count - 1)
             {

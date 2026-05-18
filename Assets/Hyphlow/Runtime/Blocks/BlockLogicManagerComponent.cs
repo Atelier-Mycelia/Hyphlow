@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace AtMycelia.Hyphlow
 {
     [DisallowMultipleComponent]
     [RequireComponent(typeof(BlockManagerComponent))]
     [ExecuteInEditMode]
     public class BlockLogicManagerComponent : MonoBehaviour, IRefreshable, IDisposable, 
-        IBlockLogicHandler
+        IBlockLogicManager
     {
         [SerializeField, HideInInspector] private MonoBehaviour _owner;
         [SerializeField, HideInInspector] private BlockLogicManager _manager;
@@ -31,7 +27,7 @@ namespace AtMycelia.Hyphlow
             set
             {
                 _owner = value;
-                _manager.Owner = _owner;
+                _manager.CoroutineRunner = _owner;
             }
         }
 
@@ -42,7 +38,8 @@ namespace AtMycelia.Hyphlow
         }
 
         public virtual IReadOnlyList<IBlock> Blocks => _manager.Blocks;
-        public virtual IReadOnlyList<ICommand> Commands => _manager.Commands;
+
+        public MonoBehaviour CoroutineRunner { get => _manager.CoroutineRunner; set => _manager.CoroutineRunner = value; }
 
         protected virtual void Awake()
         {
@@ -62,9 +59,8 @@ namespace AtMycelia.Hyphlow
         public void Refresh()
         {
             EnsureOwner();
-            _manager.Owner = _owner;
-            _manager.RefreshBlockAndCommandCache();
-            _manager.RefreshBlocks();
+            _manager.CoroutineRunner = _owner;
+            _manager.Refresh();
         }
 
         private void EnsureOwner()
@@ -80,53 +76,8 @@ namespace AtMycelia.Hyphlow
             return _manager.NextItemId();
         }
 
-        public Block CreateBlock(Vector2 position, string blockName = null)
-        {
-            bool creatingFirstBlock = _manager.Blocks.Count == 0;
-            var config = FlowchartDefaultConfig.S;
-
-            if (creatingFirstBlock)
-            {
-                blockName ??= config.FirstBlockName;
-            }
-            else
-            {
-                blockName ??= config.NewBlockName;
-            }
-
-            Block created = gameObject.AddComponent<Block>();
-#if UNITY_EDITOR
-            created._NodeRect = new Rect(position, new Vector2(300, 100));
-#endif
-            created.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(blockName, _manager.Blocks, created);
-
-            created.Scope = config.NewBlockScope;
-            created.ItemId = _manager.NextItemId();
-            _manager.Add(created);
-
-            if (creatingFirstBlock)
-            {
-                ApplyConfiguredEventHandlerToFirstBlock(created);
-            }
-
-            BlockSignals.BlockCreated(created);
-            return created;
-        }
-
-        public IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
-        {
-            IList<IBlock> blocksCreated = new Block[positions.Count];
-            for (int i = 0; i < positions.Count; i++)
-            {
-                blocksCreated[i] = CreateBlock(positions[i]);
-            }
-
-            return blocksCreated;
-        }
-
         public void ApplyDefaultConfigToFirstBlock()
         {
-            _manager.RefreshBlockAndCommandCache();
             if (_manager.Blocks.Count == 0)
             {
                 return;
@@ -217,7 +168,7 @@ namespace AtMycelia.Hyphlow
         public bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null) => _manager.ExecuteBlock(block, commandIndex, onComplete);
         public void StopAllBlocks() => _manager.StopAllBlocks();
         public bool HasExecutingBlocks() => _manager.HasExecutingBlocks();
-        public IReadOnlyList<IBlock> GetExecutingBlocks() => (IReadOnlyList<IBlock>)_manager.GetExecutingBlocks();
+        public IReadOnlyList<IBlock> GetExecutingBlocks() => _manager.GetExecutingBlocks();
 
         public void Dispose()
         {
@@ -233,6 +184,11 @@ namespace AtMycelia.Hyphlow
         public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
         {
             return _manager.ExecuteBlock(block, commandIndex, onComplete);
+        }
+
+        public bool ExecuteIfHasBlock(string blockName, Action<string> executeByName)
+        {
+            return _manager.ExecuteIfHasBlock(blockName, executeByName);
         }
     }
 }

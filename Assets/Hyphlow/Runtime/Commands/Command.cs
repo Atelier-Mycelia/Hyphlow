@@ -23,7 +23,7 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("commandId")]
         [FormerlySerializedAs("itemId")]
         [HideInInspector]
-        [SerializeField] protected ushort _itemId = 0;
+        [SerializeField] protected byte _itemId = 0;
 
         [HideInInspector]
         [FormerlySerializedAs("indentLevel")]
@@ -226,7 +226,7 @@ namespace AtMycelia.Hyphlow
         /// Unique identifier for this command.
         /// Unique for this Flowchart.
         /// </summary>
-        public virtual ushort ItemId { get { return _itemId; } set { _itemId = value; } }
+        public virtual byte ItemId { get { return _itemId; } set { _itemId = value; } }
 
         /// <summary>
         /// Error message to display in the Command inspector.
@@ -530,9 +530,9 @@ namespace AtMycelia.Hyphlow
             get => ItemId;
             set
             {
-                if (value is ushort ushortValue)
+                if (value is byte byteVal)
                 {
-                    ItemId = ushortValue;
+                    ItemId = byteVal;
                 }
                 else
                 {

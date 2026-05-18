@@ -2,14 +2,26 @@ using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow
 {
-    public interface IBlockSource : IHasName
+    /// <summary>
+    /// Runtime-agnostic contract for objects that contain Blocks.
+    /// </summary>
+    public interface IHasBlocks
     {
         IReadOnlyList<IBlock> Blocks { get; }
-
         bool Contains(IBlock block);
         IBlock GetBlock(string name);
         IBlock GetBlock(ushort id);
+    }
 
+    /// <summary>
+    /// Runtime-agnostic contract for objects that: <br></br>
+    /// - contain Blocks <br></br>
+    /// - have a name <br></br>
+    /// - have Commands <br></br>
+    /// - Let you add or remove Blocks, optionally triggering signals/events.
+    /// </summary>
+    public interface IBlockSource : IHasBlocks, IHasName, IHasCommands, ICommandRemovable
+    {
         /// <summary>
         /// Returns true if the Block was successfully added, false otherwise.
         /// </summary>

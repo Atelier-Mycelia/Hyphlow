@@ -157,12 +157,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<IPreBlockDeletionResponder>(r => r.OnPreBlockDeletion(block));
         }
 
-        public void OnPostBlockDeletion(ushort blockId)
+        public void OnPostBlockDeletion(byte blockId)
         {
             Forward<IPostBlockDeletionResponder>(r => r.OnPostBlockDeletion(blockId));
         }
 
-        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
+        public void OnPostMultiBlockDeletion(IList<byte> blockIds)
         {
             Forward<IPostMultiBlockDeletionResponder>(r => r.OnPostMultiBlockDeletion(blockIds));
         }
@@ -202,7 +202,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<IPreBlockCutResponder>(r => r.OnPreBlockCut(block));
         }
 
-        public void OnPostBlockCut(ushort blockId)
+        public void OnPostBlockCut(byte blockId)
         {
             Forward<IPostBlockCutResponder>(r => r.OnPostBlockCut(blockId));
         }
@@ -212,7 +212,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             Forward<IPreMultiBlockCutResponder>(r => r.OnPreMultiBlockCut(blocks));
         }
 
-        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        public void OnPostMultiBlockCut(IList<byte> blockIds)
         {
             Forward<IPostMultiBlockCutResponder>(r => r.OnPostMultiBlockCut(blockIds));
         }

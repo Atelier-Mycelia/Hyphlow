@@ -31,10 +31,10 @@ namespace AtMycelia.Hyphlow
         public static Action<IList<IBlock>> MultiBlocksDeselected = delegate { };
 
         public static Action<IBlock> PreBlockCut = delegate { };
-        public static Action<ushort> PostBlockCut = delegate { };
+        public static Action<byte> PostBlockCut = delegate { };
 
         public static Action<IList<IBlock>> PreMultiBlockCut = delegate { };
-        public static Action<IList<ushort>> PostMultiBlockCut = delegate { };
+        public static Action<IList<byte>> PostMultiBlockCut = delegate { };
         /// <summary>
         /// Sent just before a Block is deleted. This should only signal for when the user
         /// is deleting one Block at a time, not when they're deleting multiple at once.
@@ -44,7 +44,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Sent just after a Block is deleted. The ushort argument is the ID of the deleted Block.
         /// </summary>
-        public static Action<ushort> PostBlockDelete = delegate { };
+        public static Action<byte> PostBlockDelete = delegate { };
 
         /// <summary>
         /// Sent just before multiple Blocks are deleted at once.
@@ -54,7 +54,7 @@ namespace AtMycelia.Hyphlow
         /// Sent just after multiple Blocks are deleted at once. The IList<ushort> argument
         /// contains the IDs of the deleted Blocks.
         /// </summary>
-        public static Action<IList<ushort>> PostMultiBlockDelete = delegate { };
+        public static Action<IList<byte>> PostMultiBlockDelete = delegate { };
 
         public static Action<IList<IBlock>> BlocksCopied = delegate { };
         #endregion
@@ -99,7 +99,7 @@ namespace AtMycelia.Hyphlow
 
     public interface IPostBlockCutResponder
     {
-        void OnPostBlockCut(ushort blockId);
+        void OnPostBlockCut(byte blockId);
     }
 
     public interface IPreMultiBlockCutResponder
@@ -109,7 +109,7 @@ namespace AtMycelia.Hyphlow
 
     public interface IPostMultiBlockCutResponder
     {
-        void OnPostMultiBlockCut(IList<ushort> blockIds);
+        void OnPostMultiBlockCut(IList<byte> blockIds);
     }
 
     public interface IBlockClickResponder
@@ -150,12 +150,12 @@ namespace AtMycelia.Hyphlow
 
     public interface IPostBlockDeletionResponder
     {
-        void OnPostBlockDeletion(ushort blockId);
+        void OnPostBlockDeletion(byte blockId);
     }
 
     public interface IPostMultiBlockDeletionResponder
     {
-        void OnPostMultiBlockDeletion(IList<ushort> blockIds);
+        void OnPostMultiBlockDeletion(IList<byte> blockIds);
     }
 
     public interface IBlocksCopiedResponder

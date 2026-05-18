@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow
@@ -7,7 +6,7 @@ namespace AtMycelia.Hyphlow
     /// Runtime-agnostic contract for command-like instruction units.
     /// Intended for both MonoBehaviour Commands and future POCO Commands.
     /// </summary>
-    public interface ICommand : IHasItemId<ushort>, IRefreshable, IHasName
+    public interface ICommand : IHasItemId<byte>, IRefreshable, IHasName
     {
         bool NonStandardPaste { get; }
         void GetConnectedBlocks(ref IList<IBlock> toPopulate);

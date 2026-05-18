@@ -97,7 +97,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			{
 				// Ensure block name is unique for this Flowchart
 				var block = target as Block;
-				string uniqueName = flowchart.GetUniqueBlockKey(blockNameProperty.stringValue, block);
+				string suggestedName = blockNameProperty.stringValue;
+				string uniqueName = UniqueKeyGenerator.GetUniqueKeyFor(suggestedName, flowchart.Blocks, block);
 				if (uniqueName != block.BlockName)
 				{
 					blockNameProperty.stringValue = uniqueName;
@@ -759,7 +760,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 							null;
 						if (pastedCommand != null)
 						{
-							pastedCommand.ItemId = flowchart.NextItemId();
+							flowchart.SelectedBlock.Add(pastedCommand, true);
 							flowchart.SelectedBlock.CommandList.Insert(pasteIndex++, pastedCommand);
 						}
 					}
@@ -833,7 +834,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			var targetBlock = target as Block;
 			var flowchart = targetBlock.GetFlowchart();
 			ICommand command = flowchart.SelectedCommands[0];
-			if (targetBlock.IsExecuting())
+			if (targetBlock.IsExecuting)
 			{
 				// The Block is already executing.
 				// Tell the Block to stop, wait a little while so the executing command has a 

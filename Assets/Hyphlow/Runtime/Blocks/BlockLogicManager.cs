@@ -4,46 +4,38 @@ using UnityEngine;
 
 namespace AtMycelia.Hyphlow
 {
-    public interface IBlockLogicManager : ICommandSource, IDisposable, IHasName
+    public interface IBlockLogicManager : IBlockExecutor, IDisposable, IHasName, IRefreshable
     {
         /// <summary>
-        /// The MonoBehaviour that owns this BlockLogicManager. This is used to 
-        /// execute logic that may take more than one frame.
+        /// This is used to execute logic that may take more than one frame.
         /// </summary>
-        MonoBehaviour Owner { get; set; }
+        MonoBehaviour CoroutineRunner { get; set; }
         bool ExecuteIfHasBlock(string blockName, Action<string> executeByName);
-        void ExecuteBlock(string blockName);
-        void StopBlock(string blockName);
-        bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null);
-        void StopAllBlocks();
-        bool HasExecutingBlocks();
-        IList<IBlock> GetExecutingBlocks();
     }
 
     [Serializable]
     public sealed class BlockLogicManager : IBlockLogicManager, IDisposable
     {
-        [SerializeField] [HideInInspector] private List<Command> _legacyCommands = new List<Command>();
-        [SerializeField] [HideInInspector] private MonoBehaviour _owner;
+        [SerializeField] [HideInInspector] private MonoBehaviour _coroutineRunner;
         [SerializeField] private ushort _nextItemId = 1;
 
-        public void Initialize(IBlockManager blockManager, MonoBehaviour owner)
+        public void Initialize(IBlockManager blockManager, MonoBehaviour coroutineRunner)
         {
+            _coroutineRunner = coroutineRunner;
             _blockManager = blockManager;
-            _blockManager.BlockOwner = owner;
-            Owner = owner;
-            RefreshBlockAndCommandCache();
+            _blockManager.BlockOwner = coroutineRunner;
+            CoroutineRunner = coroutineRunner;
+            Refresh();
         }
 
         private IBlockManager _blockManager;
 
-        public MonoBehaviour Owner
+        public MonoBehaviour CoroutineRunner
         {
-            get => _owner;
+            get => _coroutineRunner;
             set
             {
-                _owner = value;
-                RefreshBlockAndCommandCache();
+                _coroutineRunner = value;
             }
         }
 
@@ -51,9 +43,9 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                if (_owner != null && !string.IsNullOrEmpty(_owner.name))
+                if (_coroutineRunner != null && !string.IsNullOrEmpty(_coroutineRunner.name))
                 {
-                    return _owner.name;
+                    return _coroutineRunner.name;
                 }
 
                 return _defaultName;
@@ -63,97 +55,46 @@ namespace AtMycelia.Hyphlow
 
         private static readonly string _defaultName = "UnownedBlockLogicManager";
 
-        public IReadOnlyList<ICommand> Commands => _legacyCommands;
-        public IReadOnlyDictionary<ushort, IBlock> BlockLookup
+        /// <summary>
+        /// To make sure this is working with the right stuff.
+        /// </summary>
+        public void Refresh()
         {
-            get
+            RefreshCaches();
+        }
+
+        private void RefreshCaches()
+        {
+            _executingCommands ??= new Dictionary<ushort, ICommand>();
+            _executingBlocks ??= new Dictionary<ushort, IBlock>();
+            _executingCommands.Clear();
+            _executingBlocks.Clear();
+
+            for (int i = 0; i < _blockManager.Blocks.Count; i++)
             {
-                // If you later expose lookup in BlockManager publicly, delegate directly.
-                // For now, build from source methods on demand.
-                Dictionary<ushort, IBlock> dict = new Dictionary<ushort, IBlock>();
-                for (int i = 0; i < _blockManager.Blocks.Count; i++)
+                var block = _blockManager.Blocks[i];
+                if (block != null && block.IsExecuting)
                 {
-                    var b = _blockManager.Blocks[i];
-                    if (b != null)
+                    _executingBlocks[block.ItemId] = block;
+                }
+                else
+                {
+                    continue;
+                }
+
+                for (int j = 0; j < block.CommandList.Count; j++)
+                {
+                    var cmd = block.CommandList[j];
+                    if (cmd != null && cmd.IsExecuting)
                     {
-                        dict[b.ItemId] = b;
+                        _executingCommands[cmd.ItemId] = cmd;
                     }
                 }
-
-                return dict;
             }
         }
 
-        public void RefreshBlockAndCommandCache()
-        {
-            _legacyCommands ??= new List<Command>();
-
-            _blockManager = _blockManager ?? new BlockManager();
-            _blockManager.BlockOwner = Owner;
-            _blockManager.Refresh();
-
-            _legacyCommands.Clear();
-
-            if (_owner == null)
-            {
-                _blockManager.ClearBlocks(false);
-                return;
-            }
-
-            HashSet<ushort> usedIds = new HashSet<ushort>();
-
-            // 1) Commands first
-            var commandsFound = _owner.GetComponents<Command>();
-            for (int i = 0; i < commandsFound.Length; i++)
-            {
-                var cmd = commandsFound[i];
-                if (cmd == null)
-                {
-                    continue;
-                }
-
-                while (cmd.ItemId == Block.InvalidId || usedIds.Contains(cmd.ItemId))
-                {
-                    cmd.ItemId = NextItemId();
-                }
-
-                usedIds.Add(cmd.ItemId);
-                _legacyCommands.Add(cmd);
-            }
-
-            // 2) Rebuild block storage through BlockManager
-            _blockManager.ClearBlocks(false);
-            var blocksFound = _owner.GetComponents<Block>();
-            for (int i = 0; i < blocksFound.Length; i++)
-            {
-                var block = blocksFound[i];
-                if (block == null)
-                {
-                    continue;
-                }
-
-                while (block.ItemId == Block.InvalidId || usedIds.Contains(block.ItemId))
-                {
-                    block.ItemId = NextItemId();
-                }
-
-                usedIds.Add(block.ItemId);
-                _blockManager.Add(block, false);
-            }
-        }
-
-        public void RefreshBlocks()
-        {
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                var block = blocks[i];
-                if (block != null)
-                {
-                    block.Refresh();
-                }
-            }
-        }
+        private IDictionary<ushort, ICommand> _executingCommands = new Dictionary<ushort, ICommand>();
+        private IDictionary<ushort, IBlock> _executingBlocks = new Dictionary<ushort, IBlock>();
 
         public ushort NextItemId()
         {
@@ -162,13 +103,16 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
+        /// <summary>
+        /// Returns the block with the given name, if it exists and is executing.
+        /// </summary>
         public IBlock FindBlock(string blockName)
         {
             var blocks = _blockManager.Blocks;
             for (int i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
-                if (block != null && block.BlockName == blockName)
+                if (block != null && block.BlockName == blockName && block.IsExecuting)
                 {
                     return block;
                 }
@@ -177,6 +121,9 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
+        /// <summary>
+        /// Returns true if the block with the given name exists and is executing.
+        /// </summary>
         public bool HasBlock(string blockName)
         {
             return FindBlock(blockName) != null;
@@ -195,125 +142,123 @@ namespace AtMycelia.Hyphlow
 
         public void ExecuteBlock(string blockName)
         {
-            var block = FindBlock(blockName);
+            var block = _blockManager.GetBlock(blockName);
             if (block == null)
             {
                 Debug.LogError("Block " + blockName + " does not exist");
                 return;
             }
 
-            if (!ExecuteBlock(block))
+            if (block.IsExecuting)
+            {
+                Debug.LogWarning("Block " + blockName + " is already executing");
+                return;
+            }
+
+            bool success = ExecuteBlock(block);
+            if (!success)
             {
                 Debug.LogWarning("Block " + blockName + " failed to execute");
             }
         }
 
-        public void StopBlock(string blockName)
-        {
-            var block = FindBlock(blockName);
-            if (block == null)
-            {
-                Debug.LogError("Block " + blockName + " does not exist");
-                return;
-            }
-
-            if (block.IsExecuting())
-            {
-                block.Stop();
-            }
-        }
-
+        /// <summary>
+        /// Returns true if execution successfully started, false if it failed to start 
+        /// (e.g. block is already executing, or block is not associated with this manager).
+        /// </summary>
         public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
         {
-            bool BlockBelongsToOwner(IBlock candidate)
-            {
-                bool actualInput = candidate != null && candidate.Owner != null && candidate.Owner.gameObject != null;
-                bool weHaveOwner = Owner != null && Owner.gameObject != null;
-                bool result = weHaveOwner && actualInput && candidate.Owner.gameObject == Owner.gameObject;
-                return result;
-            }
-
             if (block == null)
             {
                 Debug.LogError("Block must not be null");
                 return false;
             }
 
-            if (!BlockBelongsToOwner(block))
+            bool weShouldWorkWithIt = block == _blockManager.GetBlock(block.ItemId);
+            string errorMessage;
+            if (!weShouldWorkWithIt)
             {
-                Debug.LogError("Block must belong to the same gameObject as this Flowchart");
+                errorMessage = $"Block {block.BlockName} either doesn't exist, " +
+                    $"is not executing, or is not associated with this manager.";
+                Debug.LogError(errorMessage);
                 return false;
             }
 
-            if (block.IsExecuting())
+            if (block.IsExecuting)
             {
-                Debug.LogWarning(block.BlockName + " cannot be called/executed, it is already running.");
+                errorMessage = $"Block {block.BlockName} is already executing and cannot " +
+                    $"be executed again until it's done.";
+                Debug.LogWarning(errorMessage);
                 return false;
             }
 
-            if (_owner == null)
+            if (_coroutineRunner == null)
             {
-                Debug.LogError("Cannot execute block because BlockLogicManager has no owner.");
+                errorMessage = $"Cannot execute block {block.BlockName} because " +
+                    $"BlockLogicManager has no CoroutineRunner.";
+                Debug.LogError(errorMessage);
                 return false;
             }
 
-            _owner.StartCoroutine(block.Execute(commandIndex, onComplete));
+            _coroutineRunner.StartCoroutine(block.Execute(commandIndex, onComplete));
             return true;
+        }
+
+        public void StopBlock(string blockName)
+        {
+            IBlock block = FindBlock(blockName);
+            if (block == null)
+            {
+                string errorMessage = $"Block {blockName} either doesn't exist, is not executing, or is not " +
+                    $"associated with this manager.";
+                Debug.LogError(errorMessage);
+                return;
+            }
+
+            block.Stop();
         }
 
         public void StopAllBlocks()
         {
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
+            var executing = GetExecutingBlocks();
+            // ^So we don't mutate the dictionary while iterating over it.
+            // We want to stop all executing blocks, so we make a copy of
+            // the values and iterate over that.
+            foreach (IBlock toStop in executing)
             {
-                var block = blocks[i];
-                if (block != null && block.IsExecuting())
-                {
-                    block.Stop();
-                }
+                toStop.Stop();
             }
+        }
+
+        public IReadOnlyList<IBlock> GetExecutingBlocks()
+        {
+            var result = new List<IBlock>(_executingBlocks.Values);
+            return result;
         }
 
         public bool HasExecutingBlocks()
         {
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                var block = blocks[i];
-                if (block != null && block.IsExecuting())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public IList<IBlock> GetExecutingBlocks()
-        {
-            var result = new List<IBlock>();
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                var block = blocks[i];
-                if (block != null && block.IsExecuting())
-                {
-                    result.Add(block);
-                }
-            }
-
-            return result;
+            return _executingBlocks.Count > 0;
         }
 
         #region IBlockSource Implementation
         public IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
         public bool Contains(IBlock block) => _blockManager.Contains(block);
         public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
-        public bool Add(IBlock block, bool triggerSignals = true) => _blockManager.Add(block, triggerSignals);
-        public bool Remove(IBlock block, bool triggerSignals = true) => _blockManager.Remove(block, triggerSignals);
-        public bool RemoveBlockWithId(ushort id, bool triggerSignals = true) => _blockManager.RemoveBlockWithId(id, triggerSignals);
 
-        public bool Contains(ICommand cmd) => _legacyCommands.Contains(cmd as Command);
+        /// <summary>
+        /// Returns true if the given command is currently executing and is associated with this manager.
+        /// </summary>
+        public bool Contains(ICommand cmd)
+        {
+            if (cmd == null)
+            {
+                return false;
+            }
+            bool result = _executingCommands.TryGetValue(cmd.ItemId, out ICommand found) 
+                && ReferenceEquals(cmd, found);
+            return result;
+        }
 
         public bool ClearBlocks(bool triggerSignals)
         {
@@ -321,83 +266,41 @@ namespace AtMycelia.Hyphlow
         }
         #endregion
 
+        /// <summary>
+        /// Returns the command with the given ID (if it is executing).
+        /// If it's either not executing or involved with this manager, 
+        /// returns null.
+        /// </summary>
         public ICommand GetCommandWithId(ushort id)
         {
-            for (int i = 0; i < _legacyCommands.Count; i++)
-            {
-                var cmd = _legacyCommands[i];
-                if (cmd != null && cmd.ItemId == id)
-                {
-                    return cmd;
-                }
-            }
-
-            return null;
-        }
-
-        public void Add(ICommand cmd)
-        {
-            if (cmd != null && cmd is Command legacyCommand)
-            {
-                _legacyCommands.Add(legacyCommand);
-            }
-        }
-
-        public bool Remove(ICommand cmd)
-        {
-            if (cmd == null)
-            {
-                return false;
-            }
-
-            bool belongsToUs = cmd.ParentBlock != null &&
-                               _blockManager.GetBlock(cmd.ParentBlock.ItemId) == cmd.ParentBlock;
-
-            if (!belongsToUs)
-            {
-                Debug.LogWarning($"Trying to remove Command {cmd.Name} from Flowchart {Name}, " +
-                    $"but its ParentBlock does not belong to this Flowchart.");
-                return false;
-            }
-
-            _legacyCommands.Remove(cmd as Command);
-            cmd.ParentBlock.Remove(cmd);
-            return true;
-        }
-
-        public bool RemoveAllCommands()
-        {
-            bool anyRemoved = _legacyCommands.Count > 0;
-
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                var block = blocks[i];
-                if (block != null)
-                {
-                    block.RemoveAllCommands();
-                }
-            }
-
-            _legacyCommands.Clear();
-            return anyRemoved;
-        }
-
-        public bool RemoveCommandWithId(ushort id)
-        {
-            ICommand cmd = GetCommandWithId(id);
-            return cmd != null && Remove(cmd);
+            _executingCommands.TryGetValue(id, out ICommand cmd);
+            return cmd;
         }
 
         public void Dispose()
         {
-            _owner = null;
-            _legacyCommands?.Clear();
+            _coroutineRunner = null;
         }
 
+        /// <summary>
+        /// Returns the block with the given name, if it exists and is executing. 
+        /// Otherwise, returns null.
+        /// </summary>
         public IBlock GetBlock(string name)
         {
-            return _blockManager.GetBlock(name);
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            foreach (IBlock block in _executingBlocks.Values)
+            {
+                if (block != null && block.BlockName == name)
+                {
+                    return block;
+                }
+            }
+            return null;
         }
     }
 }

@@ -151,10 +151,10 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void NotifyPreMultiBlockCut(IList<IBlock> blocks) =>
             Broadcast<IPreMultiBlockCutResponder>(res => res.OnPreMultiBlockCut(blocks));
 
-        public void NotifyPostBlockCut(ushort blockId) =>
+        public void NotifyPostBlockCut(byte blockId) =>
             Broadcast<IPostBlockCutResponder>(res => res.OnPostBlockCut(blockId));
 
-        public void NotifyPostMultiBlockCut(IList<ushort> blockIds) =>
+        public void NotifyPostMultiBlockCut(IList<byte> blockIds) =>
             Broadcast<IPostMultiBlockCutResponder>(res => res.OnPostMultiBlockCut(blockIds));
 
         public void NotifyBlockCreated(IBlock block) =>
@@ -166,10 +166,10 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         public void NotifyPreMultiBlockDeleted(IList<IBlock> blocks) =>
             Broadcast<IPreBlockDeletionResponder>(res => res.OnPreBlockDeletion(blocks));
 
-        public void NotifyPostBlockDeleted(ushort blockId) =>
+        public void NotifyPostBlockDeleted(byte blockId) =>
             Broadcast<IPostBlockDeletionResponder>(res => res.OnPostBlockDeletion(blockId));
 
-        public void NotifyPostMultiBlockDeleted(IList<ushort> blockIds) =>
+        public void NotifyPostMultiBlockDeleted(IList<byte> blockIds) =>
             Broadcast<IPostMultiBlockDeletionResponder>(res => res.OnPostMultiBlockDeletion(blockIds));
 
         public void NotifyBlockClicked(IBlock block, Event evt) =>
