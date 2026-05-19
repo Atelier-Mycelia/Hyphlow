@@ -60,24 +60,20 @@ namespace AtMycelia.Hyphlow
         #endregion
 
         #region Runtime Signals
-        /// <summary>
-        /// BlockStart signal. Sent when the Block starts execution.
-        /// </summary>
-        public static event BlockStartHandler OnBlockStart = delegate { };
+        public static BlockStartHandler BlockExecStarted = delegate { };
         public delegate void BlockStartHandler(IBlock block);
+        [System.Obsolete("Use BlockSignals.BlockExecStarted instead.")]
         public static void DoBlockStart(IBlock block)
         {
-            OnBlockStart(block);
+            BlockExecStarted(block);
         }
 
-        /// <summary>
-        /// BlockEnd signal. Sent when the Block ends execution.
-        /// </summary>
-        public static event BlockEndHandler OnBlockEnd = delegate { };
+        public static BlockEndHandler BlockExecEnded = delegate { };
         public delegate void BlockEndHandler(IBlock block);
+        [System.Obsolete("Use BlockSignals.BlockExecEnded instead.")]
         public static void DoBlockEnd(IBlock block)
         {
-            OnBlockEnd(block);
+            BlockExecEnded(block);
         }
         #endregion
 

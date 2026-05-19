@@ -312,7 +312,7 @@ namespace AtMycelia.Hyphlow
             {
                 MigrateAllFlowchartVariables();
                 SetGlobalVarsToPublic();
-            }; 
+            };
         }
 
         void SetGlobalVarsToPublic()

@@ -21,6 +21,8 @@ namespace AtMycelia.Hyphlow
         [TextArea(2,4)]
         [SerializeField] protected string commentText = "";
 
+        public virtual bool SkipExecution => true;
+
         #region Public members
 
         public override void OnEnter()

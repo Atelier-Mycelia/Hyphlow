@@ -9,9 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11851dced36dc5d4f9c05a863094ca91, type: 3}
+  m_Script: {fileID: 11500000, guid: f12ff7cd4513f53439fb66477dfeaae1, type: 3}
   m_Name: FcDefaultConfig
   m_EditorClassIdentifier: 
-  _defaultNewBlockScope: 1
-  _defaultFirstBlockName: New Block
-  _defaultFirstBlockEventHandlerTypeName: 
+  _newBlockScope: 0
+  _firstBlockName: Init
+  _newBlockName: New Block
+  _blockSize: {x: 300, y: 100}
+  _stepPause: 0
+  _firstBlockEventHandlerTypeName: 

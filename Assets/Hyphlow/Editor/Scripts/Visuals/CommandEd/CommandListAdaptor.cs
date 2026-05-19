@@ -262,7 +262,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 baseName = baseName.Substring(lastSlashIndex + 1);
             }
-            return f.ShowLineNumbers
+            FlowchartEditorQol editorQol = f.EditorQol;
+            return editorQol != null && editorQol.ShowLineNumbers
                 ? $"{cmd.CommandIndex}: {baseName}"
                 : baseName;
         }

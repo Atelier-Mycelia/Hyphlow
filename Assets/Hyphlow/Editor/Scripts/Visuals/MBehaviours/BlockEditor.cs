@@ -51,7 +51,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			deleteIcon = HyphlowEditorSysAssets.Delete;
 
 			commandListProperty = serializedObject.FindProperty("_commandList");
-
+			commandListProperty ??= serializedObject.FindProperty("_legacyCommandList");
 			commandListAdaptor = new CommandListAdaptor(target as Block, commandListProperty);
 		}
 

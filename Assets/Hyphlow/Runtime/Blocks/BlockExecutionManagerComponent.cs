@@ -8,20 +8,17 @@ namespace AtMycelia.Hyphlow
     [DisallowMultipleComponent]
     [RequireComponent(typeof(BlockManagerComponent))]
     [ExecuteInEditMode]
-    public class BlockLogicManagerComponent : MonoBehaviour, IRefreshable, IDisposable, 
-        IBlockLogicManager
+    public class BlockExecutionManagerComponent : MonoBehaviour, IRefreshable, IDisposable, 
+        IBlockExecutionManager
     {
         [SerializeField, HideInInspector] private MonoBehaviour _owner;
-        [SerializeField, HideInInspector] private BlockLogicManager _manager;
+        [SerializeField, HideInInspector] private BlockExecutionManager _manager = new BlockExecutionManager();
 
         public virtual MonoBehaviour Owner
         {
             get
             {
-                if (_owner == null)
-                {
-                    _owner = this;
-                }
+                EnsureOwner();
                 return _owner;
             }
             set
@@ -43,13 +40,59 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void Awake()
         {
-            _blockManagerComponent = gameObject.GetComponent<BlockManagerComponent>();
-            _manager = new BlockLogicManager();
-            _manager.Initialize(_blockManagerComponent, Owner);
+            GetNeededComponents();
+            EnsureOwner();
+            _manager.Initialize(UnderlyingBlockManager, Owner);
             Refresh();
         }
 
-        [SerializeReference, HideInInspector] private IBlockManager _blockManagerComponent;
+        private void GetNeededComponents()
+        {
+            if (UnderlyingBlockManager == null)
+            {
+                UnderlyingBlockManager = gameObject.GetComponent<BlockManagerComponent>();
+            }
+        }
+
+        private IBlockManager UnderlyingBlockManager
+        {
+            get
+            {
+                if (_unityObjBlockManager is IBlockManager)
+                {
+                    return _unityObjBlockManager as IBlockManager;
+                }
+                else
+                {
+                    return _nonUnityObjBlockManager;
+                }
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _unityObjBlockManager = null;
+                    _nonUnityObjBlockManager = null;
+                    return;
+                }
+
+                if (value is UnityObj uobj)
+                {
+                    _unityObjBlockManager = uobj;
+                    _nonUnityObjBlockManager = null;
+                }
+                else
+                {
+                    _nonUnityObjBlockManager = value;
+                    // ^Need to avoid assigning UnityObjs to this. Gotta avoid
+                    // the serialization issues that come with that.
+                    _unityObjBlockManager = null;
+                }
+            }
+        }
+
+        [SerializeField, HideInInspector] private UnityObj _unityObjBlockManager;
+        [SerializeReference, HideInInspector] private IBlockManager _nonUnityObjBlockManager;
 
         protected virtual void OnEnable()
         {
@@ -58,22 +101,26 @@ namespace AtMycelia.Hyphlow
 
         public void Refresh()
         {
+            GetNeededComponents();
             EnsureOwner();
+            _manager.Initialize(UnderlyingBlockManager, Owner);
+            // ^Later, we'll find a way to make the manager stick
             _manager.CoroutineRunner = _owner;
             _manager.Refresh();
         }
 
         private void EnsureOwner()
         {
+            if (_owner == this)
+            {
+                _owner = null;
+            }
             if (_owner != null)
             {
                 return;
             }
-        }
 
-        public ushort NextItemId()
-        {
-            return _manager.NextItemId();
+            _owner = GetComponent<Flowchart>();
         }
 
         public void ApplyDefaultConfigToFirstBlock()
@@ -103,7 +150,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            var config = FlowchartDefaultConfig.S;
+            var config = FlowchartGlobalDefaults.S;
             firstBlock.Scope = config.NewBlockScope;
             firstBlock.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(config.FirstBlockName, _manager.Blocks,
                 ignoreItem: firstBlock, defaultKey: config.FirstBlockName);
@@ -117,7 +164,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            Type configuredType = FlowchartDefaultConfig.S.FirstBlockEventHandlerType;
+            Type configuredType = FlowchartGlobalDefaults.S.FirstBlockEventHandlerType;
             if (configuredType == null)
             {
                 return;
@@ -165,10 +212,10 @@ namespace AtMycelia.Hyphlow
         public bool ExecuteIfHasBlock(string blockName) => _manager.ExecuteIfHasBlock(blockName, ExecuteBlock);
         public void ExecuteBlock(string blockName) => _manager.ExecuteBlock(blockName);
         public void StopBlock(string blockName) => _manager.StopBlock(blockName);
-        public bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null) => _manager.ExecuteBlock(block, commandIndex, onComplete);
+        public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null) => _manager.ExecuteBlock(block, commandIndex, onComplete);
         public void StopAllBlocks() => _manager.StopAllBlocks();
         public bool HasExecutingBlocks() => _manager.HasExecutingBlocks();
-        public IReadOnlyList<IBlock> GetExecutingBlocks() => _manager.GetExecutingBlocks();
+        public IReadOnlyList<IBlock> ExecutingBlocks => _manager.ExecutingBlocks;
 
         public void Dispose()
         {
@@ -181,14 +228,19 @@ namespace AtMycelia.Hyphlow
             Dispose();
         }
 
-        public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
-        {
-            return _manager.ExecuteBlock(block, commandIndex, onComplete);
-        }
-
         public bool ExecuteIfHasBlock(string blockName, Action<string> executeByName)
         {
             return _manager.ExecuteIfHasBlock(blockName, executeByName);
+        }
+
+        public void ExecuteBlock(byte blockId)
+        {
+            _manager.ExecuteBlock(blockId);
+        }
+
+        public void StopBlock(byte blockId)
+        {
+            _manager.StopBlock(blockId);
         }
     }
 }

@@ -17,6 +17,8 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Display name for the label")]
         [SerializeField] protected StringData _key = new StringData("");
 
+        public override bool SkipExecution => true;
+
         #region Public members
 
         /// <summary>

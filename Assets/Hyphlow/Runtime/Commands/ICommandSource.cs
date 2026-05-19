@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow
         /// Returns true if the Command was successfully removed, false if one
         /// with the given id was not found in this source.
         /// </summary>
-        bool RemoveCommandWithId(ushort id, bool triggerSignals);
+        bool RemoveCommandWithId(byte id, bool triggerSignals);
 
         /// <summary>
         /// Removes all commands from this source. Returns true if any Commands were removed,
@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow
     public interface IHasCommands
     {
         IReadOnlyList<ICommand> Commands { get; }
-        ICommand GetCommandWithId(ushort id);
+        ICommand GetCommandWithId(byte id);
         bool Contains(ICommand cmd);
     }
 

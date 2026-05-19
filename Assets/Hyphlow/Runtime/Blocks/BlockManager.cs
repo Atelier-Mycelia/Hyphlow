@@ -11,10 +11,11 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-	public interface IBlockManager : IBlockSource, IRefreshable
+	public interface IBlockManager : IBlockSource, IRefreshable, ICommandResetter
 	{
 		UnityObj BlockOwner { get; set; }
 		byte NextValidId();
+
 	}
 
 	[Serializable]
@@ -56,7 +57,7 @@ namespace AtMycelia.Hyphlow
 			}
 		}
 
-		private IDictionary<ushort, IBlock> _lookup = new Dictionary<ushort, IBlock>();
+		private IDictionary<byte, IBlock> _lookup = new Dictionary<byte, IBlock>();
 
 		public void Refresh()
 		{
@@ -92,7 +93,7 @@ namespace AtMycelia.Hyphlow
 
 		private void RefreshLookup()
 		{
-			_lookup ??= new Dictionary<ushort, IBlock>();
+			_lookup ??= new Dictionary<byte, IBlock>();
 			_lookup.Clear();
 
 			for (int i = 0; i < _legacyBlocks.Count; i++)
@@ -158,7 +159,7 @@ namespace AtMycelia.Hyphlow
 			return result;
 		}
 
-		public ICommand GetCommandWithId(ushort id)
+		public ICommand GetCommandWithId(byte id)
 		{
 			ICommand result = null;
 			for (int i = 0; i < _legacyBlocks.Count; i++)
@@ -175,7 +176,7 @@ namespace AtMycelia.Hyphlow
 			}
 			return result;
 		}
-		public bool RemoveCommandWithId(ushort id)
+		public bool RemoveCommandWithId(byte id)
 		{
 			bool anyRemoved = false;
 			for (int i = 0; i < _legacyBlocks.Count; i++)
@@ -207,7 +208,7 @@ namespace AtMycelia.Hyphlow
 		public void Initialize(bool clearExisting = false)
 		{
 			_legacyBlocks ??= new List<Block>();
-			_lookup ??= new Dictionary<ushort, IBlock>();
+			_lookup ??= new Dictionary<byte, IBlock>();
 
 			if (clearExisting)
 			{
@@ -285,7 +286,7 @@ namespace AtMycelia.Hyphlow
 			return null;
 		}
 
-		public IBlock GetBlock(ushort id)
+		public IBlock GetBlock(byte id)
 		{
 			_lookup.TryGetValue(id, out IBlock result);
 			return result;
@@ -343,7 +344,7 @@ namespace AtMycelia.Hyphlow
 			}
 		}
 
-		private static FlowchartDefaultConfig DefaultConfig => FlowchartDefaultConfig.S;
+		private static FlowchartGlobalDefaults DefaultConfig => FlowchartGlobalDefaults.S;
 		public event Action<IBlock> PreBlockAdded = delegate { };
 		public event Action<IBlock> BlockAdded = delegate { };
 
@@ -428,7 +429,7 @@ namespace AtMycelia.Hyphlow
 
 		public event Action<IBlock> BlockRemoved = delegate { };
 
-		public bool RemoveBlockWithId(ushort id, bool triggerSignals)
+		public bool RemoveBlockWithId(byte id, bool triggerSignals)
 		{
 			_lookup.TryGetValue(id, out IBlock blockToRemove);
 			if (blockToRemove == null)
@@ -441,7 +442,7 @@ namespace AtMycelia.Hyphlow
 
 		private bool RemoveLookupEntryByReference(IBlock block)
 		{
-			ushort keyToRemove = 0;
+			byte keyToRemove = 0;
 			bool found = false;
 
 			foreach (var pair in _lookup)
@@ -470,7 +471,7 @@ namespace AtMycelia.Hyphlow
 			_blockOwner = null;
 		}
 
-		public bool RemoveCommandWithId(ushort id, bool triggerSignals)
+		public bool RemoveCommandWithId(byte id, bool triggerSignals)
 		{
 			for (int i = 0; i < _legacyBlocks.Count; i++)
 			{
@@ -485,6 +486,15 @@ namespace AtMycelia.Hyphlow
 				}
 			}
 			return false;
+		}
+
+		public void ResetCommands()
+		{
+			for (int i = 0; i < _legacyBlocks.Count; i++)
+			{
+				IBlock block = _legacyBlocks[i];
+				block?.ResetCommands();
+			}
 		}
 
 		public string Name

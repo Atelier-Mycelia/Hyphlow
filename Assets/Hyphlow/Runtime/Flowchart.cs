@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
+using AtMycelia.Hyphlow.EditorUtils;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -29,7 +31,7 @@ namespace AtMycelia.Hyphlow
         IBackwardsCompatibilityApplier, IBlockSource, ICommandRemovable
     {
         [SerializeField, HideInInspector] private VariableManagerComponent _varManager;
-        [SerializeField, HideInInspector] private BlockLogicManagerComponent _blockLogicManager;
+        [SerializeField, HideInInspector] private BlockExecutionManagerComponent _execManager;
         [SerializeField, HideInInspector] private BlockManagerComponent _blockManager;
 
         [FormerlySerializedAs("variableManager")]
@@ -50,9 +52,14 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("ScriptableObjects that contain settings that should apply to this Flowchart. " +
             "For example, how this Flowchart should handle Lua compatibility.")]
-        [SerializeField] protected ScriptableObject[] _otherSettings = new ScriptableObject[0]; 
+        [SerializeField] protected ScriptableObject[] _otherSettings = new ScriptableObject[0];
+
+        [SerializeField] protected FlowchartEditorQol _flowchartSettings;
 
         public IReadOnlyList<ScriptableObject> OtherSettings => _otherSettings;
+
+        public FlowchartEditorQol EditorQol => _flowchartSettings;
+
 
         /// <summary>
         /// Force reset the unique identifier for this Flowchart. Use with caution!
@@ -85,35 +92,6 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("uiModel")]
         protected FlowchartUIModel _uiModel = new FlowchartUIModel();
 
-        [Range(0f, 5f)]
-        [Tooltip("Adds a pause after each execution step to make it easier to visualise " +
-            "program flow. Editor only, has no effect in platform builds.")]
-        [FormerlySerializedAs("stepPause")]
-        [SerializeField] protected float _stepPause = 0f;
-
-        [Tooltip("Use command color when displaying the command list in the Hyphlow " +
-            "Editor window")]
-        [FormerlySerializedAs("colorCommands")]
-        [SerializeField] protected bool _colorCommands = true;
-
-        [Tooltip("Hides the Flowchart block and command components in the inspector. " +
-            "Deselect to inspect the block and command components that make up the Flowchart.")]
-        [FormerlySerializedAs("hideComponents")]
-        [SerializeField] protected bool _hideComponents = true;
-
-        [Tooltip("Saves the selected block and commands when saving the scene. Helps " +
-            "avoid version control conflicts if you've only changed the active selection.")]
-        [FormerlySerializedAs("saveSelection")]
-        [SerializeField] protected bool _saveSelection = true;
-
-        [Tooltip("Display line numbers in the command list in the Block inspector.")]
-        [FormerlySerializedAs("showLineNumbers")]
-        [SerializeField] protected bool _showLineNumbers = false;
-
-        [Tooltip("List of commands to hide in the Add Command menu. Use this to restrict " +
-            "the set of commands available when editing a Flowchart.")]
-        [FormerlySerializedAs("hideCommands")]
-        [SerializeField] protected List<string> _hideCommands = new List<string>();
 #endif
 
         #region Save Sys Involvement
@@ -190,24 +168,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            GetManagerComponents();
-            void GetManagerComponents()
-            {
-                if (_varManager == null)
-                {
-                    _varManager = GetComponent<VariableManagerComponent>();
-                }
-
-                if (_blockManager == null)
-                {
-                    _blockManager = GetComponent<BlockManagerComponent>();
-                }
-
-                if (_blockLogicManager == null)
-                {
-                    _blockLogicManager = GetComponent<BlockLogicManagerComponent>();
-                }
-            }
+            EnsureSubmanagerComponents();
 
             RegisterLegacyVars();
             void RegisterLegacyVars()
@@ -236,14 +197,12 @@ namespace AtMycelia.Hyphlow
             EnsureBlockManagerComponent();
             _blockManager.Owner = this;
             _blockManager.Refresh();
-
         }
 
         private void RefreshBlocks()
         {
             _blockManager.Refresh();
         }
-
 
         protected virtual void Start()
         {
@@ -266,7 +225,6 @@ namespace AtMycelia.Hyphlow
             {
                 elem.Trigger();
             }
-
         }
 
         protected virtual void OnEnable()
@@ -419,12 +377,13 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
+            EnsureSubmanagerComponents();
             AssertOwnership();
         }
 
 #endif
 
-        public IVariableSource VariableManager
+        public IReorderableVariableSource VariableManager
         {
             get
             {
@@ -448,12 +407,12 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public IBlockLogicManager BlockLogicManager
+        public IBlockExecutionManager BlockLogicManager
         {
             get
             {
                 EnsureBlockLogicManagerComponent();
-                return _blockLogicManager;
+                return _execManager;
             }
         }
 
@@ -465,7 +424,7 @@ namespace AtMycelia.Hyphlow
 
             _blockManager.Owner = this;
 
-            _blockLogicManager.Owner = this;
+            _execManager.Owner = this;
         }
 
         private void EnsureSubmanagerComponents()
@@ -477,12 +436,12 @@ namespace AtMycelia.Hyphlow
 
         private void EnsureBlockLogicManagerComponent()
         {
-            if (_blockLogicManager == null)
+            if (_execManager == null)
             {
-                _blockLogicManager = GetComponent<BlockLogicManagerComponent>();
-                if (_blockLogicManager == null)
+                _execManager = GetComponent<BlockExecutionManagerComponent>();
+                if (_execManager == null)
                 {
-                    _blockLogicManager = gameObject.AddComponent<BlockLogicManagerComponent>();
+                    _execManager = gameObject.AddComponent<BlockExecutionManagerComponent>();
 #if UNITY_EDITOR
                     EditorUtility.SetDirty(this);
 #endif
@@ -733,58 +692,20 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void UpdateHideFlags()
         {
-            if (_hideComponents)
+            foreach (var elem in Blocks)
             {
-                foreach (var elem in Blocks)
+                if (elem == null)
                 {
-                    if (elem == null)
-                    {
-                        continue;
-                    }
-
-                    elem.HideFlags = HideFlags.HideInInspector;
-
-                    if (elem.Owner != null && elem.Owner.gameObject != gameObject)
-                    {
-                        elem.HideFlags = HideFlags.HideInHierarchy;
-                    }
+                    continue;
                 }
 
-            }
-            else
-            {
-                var monoBehaviours = GetComponents<MonoBehaviour>();
-                for (int i = 0; i < monoBehaviours.Length; i++)
-                {
-                    var monoBehaviour = monoBehaviours[i];
-                    if (monoBehaviour == null)
-                    {
-                        continue;
-                    }
+                elem.HideFlags = HideFlags.HideInInspector;
 
-                    monoBehaviour.hideFlags = HideFlags.None;
-                    monoBehaviour.gameObject.hideFlags = HideFlags.None;
+                if (elem.Owner != null && elem.Owner.gameObject != gameObject)
+                {
+                    elem.HideFlags = HideFlags.HideInHierarchy;
                 }
             }
-        }
-
-        /// <summary>
-        /// Override this in a Flowchart subclass to filter which commands are shown in the Add Command list.
-        /// </summary>
-        public virtual bool IsCommandSupported(CommandInfoAttribute commandInfo)
-        {
-            for (int i = 0; i < _hideCommands.Count; i++)
-            {
-                // Match on category or command name (case insensitive)
-                var key = _hideCommands[i];
-                if (String.Compare(commandInfo.Category, key, StringComparison.OrdinalIgnoreCase) == 0 
-                    || String.Compare(commandInfo.CommandName, key, StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -825,29 +746,6 @@ namespace AtMycelia.Hyphlow
         #endregion
 #endif
 
-#if UNITY_EDITOR
-        /// <summary>
-        /// Slow down execution in the editor to make it easier to visualise program flow.
-        /// </summary>
-        public virtual float StepPause { get { return _stepPause; } }
-
-        /// <summary>
-        /// Use command color when displaying the command list in the inspector.
-        /// </summary>
-        public virtual bool ColorCommands { get { return _colorCommands; } }
-
-        /// <summary>
-        /// Saves the selected block and commands when saving the scene. Helps avoid version control conflicts if you've only changed the active selection.
-        /// </summary>
-        public virtual bool SaveSelection { get { return _saveSelection; } }
-
-        /// <summary>
-        /// Display line numbers in the command list in the Block inspector.
-        /// </summary>
-        public virtual bool ShowLineNumbers { get { return _showLineNumbers; } }
-
-#endif
-
         /// <summary>
         /// Description text displayed in the Flowchart editor window
         /// </summary>
@@ -883,18 +781,18 @@ namespace AtMycelia.Hyphlow
 
             if (creatingFirstBlock)
             {
-                blockName ??= DefaultConfig.FirstBlockName;
+                blockName ??= GlobalDefaults.FirstBlockName;
             }
             else
             {
-                blockName ??= DefaultConfig.NewBlockName;
+                blockName ??= GlobalDefaults.NewBlockName;
             }
 
             Block created = gameObject.AddComponent<Block>();
 #if UNITY_EDITOR
             created._NodeRect = new Rect(position, defaultBlockSize);
 #endif
-            created.Scope = DefaultConfig.NewBlockScope;
+            created.Scope = GlobalDefaults.NewBlockScope;
 
             EnsureBlockManagerComponent();
             _blockManager.Owner = this;
@@ -920,7 +818,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            firstBlock.Scope = DefaultConfig.NewBlockScope;
+            firstBlock.Scope = GlobalDefaults.NewBlockScope;
         }
 
         protected static Vector2 defaultBlockSize = new Vector2(300, 100);
@@ -956,7 +854,7 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
-        public virtual IBlock GetBlock(ushort itemId)
+        public virtual IBlock GetBlock(byte itemId)
         {
             IBlock result = _blockManager.GetBlock(itemId);
             return result;
@@ -976,15 +874,8 @@ namespace AtMycelia.Hyphlow
         /// You can use this method in a UI event. e.g. to try executing block without confidence in its existence.
         public virtual bool ExecuteIfHasBlock(string blockName)
         {
-            if (ContainsBlockNamed(blockName))
-            {
-                ExecuteBlock(blockName);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            EnsureSubmanagerComponents();
+            return _execManager.ExecuteIfHasBlock(blockName);
         }
 
         /// <summary>
@@ -992,18 +883,8 @@ namespace AtMycelia.Hyphlow
         /// You can use this method in a UI event. e.g. to handle a button click.
         public virtual void ExecuteBlock(string blockName)
         {
-            var block = GetBlock(blockName);
-
-            if (block == null)
-            {
-                Debug.LogError("Block " + blockName + " does not exist");
-                return;
-            }
-
-            if (!ExecuteBlock(block))
-            {
-                Debug.LogWarning("Block " + blockName + " failed to execute");
-            }
+            EnsureSubmanagerComponents();
+            _execManager.ExecuteBlock(blockName);
         }
 
         /// <summary>
@@ -1014,30 +895,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
         {
-            if (block == null)
-            {
-                Debug.LogError("Block must not be null");
-                return false;
-            }
-
-            bool sameOwner =
-                block.Owner != null &&
-                block.Owner.gameObject == gameObject;
-
-            if (!sameOwner)
-            {
-                Debug.LogError("Block must belong to the same gameObject as this Flowchart");
-                return false;
-            }
-
-            if (block.IsExecuting)
-            {
-                Debug.LogWarning(block.BlockName + " cannot be called/executed, it is already running.");
-                return false;
-            }
-
-            StartCoroutine(block.Execute(commandIndex, onComplete));
-            return true;
+            EnsureSubmanagerComponents();
+            return _execManager.ExecuteBlock(block, commandIndex, onComplete);
         }
 
         /// <summary>
@@ -1045,51 +904,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void StopBlock(string blockName)
         {
-            var block = GetBlock(blockName);
-
-            if (block == null)
-            {
-                Debug.LogError("Block " + blockName + " does not exist");
-                return;
-            }
-
-            if (block.IsExecuting)
-            {
-                block.Stop();
-            }
-        }
-
-        /// <summary>
-        /// Execute a child block in the flowchart.
-        /// The block must be in an idle state to be executed.
-        /// This version provides extra options to control how the block is executed.
-        /// Returns true if the Block started execution.            
-        /// </summary>
-        public virtual bool ExecuteBlock(Block block, int commandIndex = 0, Action onComplete = null)
-        {
-            if (block == null)
-            {
-                Debug.LogError("Block must not be null");
-                return false;
-            }
-
-            if (block.gameObject != gameObject)
-            {
-                Debug.LogError("Block must belong to the same gameObject as this Flowchart");
-                return false;
-            }
-
-            // Can't restart a running block, have to wait until it's idle again
-            if (block.IsExecuting)
-            {
-                Debug.LogWarning(block.BlockName + " cannot be called/executed, it is already running.");
-                return false;
-            }
-
-            // Start executing the Block as a new coroutine
-            StartCoroutine(block.Execute(commandIndex, onComplete));
-
-            return true;
+            _execManager.StopBlock(blockName);
         }
 
         /// <summary>
@@ -1097,18 +912,10 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void StopAllBlocks()
         {
-            var blocks = GetComponents<IBlock>();
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                var block = blocks[i];
-                if (block.IsExecuting)
-                {
-                    block.Stop();
-                }
-            }
+            _execManager.StopAllBlocks();
         }
 
-        protected static FlowchartDefaultConfig DefaultConfig => FlowchartDefaultConfig.S;
+        protected static FlowchartGlobalDefaults GlobalDefaults => FlowchartGlobalDefaults.S;
         #endregion
 
         /// <summary>
@@ -1165,101 +972,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void ReorderVariables(IList<IVariable> newOrder)
         {
-            if (newOrder == null || newOrder.Count == 0) return;
-
-            // Extract legacy variables that appear in newOrder, in that order
-            var ordered = new List<Variable>(_legacyVariables.Count);
-            var seen = new HashSet<Variable>();
-
-            for (int i = 0; i < newOrder.Count; i++)
-            {
-                if (newOrder[i] is Variable legacy && _legacyVariables.ContainsReference(legacy) && seen.Add(legacy))
-                    ordered.Add(legacy);
-            }
-
-            // Append the rest (not explicitly positioned)
-            for (int i = 0; i < _legacyVariables.Count; i++)
-            {
-                var elem = _legacyVariables[i];
-                if (!seen.Contains(elem))
-                {
-                    ordered.Add(elem);
-                }
-            }
-            if (ordered.Count == _legacyVariables.Count)
-            {
-                _legacyVariables = ordered;
-            }
+            VariableManager.ReorderVariables(newOrder);
         }
-
-
-        /// <summary>
-        /// Adds an already-existing Muscariable to the Flowchart, getting it integrated as something
-        /// owned by said Flowchart. If the variable is already registered,
-        /// it will not be added again.
-        /// </summary>
-
-
-
-        /// <summary>
-        /// Adds and registers a new var to the flowchart. If the passed key is null or empty,
-        /// a unique key will be generated. If TVarType is a legacy Variable type, it will be converted
-        /// into its Muscariable equivalent and the legacy variable will be destroyed.
-        /// </summary>
-
-        /// <summary>
-        /// Adds an already-existing variable to the flowchart. If the variable is already registered,
-        /// nothing happens. The variable's key and ID will be made unique if necessary.
-        /// If the variable is a legacy Variable, a Muscariable version of it will
-        /// be registered instead.
-        /// </summary>
-
-        /// <summary>
-        /// Returns the variable with the specified key, or null if the key is not found.
-        /// You will need to cast the returned variable to the correct sub-type.
-        /// You can then access the variable's value using the Value property. e.g.
-        /// BooleanVariable boolVar = flowchart.GetVariable("MyBool") as BooleanVariable;
-        /// boolVar.Value = false;
-        /// </summary>
-
-
-
-        /// <summary>
-        /// Returns the variable with the specified key, or null if the key is not found.
-        /// You can then access the variable's value using the Value property. e.g.
-        /// BooleanVariable boolVar = flowchart.GetVariable<BooleanVariable>("MyBool");
-        /// boolVar.Value = false;
-        /// </summary>
-
-
-        /// <summary>
-        /// Returns a list of variables matching the specified type.
-        /// </summary>
-
-
-
-
-        /// <summary>
-        /// Creates and returns a new Muscariable of the specified type, with this
-        /// as the parent Flowchart.
-        /// </summary>
-
-
-        /// <summary>
-        /// Sets up the Muscariable to belong to this Flowchart before adding it.
-        /// </summary>
-        public virtual void IntegrateMuscariable(Muscariable toAdd)
-        {
-            FlowchartSignals.VariableAdded(this, toAdd);
-        }
-
-        /// <summary>
-        /// Unregisters the Muscariable from this Flowchart, setting it to have no parent FC.
-        /// </summary>
-        /// <param name="toRemove"></param>
-
-
-
 
         #endregion
 
@@ -1721,7 +1435,7 @@ namespace AtMycelia.Hyphlow
             return _blockManager.Remove(block, triggerSignals);
         }
 
-        public bool RemoveBlockWithId(ushort id, bool triggerSignals = true)
+        public bool RemoveBlockWithId(byte id, bool triggerSignals = true)
         {
             EnsureBlockLogicManagerComponent();
             return _blockManager.RemoveBlockWithId(id, triggerSignals);
@@ -1732,7 +1446,7 @@ namespace AtMycelia.Hyphlow
             return _blockManager.Contains(cmd);
         }
 
-        public ICommand GetCommandWithId(ushort id) => _blockManager.GetCommandWithId(id);
+        public ICommand GetCommandWithId(byte id) => _blockManager.GetCommandWithId(id);
         
         public bool Remove(ICommand cmd, bool triggerSignals = true) => _blockManager.Remove(cmd, triggerSignals);
             
@@ -1744,7 +1458,7 @@ namespace AtMycelia.Hyphlow
         public virtual bool RemoveAllCommands(bool triggerSignals = true) => 
             _blockManager.RemoveAllCommands(triggerSignals);
 
-        public bool RemoveCommandWithId(ushort id, bool triggerSignals = true) => 
+        public bool RemoveCommandWithId(byte id, bool triggerSignals = true) => 
             _blockManager.RemoveCommandWithId(id, triggerSignals);
 
         public bool ClearBlocks(bool triggerSignals) => _blockManager.ClearBlocks(triggerSignals);

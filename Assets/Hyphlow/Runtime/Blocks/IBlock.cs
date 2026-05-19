@@ -10,8 +10,11 @@ namespace AtMycelia.Hyphlow
     /// Current MonoBehaviour Block should implement this.
     /// Future POCO blocks can implement this as well.
     /// </summary>
-    public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable
+    public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable,
+        ICommandResetter
     {
+        bool SuppressAllAutoSelections { get; set; }
+        ExecutionState ExecutionState { get; set; }
         new string Key { get; set; }
         Color Tint { get; set; }
         bool UseCustomTint { get; set; }
@@ -49,8 +52,6 @@ namespace AtMycelia.Hyphlow
         Flowchart GetFlowchart();
 
         bool IsExecuting { get; }
-        int GetExecutionCount();
-
         void StartExecution();
         IEnumerator Execute(int commandIndex = 0, Action onComplete = null);
         void Stop();
@@ -68,6 +69,7 @@ namespace AtMycelia.Hyphlow
         bool SuppressNextAutoSelection { get; set; }
 
         HideFlags HideFlags { get; set; }
+        int ExecutionCount { get; set; }
     }
 
     public enum FilteredState { Full, Partial, None }
