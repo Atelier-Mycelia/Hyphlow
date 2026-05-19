@@ -31,6 +31,8 @@ namespace AtMycelia.Hyphlow
 
         protected string _errorMessage = "";
 
+        public virtual bool SkipExecution => Enabled == false;
+
         public virtual bool Enabled
         {
             get { return enabled; }

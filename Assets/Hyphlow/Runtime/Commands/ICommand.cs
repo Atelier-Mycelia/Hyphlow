@@ -8,6 +8,12 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     public interface ICommand : IHasItemId<byte>, IRefreshable, IHasName
     {
+        /// <summary>
+        /// Whether or not this command should be skipped during execution. This is good for when
+        /// you have stuff like the Comment and Label Commands that aren't meant to wrap logic,
+        /// but just exist to provide metadata or context for other Commands. 
+        /// </summary>
+        bool SkipExecution { get; }
         bool NonStandardPaste { get; }
         void GetConnectedBlocks(ref IList<IBlock> toPopulate);
         bool Enabled { get; set; }

@@ -92,14 +92,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (targetCommand.enabled)
             {
-                if (flowchart.ColorCommands)
-                {
-                    GUI.backgroundColor = targetCommand.GetButtonColor();
-                }
-                else
-                {
-                    GUI.backgroundColor = Color.white;
-                }
+                GUI.backgroundColor = targetCommand.GetButtonColor();
             }
             else
             {

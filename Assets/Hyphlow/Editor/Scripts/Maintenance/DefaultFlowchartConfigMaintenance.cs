@@ -40,23 +40,23 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (foundPaths.Count == 0)
             {
-                FlowchartDefaultConfig created = CreateDefaultConfigAsset();
-                FlowchartDefaultConfig.S = created;
+                FlowchartGlobalDefaults created = CreateDefaultConfigAsset();
+                FlowchartGlobalDefaults.S = created;
                 return;
             }
 
             string primaryPath = ChoosePrimaryPath(foundPaths);
             DeleteExtras(foundPaths, primaryPath);
 
-            FlowchartDefaultConfig primary =
-                AssetDatabase.LoadAssetAtPath<FlowchartDefaultConfig>(primaryPath);
+            FlowchartGlobalDefaults primary =
+                AssetDatabase.LoadAssetAtPath<FlowchartGlobalDefaults>(primaryPath);
 
             if (primary == null)
             {
                 primary = CreateDefaultConfigAsset();
             }
 
-            FlowchartDefaultConfig.S = primary;
+            FlowchartGlobalDefaults.S = primary;
         }
 
         private static string ChoosePrimaryPath(IList<string> paths)
@@ -95,16 +95,16 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        private static FlowchartDefaultConfig CreateDefaultConfigAsset()
+        private static FlowchartGlobalDefaults CreateDefaultConfigAsset()
         {
             EnsureFolderPath($"{ResourcesRootPath}/{RelativeResourcesFolderPath}");
 
-            FlowchartDefaultConfig config = ScriptableObject.CreateInstance<FlowchartDefaultConfig>();
+            FlowchartGlobalDefaults config = ScriptableObject.CreateInstance<FlowchartGlobalDefaults>();
             AssetDatabase.CreateAsset(config, _defaultAssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            return AssetDatabase.LoadAssetAtPath<FlowchartDefaultConfig>(_defaultAssetPath);
+            return AssetDatabase.LoadAssetAtPath<FlowchartGlobalDefaults>(_defaultAssetPath);
         }
 
         private static void EnsureFolderPath(string absoluteFolderPath)

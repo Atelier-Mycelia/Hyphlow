@@ -14,10 +14,19 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
+    public interface IVariableManager : IReorderableVariableSource, IDisposable
+    {
+        /// <summary>
+        /// Sets the values of all the vars this is managing back 
+        /// to their initial values, as if they were just created.
+        /// </summary>
+        void ResetAllVars();
+    }
+
     [Serializable]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public sealed class VariableManager : IVariableSource, IMuscariableSource,
-        IReorderableVariableSource, IReorderableMuscariableSource, IDisposable
+    public sealed class VariableManager : IVariableManager, IMuscariableSource,
+        IReorderableMuscariableSource
     {
         // Note: Unity does not serialize readonly fields, even if they're plain 
         // old Lists of types it otherwise serializes just fine. So, we have
@@ -844,6 +853,15 @@ namespace AtMycelia.Hyphlow
             PreVariableRemoved = null;
             Refreshed = null;
             Reordered = null;
+        }
+
+        public void ResetAllVars()
+        {
+            for (int i = 0; i < _lookup.Values.Count; i++)
+            {
+                var variable = _lookup.Values.ElementAt(i);
+                variable.OnReset();
+            }
         }
     }
 }

@@ -19,12 +19,11 @@ namespace AtMycelia.Hyphlow
     {
         [FormerlySerializedAs("block")]
         [FormerlySerializedAs("_block")]
-        [SerializeField] [HideInInspector] private LegacyBlock _legacyBlock;
-        [SerializeField] private ushort _itemId = InvalidId;
+        [SerializeField] private byte _itemId = InvalidId;
         [SerializeField] private UnityObj _owningSource;
 
-        private static readonly ushort InvalidId = LegacyBlock.InvalidId;
-        public ushort ItemId
+        private static readonly byte InvalidId = LegacyBlock.InvalidId;
+        public byte ItemId
         {
             get { return _itemId; }
         }
@@ -40,7 +39,6 @@ namespace AtMycelia.Hyphlow
             {
                 _blockOwner = value;
                 _owningSource = value as UnityObj;
-                _legacyBlock = null;
             }
         }
 
@@ -76,31 +74,12 @@ namespace AtMycelia.Hyphlow
             RefreshOwner();
         }
 
-        private void RefreshOwner()
+        protected virtual void RefreshOwner()
         {
-            _blockOwner = null;
-
-            if (IsUnityObjectNull(_owningSource))
-            {
-                if (!IsUnityObjectNull(_legacyBlock))
-                {
-                    _itemId = _legacyBlock.ItemId;
-                    _owningSource = _legacyBlock.GetFlowchart();
-                    _legacyBlock = null;
-                }
-            }
-
-            _blockOwner ??= _owningSource as Flowchart;
+            _blockOwner ??= _owningSource as IBlockSource;
         }
 
         private IBlockSource _blockOwner;
-
-        private static bool IsUnityObjectNull(UnityObj unityObj)
-        {
-            bool isRealNull = ReferenceEquals(unityObj, null);
-            bool isFakeUnityNull = !isRealNull && unityObj == null;
-            return isFakeUnityNull;
-        }
 
         public void Execute()
         {

@@ -12,8 +12,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
     /// </summary>
     public class CommandSelectorPopupWindowContent : BasePopupWindowContent
     {
-        static List<System.Type> _commandTypes;
-        static List<System.Type> CommandTypes
+        static List<Type> _commandTypes;
+        static List<Type> CommandTypes
         {
             get
             {
@@ -88,12 +88,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected static List<KeyValuePair<Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
         {
-            List<KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes)
+            List<KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = 
+                BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes)
                 .ToList();
 
             filteredAttributes.Sort(BlockEditor.CompareCommandAttributes);
 
-            filteredAttributes = filteredAttributes.Where(x => flowchart.IsCommandSupported(x.Value)).ToList();
+            FlowchartEditorQol fcQol = flowchart.EditorQol;
+            if (fcQol != null)
+            {
+                var toExclude = fcQol.CommandsToHide;
+                for (int i = 0; i < filteredAttributes.Count; i++)
+                {
+                    var keyPair = filteredAttributes[i];
+                    CommandInfoAttribute cmdInfo = keyPair.Value;
+                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName);
+                    if (shouldExclude)
+                    {
+                        filteredAttributes.RemoveAt(i);
+                        i--;
+                    }
+
+                }
+            }
 
             return filteredAttributes;
         }

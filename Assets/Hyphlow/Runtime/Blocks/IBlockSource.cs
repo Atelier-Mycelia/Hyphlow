@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
         IReadOnlyList<IBlock> Blocks { get; }
         bool Contains(IBlock block);
         IBlock GetBlock(string name);
-        IBlock GetBlock(ushort id);
+        IBlock GetBlock(byte id);
     }
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace AtMycelia.Hyphlow
         /// Returns true if the Block with the given id was successfully
         /// removed, false otherwise.
         /// </summary>
-        bool RemoveBlockWithId(ushort id, bool triggerSignals);
+        bool RemoveBlockWithId(byte id, bool triggerSignals);
         bool ClearBlocks(bool triggerSignals);
     }
 }

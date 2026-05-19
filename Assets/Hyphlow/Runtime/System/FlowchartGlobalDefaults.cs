@@ -3,10 +3,11 @@ using UnityEngine;
 
 namespace AtMycelia.Hyphlow
 {
-    [CreateAssetMenu(
-        fileName = "FcDefaultConfig",
-        menuName = "Atelier Mycelia/Hyphlow/Flowchart Default Config")]
-    public sealed class FlowchartDefaultConfig : ScriptableObject
+    /// <summary>
+    /// For settings that should apply globally to all Flowcharts in a project,
+    /// such as default Block size and default Block names.
+    /// </summary>
+    public sealed class FlowchartGlobalDefaults : ScriptableObject
     {
         [SerializeField]
         private AccessScope _newBlockScope = AccessScope.Private;
@@ -21,6 +22,10 @@ namespace AtMycelia.Hyphlow
 
         [SerializeField]
         private Vector2 _blockSize = new Vector2(300f, 100f);
+
+        [Range(0f, 5f)]
+        [SerializeField]
+        private float _stepPause = 0f;
 
         [SerializeField]
         private string _firstBlockEventHandlerTypeName = "";
@@ -43,6 +48,11 @@ namespace AtMycelia.Hyphlow
         public Vector2 BlockSize
         {
             get => _blockSize;
+        }
+
+        public float StepPause
+        {
+            get => _stepPause;
         }
 
         public string FirstBlockEventHandlerTypeName
@@ -85,13 +95,13 @@ namespace AtMycelia.Hyphlow
 
         private const string _defaultResourcesPath = "AtMycelia/Hyphlow/FcDefaultConfig";
 
-        public static FlowchartDefaultConfig S
+        public static FlowchartGlobalDefaults S
         {
             get
             {
                 if (_s == null)
                 {
-                    _s = Resources.Load<FlowchartDefaultConfig>(_defaultResourcesPath);
+                    _s = Resources.Load<FlowchartGlobalDefaults>(_defaultResourcesPath);
                 }
 
                 return _s;
@@ -99,7 +109,7 @@ namespace AtMycelia.Hyphlow
             set => _s = value;
         }
 
-        private static FlowchartDefaultConfig _s;
+        private static FlowchartGlobalDefaults _s;
 
         private void OnEnable()
         {

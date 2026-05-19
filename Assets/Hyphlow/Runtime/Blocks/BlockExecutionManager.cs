@@ -1,27 +1,28 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace AtMycelia.Hyphlow
 {
-    public interface IBlockLogicManager : IBlockExecutor, IDisposable, IHasName, IRefreshable
+    public interface IBlockExecutionManager : IBlockExecutor, IDisposable, 
+        IHasName, IRefreshable
     {
-        /// <summary>
-        /// This is used to execute logic that may take more than one frame.
-        /// </summary>
-        MonoBehaviour CoroutineRunner { get; set; }
-        bool ExecuteIfHasBlock(string blockName, Action<string> executeByName);
+        
+    }
+
+    public interface ICommandResetter
+    {
+        void ResetCommands();
     }
 
     [Serializable]
-    public sealed class BlockLogicManager : IBlockLogicManager, IDisposable
+    public sealed class BlockExecutionManager : IBlockExecutionManager, IDisposable
     {
         [SerializeField] [HideInInspector] private MonoBehaviour _coroutineRunner;
-        [SerializeField] private ushort _nextItemId = 1;
 
         public void Initialize(IBlockManager blockManager, MonoBehaviour coroutineRunner)
         {
-            _coroutineRunner = coroutineRunner;
             _blockManager = blockManager;
             _blockManager.BlockOwner = coroutineRunner;
             CoroutineRunner = coroutineRunner;
@@ -65,8 +66,8 @@ namespace AtMycelia.Hyphlow
 
         private void RefreshCaches()
         {
-            _executingCommands ??= new Dictionary<ushort, ICommand>();
-            _executingBlocks ??= new Dictionary<ushort, IBlock>();
+            _executingCommands ??= new Dictionary<byte, ICommand>();
+            _executingBlocks ??= new Dictionary<byte, IBlock>();
             _executingCommands.Clear();
             _executingBlocks.Clear();
 
@@ -93,15 +94,8 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private IDictionary<ushort, ICommand> _executingCommands = new Dictionary<ushort, ICommand>();
-        private IDictionary<ushort, IBlock> _executingBlocks = new Dictionary<ushort, IBlock>();
-
-        public ushort NextItemId()
-        {
-            ushort result = _nextItemId;
-            _nextItemId++;
-            return result;
-        }
+        private IDictionary<byte, ICommand> _executingCommands = new Dictionary<byte, ICommand>();
+        private IDictionary<byte, IBlock> _executingBlocks = new Dictionary<byte, IBlock>();
 
         /// <summary>
         /// Returns the block with the given name, if it exists and is executing.
@@ -204,6 +198,38 @@ namespace AtMycelia.Hyphlow
             return true;
         }
 
+        private IEnumerator ExecutionCoroutine(IBlock toExecute, int commandIndex, Action onComplete = null)
+        {
+            if (commandIndex >= toExecute.CommandList.Count)
+            {
+                string warningMessage = $"Command index {commandIndex} is out of range " +
+                    $"for Block {toExecute.BlockName}. Executing from the start of the " +
+                    $"Block instead.";
+                Debug.LogWarning(warningMessage);
+                commandIndex = 0;
+            }
+            onComplete ??= delegate { };
+            _lastOnCompleteActions[toExecute] = onComplete;
+            toExecute.ExecutionCount++;
+            _executionCountsAtStart[toExecute] = toExecute.ExecutionCount;
+
+            Flowchart fc = toExecute.GetFlowchart();
+            toExecute.ExecutionState = ExecutionState.Executing;
+            BlockSignals.BlockExecStarted(toExecute);
+
+            bool doAutoSelect = !toExecute.SuppressNextAutoSelection && toExecute.CommandList.Count > 0;
+            if (doAutoSelect)
+            {
+                fc.SelectedBlock = toExecute;
+                fc.ClearSelectedCommands();
+                fc.AddSelectedCommand(toExecute.CommandList[commandIndex]);
+            }
+            yield return null;
+        }
+
+        private readonly IDictionary<IBlock, Action> _lastOnCompleteActions = new Dictionary<IBlock, Action>();
+        private readonly IDictionary<IBlock, int> _executionCountsAtStart = new Dictionary<IBlock, int>();
+
         public void StopBlock(string blockName)
         {
             IBlock block = FindBlock(blockName);
@@ -220,7 +246,7 @@ namespace AtMycelia.Hyphlow
 
         public void StopAllBlocks()
         {
-            var executing = GetExecutingBlocks();
+            var executing = ExecutingBlocks;
             // ^So we don't mutate the dictionary while iterating over it.
             // We want to stop all executing blocks, so we make a copy of
             // the values and iterate over that.
@@ -230,12 +256,6 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public IReadOnlyList<IBlock> GetExecutingBlocks()
-        {
-            var result = new List<IBlock>(_executingBlocks.Values);
-            return result;
-        }
-
         public bool HasExecutingBlocks()
         {
             return _executingBlocks.Count > 0;
@@ -243,8 +263,18 @@ namespace AtMycelia.Hyphlow
 
         #region IBlockSource Implementation
         public IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
+
+        public IReadOnlyList<IBlock> ExecutingBlocks
+        {
+            get
+            {
+                var result = new List<IBlock>(_executingBlocks.Values);
+                return result;
+            }
+        }
+
         public bool Contains(IBlock block) => _blockManager.Contains(block);
-        public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
+        public IBlock GetBlock(byte id) => _blockManager.GetBlock(id);
 
         /// <summary>
         /// Returns true if the given command is currently executing and is associated with this manager.
@@ -271,7 +301,7 @@ namespace AtMycelia.Hyphlow
         /// If it's either not executing or involved with this manager, 
         /// returns null.
         /// </summary>
-        public ICommand GetCommandWithId(ushort id)
+        public ICommand GetCommandWithId(byte id)
         {
             _executingCommands.TryGetValue(id, out ICommand cmd);
             return cmd;
@@ -301,6 +331,28 @@ namespace AtMycelia.Hyphlow
                 }
             }
             return null;
+        }
+
+        public void ExecuteBlock(byte blockId)
+        {
+            IBlock toExecute = _blockManager.GetBlock(blockId);
+            if (toExecute == null)
+            {
+                Debug.LogError($"Block with ID {blockId} does not exist.");
+                return;
+            }
+            ExecuteBlock(toExecute);
+        }
+
+        public void StopBlock(byte blockId)
+        {
+            IBlock toStop = _blockManager.GetBlock(blockId);
+            if (toStop == null)
+            {
+                Debug.LogError($"Block with ID {blockId} does not exist.");
+                return;
+            }
+            toStop.Stop();
         }
     }
 }

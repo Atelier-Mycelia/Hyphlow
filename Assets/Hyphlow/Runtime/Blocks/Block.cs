@@ -1,3 +1,4 @@
+using AtMycelia.Hyphlow.EditorUtils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -68,6 +69,11 @@ namespace AtMycelia.Hyphlow
 
         public static readonly byte InvalidId = 0;
 
+        public virtual bool SuppressAllAutoSelections
+        {
+            get { return suppressAllAutoSelections; }
+            set { suppressAllAutoSelections = value; }
+        }
         /// <summary>
         /// Alias for BlockName, used for IHasKey interface.
         /// </summary>
@@ -115,7 +121,12 @@ namespace AtMycelia.Hyphlow
 
         protected bool _executionInfoSet = false;
 
-        
+        public virtual ExecutionState ExecutionState
+        {
+            get { return _executionState; }
+            set { _executionState = value; }
+        }
+
         /// <summary>
         /// If set, flowchart will not auto select when it is next executed, 
         /// used by eventhandlers. Only affects the editor.
@@ -124,7 +135,6 @@ namespace AtMycelia.Hyphlow
 
         [SerializeField] bool suppressAllAutoSelections = true;
         
-
         protected virtual void Awake()
         {
             Refresh();
@@ -170,7 +180,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private IDictionary<ushort, ICommand> _commandListDict = new Dictionary<ushort, ICommand>();
+        private IDictionary<byte, ICommand> _commandListDict = new Dictionary<byte, ICommand>();
         // ^This is used to speed up lookup of Commands by their unique Ids, which
         // things such as the editor may want to do frequently.
 
@@ -318,9 +328,10 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Returns the number of times this Block has executed.
         /// </summary>
-        public virtual int GetExecutionCount()
+        public virtual int ExecutionCount
         {
-            return _executionCount;
+            get { return _executionCount; }
+            set { _executionCount = value; }
         }
 
         /// <summary>
@@ -355,31 +366,15 @@ namespace AtMycelia.Hyphlow
 
             _executionCount++;
             var executionCountAtStart = _executionCount;
+            GetFlowchart();
+            var flowchart = _owner as Flowchart;
 
-            var flowchart = GetFlowchart();
             _executionState = ExecutionState.Executing;
-            BlockSignals.DoBlockStart(this);
+            BlockSignals.BlockExecStarted(this);
 
             bool suppressSelectionChanges = false;
-
-            #if UNITY_EDITOR
-            // Select the executing block & the first command
-            if (suppressAllAutoSelections || SuppressNextAutoSelection)
-            {
-                SuppressNextAutoSelection = false;
-                suppressSelectionChanges = true;
-            }
-            else if (Selection.activeGameObject == flowchart.gameObject)
-            {
-                flowchart.SelectedBlock = this;
-                if (_legacyCommandList.Count > 0)
-                {
-                    flowchart.ClearSelectedCommands();
-                    flowchart.AddSelectedCommand(_legacyCommandList[0]);
-                }
-            }
-            #endif
-
+            SelectTheExecutingBlockAndCommand(ref suppressSelectionChanges);
+            
             _jumpToCommandIndex = commandIndex;
 
             int i = 0;
@@ -393,12 +388,11 @@ namespace AtMycelia.Hyphlow
                     _jumpToCommandIndex = -1;
                 }
 
+                _legacyCommandList.RemoveAll(cmd => cmd == null); 
+                // Clean up any null entries that may be in the list
                 // Skip disabled commands, comments and labels
-                _legacyCommandList.RemoveAll(cmd => cmd == null); // Clean up any null entries that may be in the list
-                while (i < _legacyCommandList.Count &&
-                      (!_legacyCommandList[i].enabled || 
-                        _legacyCommandList[i].GetType() == typeof(Comment) ||
-                        _legacyCommandList[i].GetType() == typeof(Label)))
+
+                while (i < _legacyCommandList.Count && !_legacyCommandList[i].enabled)
                 {
                     i = _legacyCommandList[i].CommandIndex + 1;
                 }
@@ -421,7 +415,8 @@ namespace AtMycelia.Hyphlow
                 var command = _legacyCommandList[i];
                 _activeCommand = command;
 
-                if (Selection.activeGameObject == flowchart.gameObject && flowchart.IsActive() && !suppressSelectionChanges)
+                if (Selection.activeGameObject == flowchart.gameObject && 
+                    flowchart.IsActive() && !suppressSelectionChanges)
                 {
                     // Auto select a command in some situations
                     if ((flowchart.SelectedCommandCount == 0 && i == 0) ||
@@ -459,9 +454,13 @@ namespace AtMycelia.Hyphlow
                 }
 
                 #if UNITY_EDITOR
-                if (flowchart.StepPause > 0f)
+                FlowchartEditorQol editorQol = flowchart.EditorQol;
+                float stepPause = editorQol != null ? 
+                    editorQol.StepPause : 
+                    0f;
+                if (stepPause > 0f)
                 {
-                    yield return new WaitForSeconds(flowchart.StepPause);
+                    yield return new WaitForSeconds(stepPause);
                 }
                 #endif
 
@@ -476,6 +475,8 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        private static readonly Type _commentType = typeof(Comment);
+        private static readonly Type _labelType = typeof(Label);
         private void ReturnToIdle()
         {
             _executionState = ExecutionState.Idle;
@@ -516,6 +517,27 @@ namespace AtMycelia.Hyphlow
             IList<IBlock> connectedBlocks = new List<IBlock>();
             RefreshConnectedBlockCache(ref connectedBlocks);
             return connectedBlocks;
+        }
+
+        void SelectTheExecutingBlockAndCommand(ref bool suppressSelectionChanges)
+        {
+#if UNITY_EDITOR
+            var flowchart = _owner as Flowchart;
+            if (suppressAllAutoSelections || SuppressNextAutoSelection)
+            {
+                SuppressNextAutoSelection = false;
+                suppressSelectionChanges = true;
+            }
+            else if (Selection.activeGameObject == flowchart.gameObject)
+            {
+                flowchart.SelectedBlock = this;
+                if (_legacyCommandList.Count > 0)
+                {
+                    flowchart.ClearSelectedCommands();
+                    flowchart.AddSelectedCommand(_legacyCommandList[0]);
+                }
+            }
+#endif
         }
 
         public virtual bool Enabled
@@ -646,7 +668,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public ICommand GetCommandWithId(ushort id)
+        public ICommand GetCommandWithId(byte id)
         {
             ICommand result = _commandListDict[id];
             return result;
@@ -750,7 +772,7 @@ namespace AtMycelia.Hyphlow
             return nextId;
         }
 
-        public virtual bool RemoveCommandWithId(ushort id, bool triggerSignals = true)
+        public virtual bool RemoveCommandWithId(byte id, bool triggerSignals = true)
         {
             ICommand toRemove = _commandListDict[id];
             bool successfulRemoval = Remove(toRemove, triggerSignals);
@@ -799,6 +821,16 @@ namespace AtMycelia.Hyphlow
             return anyToRemove;
         }
 
-        
+        public void ResetCommands()
+        {
+            for (int i = 0; i < _legacyCommandList.Count; i++)
+            {
+                var command = _legacyCommandList[i];
+                if (command != null)
+                {
+                    command.OnReset();
+                }
+            }
+        }
     }
 }

@@ -20,7 +20,6 @@ namespace AtMycelia.Hyphlow
 		public virtual void Refresh()
 		{
 			EnsureOwner();
-			_blockManager.BlockOwner = Owner;
 
 			_blockManager.ClearBlocks(false);
 
@@ -47,6 +46,11 @@ namespace AtMycelia.Hyphlow
 
 		protected virtual void EnsureOwner()
 		{
+			if (Owner == this)
+			{
+				Owner = null;
+			}
+
 			if (Owner != null)
 			{
 				return;
@@ -63,38 +67,40 @@ namespace AtMycelia.Hyphlow
 			}
 		}
 
-		protected virtual void OnEnable()
-		{
-			Refresh();
-		}
-
-		#region Delegations to underlying manager
-		public virtual IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
 		public virtual UnityObj Owner
 		{
 			get => _blockManager.BlockOwner;
 			set => _blockManager.BlockOwner = value;
 		}
+
+		protected virtual void OnEnable()
+		{
+			Refresh();
+		}
+
+		#region Most delegations to underlying manager
+		public virtual IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
+		
 		public virtual bool Contains(IBlock block) => 
 			_blockManager.Contains(block);
 		public virtual bool Add(IBlock block, bool triggerSignals) => 
 			_blockManager.Add(block, triggerSignals);
 		public virtual bool Remove(IBlock block, bool triggerSignals) => 
 			_blockManager.Remove(block, triggerSignals);
-		public virtual bool RemoveBlockWithId(ushort id, bool triggerSignals) => 
+		public virtual bool RemoveBlockWithId(byte id, bool triggerSignals) => 
 			_blockManager.RemoveBlockWithId(id, triggerSignals);
 		public virtual bool ClearBlocks(bool triggerSignals) => 
 			_blockManager.ClearBlocks(triggerSignals);
 
-		public IBlock GetBlock(ushort id) => _blockManager.GetBlock(id);
+		public IBlock GetBlock(byte id) => _blockManager.GetBlock(id);
 		public IBlock GetBlock(string name) => _blockManager.GetBlock(name);
 		public bool Contains(ICommand cmd) => _blockManager.Contains(cmd);
-		public ICommand GetCommandWithId(ushort id) => _blockManager.GetCommandWithId(id);
+		public ICommand GetCommandWithId(byte id) => _blockManager.GetCommandWithId(id);
 
 		public bool Remove(ICommand cmd, bool triggerSignals = true) => 
 			_blockManager.Remove(cmd, triggerSignals);
 		public bool RemoveAllCommands(bool triggerSignals = true) => _blockManager.RemoveAllCommands(triggerSignals);
-		public bool RemoveCommandWithId(ushort id, bool triggerSignals) =>
+		public bool RemoveCommandWithId(byte id, bool triggerSignals) =>
 			_blockManager.RemoveCommandWithId(id, triggerSignals);
 
 		public int BlockCount => _blockManager.Blocks.Count;
@@ -156,7 +162,7 @@ namespace AtMycelia.Hyphlow
 			// needing to get too technical. For now, do nothing.
 		}
 
-		protected static FlowchartDefaultConfig DefaultConfig => FlowchartDefaultConfig.S;
+		protected static FlowchartGlobalDefaults DefaultConfig => FlowchartGlobalDefaults.S;
 
 		public IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
 		{
@@ -166,6 +172,11 @@ namespace AtMycelia.Hyphlow
 		public byte NextValidId()
 		{
 			return ((IBlockManager)_blockManager).NextValidId();
+		}
+
+		public void ResetCommands()
+		{
+			_blockManager.ResetCommands();
 		}
 
 		public virtual string Name
