@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Handles single-click-driven block selection and empty space deselection.
@@ -71,7 +71,6 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 Flowchart.ClearSelectedBlocks();
             }
             
-
             Flowchart.SelectedBlock = block;
             Flowchart.AddToSelection(block);
         }

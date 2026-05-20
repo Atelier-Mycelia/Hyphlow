@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public interface IFcWindowComponent : IDisposable
     {

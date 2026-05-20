@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class FakeFlowchartHost : IFlowchartHost, IDisposable
     {

@@ -1,6 +1,6 @@
 ﻿using AtMycelia.EditorUtils;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -33,7 +33,8 @@ namespace VScriptingTests.VariableOperations
             void PrepFactory()
             {
                 _handlerResolver = new RowVisualHandlerResolver();
-                _handlerPool = new RowVisualHandlerPool(_handlerResolver, RowVisualHandlerRegistry.VisualHandlerLookup);
+                _handlerPool = new RowVisualHandlerPool(_handlerResolver, 
+                    RowVisualHandlerRegistry.VisualHandlerLookup);
                 _rowPool = new VariableRowPool();
                 VariableRowFactoryInitArgs factoryInitArgs = new VariableRowFactoryInitArgs()
                 {
@@ -184,14 +185,20 @@ namespace VScriptingTests.VariableOperations
             // Give Unity a frame so Flowchart variable events finish propagating
             yield return null;
 
-            _firstListView.ForceMaterializeAllRowsForTests();
-            // (Optional) yield a bit longer to mimic a layout pass
-            yield return new WaitForSeconds(1);
+            yield return WaitForAllRowsToMaterialize();
 
             int initialVisible = _firstListView.RowCount;
-            Assert.Greater(initialVisible, 1, "Precondition failed: need at least 2 variables.");
+            string errorMessage = $"Expected at least 2 visible rows after initialization, " +
+                $"but got {initialVisible}.";
+            Assert.Greater(initialVisible, 1, errorMessage);
 
-            Assert.IsTrue(_firstListView.Rows.Count == _firstFc.VariableCount, "Row count mismatch after initialization.");
+            errorMessage = $"Expected handler pool to start empty, but had " +
+                $"{PooledHandlerCount} handlers.";
+            Assert.AreEqual(0, PooledHandlerCount, errorMessage);
+
+            errorMessage = $"Expected active rows to match variable count before removals, " +
+                $"but got {_firstListView.Rows.Count} rows for {_firstFc.VariableCount} variables.";
+            Assert.AreEqual(_firstFc.VariableCount, _firstListView.Rows.Count, errorMessage);
 
             var toRemove = new IVariable[]
             {
@@ -205,15 +212,40 @@ namespace VScriptingTests.VariableOperations
                 yield return null;
             }
 
-            Assert.AreEqual(_firstFc.VariableCount, _firstListView.RowCount,
-                "Row count mismatch after removals.");
+            errorMessage = $"Expected row count to match variable count after removals, " +
+                $"but got {_firstListView.RowCount} rows for {_firstFc.VariableCount} variables.";
+            Assert.AreEqual(_firstFc.VariableCount, _firstListView.RowCount, errorMessage);
 
             string expectedLabelText = string.Format(countLabelFormat, _firstFc.VariableCount);
-            Assert.AreEqual(expectedLabelText, _countLabel.text, $"Expected count label text to be '{expectedLabelText}'.");
+            errorMessage = $"Expected count label text to be '{expectedLabelText}', but " +
+                $"was '{_countLabel.text}'.";
+            Assert.AreEqual(expectedLabelText, _countLabel.text, errorMessage);
 
             // Now pooling should reflect the two released rows
-            Assert.AreEqual(2, PooledRowCount, "Expected 2 pooled rows after removal.");
-            Assert.AreEqual(2, PooledHandlerCount, "Expected 2 pooled handlers after removal.");
+            errorMessage = $"Expected 2 pooled rows after removal, but got {PooledRowCount}.";
+            Assert.AreEqual(2, PooledRowCount, errorMessage);
+
+            errorMessage = $"Expected 2 pooled handlers after removal, but got {PooledHandlerCount}.";
+            Assert.AreEqual(2, PooledHandlerCount, errorMessage);
+        }
+
+        private IEnumerator WaitForAllRowsToMaterialize(int maxFrames = 30)
+        {
+            for (int i = 0; i < maxFrames; i++)
+            {
+                _firstListView.ForceMaterializeAllRowsForTests();
+
+                if (_firstListView.Rows.Count == _firstFc.VariableCount)
+                {
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            string errorMessage = $"Timed out waiting for row materialization. " +
+                $"Rows={_firstListView.Rows.Count}, Variables={_firstFc.VariableCount}.";
+            Assert.Fail(errorMessage);
         }
 
         [Test] public virtual void CountLabel_TextUpdates_AddingVars() { /* unchanged */ }

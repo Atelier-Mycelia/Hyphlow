@@ -6,11 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityObj = UnityEngine.Object;
+using UnityEd = UnityEditor.Editor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
 	[CustomEditor(typeof(Block))]
-	public class BlockEditor : Editor
+	public class BlockEditor : UnityEd
 	{
 		public static List<Action> actionList = new List<Action>();
 
@@ -71,7 +72,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 				if (monoBehaviours[i] is IBlockCaller blockCaller &&
 					blockCaller.MayCallBlock(targetBlock))
 				{
-					callerNames.Add(blockCaller.GetLocationIdentifier());
+					callerNames.Add(blockCaller.LocationIdentifier);
 				}
 			}
 
@@ -485,7 +486,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
 			int selectedIndex = 0;
 			blockNames.Add(nullLabel);
-			var blocks = GetSortedBlocks((IList<IBlock>)flowchart.Blocks);
+			var blocks = GetSortedBlocks(flowchart.Blocks);
 
 			for (int i = 0; i < blocks.Count; ++i)
 			{
@@ -952,7 +953,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 			return sortedBlocks;
 		}
 
-		private static IList<IBlock> GetSortedBlocks(IList<IBlock> blocks)
+		private static IList<IBlock> GetSortedBlocks(IReadOnlyList<IBlock> blocks)
 		{
 			var sortedBlocks = new List<IBlock>(blocks.Count);
 			for (int i = 0; i < blocks.Count; i++)

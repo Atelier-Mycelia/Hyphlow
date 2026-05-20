@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
+using AtMycelia.Hyphlow.EditorExt;
 
 
 #if UNITY_EDITOR
@@ -65,6 +66,7 @@ namespace AtMycelia.Hyphlow
 			_legacyBlocks.RemoveAll(block => block == null);
 
 			EnsureValidIdsForAllOurBlocks();
+			EnsureBlocksHaveValidSizes();
 			RefreshLookup();
 		}
 
@@ -105,6 +107,25 @@ namespace AtMycelia.Hyphlow
 				}
 			}
 		}
+
+		private void EnsureBlocksHaveValidSizes()
+		{
+			for (int i = 0; i < _legacyBlocks.Count; i++)
+			{
+				var currentBlock = _legacyBlocks[i];
+				Rect nodeRect = currentBlock._NodeRect;
+				if (nodeRect.size.Equals(Vector2.zero))
+				{
+					string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. " +
+						$"There may be an underlying problem.";
+					Debug.LogWarning(logMessage);
+					Rect fixedRect = new Rect(nodeRect.position, _defaultConfig.BlockSize);
+					currentBlock._NodeRect = fixedRect;
+				}
+			}
+		}
+
+		private static FlowchartGlobalDefaults _defaultConfig => FlowchartGlobalDefaults.S;
 
 		public byte NextValidId()
 		{
@@ -290,6 +311,22 @@ namespace AtMycelia.Hyphlow
 		{
 			_lookup.TryGetValue(id, out IBlock result);
 			return result;
+		}
+
+		public bool AddRange(ICollection<Block> blocks, bool triggerSignals = true)
+		{
+			if (blocks == null)
+			{
+				Debug.LogError("Cannot add null collection of Blocks to BlockManager.");
+				return false;
+			}
+			bool anyAdded = false;
+			foreach (Block block in blocks)
+			{
+				bool added = Add(block, triggerSignals);
+				anyAdded |= added;
+			}
+			return anyAdded;
 		}
 
 		public bool Add(IBlock block, bool triggerSignals = true)

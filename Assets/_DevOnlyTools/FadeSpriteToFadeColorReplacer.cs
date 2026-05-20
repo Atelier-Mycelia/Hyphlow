@@ -5,7 +5,7 @@ using AtMycelia.AmaniTween;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class FadeSpriteToFadeColorReplacer
     {

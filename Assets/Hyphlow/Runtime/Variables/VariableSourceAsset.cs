@@ -247,11 +247,11 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Refresh()
         {
-            EnsureContentsAreMarkedAsGlobal();
             EnsureValidUniqueId();
 
             _varManager.VarOwner = this;
             _varManager.Refresh();
+            EnsureContentsAreMarkedAsGlobal();
         }
 
         private void EnsureContentsAreMarkedAsGlobal()
@@ -428,6 +428,11 @@ namespace AtMycelia.Hyphlow
         {
             ToggleSubs(false);
             VsaSignals.VsaDisabled(this);
+        }
+
+        protected virtual void OnDestroy()
+        {
+            VsaSignals.VsaDestroyed(name, _uniqueId);
         }
 
         protected virtual void OnValidate()

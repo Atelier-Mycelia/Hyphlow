@@ -1,5 +1,5 @@
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow.RuntimeTesting;
 using NUnit.Framework;
 using System;
@@ -99,7 +99,7 @@ namespace VScriptingTests.FCWindowOperations
         }
 
         protected static FieldInfo FI_ReorderableLists =>
-            typeof(CommandEditor).GetField("reorderableLists", BindingFlags.Instance | BindingFlags.NonPublic);
+            typeof(CommandEditor).GetField("_reorderableLists", BindingFlags.Instance | BindingFlags.NonPublic);
 
         [UnityTest]
         public IEnumerator ReorderableArrayProperty_CreatesReorderableList()
@@ -115,9 +115,26 @@ namespace VScriptingTests.FCWindowOperations
         protected virtual void EarlySetupWithDummyArrayCommand()
         {
             _dummyArrayCommand = _host.AddComponent<DummyArrayCommand>();
+            string errorMessage = "Failed to add DummyArrayCommand component. " +
+                                  "Ensure DummyTestCommands.cs is compiled in a runtime assembly " +
+                                  "(not under an Editor folder).";
+            Assert.NotNull(_dummyArrayCommand, errorMessage);
+
             _block.CommandList.Add(_dummyArrayCommand);
-            _editor = Editor.CreateEditor(_dummyArrayCommand, typeof(CommandEditor)) as CommandEditor;
-            Assert.NotNull(_editor, "Failed to create CommandEditor (DummyArrayCommand).");
+
+            var rawEditor = Editor.CreateEditor(_dummyArrayCommand, typeof(CommandEditor));
+            errorMessage = $"Editor.CreateEditor returned null. Target={_dummyArrayCommand.GetType().FullName}, " +
+                           $"RequestedEditor={typeof(CommandEditor).FullName}. " +
+                           "If this happens in tests, ensure DummyTestCommands.cs is in a runtime folder " +
+                           "(not under an Editor folder).";
+            Assert.NotNull(rawEditor, errorMessage);
+
+            _editor = rawEditor as CommandEditor;
+
+            errorMessage = $"Editor.CreateEditor returned an editor of type '{rawEditor.GetType().FullName}', " +
+                           $"which cannot be cast to '{typeof(CommandEditor).FullName}'. " +
+                           "Ensure DummyTestCommands.cs is in a runtime folder (not under an Editor folder).";
+            Assert.NotNull(_editor, errorMessage);
         }
 
         protected DummyArrayCommand _dummyArrayCommand;

@@ -1,4 +1,4 @@
-﻿using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+﻿using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Custom drawer for VariableReference, allows selecting a target variable.

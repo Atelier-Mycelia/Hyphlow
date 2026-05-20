@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Searchable Popup Window for adding a command to a block
@@ -102,7 +102,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 {
                     var keyPair = filteredAttributes[i];
                     CommandInfoAttribute cmdInfo = keyPair.Value;
-                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName);
+                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName) || !cmdInfo.VisibleToUser;
                     if (shouldExclude)
                     {
                         filteredAttributes.RemoveAt(i);

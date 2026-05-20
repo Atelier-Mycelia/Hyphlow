@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [InitializeOnLoad]
     internal static class FlowchartDomainReloadHandler
@@ -35,11 +35,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
             var flowcharts = Resources.FindObjectsOfTypeAll<Flowchart>()
                 .Where(fc => fc != null && !EditorUtility.IsPersistent(fc.gameObject));
             
-            foreach (var flowchart in flowcharts)
-            {
-                flowchart.RefreshVariableManagerForEditorReload();
-            }
-
             GameObject selected = Selection.activeGameObject;
             if (selected != null && selected.TryGetComponent<Flowchart>(out _))
             {

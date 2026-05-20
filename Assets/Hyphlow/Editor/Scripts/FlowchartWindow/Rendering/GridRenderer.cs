@@ -5,7 +5,7 @@ using AtMycelia.Graphics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// UITK-based grid renderer that redraws only when flowchart context changes,

@@ -5,7 +5,7 @@ using System.Reflection;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Searchable Popup Window for selecting Event type, used by block editor

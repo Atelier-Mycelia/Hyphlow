@@ -5,8 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 
 namespace VScriptingTests.FCWindowOperations
 {

@@ -10,7 +10,7 @@ using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
 using AtMycelia.EditorUtils;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).
@@ -225,14 +225,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             bool rowAlreadyAssignedToIt = _activeRows.TryGetValue(variable, out var existing);
             if (rowAlreadyAssignedToIt)
             {
-                //Debug.Log($"[GetOrCreateRow] Reusing existing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 return existing;
             }
 
             var row = _rowFactory.Create(variable);
             if (row != null)
             {
-                //Debug.Log($"[GetOrCreateRow] Created new row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)} handlerType={row.VisualHandler?.GetType().FullName}");
                 _activeRows[variable] = row;
             }
             else
@@ -253,7 +251,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
             if (variable == null) return;
             if (_activeRows.TryGetValue(variable, out var row))
             {
-                //Debug.Log($"[ReleaseRow] Releasing row for key='{variable.Key}' varHash={RuntimeHelpers.GetHashCode(variable)}");
                 _activeRows.Remove(variable);
                 _rowFactory?.Release(row);
             }
@@ -262,7 +259,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected virtual void ReleaseAllActiveRows()
         {
             if (_activeRows.Count == 0) return;
-            ////Debug.Log($"[ReleaseAllActiveRows] Releasing {_activeRows.Count} active rows");
             foreach (var rowElem in _activeRows.Keys.ToList())
                 ReleaseRow(rowElem);
             _activeRows.Clear();
@@ -516,13 +512,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
                         }
                         catch (Exception ex)
                         {
-                            Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Refresh failed for var key='{variable.Key}': {ex.Message}");
+                            Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Refresh failed " +
+                                $"for var key='{variable.Key}': {ex.Message}");
                         }
                     }
 
                     if (row.RootElement == null)
                     {
-                        Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Row.RootElement still null for key='{variable.Key}'. Pooling will work but UI won’t show.");
+                        Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Row.RootElement still " +
+                            $"null for key='{variable.Key}'. Pooling will work but UI won’t show.");
                         continue;
                     }
 

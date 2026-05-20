@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [InitializeOnLoad]
     public static class DefaultFlowchartConfigMaintenance
@@ -18,13 +18,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         static DefaultFlowchartConfigMaintenance()
         {
-            AssemblyReloadEvents.afterAssemblyReload -= EnsureDefaultFlowchartConfigAsset;
-            AssemblyReloadEvents.afterAssemblyReload += EnsureDefaultFlowchartConfigAsset;
+            AssemblyReloadEvents.afterAssemblyReload -= EnsureFcGlobalDefaults;
+            AssemblyReloadEvents.afterAssemblyReload += EnsureFcGlobalDefaults;
 
-            EditorApplication.delayCall += EnsureDefaultFlowchartConfigAsset;
+            EditorApplication.delayCall += EnsureFcGlobalDefaults;
         }
 
-        private static void EnsureDefaultFlowchartConfigAsset()
+        public static void EnsureFcGlobalDefaults()
         {
             string[] guids = AssetDatabase.FindAssets(SearchFilter);
             List<string> foundPaths = new List<string>(guids.Length);

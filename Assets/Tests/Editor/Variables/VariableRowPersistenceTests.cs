@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using UnityObject = UnityEngine.Object;
 using UitkLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
@@ -39,6 +39,7 @@ namespace VScriptingTests.VariableRows
         [SetUp]
         public void SetUp()
         {
+            VariableTypeDiscovery.DiscoverAndRegister();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             Undo.ClearAll();

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Temp hidden object which lets us use the entire inspector window to inspect the block command list.

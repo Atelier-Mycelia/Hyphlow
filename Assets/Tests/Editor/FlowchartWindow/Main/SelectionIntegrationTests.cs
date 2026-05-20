@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
-using FcWindow = AtMycelia.Hyphlow.EditorUtils.FcWindow.FlowchartWindow;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
+using FcWindow = AtMycelia.Hyphlow.EditorExt.FcWindow.FlowchartWindow;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {

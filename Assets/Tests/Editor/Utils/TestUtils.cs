@@ -1,8 +1,8 @@
 ﻿using UnityEngine.Assertions;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using System.Reflection;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     static public class TestUtils
     {
@@ -35,13 +35,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             // Use the Assert class to test conditions.
             // Use yield to skip a frame.
-            var f = resTest.GetComponent<Flowchart>();
-            Assert.IsNotNull(f);
+            var fChart = resTest.GetComponent<Flowchart>();
+            Assert.IsNotNull(fChart);
 
             int frame = 3;
 
             //ensure there isn't something already doing a job
-            while (f.HasExecutingBlocks())
+            while (fChart.HasExecutingBlocks())
             {
                 frame++;
                 Assert.IsTrue(frame < maxFramesToComplete);
@@ -50,11 +50,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (runBlocksManually)
             {
-                var blocks = f.GetComponents<Block>();
+                var blocks = fChart.GetComponents<Block>();
                 foreach (var block in blocks)
                 {
-                    block.StartExecution();
-                    while (f.HasExecutingBlocks())
+                    fChart.ExecuteBlock(block);
+                    while (fChart.HasExecutingBlocks())
                     {
                         frame++;
                         Assert.IsTrue(frame < maxFramesToComplete);

@@ -1,7 +1,7 @@
 using System;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Coordinates selection changes in the flowchart window, ensuring that the correct flowchart is selected

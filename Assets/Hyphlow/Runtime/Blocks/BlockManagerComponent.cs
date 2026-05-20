@@ -1,3 +1,4 @@
+using AtMycelia.Hyphlow.EditorExt;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,16 +31,7 @@ namespace AtMycelia.Hyphlow
 				// but for now, we just want to make sure that the legacy Blocks on this
 				// GameObject are registered.
 				IList<Block> blocksOnGameObject = GetComponents<Block>();
-				for (int i = 0; i < blocksOnGameObject.Count; i++)
-				{
-					Block block = blocksOnGameObject[i];
-					if (block == null)
-					{
-						continue;
-					}
-
-					_blockManager.Add(block, false);
-				}
+				_blockManager.AddRange(blocksOnGameObject, false);
 			}
 
 		}
@@ -171,7 +163,7 @@ namespace AtMycelia.Hyphlow
 
 		public byte NextValidId()
 		{
-			return ((IBlockManager)_blockManager).NextValidId();
+			return (_blockManager).NextValidId();
 		}
 
 		public void ResetCommands()

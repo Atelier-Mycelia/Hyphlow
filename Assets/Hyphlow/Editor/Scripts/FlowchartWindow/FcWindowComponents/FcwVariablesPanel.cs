@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     public sealed class FcwVariablesPanel : IFlowchartWindowModule, IFlowchartChangeResponder
     {

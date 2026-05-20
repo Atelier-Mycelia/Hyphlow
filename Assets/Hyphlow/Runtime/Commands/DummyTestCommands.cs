@@ -3,11 +3,11 @@ using System.Collections.Generic;
 namespace AtMycelia.Hyphlow.RuntimeTesting
 {
     // Runtime (non-Editor) test support commands.
-    // IMPORTANT: This file must NOT be inside an Editor folder so that these
+    // IMPORTANT: This file must NOT be inside an Editor folder. That way, these
     // MonoBehaviours can be attached via AddComponent in EditMode tests.
 
     // Command WITH CommandInfo and a reorderable array.
-    [CommandInfo("Test", "Dummy Array Cmd", "Dummy command with reorderable list", TestOnly = true)]
+    [CommandInfo("Test", "Dummy Array Cmd", "Dummy command with reorderable list", VisibleToUser = false)]
     public class DummyArrayCommand : Command
     {
         public List<string> names = new List<string> { "A", "B" };

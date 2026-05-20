@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class UIToolkitEventUtil
     {

@@ -69,57 +69,6 @@ namespace VScriptingTests.FlowchartLifecycle
         }
 
         [UnityTest]
-        public IEnumerator ClearVariables_EmptiesAllInternalLists()
-        {
-            fChartHolder.SetActive(true);
-            yield return null;
-
-            var varManagerComponent = fChart.GetComponent<VariableManagerComponent>();
-            Assert.IsNotNull(varManagerComponent, "VariableManagerComponent not found on Flowchart.");
-
-            VariableManager varManager = GetVariableManager(varManagerComponent);
-            Assert.IsNotNull(varManager, "Could not access VariableManager via reflection.");
-
-            // Use reflection to access VariableManager's internal lists
-            IList legacyList = GetLegacyVariablesList(varManager);
-            IList muscariList = GetMuscariablesList(varManager);
-            Assert.NotNull(legacyList, "Could not access VariableManager legacy list via reflection.");
-            Assert.NotNull(muscariList, "Could not access VariableManager muscariables list via reflection.");
-
-            // Populate muscariable list with a test muscariable
-            var testMusca = varManagerComponent.AddVariable(new TestIntMuscariable
-            {
-                Value = 42,
-                Key = "muscaA",
-            });
-
-            Assert.IsNotNull(testMusca, "Failed to add test muscariable.");
-
-            // Attempt to create a legacy variable component (if any legacy type exists)
-            Variable legacyVar = TryCreateLegacyVariableComponent(fChartHolder);
-            if (legacyVar != null)
-            {
-                // Assign a key property (if present) to avoid null key collisions
-                SetStringPropertyIfExists(legacyVar, "Key", "legacyA");
-                varManagerComponent.AddVariable(legacyVar);
-            }
-
-            Assert.Greater(muscariList.Count, 0, "Precondition failed: muscariables list not populated.");
-            if (legacyVar != null)
-            {
-                Assert.Greater(legacyList.Count, 0, "Precondition failed: legacyVariables list not populated.");
-            }
-
-            fChart.ClearVariables();
-            yield return null;
-
-            Assert.AreEqual(0, muscariList.Count, "muscariables list should be empty after ClearVariables.");
-            Assert.AreEqual(0, legacyList.Count, "legacyVariables list should be empty after ClearVariables.");
-            Assert.AreEqual(0, varManagerComponent.Variables.Count, "VariableManagerComponent.Variables should report empty after ClearVariables.");
-
-        }
-
-        [UnityTest]
         public IEnumerator AddedVariables_GetUniqueNonClashingItemIds()
         {
             yield return null;

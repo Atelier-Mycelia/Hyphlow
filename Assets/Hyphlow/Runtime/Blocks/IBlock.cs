@@ -13,6 +13,7 @@ namespace AtMycelia.Hyphlow
     public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable,
         ICommandResetter
     {
+        Flowchart ParentFlowchart { get; }
         bool SuppressAllAutoSelections { get; set; }
         ExecutionState ExecutionState { get; set; }
         new string Key { get; set; }
@@ -35,8 +36,8 @@ namespace AtMycelia.Hyphlow
         string Description { get; }
 
         ExecutionState State { get; }
-        ICommand ActiveCommand { get; }
-        int PreviousActiveCommandIndex { get; }
+        ICommand ActiveCommand { get; set; }
+        int PreviousActiveCommandIndex { get; set; }
         float ExecutingIconTimer { get; set; }
 
         /// <summary>
@@ -45,15 +46,20 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         IList<ICommand> CommandList { get; }
 
-        int JumpToCommandIndex { set; }
+        /// <summary>
+        /// The index of the command to jump to on the next execution step.
+        /// When negative, no jump will occur and execution will proceed to 
+        /// the next command in the list.
+        /// </summary>
+        int NextExecCmdIndex { get; set; }
 
         IEventHandler EventHandler { get; set; }
 
         Flowchart GetFlowchart();
 
         bool IsExecuting { get; }
-        void StartExecution();
-        IEnumerator Execute(int commandIndex = 0, Action onComplete = null);
+        event Action<IBlock> ExecStarted;
+        event Action<IBlock> ExecEnded;
         void Stop();
 
         IList<IBlock> GetConnectedBlocks();

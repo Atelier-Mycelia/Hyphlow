@@ -10,7 +10,7 @@ using UnityRandom = UnityEngine.Random;
 using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.EditorUtils;
 using AtMycelia.Collections;
 using AtMycelia;
@@ -230,7 +230,7 @@ namespace VScriptingTests.VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
+            string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
             if (_variableTemplate == null)
             {
                 _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);

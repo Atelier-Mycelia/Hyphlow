@@ -15,9 +15,7 @@ namespace AtMycelia.Hyphlow.UI
         [SerializeField] protected List<Block> _selectedLegacyBlocks = new List<Block>();
         [FormerlySerializedAs("_selectedCommands")]
         [SerializeField] protected List<Command> _selectedLegacyCommands = new List<Command>();
-
-        [SerializeField]
-        private GameObject _owner;
+        [SerializeField] private GameObject _owner;
 
         public virtual GameObject Owner
         {
@@ -65,6 +63,13 @@ namespace AtMycelia.Hyphlow.UI
             }
             set
             {
+                bool alreadySelectedThisBlock = value != null && 
+                    _selectedLegacyBlocks.Count == 1 && 
+                    ReferenceEquals(_selectedLegacyBlocks[0], value);
+                if (alreadySelectedThisBlock)
+                {
+                    return;
+                }
                 ClearSelectedBlocks();
                 AddToSelection(value);
             }
@@ -103,6 +108,13 @@ namespace AtMycelia.Hyphlow.UI
             get => new List<ICommand>(_selectedLegacyCommands);
             set
             {
+                bool alreadySelectedThisCommand = value.Count == 1 && 
+                    _selectedLegacyCommands.Count == 1 && 
+                    ReferenceEquals(_selectedLegacyCommands[0],  value[0]);
+                if (alreadySelectedThisCommand)
+                {
+                    return;
+                }
                 ClearSelectedCommands();
                 AddRangeToSelection(value);
             }
@@ -118,8 +130,9 @@ namespace AtMycelia.Hyphlow.UI
 
             Block firstBlock = _selectedLegacyBlocks[0];
             IList<IBlock> blocksToDeselect = new List<IBlock>(_selectedLegacyBlocks);
-            foreach (var blockEl in _selectedLegacyBlocks)
+            for (int i = 0; i < amountToClear; i++)
             {
+                var blockEl = _selectedLegacyBlocks[i];
                 if (blockEl == null)
                 {
                     continue;
@@ -145,8 +158,9 @@ namespace AtMycelia.Hyphlow.UI
 
         public void AddRangeToSelection(IList<IBlock> toAdd)
         {
-            foreach (var blockEl in toAdd)
+            for (int i = 0; i < toAdd.Count; i++)
             {
+                var blockEl = toAdd[i];
                 // To avoid confusion, we don't want this to be able to trigger MultiBlocksSelected
                 // and BlockSelected at the same time in the same call of this func
                 AddToSelectionWithoutSignal(blockEl);
@@ -183,8 +197,9 @@ namespace AtMycelia.Hyphlow.UI
 
         public virtual void AddRangeToSelection(IList<ICommand> toAdd)
         {
-            foreach (var command in toAdd)
+            for (int i = 0; i < toAdd.Count; i++)
             {
+                var command = toAdd[i];
                 AddToSelection(command);
             }
         }

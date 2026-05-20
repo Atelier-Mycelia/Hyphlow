@@ -5,7 +5,7 @@ using AtMycelia.AmaniTween;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// For ensuring that certain default assets are present in the project.

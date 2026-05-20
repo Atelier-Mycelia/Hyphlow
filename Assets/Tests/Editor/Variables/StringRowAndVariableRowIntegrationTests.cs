@@ -1,5 +1,5 @@
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,7 +50,7 @@ namespace VScriptingTests.VariableOperations
             PrepUIElements();
             void PrepUIElements()
             {
-                uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+                uxml = Resources.Load<VisualTreeAsset>(PathToUxml);
                 _resolver = new RowVisualHandlerResolver();
                 _handlerPool = new RowVisualHandlerPool(_resolver, RowVisualHandlerRegistry.VisualHandlerLookup);
                 _rowPool = new VariableRowPool();
@@ -147,7 +147,7 @@ namespace VScriptingTests.VariableOperations
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
         protected VariableRowManager manager;
-        protected readonly string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
+        protected string PathToUxml => HyphlowConstants.PathToVariableDisplayEditorUxml;
         protected VisualTreeAsset uxml;
 
         protected readonly List<UnityObj> _toDestroy = new();

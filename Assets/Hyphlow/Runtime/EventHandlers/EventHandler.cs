@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow
 		[FormerlySerializedAs("parentSequence")]
 		[FormerlySerializedAs("parentBlock")]
 		[FormerlySerializedAs("_parentBlock")]
-		protected IBlock _parentMbBlock;
+		protected Block _parentMbBlock;
 
 		[SerializeField, HideInInspector] protected BlockReference _parentBlockReference = new BlockReference();
 		// ^ For when we migrate Blocks to be POCOs instead of MonoBehaviours. This will allow us more
@@ -61,17 +61,15 @@ namespace AtMycelia.Hyphlow
 			}
 			set
 			{
-				
 				_parentMbBlock = value as Block;
 				_fChart = null;
 				if (_parentMbBlock != null)
 				{
-					_fChart = _parentMbBlock.GetFlowchart();
+					_fChart = _parentMbBlock.ParentFlowchart;
 				}
 			}
 		}
 
-		
 		protected Flowchart _fChart;
 
 		/// <summary>
@@ -100,7 +98,7 @@ namespace AtMycelia.Hyphlow
 				ParentBlock.SuppressNextAutoSelection = true;
 			}
 
-			_fChart.ExecuteBlock(ParentBlock.BlockName);
+			_fChart.ExecuteBlock(ParentBlock);
 			return true;
 		}
 
@@ -121,6 +119,11 @@ namespace AtMycelia.Hyphlow
 				return;
 			}
 
+			if (ParentBlock == null)
+			{
+				_parentBlockReference.Block = GetComponent<Block>();
+				return;
+			}
 			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
 			{
 				ToggleSubs(true);
@@ -178,6 +181,7 @@ namespace AtMycelia.Hyphlow
 			{
 				return;
 			}
+			hideFlags = HideFlags.HideInInspector;
 			// Seems that when this is set to execute in edit mode, OnValidate can be called
 			// before Awake does. Thus, we need to ensure fChart is assigned.
 			if (_fChart == null)

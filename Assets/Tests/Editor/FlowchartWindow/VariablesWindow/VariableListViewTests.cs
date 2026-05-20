@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
@@ -302,29 +302,29 @@ namespace VScriptingTests.VariableOperations
         public void AddMultiple_Variables_WithValueBasedEquals_DoNotCollide_InActiveRowMap()
         {
             // Arrange: create three distinct component variables that intentionally override equality
-            var a = _host.AddComponent<ValueEqualsVariable>();
-            a.Key = "same-key";
-            a.ItemId = 1;
-            _createdVars.Add(a);
+            var firstVar = _host.AddComponent<ValueEqualsVariable>();
+            firstVar.Key = "same-key";
+            firstVar.ItemId = 1;
+            _createdVars.Add(firstVar);
 
-            var b = _host.AddComponent<ValueEqualsVariable>();
-            b.Key = "same-key";
-            b.ItemId = 2;
-            _createdVars.Add(b);
-
-            var c = _host.AddComponent<ValueEqualsVariable>();
-            c.Key = "same-key";
-            c.ItemId = 3;
-            _createdVars.Add(c);
+            var secondVar = _host.AddComponent<ValueEqualsVariable>();
+            secondVar.Key = "same-key";
+            secondVar.ItemId = 2;
+            _createdVars.Add(secondVar);
+            
+            var thirdVar = _host.AddComponent<ValueEqualsVariable>();
+            thirdVar.Key = "same-key";
+            thirdVar.ItemId = 3;
+            _createdVars.Add(thirdVar);
 
             // Sanity: distinct references but value-equality says they are equal
-            Assert.AreNotSame(a, b);
-            Assert.IsTrue(a.Equals(b) && b.Equals(c));
+            Assert.AreNotSame(firstVar, secondVar);
+            Assert.IsTrue(firstVar.Equals(secondVar) && secondVar.Equals(thirdVar));
 
             // Act: add them to the view
-            _view.AddVariable(a);
-            _view.AddVariable(b);
-            _view.AddVariable(c);
+            _view.AddVariable(firstVar);
+            _view.AddVariable(secondVar);
+            _view.AddVariable(thirdVar);
 
             // Ensure the source list contains all three
             Assert.AreEqual(3, InternalVariables.Count);
@@ -333,30 +333,35 @@ namespace VScriptingTests.VariableOperations
             _view.ForceMaterializeAllRowsForTests();
 
             // Assert: each variable has its own materialized row (no collisions in _activeRows)
-            Assert.AreEqual(3, _view.Rows.Count, "Expected three active rows; value-based Equals should not collapse distinct instances.");
+            string errorMessage = "Expected three active rows; value-based Equals " +
+                "should not collapse distinct instances.";
+            Assert.AreEqual(3, _view.Rows.Count, errorMessage);
 
-            var row0 = _view.RowAtIndex(0);
-            var row1 = _view.RowAtIndex(1);
-            var row2 = _view.RowAtIndex(2);
+            var firstRow = _view.RowAtIndex(0);
+            var secondRow = _view.RowAtIndex(1);
+            var thirdRow = _view.RowAtIndex(2);
 
-            Assert.IsNotNull(row0);
-            Assert.IsNotNull(row1);
-            Assert.IsNotNull(row2);
+            Assert.IsNotNull(firstRow);
+            Assert.IsNotNull(secondRow);
+            Assert.IsNotNull(thirdRow);
 
-            Assert.AreNotSame(row0, row1);
-            Assert.AreNotSame(row1, row2);
-            Assert.AreNotSame(row0, row2);
+            Assert.AreNotSame(firstRow, secondRow);
+            Assert.AreNotSame(secondRow, thirdRow);
+            Assert.AreNotSame(firstRow, thirdRow);
 
             // Also ensure the visuals were created
-            Assert.IsNotNull(row0.RootElement);
-            Assert.IsNotNull(row1.RootElement);
-            Assert.IsNotNull(row2.RootElement);
+            Assert.IsNotNull(firstRow.RootElement);
+            Assert.IsNotNull(secondRow.RootElement);
+            Assert.IsNotNull(thirdRow.RootElement);
         }
 
         [Test]
         public void Dispose_ClearsInternalState()
         {
-            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var firstVar = new FloatMuscariable();
+            firstVar.Value = 1f;
+            firstVar.Key = "f1";
+
             _view.AddVariable(firstVar);
             Assert.AreEqual(1, InternalVariables.Count);
 
@@ -368,7 +373,10 @@ namespace VScriptingTests.VariableOperations
         [Test]
         public void AddVariable_AfterDispose_LogWarning()
         {
-            var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
+            var firstVar = new FloatMuscariable();
+            firstVar.Value = 1f;
+            firstVar.Key = "f1";
+
             _view.Dispose();
             LogAssert.Expect(LogType.Warning, "Tried to add variable to disposed VariableListView.");
             _view.AddVariable(firstVar);

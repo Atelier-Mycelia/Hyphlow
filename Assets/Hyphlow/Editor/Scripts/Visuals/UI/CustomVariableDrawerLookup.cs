@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Fungus Variables are drawn via EditorGUI.Property by default, however, some types may require a custom replacement.

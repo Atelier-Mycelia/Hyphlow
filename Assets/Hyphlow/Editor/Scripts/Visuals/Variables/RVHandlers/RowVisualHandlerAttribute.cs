@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class RowVisualHandlerAttribute : Attribute
@@ -15,7 +15,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
         /// </summary>
         public string PathToTemplate { get; }
         
-        public RowVisualHandlerAttribute(string menuName, Type contentType, string typeDisplayName, string pathToTemplate)
+        public RowVisualHandlerAttribute(string menuName, Type contentType, 
+            string typeDisplayName, string pathToTemplate)
         {
             bool isValid = Validate();
             bool Validate()

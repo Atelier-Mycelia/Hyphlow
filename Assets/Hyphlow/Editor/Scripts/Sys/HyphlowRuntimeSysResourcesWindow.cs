@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using AtMycelia.Hyphlow.Sys;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public sealed class HyphlowRuntimeSysResourcesWindow : EditorWindow
     {

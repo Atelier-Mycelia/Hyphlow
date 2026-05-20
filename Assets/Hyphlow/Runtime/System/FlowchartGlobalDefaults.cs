@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// For settings that should apply globally to all Flowcharts in a project,
@@ -71,26 +71,6 @@ namespace AtMycelia.Hyphlow
 
                 return Type.GetType(_firstBlockEventHandlerTypeName);
             }
-        }
-
-        public void SetDefaultFirstBlockEventHandlerType(Type eventHandlerType)
-        {
-            if (eventHandlerType == null)
-            {
-                _firstBlockEventHandlerTypeName = string.Empty;
-                return;
-            }
-
-            bool valid = typeof(EventHandler).IsAssignableFrom(eventHandlerType);
-            if (!valid)
-            {
-                string message =
-                    $"Type {eventHandlerType.FullName} is not a valid {nameof(EventHandler)} type.";
-                Debug.LogError(message, this);
-                return;
-            }
-
-            _firstBlockEventHandlerTypeName = eventHandlerType.AssemblyQualifiedName;
         }
 
         private const string _defaultResourcesPath = "AtMycelia/Hyphlow/FcDefaultConfig";

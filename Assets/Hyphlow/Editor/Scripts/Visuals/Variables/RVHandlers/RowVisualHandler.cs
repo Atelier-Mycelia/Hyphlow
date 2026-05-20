@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public abstract class RowVisualHandler : IRowVisualHandler, IResettable
     {
@@ -332,7 +332,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
     }
 
     [RowVisualHandler("Hidden", typeof(object), "Generic",
-        "UIToolkitTemplates/VarRows/_VariableRowTemplate")]
+        "Editor/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
     }

@@ -1,7 +1,7 @@
 using UnityEngine.UIElements;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [RowVisualHandler(menuName: "Graphics",
         contentType: typeof(string),

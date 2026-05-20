@@ -3,11 +3,12 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using System.Reflection;
+using UnityEd = UnityEditor.Editor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(Command), true)]
-    public class CommandEditor : Editor 
+    public class CommandEditor : UnityEd
     {
         // Note that unlike PropertyDrawers, Editor subclasses each work with
         // their own instance of the inspected property. Thus, it's fine
@@ -39,14 +40,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         #endregion statics
 
-        private Dictionary<string, ReorderableList> reorderableLists;
+        private Dictionary<string, ReorderableList> _reorderableLists;
 
         public virtual void OnEnable()
         {
             if (NullTargetCheck()) // Check for an orphaned editor instance
                 return;
 
-            reorderableLists = new Dictionary<string, ReorderableList>();
+            _reorderableLists = new Dictionary<string, ReorderableList>();
 
             var targetCommand = target as Command;
             if (targetCommand == null)
@@ -182,7 +183,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     targetCommand.IsReorderableArray(iterator.name))
                 {
                     ReorderableList reordList = null;
-                    reorderableLists.TryGetValue(iterator.displayName, out reordList);
+                    _reorderableLists.TryGetValue(iterator.displayName, out reordList);
                     if(reordList == null)
                     {
                         var locSerProp = iterator.Copy();
@@ -203,7 +204,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                             }
                     };
 
-                        reorderableLists.Add(iterator.displayName, reordList);
+                        _reorderableLists.Add(iterator.displayName, reordList);
                     }
 
                     reordList.DoLayoutList();
@@ -220,7 +221,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         
-        public static void ObjectField<T>(SerializedProperty property, GUIContent label, GUIContent nullLabel, List<T> objectList) where T : Object 
+        public static void ObjectField<T>(SerializedProperty property, GUIContent label, 
+            GUIContent nullLabel, List<T> objectList) where T : Object 
         {
             if (property == null)
             {

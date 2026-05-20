@@ -2,7 +2,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomPropertyDrawer(typeof(AnyVariableData), true)]
     public class AnyVariableDataDrawer : VariableDataDrawer
