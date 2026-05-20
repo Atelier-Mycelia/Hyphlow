@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class VariableRow : IDisposable
     {
@@ -69,7 +69,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             HyphlowEditorSignals.KeyFieldChanged(this, field.value);
         }
 
-        protected virtual void OnScopeFieldChanged(VariableScope scope)
+        protected virtual void OnScopeFieldChanged(AccessScope scope)
         {
             HyphlowEditorSignals.ScopeFieldChanged(this, scope);
         }

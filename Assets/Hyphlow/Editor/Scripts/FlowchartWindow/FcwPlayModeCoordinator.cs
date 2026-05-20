@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Handles responses to changes in play mode state, ensuring that the flowchart

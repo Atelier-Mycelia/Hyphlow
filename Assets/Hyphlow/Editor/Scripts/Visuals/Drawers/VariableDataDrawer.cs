@@ -1,4 +1,4 @@
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using UnityEngine;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public abstract class VariableDataDrawerBase : PropertyDrawer
     {
@@ -76,11 +76,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 if (useMultilineLabel)
                 {
                     float lineHeight = EditorGUIUtility.singleLineHeight;
-                    labelRect = new Rect(position.x + labelOffset, position.y, position.width - labelOffset, lineHeight);
+                    float labelRectWidth = position.width - labelOffset;
+                    labelRect = new Rect(position.x + labelOffset, position.y, labelRectWidth, lineHeight);
 
                     float fieldY = position.y + lineHeight + EditorGUIUtility.standardVerticalSpacing;
                     float fieldHeight = position.height - lineHeight - EditorGUIUtility.standardVerticalSpacing;
-                    fieldRect = new Rect(position.x + labelOffset, fieldY, position.width - labelOffset, fieldHeight);
+                    float fieldX = position.x + labelOffset;
+                    fieldRect = new Rect(fieldX, fieldY, labelRectWidth, fieldHeight);
                 }
                 else
                 {

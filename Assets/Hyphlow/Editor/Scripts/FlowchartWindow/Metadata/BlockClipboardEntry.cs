@@ -1,11 +1,11 @@
-﻿#define DEBUG
+﻿//#define DEBUG
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class BlockClipboardEntry
     {
@@ -14,18 +14,18 @@ namespace AtMycelia.Hyphlow.EditorUtils
         protected IList<ClipboardObject> commands = new List<ClipboardObject>();
         protected ClipboardObject eventHandler = null;
 
-        public BlockClipboardEntry(Block block)
+        public BlockClipboardEntry(IBlock block)
             : this(block, false)
         {
         }
 
-        public BlockClipboardEntry(Block block, bool isCut)
+        public BlockClipboardEntry(IBlock block, bool isCut)
         {
             blockName = block.BlockName;
             BlockID = block.ItemId;
 
             CacheProperties(
-                new SerializedObject(block),
+                new SerializedObject(block as Block),
                 blockPropertySnapshots,
                 SerializedPropertyType.ObjectReference,
                 SerializedPropertyType.Generic,
@@ -38,18 +38,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     continue;
                 }
 
-                PrepareCommandForSnapshot(commandEl, isCut);
-                commands.Add(new ClipboardObject(commandEl));
+                PrepareCommandForSnapshot(commandEl as Command, isCut);
+                commands.Add(new ClipboardObject(commandEl as Command));
             }
-            if (block._EventHandler != null)
+            if (block.EventHandler != null)
             {
-                eventHandler = new ClipboardObject(block._EventHandler);
+                eventHandler = new ClipboardObject(block.EventHandler as UnityObj);
             }
         }
 
         public virtual int BlockID { get; protected set; }
 
-        protected void CopyProperties(SerializedObject source, Object dest, params SerializedPropertyType[] excludeTypes)
+        protected void CopyProperties(SerializedObject source, UnityObj dest, 
+            params SerializedPropertyType[] excludeTypes)
         {
             var destSO = new SerializedObject(dest);
             destSO.Update();
@@ -182,7 +183,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                    sourceProp.propertyPath == "_targetButton";
         }
 
-        private static void CopyObjectWithJson(Object source, Object dest)
+        private static void CopyObjectWithJson(UnityObj source, UnityObj dest)
         {
             if (source == null || dest == null)
             {
@@ -258,7 +259,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         private static string currentCopyTargetType;
 
         [System.Diagnostics.Conditional("DEBUG")]
-        private static void BeginCopyContext(SerializedProperty sourceProp, SerializedProperty destProp, Object target)
+        private static void BeginCopyContext(SerializedProperty sourceProp, SerializedProperty destProp, UnityObj target)
         {
             EnsureLogHookInstalled();
 
@@ -390,7 +391,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 $"Reason: {reason}");
         }
 
-        internal Block PasteBlock(IFlowchartHostCore flowWind, Flowchart flowchart)
+        internal IBlock PasteBlock(IFlowchartHostCore flowWind, Flowchart flowchart)
         {
             var newBlock = flowWind.CreateBlock(flowchart, Vector2.zero);
 
@@ -398,23 +399,22 @@ namespace AtMycelia.Hyphlow.EditorUtils
             // Copy references to match duplication behavior
             foreach (var commandEl in commands)
             {
-                var newCommand = flowchart.AddCommand(commandEl.type, newBlock);
+                var newCommand = flowchart.AddCommand(commandEl.type, newBlock as Block);
 
                 if (newCommand.NonStandardPaste)
                 {
-                    ApplyJson(commandEl, newCommand);
+                    ApplyJson(commandEl, newCommand as UnityObj);
                 }
                 else if (HasValidTarget(commandEl))
                 {
                     // Default path — safe for simple, flat, non-polymorphic Commands
-                    CopyProperties(commandEl.serializedObject, newCommand);
+                    CopyProperties(commandEl.serializedObject, newCommand as UnityObj);
                 }
                 else
                 {
-                    ApplyJson(commandEl, newCommand);
+                    ApplyJson(commandEl, newCommand as UnityObj);
                 }
 
-                newCommand.ItemId = flowchart.NextItemId();
             }
 
             // Copy event handler
@@ -431,19 +431,20 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 }
 
                 newEventHandler.ParentBlock = newBlock;
-                newBlock._EventHandler = newEventHandler;
+                newBlock.EventHandler = newEventHandler;
             }
 
             // Copy block properties, but do not copy references because those were just assigned
-            ApplyProperties(blockPropertySnapshots, newBlock);
+            ApplyProperties(blockPropertySnapshots, newBlock as Block);
 
-            newBlock.BlockName = flowchart.GetUniqueBlockKey(blockName + " (Copy)");
+            string suggestedNewName = blockName + " (Copy)";
+            newBlock.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(suggestedNewName, flowchart.Blocks, newBlock);
 
             return newBlock;
         }
 
-        internal void RestoreObjectReferences(Block pastedBlock, Flowchart flowchart, 
-            IDictionary<ushort, Block> pastedBlockLookup)
+        internal void RestoreObjectReferences(IBlock pastedBlock, Flowchart flowchart, 
+            IDictionary<ushort, IBlock> pastedBlockLookup)
         {
             if (pastedBlock == null || flowchart == null)
             {
@@ -453,18 +454,18 @@ namespace AtMycelia.Hyphlow.EditorUtils
             int commandCount = Mathf.Min(commands.Count, pastedBlock.CommandList.Count);
             for (int i = 0; i < commandCount; i++)
             {
-                ApplyObjectReferences(commands[i], pastedBlock.CommandList[i], 
+                ApplyObjectReferences(commands[i], pastedBlock.CommandList[i] as UnityObj, 
                     flowchart, pastedBlockLookup);
             }
 
-            if (eventHandler != null && pastedBlock._EventHandler != null)
+            if (eventHandler != null && pastedBlock.EventHandler != null)
             {
-                ApplyObjectReferences(eventHandler, pastedBlock._EventHandler, 
+                ApplyObjectReferences(eventHandler, pastedBlock.EventHandler as UnityObj, 
                     flowchart, pastedBlockLookup);
             }
         }
 
-        internal void RefreshPastedObjects(Block pastedBlock)
+        internal void RefreshPastedObjects(IBlock pastedBlock)
         {
             if (pastedBlock == null)
             {
@@ -473,13 +474,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             for (int i = 0; i < pastedBlock.CommandList.Count; i++)
             {
-                RefreshCommand(pastedBlock.CommandList[i]);
+                RefreshCommand(pastedBlock.CommandList[i] as Command);
             }
 
-            RefreshCommand(pastedBlock._EventHandler);
+            RefreshCommand(pastedBlock.EventHandler as UnityObj);
         }
 
-        private static void PrepareCommandForSnapshot(Command command, bool isCut)
+        private static void PrepareCommandForSnapshot(ICommand command, bool isCut)
         {
             if (command == null)
             {
@@ -497,7 +498,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        private static void RefreshCommand(Object commandOrHandler)
+        private static void RefreshCommand(UnityObj commandOrHandler)
         {
             if (commandOrHandler is IRefreshable refreshable)
             {
@@ -512,7 +513,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                    clipboardObject.serializedObject.targetObject != null;
         }
 
-        private static void ApplyJson(ClipboardObject source, Object dest)
+        private static void ApplyJson(ClipboardObject source, UnityObj dest)
         {
             if (source == null || dest == null || string.IsNullOrEmpty(source.json))
             {
@@ -522,8 +523,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EditorJsonUtility.FromJsonOverwrite(source.json, dest);
         }
 
-        private static void ApplyObjectReferences(ClipboardObject source, Object dest, Flowchart flowchart, 
-            IDictionary<ushort, Block> pastedBlockLookup)
+        private static void ApplyObjectReferences(ClipboardObject source, UnityObj dest, Flowchart flowchart, 
+            IDictionary<ushort, IBlock> pastedBlockLookup)
         {
             if (source == null || dest == null || source.objectReferences == null)
             {
@@ -546,7 +547,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 if (snapshot.IsBlock)
                 {
-                    Block resolved = null;
+                    IBlock resolved = null;
 
                     if (pastedBlockLookup != null && pastedBlockLookup.TryGetValue(snapshot.BlockId, out var pasted))
                     {
@@ -554,15 +555,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     }
                     else if (flowchart != null)
                     {
-                        resolved = flowchart.FindBlockByItemId(snapshot.BlockId);
+                        resolved = flowchart.GetBlock(snapshot.BlockId);
                         if (resolved == null)
                         {
-                            resolved = flowchart.FindBlock(snapshot.BlockName);
+                            resolved = flowchart.GetBlock(snapshot.BlockName);
                         }
                         
                     }
 
-                    destProp.objectReferenceValue = resolved;
+                    destProp.objectReferenceValue = resolved as UnityObj;
                 }
                 else
                 {
@@ -586,7 +587,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return current;
             }
 
-            var flowcharts = Object.FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var flowcharts = UnityObj.FindObjectsByType<Flowchart>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < flowcharts.Length; i++)
             {
                 var fc = flowcharts[i];
@@ -633,7 +634,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        private static void ApplyProperties(IList<SerializedPropertySnapshot> source, Object dest)
+        private static void ApplyProperties(IList<SerializedPropertySnapshot> source, UnityObj dest)
         {
             if (source == null || dest == null)
             {

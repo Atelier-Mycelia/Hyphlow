@@ -5,13 +5,14 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using StringComparison = System.StringComparison;
 using AtMycelia.EditorUtils;
+using AtMycelia;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -646,9 +647,9 @@ namespace VScriptingTests.VariableOperations
             }
 
             // IVariable.Scope (readonly)
-            public VariableScope Scope
+            public AccessScope Scope
             {
-                get => VariableScope.Private;
+                get => AccessScope.Private;
                 set { } // no-op
             }
 
@@ -663,6 +664,20 @@ namespace VScriptingTests.VariableOperations
             public Type ContentType => typeof(object);
 
             public bool IsRelationalSupported => false;
+
+            object IHasItemId.ItemId
+            {
+                get => ItemId;
+                set
+                {
+                    if (value is byte b)
+                        ItemId = b;
+                    else
+                    {
+                        throw new System.ArgumentException("ItemId must be a byte.");
+                    }
+                }
+            }
 
             // Init is a no-op for test helper
             public void Init() { }

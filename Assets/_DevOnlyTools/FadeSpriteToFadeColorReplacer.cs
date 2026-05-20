@@ -5,7 +5,7 @@ using AtMycelia.AmaniTween;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class FadeSpriteToFadeColorReplacer
     {
@@ -58,15 +58,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             for (int b = 0; b < blocks.Length; b++)
             {
-                Block block = blocks[b];
+                IBlock block = blocks[b];
                 if (block == null)
                 {
                     continue;
                 }
 
-                Undo.RecordObject(block, "Replace Fade Sprite Commands");
+                Undo.RecordObject(block as Block, "Replace Fade Sprite Commands");
 
-                List<Command> commands = block.CommandList;
+                IList<ICommand> commands = block.CommandList;
                 for (int i = 0; i < commands.Count; i++)
                 {
                     FadeSprite fadeSprite = commands[i] as FadeSprite;
@@ -199,7 +199,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 {
                     Key = key,
                     BoxedValue = spriteRenderer.gameObject,
-                    Scope = VariableScope.Private
+                    Scope = AccessScope.Private
                 };
                 flowchart.AddVariable(existing);
             }

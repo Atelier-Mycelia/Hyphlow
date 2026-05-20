@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Centralized class for handling clipboard operations related to Amanita (such as Flowchart blocks and commands).
@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            IList<Block> selectedBlocks = context.Selection.Blocks;
+            IList<IBlock> selectedBlocks = context.Selection.Blocks;
             if (selectedBlocks == null || selectedBlocks.Count == 0)
             {
                 return;
@@ -62,12 +62,17 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
             var selected = context.Selection.Blocks;
-            IList<ushort> blockIds = null;
+            IList<byte> blockIds = null;
 
             #region Pre-Signals
             if (doSignal)
             {
-                blockIds = selected.Select(b => b.ItemId).ToList();
+                blockIds = new List<byte>();
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    blockIds.Add(selected[i].ItemId);
+                }
+
                 if (selected.Count == 1)
                 {
                     BlockSignals.PreBlockCut(selected[0]);
@@ -114,7 +119,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             #region Gather up Block IDs for post-deletion signals
-            IList<ushort> blockIDs = null;
+            IList<byte> blockIDs = null;
             #endregion
 
             #region Pre-Delete Broadcasts

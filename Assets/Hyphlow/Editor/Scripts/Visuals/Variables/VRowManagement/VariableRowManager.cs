@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class VariableRowManager : IDisposable
     {
@@ -479,7 +479,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
+        protected virtual void OnScopeFieldChanged(VariableRow row, AccessScope scope)
         {
             if (!WeAreManaging(row))
             {

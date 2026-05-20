@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Encapsulates viewport input handlers (pan/zoom/reset/selection/drag) for the UITK flowchart window.
@@ -150,12 +150,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        public void OnBlockClicked(Block block, Event evt)
+        public void OnBlockClicked(IBlock block, Event evt)
         {
             Forward<IBlockClickResponder>(r => r.OnBlockClicked(block, evt));
         }
 
-        public void OnBlockCreated(Block block)
+        public void OnBlockCreated(IBlock block)
         {
             Forward<IBlockCreatedResponder>(r => r.OnBlockCreated(block));
         }

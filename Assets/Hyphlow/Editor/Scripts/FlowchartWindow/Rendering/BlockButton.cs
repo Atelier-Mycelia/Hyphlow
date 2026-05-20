@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// A button representing a Block in the flowchart. Displays the Block's name and changes 
@@ -37,7 +37,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             this.graphicsGenerator = graphicsGenerator ?? new BlockGraphicsGenerator();
         }
 
-        public void Initialize(Block block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
+        public void Initialize(IBlock block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
             StyleSheet selectedStyleSheet)
         {
             Validate(block, blockTemplate, baseStyleSheet, selectedStyleSheet);
@@ -49,7 +49,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void Validate(Block block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
+        private void Validate(IBlock block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
             StyleSheet selectedStyleSheet)
         {
             if (block == null)
@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void InitializeInternal(Block block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
+        private void InitializeInternal(IBlock block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
             StyleSheet selectedStyleSheet, bool enableSubscriptions)
         {
             _block = block;
@@ -96,7 +96,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private Block _block;
+        private IBlock _block;
         private VisualElement _templateInstance;
         private Button _clickable;
         private UitkLabel _nameLabel;
@@ -142,7 +142,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return _nameLabel.MeasureTextSize(text, width, widthMode, height, heightMode);
         }
 
-        public void UpdateVisuals(Block block, float zoom)
+        public void UpdateVisuals(IBlock block, float zoom)
         {
             if (block == null)
             {
@@ -175,7 +175,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            var handler = _block._EventHandler;
+            IEventHandler handler = _block.EventHandler;
             if (handler == null)
             {
                 _eventHandlerLabel.text = string.Empty;
@@ -439,7 +439,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             _block = null;
         }
 
-        private static string SafeBlockName(Block block)
+        private static string SafeBlockName(IBlock block)
         {
             string result = "New Block";
             if (block != null)

@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Searchable Popup Window for adding a command to a block
     /// </summary>
     public class CommandSelectorPopupWindowContent : BasePopupWindowContent
     {
-        static List<System.Type> _commandTypes;
-        static List<System.Type> CommandTypes
+        static List<Type> _commandTypes;
+        static List<Type> CommandTypes
         {
             get
             {
@@ -86,13 +86,31 @@ namespace AtMycelia.Hyphlow.EditorUtils
             DoOlderMenu();
         }
 
-        protected static List<KeyValuePair<System.Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
+        protected static List<KeyValuePair<Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
         {
-            List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes);
+            List<KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = 
+                BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes)
+                .ToList();
 
             filteredAttributes.Sort(BlockEditor.CompareCommandAttributes);
 
-            filteredAttributes = filteredAttributes.Where(x => flowchart.IsCommandSupported(x.Value)).ToList();
+            FlowchartEditorQol fcQol = flowchart.EditorQol;
+            if (fcQol != null)
+            {
+                var toExclude = fcQol.CommandsToHide;
+                for (int i = 0; i < filteredAttributes.Count; i++)
+                {
+                    var keyPair = filteredAttributes[i];
+                    CommandInfoAttribute cmdInfo = keyPair.Value;
+                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName);
+                    if (shouldExclude)
+                    {
+                        filteredAttributes.RemoveAt(i);
+                        i--;
+                    }
+
+                }
+            }
 
             return filteredAttributes;
         }
@@ -141,7 +159,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            var flowchart = (Flowchart)block.GetFlowchart();
+            var flowchart = block.GetFlowchart();
 
             // Use index of last selected command in list, or end of list if nothing selected.
             int index = -1;
@@ -158,13 +176,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             var newCommand = Undo.AddComponent(block.gameObject, commandType) as Command;
-            block.GetFlowchart().AddSelectedCommand(newCommand);
-            newCommand.ParentBlock = block;
-            newCommand.ItemId = flowchart.NextItemId();
-
-            // Let command know it has just been added to the block
-            newCommand.OnCommandAdded(block);
-
+            block.Add(newCommand);
+            flowchart.AddSelectedCommand(newCommand);
+            
             Undo.RecordObject(block, "Set command type");
             if (index < block.CommandList.Count - 1)
             {

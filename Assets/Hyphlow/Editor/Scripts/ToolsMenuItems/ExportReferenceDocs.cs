@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Attribute = System.Attribute;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Helper functions for generating the markdown files for Commands and Events.
@@ -30,7 +30,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             // Dump command info
             List<System.Type> menuTypes = EditorExtensions.FindDerivedTypes(typeof(Command)).ToList();
-            List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(menuTypes);
+            List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes = BlockEditor.GetFilteredCommandInfoAttribute(menuTypes)
+                .ToList();
             filteredAttributes.Sort(BlockEditor.CompareCommandAttributes);
 
             // Build list of command categories

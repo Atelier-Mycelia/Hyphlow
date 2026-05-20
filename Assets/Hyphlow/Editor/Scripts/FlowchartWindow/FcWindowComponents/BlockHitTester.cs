@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     public static class BlockHitTester
     {
@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return false;
             }
 
-            IReadOnlyCollection<Block> blocks = ActiveFlowchart.Blocks;
+            IReadOnlyCollection<IBlock> blocks = ActiveFlowchart.Blocks;
             if (blocks == null || blocks.Count == 0)
             {
                 Block[] fallback = ActiveFlowchart.GetComponents<Block>();
@@ -64,7 +64,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         /// from the BlockRendererUitk for better accuracy, and falls back to calculating it 
         /// from the block's NodeRect if necessary.
         /// </summary>
-        internal static bool TryGetBlockWindowRect(Block block, Flowchart flowchart, out Rect rect)
+        internal static bool TryGetBlockWindowRect(IBlock block, Flowchart flowchart, out Rect rect)
         {
             rect = default;
             if (block == null || flowchart == null)
@@ -87,7 +87,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return true;
         }
 
-        private static bool IsMouseOverBlock(Block block, Flowchart flowchart, Vector2 mousePosition)
+        private static bool IsMouseOverBlock(IBlock block, Flowchart flowchart, Vector2 mousePosition)
         {
             if (!TryGetBlockWindowRect(block, flowchart, out Rect windowSpaceRect))
             {
@@ -97,7 +97,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return windowSpaceRect.Contains(mousePosition);
         }
 
-        private static bool TryGetBlockRectFromRenderer(Block block, out Rect rect)
+        private static bool TryGetBlockRectFromRenderer(IBlock block, out Rect rect)
         {
             rect = default;
 
@@ -152,7 +152,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return new Vector2(world.x, world.y);
         }
 
-        public static Block FindTopmostBlock(Vector2 mousePosition)
+        public static IBlock FindTopmostBlock(Vector2 mousePosition)
         {
             if (ActiveFlowchart == null)
             {
@@ -165,7 +165,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return null;
             }
 
-            Block topmost = null;
+            IBlock topmost = null;
             foreach (var blockEl in blocks)
             {
                 if (blockEl == null)

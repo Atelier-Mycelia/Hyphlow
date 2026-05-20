@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Hosts the dispatchers for the Flowchart Window modules. The dispatchers are responsible 

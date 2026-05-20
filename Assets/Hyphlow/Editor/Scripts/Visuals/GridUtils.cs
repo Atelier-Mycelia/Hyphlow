@@ -1,7 +1,7 @@
 // File: GridUtils.cs
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class GridUtils
     {

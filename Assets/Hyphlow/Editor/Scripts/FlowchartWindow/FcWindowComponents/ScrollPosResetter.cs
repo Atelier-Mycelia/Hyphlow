@@ -1,7 +1,7 @@
 
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Listens for a specific input event and resets the scroll position of the flowchart to (0,0).

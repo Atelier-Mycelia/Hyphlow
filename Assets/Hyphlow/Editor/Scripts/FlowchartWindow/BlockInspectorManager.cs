@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Central authority for creating, showing, and clearing the hidden BlockInspector ScriptableObject.
@@ -13,6 +13,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
     [InitializeOnLoad]
     public static class BlockInspectorManager
     {
+        private const bool _debugSelectionRouting = true;
+
         static BlockInspectorManager()
         {
             ListenForEvents();
@@ -27,19 +29,25 @@ namespace AtMycelia.Hyphlow.EditorUtils
             FlowchartWindowSignals.EmptySpaceLeftClicked += OnEmptySpaceLeftClicked;
             FlowchartWindowSignals.ChangedFlowchart += OnFlowchartChanged;
 
+            Selection.selectionChanged -= OnSelectionChanged;
+            Selection.selectionChanged += OnSelectionChanged;
+
             AssemblyReloadEvents.beforeAssemblyReload += DisposeInspector;
             EditorApplication.quitting += DisposeInspector;
         }
 
-        private static void OnBlockSelected(Block block)
+        private static void OnBlockSelected(IBlock block)
         {
             Show(block);
         }
 
-        public static void Show(Block block)
+        public static void Show(IBlock block)
         {
+            LogSelection(nameof(Show), $"Requested show for block: {DescribeBlock(block)}");
+
             if (block == null)
             {
+                LogSelection(nameof(Show), "Incoming block is null -> Clear()");
                 Clear();
                 return;
             }
@@ -47,6 +55,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Flowchart flowchart = block.GetFlowchart();
             if (flowchart == null)
             {
+                LogSelection(nameof(Show), "Block has no Flowchart -> ignoring");
                 return;
             }
 
@@ -66,6 +75,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
         /// </summary>
         private static void ClearInternal(Flowchart flowchart)
         {
+            bool hiddenInspectorWasSelected =
+                inspectorInstance != null && Selection.activeObject == inspectorInstance;
+
             if (inspectorInstance != null)
             {
                 inspectorInstance._block = null;
@@ -77,8 +89,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 if (flowchart.gameObject != null)
                 {
-                    Selection.activeGameObject = flowchart.gameObject;
-                    // ^To keep the inspector focused on the Flowchart itself
+                    Selection.activeObject = flowchart.gameObject;
+                }
+            }
+            else if (hiddenInspectorWasSelected)
+            {
+                // Recover from blank inspector state by selecting something visible.
+                if (Selection.activeGameObject != null)
+                {
+                    Selection.activeObject = Selection.activeGameObject;
+                }
+                else
+                {
+                    Selection.activeObject = null;
                 }
             }
 
@@ -87,8 +110,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         private static BlockInspector inspectorInstance;
-        private static Block lastShownBlock;
-        public static event Action<Block> InspectorTargetChanged = delegate { };
+        private static IBlock lastShownBlock;
+        public static event Action<IBlock> InspectorTargetChanged = delegate { };
 
 
         private static Flowchart TrackedFlowchart
@@ -96,22 +119,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
             set => trackedFlowchart = value;
         }
 
-        private static void ShowInspectorFor(Flowchart flowchart, Block block)
+        private static void ShowInspectorFor(Flowchart flowchart, IBlock block)
         {
+            LogSelection(nameof(ShowInspectorFor), $"flowchart={(flowchart != null ? flowchart.name : "null")}, block={DescribeBlock(block)}");
+
             if (flowchart == null || block == null)
             {
+                LogSelection(nameof(ShowInspectorFor), "Null flowchart or block -> return");
                 return;
             }
 
-            BlockInspector inspector = EnsureInspector();
+            bool blockBelongsToFlowchart = ReferenceEquals(block.GetFlowchart(), flowchart);
+            if (!blockBelongsToFlowchart)
+            {
+                LogSelection(nameof(ShowInspectorFor), "Block belongs to different flowchart");
+            }
 
-            bool inspectorIsActive = Selection.activeObject == inspector;
-            bool inspectorAlreadyShowing = inspector._block == block;
+            BlockInspector inspector = EnsureInspector();
+            bool inspectorAlreadyShowing = ReferenceEquals(inspector._block, block);
 
             if (!inspectorAlreadyShowing)
             {
                 flowchart.ClearSelectedCommands();
-                inspector._block = block;
+                inspector._block = block as Block;
 
                 if (block.ActiveCommand != null)
                 {
@@ -121,6 +151,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (Selection.activeObject != inspector)
             {
+                LogSelection(nameof(ShowInspectorFor), "Switching Selection.activeObject -> BlockInspector");
                 Selection.activeObject = inspector;
             }
 
@@ -144,9 +175,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public static BlockInspector Inspector => EnsureInspector();
 
-        public static Block LastShownBlock => lastShownBlock;
+        public static IBlock LastShownBlock => lastShownBlock;
 
-        private static void OnBlockDEselected(Block block)
+        private static void OnBlockDEselected(IBlock block)
         {
             Flowchart flowchart = block != null ? 
                 block.GetFlowchart() : 
@@ -163,7 +194,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            Block selectedBlock = GetPrimarySelectedBlock(flowchart);
+            IBlock selectedBlock = GetPrimarySelectedBlock(flowchart);
             if (selectedBlock != null)
             {
                 ShowInspectorFor(flowchart, selectedBlock);
@@ -174,17 +205,21 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        private static Block GetPrimarySelectedBlock(Flowchart flowchart)
+        private static IBlock GetPrimarySelectedBlock(Flowchart flowchart)
         {
             if (flowchart == null || flowchart.UIModel == null)
             {
+                LogSelection(nameof(GetPrimarySelectedBlock), "Flowchart or UIModel is null");
                 return null;
             }
 
-            return flowchart.UIModel.SelectedBlock;
+            IBlock selected = flowchart.UIModel.SelectedBlock;
+            LogSelection(nameof(GetPrimarySelectedBlock), $"UIModel.SelectedBlock={DescribeBlock(selected)}, SelectedBlockCount={flowchart.SelectedBlockCount}");
+
+            return selected;
         }
 
-        private static void OnMultiBlocksSelected(IList<Block> blocks)
+        private static void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             if (blocks == null)
             {
@@ -194,7 +229,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             for (int i = 0; i < blocks.Count; i++)
             {
-                Block candidate = blocks[i];
+                IBlock candidate = blocks[i];
                 if (candidate != null)
                 {
                     Show(candidate);
@@ -220,7 +255,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            Block selectedBlock = GetPrimarySelectedBlock(next);
+            IBlock selectedBlock = GetPrimarySelectedBlock(next);
             if (selectedBlock != null)
             {
                 ShowInspectorFor(next, selectedBlock);
@@ -241,6 +276,53 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             trackedFlowchart = null;
             lastShownBlock = null;
+        }
+
+        private static void LogSelection(string source, string message)
+        {
+            if (!_debugSelectionRouting)
+            {
+                return;
+            }
+
+            string activeObj = Selection.activeObject != null ? $"{Selection.activeObject.name} ({Selection.activeObject.GetType().Name})" : "null";
+            string activeGo = Selection.activeGameObject != null ? Selection.activeGameObject.name : "null";
+            string tracked = trackedFlowchart != null ? trackedFlowchart.name : "null";
+
+            Debug.Log($"[BlockInspectorManager::{source}] {message} | activeObject={activeObj} | activeGameObject={activeGo} | trackedFlowchart={tracked}");
+        }
+
+        private static string DescribeBlock(IBlock block)
+        {
+            if (block == null)
+            {
+                return "null";
+            }
+
+            Flowchart flowchart = block.GetFlowchart();
+            string fcName = flowchart != null ? flowchart.name : "null";
+            return $"name={block.BlockName}, id={block.ItemId}, isSelected={block.IsSelected}, flowchart={fcName}";
+        }
+
+        private static void OnSelectionChanged()
+        {
+            if (!_debugSelectionRouting)
+            {
+                return;
+            }
+
+            UnityEngine.Object active = Selection.activeObject;
+            bool activeIsHiddenInspector = active is BlockInspector;
+            string activeName = active != null ? $"{active.name} ({active.GetType().Name})" : "null";
+
+            string inspectorBlock = "null";
+            if (inspectorInstance != null && inspectorInstance._block != null)
+            {
+                inspectorBlock = $"{inspectorInstance._block.BlockName} (id={inspectorInstance._block.ItemId}, isSelected={inspectorInstance._block.IsSelected})";
+            }
+
+            LogSelection(nameof(OnSelectionChanged),
+                $"Raw selection changed -> active={activeName}, activeIsBlockInspector={activeIsHiddenInspector}, inspector._block={inspectorBlock}");
         }
     }
 }

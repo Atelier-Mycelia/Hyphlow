@@ -1,3 +1,8 @@
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityObj = UnityEngine.Object;
+using LegacyBlock = AtMycelia.Hyphlow.Block;
+
 namespace AtMycelia.Hyphlow
 {
     /// <summary>
@@ -10,14 +15,84 @@ namespace AtMycelia.Hyphlow
     /// that have these also implement IBlockCaller.
     /// </summary>
     [System.Serializable]
-    public struct BlockReference
+    public class BlockReference
     {
-        public Block block;
+        [FormerlySerializedAs("block")]
+        [FormerlySerializedAs("_block")]
+        [SerializeField] private byte _itemId = InvalidId;
+        [SerializeField] private UnityObj _owningSource;
 
-        public readonly void Execute()
+        private static readonly byte InvalidId = LegacyBlock.InvalidId;
+        public byte ItemId
         {
-            if (block != null)
-                block.StartExecution();
+            get { return _itemId; }
+        }
+
+        public IBlockSource BlockOwner
+        {
+            get
+            {
+                RefreshOwner();
+                return _blockOwner;
+            }
+            set
+            {
+                _blockOwner = value;
+                _owningSource = value as UnityObj;
+            }
+        }
+
+        public IBlock Block
+        {
+            get
+            {
+                RefreshOwner();
+                if (_itemId == InvalidId || _blockOwner == null)
+                {
+                    return null;
+                }
+
+                return _blockOwner.GetBlock(_itemId);
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _itemId = InvalidId;
+                    BlockOwner = null;
+                }
+                else
+                {
+                    _itemId = value.ItemId;
+                    BlockOwner = value.GetFlowchart();
+                }
+            }
+        }
+
+        public void Refresh()
+        {
+            RefreshOwner();
+        }
+
+        protected virtual void RefreshOwner()
+        {
+            _blockOwner ??= _owningSource as IBlockSource;
+        }
+
+        private IBlockSource _blockOwner;
+
+        public void Execute()
+        {
+            if (Block == null)
+            {
+                string errorMessage = $"Tried to execute block reference, but block was null. ItemId: " +
+                    $"{_itemId}, OwningSource: {_owningSource}";
+                Debug.LogError(errorMessage);
+                return;
+            }
+
+            Block.StartExecution();
         }
     }
+
 }

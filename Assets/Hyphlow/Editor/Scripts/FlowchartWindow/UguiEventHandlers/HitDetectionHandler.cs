@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Handles hit detection for mouse clicks in the FlowchartWindow, determining which 
@@ -38,7 +38,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private void OnMouseDown(PointerEventInfo eventInfo)
         {
-            Block blockHit = TopmostBlockOverlapping(eventInfo.PanelPosition);
+            IBlock blockHit = TopmostBlockOverlapping(eventInfo.PanelPosition);
             owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
             BlockHitInLastMouseDown = blockHit;
 
@@ -50,12 +50,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private FlowchartContext FcContext => owner.FcContext;
 
-        private Block TopmostBlockOverlapping(Vector2 mousePos)
+        private IBlock TopmostBlockOverlapping(Vector2 mousePos)
         {
             return BlockHitTester.FindTopmostBlock(mousePos);
         }
 
-        private Block BlockHitInLastMouseDown
+        private IBlock BlockHitInLastMouseDown
         {
             set => FcContext.Interaction.BlockHitInLastMouseDown = value;
         }

@@ -98,14 +98,14 @@ namespace AtMycelia.Hyphlow
         /// have (functionally) global scopes for their vars.
         /// </summary>
         public virtual Muscariable<TContent> AddNewVariableOfContentType<TContent>(string key,
-            TContent startingVal = default, VariableScope scope = VariableScope.Private)
+            TContent startingVal = default, AccessScope scope = AccessScope.Private)
         {
-            var result = _varManager.AddNewVariable(key, startingVal, VariableScope.Public);
+            var result = _varManager.AddNewVariable(key, startingVal, AccessScope.Public);
             return (Muscariable<TContent>)result; 
         }
 
         public virtual Muscariable AddNewVariableOfContentType(Type contentType, string key, object defaultVal,
-            VariableScope scope = VariableScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             var result = _varManager.AddNewVariableOfContentType(contentType, key, defaultVal, scope);
             return result;
@@ -247,10 +247,21 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Refresh()
         {
+            EnsureContentsAreMarkedAsGlobal();
             EnsureValidUniqueId();
 
             _varManager.VarOwner = this;
             _varManager.Refresh();
+        }
+
+        private void EnsureContentsAreMarkedAsGlobal()
+        {
+            var vars = Variables;
+            for (int i = 0; i < vars.Count; i++)
+            {
+                var currentVar = vars[i];
+                currentVar.Scope = AccessScope.Global;
+            }
         }
 
         public event Action Refreshed
@@ -419,6 +430,11 @@ namespace AtMycelia.Hyphlow
             VsaSignals.VsaDisabled(this);
         }
 
+        protected virtual void OnDestroy()
+        {
+            VsaSignals.VsaDestroyed(name, _uniqueId);
+        }
+
         protected virtual void OnValidate()
         {
             if (!AssetDatabase.Contains(this))
@@ -460,7 +476,7 @@ namespace AtMycelia.Hyphlow
 
 #if UNITY_EDITOR
 
-        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, VariableScope scope)
+        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, AccessScope scope)
         {
             return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(k, defaultVal, scope);
         }

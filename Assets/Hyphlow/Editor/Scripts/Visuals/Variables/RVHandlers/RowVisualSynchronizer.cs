@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Synchronizes the visual elements of a Variable Row with the underlying variable data model.
@@ -25,7 +25,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             EnumField scopeField,
             VisualElement valueField,
             Action<TextField> keyFieldChanged,
-            Action<VariableScope> scopeFieldChanged,
+            Action<AccessScope> scopeFieldChanged,
             Action applyValueFromModel)
         {
             Variable = variable;
@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public EnumField ScopeField { get; }
         public VisualElement ValueField { get; }
         public Action<TextField> KeyFieldChanged { get; }
-        public Action<VariableScope> ScopeFieldChanged { get; }
+        public Action<AccessScope> ScopeFieldChanged { get; }
         public Action ApplyValueFromModel { get; }
         public bool IsValid => Variable != null && KeyField != null && ScopeField != null;
     }
@@ -151,7 +151,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             private void OnScopeChanged(ChangeEvent<Enum> evt)
             {
-                _context.ScopeFieldChanged?.Invoke((VariableScope)evt.newValue);
+                _context.ScopeFieldChanged?.Invoke((AccessScope)evt.newValue);
             }
 
             private void OnMuscariableValueChanged(Muscariable changedVar)

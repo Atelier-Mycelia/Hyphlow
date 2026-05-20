@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [RowVisualHandler(menuName: "UnityGeneral",
         contentType: typeof(GameObject),

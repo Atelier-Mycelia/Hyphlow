@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Handles single-click-driven block selection and empty space deselection.
@@ -39,7 +39,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             isDisposed = true;
         }
 
-        public void OnBlockClicked(Block block, Event _)
+        public void OnBlockClicked(IBlock block, Event _)
         {
             if (!isDisposed)
             {
@@ -51,7 +51,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void SetFlowchartAsSelecting(Block block)
+        private void SetFlowchartAsSelecting(IBlock block)
         {
             if (Flowchart == null)
             {
@@ -78,7 +78,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private Flowchart Flowchart => flowchartContext.Flowchart;
 
-        public void OnBlockCreated(Block block)
+        public void OnBlockCreated(IBlock block)
         {
             if (!isDisposed)
             {

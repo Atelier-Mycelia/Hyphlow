@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Encapsulates Flowchart selection operations so callers don't have
@@ -9,11 +9,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
     /// </summary>
     public class SelectionState : IDisposable
     {
-        private static readonly IList<Block> EmptyBlocks = Array.Empty<Block>();
+        private static readonly IList<IBlock> EmptyBlocks = Array.Empty<Block>();
 
         public Flowchart Flowchart { get; set; }
 
-        public IList<Block> Blocks => Flowchart != null ? Flowchart.SelectedBlocks : EmptyBlocks;
+        public IList<IBlock> Blocks => Flowchart != null ? Flowchart.SelectedBlocks : EmptyBlocks;
 
         public int BlockCount => Flowchart != null ? 
             Flowchart.SelectedBlockCount :
@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public bool HasMultipleBlocks => BlockCount > 1;
 
-        public bool Contains(Block block)
+        public bool Contains(IBlock block)
         {
             return block != null &&
                    Flowchart != null &&
@@ -54,7 +54,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Flowchart.ClearSelectedCommands();
         }
 
-        public void ReplaceWith(Block block)
+        public void ReplaceWith(IBlock block)
         {
             if (Flowchart == null)
             {
@@ -69,7 +69,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        public void Add(Block block)
+        public void Add(IBlock block)
         {
             if (Flowchart == null || block == null)
             {
@@ -82,7 +82,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        public void Remove(Block block)
+        public void Remove(IBlock block)
         {
             if (Flowchart == null || block == null)
             {
@@ -95,7 +95,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        public void Toggle(Block block)
+        public void Toggle(IBlock block)
         {
             if (Flowchart == null || block == null)
             {

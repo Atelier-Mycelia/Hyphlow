@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(Call))]
     public class CallEditor : CommandEditor 
@@ -27,26 +27,29 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             serializedObject.Update();
 
-            Call t = target as Call;
-
-            Flowchart flowchart = null;
+            Call commandTarg = target as Call;
+            Flowchart commandFc = commandTarg.GetFlowchart();
+            Flowchart targetFc = null;
             if (targetFlowchartProp.objectReferenceValue == null)
             {
-                flowchart = (Flowchart)t.GetFlowchart();
+                targetFc = commandFc;
             }
             else
             {
-                flowchart = targetFlowchartProp.objectReferenceValue as Flowchart;
+                targetFc = targetFlowchartProp.objectReferenceValue as Flowchart;
             }
 
             EditorGUILayout.PropertyField(targetFlowchartProp);
 
-            if (flowchart != null)
+            if (targetFc != null)
             {
+                AccessScope scopesAllowed = ReferenceEquals(targetFc, commandFc) ?
+                    AccessScope.Null : // Null = no restrictions if the target flowchart is the same as the caller's flowchart
+                    AccessScopeDefaults.VisibleToOutsiders;
                 BlockEditor.BlockField(targetBlockProp,
                                        new GUIContent("Target Block", "Block to call"), 
                                        new GUIContent("<None>"), 
-                                       flowchart);
+                                       targetFc);
 
                 EditorGUILayout.PropertyField(startLabelProp);
 
@@ -57,5 +60,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             serializedObject.ApplyModifiedProperties();
         }
+
     }
 }

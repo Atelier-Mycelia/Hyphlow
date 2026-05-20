@@ -89,7 +89,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            f.DetermineSubstituteVariables(logMessage.Value, referencedVariables);
+            f.DetermineSubstituteVariables(logMessage.Value, _referencedVariables);
         }
 #endif
         #endregion Editor caches

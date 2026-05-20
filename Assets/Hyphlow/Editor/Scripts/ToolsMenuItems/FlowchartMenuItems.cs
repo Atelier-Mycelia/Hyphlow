@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Menu items for creating Flowchart-related objects, such as
@@ -22,6 +22,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             if (flowchart != null)
             {
                 flowchart.Version = HyphlowConstants.CurrentVersion;
+                flowchart.ApplyDefaultConfigToFirstBlock();
+                EditorUtility.SetDirty(flowchart);
             }
         }
 

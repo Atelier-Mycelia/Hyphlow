@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Handles setting up the selection box during left-mouse drag operations. This does NOT draw the box;
@@ -201,7 +201,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return zoomSelectionBox;
         }
 
-        private static IEnumerable<Block> EnumerateBlocks(FlowchartContext ctx)
+        private static IEnumerable<IBlock> EnumerateBlocks(FlowchartContext ctx)
         {
             var blocks = ctx.Document.AllBlocks;
             if (blocks != null && blocks.Count > 0)
@@ -209,7 +209,9 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return blocks;
             }
 
-            return ctx.Flowchart != null ? ctx.Flowchart.GetComponents<Block>() : Array.Empty<Block>();
+            return ctx.Flowchart != null ? 
+                ctx.Flowchart.GetComponents<Block>() : 
+                Array.Empty<IBlock>();
         }
 
         

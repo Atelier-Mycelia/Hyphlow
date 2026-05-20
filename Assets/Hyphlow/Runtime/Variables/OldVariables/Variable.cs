@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField]
         [FormerlySerializedAs("scope")]
-        protected VariableScope _scope;
+        protected AccessScope _scope;
 
         [SerializeField]
         [FormerlySerializedAs("key")]
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Visibility scope for the variable.
         /// </summary>
-        public virtual VariableScope Scope { get { return _scope; } set { _scope = value; } }
+        public virtual AccessScope Scope { get { return _scope; } set { _scope = value; } }
 
         /// <summary>
         /// String identifier for the variable.
@@ -165,6 +165,23 @@ namespace AtMycelia.Hyphlow
         }
 
         public virtual bool IsRelationalSupported => false;
+
+        object IHasItemId.ItemId
+        {
+            get => ItemId;
+            set
+            {
+                if (value is byte b)
+                {
+                    ItemId = b;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Cannot assign value of type " +
+                        $"{value?.GetType().Name ?? "null"} to ItemId of type byte.");
+                }
+            }
+        }
 
         protected virtual void OnValidate()
         {

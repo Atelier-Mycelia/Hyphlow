@@ -10,7 +10,7 @@ using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
 using AtMycelia.EditorUtils;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).

@@ -6,7 +6,7 @@ using System.Reflection;
 using System;
 using System.Collections.Generic;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor(typeof(InvokeMethod))]
     public class InvokeMethodEditor : CommandEditor

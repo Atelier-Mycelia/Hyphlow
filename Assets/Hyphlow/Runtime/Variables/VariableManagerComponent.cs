@@ -16,12 +16,22 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     [MovedFrom(true, "AtMycelia.Hyphlow", 
         "AtMycelia.Amanita.Core")]
-    public class VariableManagerComponent : MonoBehaviour, IReorderableMuscariableSource
+    /// <summary>
+    /// A MonoBehaviour wrapper for the VariableManager class, which allows it to be 
+    /// used as a component on a GameObject. This is useful for things such as 
+    /// Flowcharts, which can delegate their variable-management to another module.
+    /// </summary>
+    public class VariableManagerComponent : MonoBehaviour, IVariableManager, IDisposable
     {
         [SerializeField, HideInInspector] private UnityObj _unityObjOwner;
         [SerializeField, HideInInspector] private VariableManager _variableManager = new VariableManager();
         [SerializeField, HideInInspector] private Flowchart _cachedFlowchart;
 
+        /// <summary>
+        /// The owner of the variables in this manager. Note that this 
+        /// property's setter will update said variables' Owner fields
+        /// based on the value passed.
+        /// </summary>
         public IVariableSource Owner
         {
             get
@@ -46,8 +56,6 @@ namespace AtMycelia.Hyphlow
         public string UniqueId => _variableManager.UniqueId;
 
         public string Name { get => _variableManager.Name; set => _variableManager.Name = value; }
-
-        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => ((IVariableSource<Muscariable>)_variableManager).Variables;
 
         public event Action<IVariable> VariableAdded
         {
@@ -130,7 +138,7 @@ namespace AtMycelia.Hyphlow
 
             Flowchart[] flowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             int migratedCount = 0;
-
+            string fcsMigratedFor = "";
             for (int i = 0; i < flowcharts.Length; i++)
             {
                 Flowchart flowchart = flowcharts[i];
@@ -155,12 +163,16 @@ namespace AtMycelia.Hyphlow
                 component.SetGlobalVarsToPublic();
                 if (success)
                 {
+                    fcsMigratedFor += flowchart.name + ", ";
                     migratedCount++;
                 }
             }
+
             if (migratedCount > 0)
             {
-                Debug.Log($"VariableManagerComponent: Migrated variables for {migratedCount} Flowchart(s).");
+                string logMessage = $"VariableManagerComponent: Migrated variables " +
+                    $"for {migratedCount} Flowchart(s): {fcsMigratedFor}";
+                Debug.Log(logMessage);
             }
         }
 
@@ -168,43 +180,36 @@ namespace AtMycelia.Hyphlow
         {
             success = false;
             EnsureOwner();
-            _cachedFlowchart = _unityObjOwner as Flowchart;
-            if (_cachedFlowchart == null)
-            {
-                return;
-            }
+            IList<Variable> legacyVarsToMigrate = GetComponents<Variable>();
 
-            _cachedFlowchart.GetVariableManagerMigrationData(out VariableManager legacyManager,
-                out IList<Muscariable> oldMuscariables,
-                out IList<Variable> legacyVariables);
-
-            List<Muscariable> muscariablesToMigrate = new List<Muscariable>();
-            List<Variable> legacyVarsToMigrate = new List<Variable>();
-
-            if (legacyManager != null)
-            {
-                muscariablesToMigrate.AddRange(legacyManager.Variables.OfType<Muscariable>());
-                legacyVarsToMigrate.AddRange(legacyManager.Variables.OfType<Variable>());
-            }
-
-            if (oldMuscariables != null)
-            {
-                muscariablesToMigrate.AddRange(oldMuscariables);
-            }
-
-            if (legacyVariables != null)
-            {
-                legacyVarsToMigrate.AddRange(legacyVariables);
-            }
-
-            if (muscariablesToMigrate.Count == 0 && legacyVarsToMigrate.Count == 0)
+            if (legacyVarsToMigrate.Count == 0)
             {
                 Debug.Log("VariableManagerComponent: No Flowchart variables found to migrate.");
                 return;
             }
 
-            _variableManager.MigrateLegacyVariables(muscariablesToMigrate, legacyVarsToMigrate);
-            _cachedFlowchart.ClearVariableManagerMigrationData();
+            _variableManager.MigrateLegacyVariables(legacyVarsToMigrate);
+
+            ClearFcLocalVarLists();
+            void ClearFcLocalVarLists()
+            {
+                // Doing it by reflection since we don't want to add more bloat to Flowchart
+                // just for this migration, and we don't want to make the fields public either.
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var flowchartType = typeof(Flowchart);
+                var legacyVariablesField = flowchartType.GetField("_legacyVariables", flags);
+                if (legacyVariablesField != null)
+                {
+                    legacyVariablesField.SetValue(_cachedFlowchart, new List<Variable>());
+                }
+
+                var muscariablesField = flowchartType.GetField("_oldMuscariables", flags);
+                if (muscariablesField != null)
+                {
+                    muscariablesField.SetValue(_cachedFlowchart, new List<Muscariable>());
+                }
+            }
+
             _variableManager.Refresh();
             Owner = _cachedFlowchart;
 
@@ -283,7 +288,7 @@ namespace AtMycelia.Hyphlow
         }
 
         public Muscariable AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
-            VariableScope scope = VariableScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
         }
@@ -299,7 +304,7 @@ namespace AtMycelia.Hyphlow
             {
                 MigrateAllFlowchartVariables();
                 SetGlobalVarsToPublic();
-            }; 
+            };
         }
 
         void SetGlobalVarsToPublic()
@@ -312,7 +317,7 @@ namespace AtMycelia.Hyphlow
             var globalVars = vManager.Variables.Where(VarIsGlobal).ToList();//
             foreach (var globalVar in globalVars)
             {
-                globalVar.Scope = VariableScope.Public;
+                globalVar.Scope = AccessScope.Public;
             }
         }
 
@@ -326,10 +331,27 @@ namespace AtMycelia.Hyphlow
                 Debug.LogError(errorMessage);
                 return false;
             }
-            bool result = var.Scope == VariableScope.Global;
+            bool result = var.Scope == AccessScope.Global;
             return result;
         }
 #endif
+
+        public void Dispose()
+        {
+            _unityObjOwner = null;
+            _cachedFlowchart = null;
+            _variableManager.Dispose();
+        }
+
+        protected void OnDestroy()
+        {
+            Dispose();
+        }
+
+        public void ResetAllVars()
+        {
+            _variableManager.ResetAllVars();
+        }
     }
 
 }

@@ -1,3 +1,4 @@
+using AtMycelia;
 using AtMycelia.Hyphlow;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -61,15 +62,16 @@ namespace General
         }
 
         [Test]
-        public void EmptyAfterSanitization_FallsBackToVar()
+        public void EmptyAfterSanitization_FallsBackToDefaultKey()
         {
             var muscari = new FloatMuscariable { Key = null };
             string suggested = "@@@123"; // after stripping non-alnum and trimming leading digits -> empty
             var group = new List<IVariable>();
 
-            string result = UniqueKeyGenerator.GetUniqueKeyFor(suggested, group, muscari);
-
-            Assert.AreEqual("Var", result);
+            string defaultKey = "Var";
+            string result = UniqueKeyGenerator.GetUniqueKeyFor(suggested, group, muscari, defaultKey);
+            
+            Assert.AreEqual(defaultKey, result);
         }
 
         [Test]
@@ -98,7 +100,8 @@ namespace General
             // Take the current variables from the source as a List<Muscariable>
             IList<IVariable> varsFetched = _source.GetVarsByType<Muscariable>().Cast<IVariable>().ToList();
 
-            string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, varsFetched, newVar);
+            string result = UniqueKeyGenerator.GetUniqueKeyFor(newVar.Key, (IReadOnlyList<IVariable>) varsFetched,
+                newVar);
 
             // Expect next available suffix to be "score3"
             Assert.AreEqual("score3", result);
@@ -144,7 +147,9 @@ namespace General
             };
 
             // Should not throw and should return the suggested key unchanged
-            string result = UniqueKeyGenerator.GetUniqueKeyFor("uniqueName", list, null);
+            string result = UniqueKeyGenerator.GetUniqueKeyFor<IVariable>("uniqueName", 
+                (IReadOnlyList<IVariable>)list, 
+                null);
 
             Assert.AreEqual("uniqueName", result);
         }

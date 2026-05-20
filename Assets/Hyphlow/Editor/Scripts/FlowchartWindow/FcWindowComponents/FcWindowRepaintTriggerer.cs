@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Handles when to get the new flowchart window to repaint.
@@ -74,17 +74,17 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             TriggerRepaint();
         }
 
-        public void OnPostBlockDeletion(ushort blockId)
+        public void OnPostBlockDeletion(byte blockId)
         {
             TriggerRepaint();
         }
 
-        public void OnBlockSelected(Block block)
+        public void OnBlockSelected(IBlock block)
         {
             TriggerRepaint();
         }
 
-        public void OnMultiBlocksSelected(IList<Block> blocks)
+        public void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             TriggerRepaint();
         }

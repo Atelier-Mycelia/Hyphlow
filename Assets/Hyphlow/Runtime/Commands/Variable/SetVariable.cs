@@ -100,7 +100,7 @@ namespace AtMycelia.Hyphlow
             base.RefreshVariableCache();
 
             _anyVar ??= new AnyVariableAndDataPair();
-            _anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref referencedVariables);
+            _anyVar.RefreshVariableCacheHelper(GetFlowchart(), ref _referencedVariables);
         }
 #endif
         #endregion Editor caches

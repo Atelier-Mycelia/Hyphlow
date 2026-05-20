@@ -2,11 +2,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class FlowchartDocument : IDisposable
     {
-        private static readonly Block[] EmptyBlocks = Array.Empty<Block>();
+        private static readonly IBlock[] EmptyBlocks = Array.Empty<IBlock>();
 
         public Flowchart Flowchart
         {
@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private Flowchart _flowchart;
 
-        public IReadOnlyCollection<Block> AllBlocks
+        public IReadOnlyCollection<IBlock> AllBlocks
         {
             get
             {
@@ -29,14 +29,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        public Block TopmostBlockOverlapping(Vector2 mousePosition)
+        public IBlock TopmostBlockOverlapping(Vector2 mousePosition)
         {
             if (Flowchart == null)
             {
                 return null;
             }
 
-            IList<Block> blocks = GetOrderedBlocksSnapshot();
+            IList<IBlock> blocks = GetOrderedBlocksSnapshot();
             if (blocks.Count == 0)
             {
                 return null;
@@ -64,14 +64,14 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return null;
         }
 
-        private IList<Block> GetOrderedBlocksSnapshot()
+        private IList<IBlock> GetOrderedBlocksSnapshot()
         {
             if (Flowchart == null)
             {
                 return EmptyBlocks;
             }
 
-            IReadOnlyCollection<Block> blocks = AllBlocks;
+            IReadOnlyCollection<IBlock> blocks = AllBlocks;
             if (blocks == null)
             {
                 return EmptyBlocks;
@@ -79,25 +79,25 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (blocks.Count == 0)
             {
-                return Flowchart.GetComponents<Block>();
+                return Flowchart.GetComponents<IBlock>();
             }
 
-            if (blocks is IList<Block> list)
+            if (blocks is IList<IBlock> list)
             {
                 return list;
             }
 
-            if (blocks is IReadOnlyList<Block> readOnlyList)
+            if (blocks is IReadOnlyList<IBlock> readOnlyList)
             {
                 return CopyReadOnlyList(readOnlyList);
             }
 
-            return new List<Block>(blocks);
+            return new List<IBlock>(blocks);
         }
 
-        private static IList<Block> CopyReadOnlyList(IReadOnlyList<Block> source)
+        private static IList<IBlock> CopyReadOnlyList(IReadOnlyList<IBlock> source)
         {
-            List<Block> copy = new List<Block>(source.Count);
+            List<IBlock> copy = new List<IBlock>(source.Count);
             for (int i = 0; i < source.Count; i++)
             {
                 copy.Add(source[i]);

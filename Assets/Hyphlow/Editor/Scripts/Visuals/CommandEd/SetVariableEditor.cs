@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Type = System.Type;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor(typeof(SetVariable))]
     public class SetVariableEditor : CommandEditor

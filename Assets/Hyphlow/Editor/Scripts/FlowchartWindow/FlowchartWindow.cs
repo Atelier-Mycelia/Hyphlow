@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     public class FlowchartWindow : EditorWindow, IFlowchartHostCore
     {
@@ -27,6 +27,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 GetWindow<FlowchartWindow>();
             wnd.titleContent = new GUIContent(Config.FlowchartWindowTitle);
             wnd.minSize = Config.WindowMinSize;
+            wnd.Show();
             wnd.Focus();
         }
 
@@ -60,16 +61,16 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             _graphicsRenderer?.RefreshNow();
         }
 
-        public Block CreateBlock(Flowchart fc, Vector2 pos)
+        public IBlock CreateBlock(Flowchart fc, Vector2 pos)
         {
             if (fc == null)
             {
                 return null;
             }
 
-            Block newBlock = fc.CreateBlock(pos);
+            IBlock newBlock = fc.CreateBlock(pos);
             UpdateBlockCollection();
-            Undo.RegisterCreatedObjectUndo(newBlock, "New Block");
+            Undo.RegisterCreatedObjectUndo(newBlock.Owner, "New Block");
 
             fc.AddToSelection(newBlock);
             return newBlock;
@@ -121,7 +122,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return result;
         }
 
-        public Vector2 GetBlockCenter(IReadOnlyCollection<Block> blocks)
+        public Vector2 GetBlockCenter(IReadOnlyCollection<IBlock> blocks)
         {
             if (blocks == null || blocks.Count == 0)
             {

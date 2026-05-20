@@ -14,10 +14,25 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
+    public interface IVariableManager : IReorderableVariableSource, IDisposable
+    {
+        /// <summary>
+        /// Sets the values of all the vars this is managing back 
+        /// to their initial values, as if they were just created.
+        /// </summary>
+        void ResetAllVars();
+    }
+
+    /// <summary>
+    /// This class is responsible for the maintenance and upkeep of a collection of variables.
+    /// It provides functionality to add, remove, retrieve, and reorder variables, as well as to ensure
+    /// that each variable has a unique and valid ID. The manager also handles initialization and
+    /// cleanup of variables, and it can notify listeners when variables are added or removed.
+    /// </summary>
     [Serializable]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public sealed class VariableManager : IVariableSource, IMuscariableSource,
-        IReorderableVariableSource, IReorderableMuscariableSource
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    public sealed class VariableManager : IVariableManager, IMuscariableSource,
+        IReorderableMuscariableSource
     {
         // Note: Unity does not serialize readonly fields, even if they're plain 
         // old Lists of types it otherwise serializes just fine. So, we have
@@ -35,11 +50,11 @@ namespace AtMycelia.Hyphlow
         {
             if (IsInitted)
             {
-                Debug.LogWarning($"VariableManager for {Name} is already initialized. Reinitializing will clear " +
-                    "all variables and reset the manager. Proceeding with reinitialization.");
+                Debug.LogWarning($"VariableManager for {Name} is already initialized. " +
+                    $"Reinitializing will clear all variables and reset the manager. " +
+                    $"Proceeding with reinitialization.");
             }
             Clear();
-            _nextValidVarID = 1;
             IsInitted = true;
         }
 
@@ -49,21 +64,35 @@ namespace AtMycelia.Hyphlow
             private set => _isInitted = value;
         }
 
-        public void Clear()
+        /// <summary>
+        /// Removes all variables from this manager. Note that this will fire the 
+        /// appropriate events for each variable removed, so if you have any listeners
+        /// for those events, they will be notified of each individual removal. 
+        /// <br></br> <br></br>
+        /// If you just want to clear the variables without 
+        /// firing events, you can clear the _legacyVariables and _muscariables lists 
+        /// directly and then call Refresh() to update the lookup and ensure valid IDs, 
+        /// but be aware that doing so will not send any signals about the variables 
+        /// being removed, which could lead to issues if you have other parts of your 
+        /// code that rely on those signals.
+        /// </summary>
+        public void Clear(bool triggerSignals = true)
         {
             // Remove them one by one so the right events fire
             while (_legacyVariables.Count > 0)
             {
-                RemoveLegacyVarAtIndex(0);
+                RemoveLegacyVarAtIndex(0, triggerSignals);
             }
 
             while (_muscariables.Count > 0)
             {
-                RemoveMuscariAtIndex(0);
+                RemoveMuscariAtIndex(0, triggerSignals);
             }
+
+            _nextValidVarID = 1;
         }
 
-        public IVariable RemoveLegacyVarAtIndex(int index)
+        public IVariable RemoveLegacyVarAtIndex(int index, bool triggerSignals = true)
         {
             if (index < 0 || index >= _legacyVariables.Count)
             {
@@ -74,20 +103,29 @@ namespace AtMycelia.Hyphlow
             }
 
             Variable toRemove = _legacyVariables[index];
-            RemoveFromCachesThenSignal(toRemove);
+            if (triggerSignals)
+            {
+                RemoveFromCaches(toRemove, triggerSignals);
+            }
             return toRemove;
         }
 
-        private void RemoveFromCachesThenSignal(IVariable toRemove)
+        private void RemoveFromCaches(IVariable toRemove, bool triggerSignals = true)
         {
-            PreVariableRemoved(toRemove);
+            if (triggerSignals)
+            {
+                PreVariableRemoved(toRemove);
+            }
             _legacyVariables.RemoveByReference(toRemove as Variable);
             _muscariables.RemoveByReference(toRemove as Muscariable);
 
             _lookup.Remove(toRemove.ItemId);
             MarkOwnerAsDirty();
-            VariableRemoved(toRemove);
-            VariableSignals.VariableRemoved(toRemove);
+            if (triggerSignals)
+            {
+                VariableRemoved(toRemove);
+                VariableSignals.VariableRemoved(toRemove);
+            }
         }
 
         private Dictionary<byte, IVariable> _lookup = new();
@@ -96,7 +134,7 @@ namespace AtMycelia.Hyphlow
 
         public event Action<IVariable> VariableRemoved = delegate { };
 
-        public IVariable RemoveMuscariAtIndex(int index)
+        public IVariable RemoveMuscariAtIndex(int index, bool triggerSignals = true)
         {
             if (index < 0 || index >= _muscariables.Count)
             {
@@ -105,7 +143,7 @@ namespace AtMycelia.Hyphlow
                 throw new IndexOutOfRangeException(errorMessage);
             }
             Muscariable toRemove = _muscariables[index];
-            RemoveFromCachesThenSignal(toRemove);
+            RemoveFromCaches(toRemove);
             return toRemove;
         }
 
@@ -122,24 +160,6 @@ namespace AtMycelia.Hyphlow
                 _legacyVariables.Add(legacy);
                 RegisterIntoVarLookup(new[] { legacy });
             }
-
-            UpdateNextValidId();
-            void UpdateNextValidId()
-            {
-                // We want it set to one more than the max ID currently in use, so that the next
-                // variable added will get an ID that is not already taken.
-                byte maxIdInUse = 0;
-                foreach (var elem in _lookup.Values)
-                {
-                    if (elem.ItemId > maxIdInUse)
-                    {
-                        maxIdInUse = elem.ItemId;
-                    }
-                }
-                _nextValidVarID = (byte)(maxIdInUse + 1);
-            }
-
-            EnsureValidIds();
         }
 
         public void AddMultiVars(IEnumerable<IVariable> toAdd)
@@ -152,25 +172,11 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
-        public void MigrateLegacyVariables(IList<Muscariable> oldMuscariables, IList<Variable> oldLegacyVariables)
+        public void MigrateLegacyVariables(IList<Variable> oldLegacyVariables)
         {
             EnsureInitialized();//
 
             bool addedAny = false;
-
-            if (oldMuscariables != null)
-            {
-                for (int i = 0; i < oldMuscariables.Count; i++)
-                {
-                    var muscariable = oldMuscariables[i];
-                    if (muscariable == null || IsRegistered(muscariable))
-                    {
-                        continue;
-                    }
-                    _muscariables.Add(muscariable);
-                    addedAny = true;
-                }
-            }
 
             if (oldLegacyVariables != null)
             {
@@ -182,10 +188,7 @@ namespace AtMycelia.Hyphlow
                         continue;
                     }
 
-                    if (legacyVar.ItemId == Muscariable.InvalidId || _lookup.ContainsKey(legacyVar.ItemId))
-                    {
-                        legacyVar.ItemId = NextValidVarID();
-                    }
+                    EnsureValidIdFor(legacyVar);
 
                     _legacyVariables.Add(legacyVar);
                     _lookup[legacyVar.ItemId] = legacyVar;
@@ -238,9 +241,7 @@ namespace AtMycelia.Hyphlow
         public Muscariable AddAsMuscari(IVariable toAdd)
         {
             EnsureInitialized();
-            bool alreadyRegistered = _legacyVariables.ContainsReference(toAdd) ||
-                _muscariables.ContainsReference(toAdd);
-            if (alreadyRegistered)
+            if (IsRegistered(toAdd))
             {
                 return null;
             }
@@ -256,35 +257,22 @@ namespace AtMycelia.Hyphlow
         /// and setting its owner and parent flowchart references. Also sends the signal
         /// for var-adding.
         /// </summary>
-        void Integrate(Muscariable toAdd)
+        private void Integrate(Muscariable toAdd)
         {
-            UpdateNextValidId();
-            #region Ensure valid id and key
-            bool duplicateId = _lookup.ContainsKey(toAdd.ItemId);
-            if (toAdd.ItemId == Muscariable.InvalidId)
-            {
-                toAdd.ItemId = NextValidVarID();
-            }
-            else if (duplicateId)
-            {
-                Debug.LogWarning($"Duplicate variable ID {toAdd.ItemId} found for {_varOwner?.Name}. Reassigning.");
-                toAdd.ItemId = NextValidVarID();
-            }
-
-            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, (IList<IVariable>)Variables, null);
-            #endregion
-
-            #region Establish ownership and parent flowchart references
+            toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, Variables, null);
             toAdd.ParentFlowchart = VarOwner as Flowchart;
             toAdd.Owner = _varOwner;
-            #endregion
 
-            AddToCachesThenSignal(toAdd);
+            AddToCaches(toAdd);
         }
 
-        private void AddToCachesThenSignal(IVariable toAdd)
+        private void AddToCaches(IVariable toAdd, bool triggerSignals = true)
         {
-            PreVariableAdded(toAdd);
+            if (triggerSignals)
+            {
+                PreVariableAdded(toAdd);
+            }
+
             if (toAdd is Muscariable)
             {
                 _muscariables.Add(toAdd as Muscariable);
@@ -293,10 +281,16 @@ namespace AtMycelia.Hyphlow
             {
                 _legacyVariables.Add(toAdd as Variable);
             }
+
+            EnsureValidIdFor(toAdd);
             _lookup[toAdd.ItemId] = toAdd;
             MarkOwnerAsDirty();
-            VariableAdded(toAdd);
-            VariableSignals.VariableAdded(toAdd);
+
+            if (triggerSignals)
+            {
+                VariableAdded(toAdd);
+                VariableSignals.VariableAdded(toAdd);
+            }
         }
 
         public event Action<IVariable> PreVariableAdded = delegate { };
@@ -316,7 +310,7 @@ namespace AtMycelia.Hyphlow
         {
             if (VarOwner is UnityObj ownerUnityObj)
             {
-                EnsureValidIds();
+                EnsureValidAndUniqueIdsForAllOurVars();
                 foreach (var elem in _lookup.Values)
                 {
                     elem.Init(elem.BoxedValue);
@@ -346,7 +340,7 @@ namespace AtMycelia.Hyphlow
             _lookup.Clear();
             RegisterIntoVarLookup(_muscariables);
             RegisterIntoVarLookup(_legacyVariables);
-            EnsureValidIds();
+            EnsureValidAndUniqueIdsForAllOurVars();
             Refreshed();
         }
 
@@ -362,54 +356,65 @@ namespace AtMycelia.Hyphlow
         {
             foreach (var elem in varsToRegister)
             {
-                if (elem.ItemId == Muscariable.InvalidId)
-                {
-                    elem.ItemId = NextValidVarID();
-                }
-                else if (_lookup.ContainsKey(elem.ItemId))
-                {
-                    Debug.LogWarning($"Duplicate variable ID {elem.ItemId} found for {_varOwner?.Name}. Reassigning.");
-                    elem.ItemId = NextValidVarID();
-                }
+                EnsureValidIdFor(elem);
+                _lookup[elem.ItemId] = elem;
+            }
+        }
+
+        private void EnsureValidIdFor(IVariable iVar)
+        {
+            // It is possible that the var we're given is already registered under a valid ID.
+            // In that case, we want to ignore it.
+            _lookup.TryGetValue(iVar.ItemId, out IVariable varWithThatId);
+            bool alreadyRegistered = varWithThatId != null && ReferenceEquals(varWithThatId, iVar);
+            if (alreadyRegistered)
+            {
+                return;
+            }
+
+            while (iVar.ItemId == Muscariable.InvalidId || _lookup.ContainsKey(iVar.ItemId))
+            {
+                iVar.ItemId = NextValidVarID();
+            }
+        }
+
+        /// <summary>
+        /// Validates the IDs of all variables in this manager, ensuring that each 
+        /// one has a unique and valid ID.
+        /// </summary>
+        public void EnsureValidAndUniqueIdsForAllOurVars()
+        {
+            var varsToCheck = Variables;
+            for (int i = 0; i < varsToCheck.Count; i++)
+            {
+                var elem = varsToCheck[i];
+                EnsureValidIdFor(elem);
                 _lookup[elem.ItemId] = elem;
             }
         }
 
         /// <summary>
-        /// Checks for duplicate IDs and reassigns them if necessary
+        /// Returns the next valid variable ID for a new variable,
+        /// incrementing the internal counter for the next valid ID in the process.
         /// </summary>
-        public void EnsureValidIds()
-        {
-            var idGroups = _lookup.Values.GroupBy(elem => elem.ItemId);
-            foreach (var group in idGroups)
-            {
-                if (group.Count() > 1)
-                {
-                    Debug.LogWarning($"Duplicate variable ID {group.Key} found for {_varOwner?.Name}. Reassigning IDs.");
-                    foreach (var elem in group)
-                    {
-                        elem.ItemId = NextValidVarID();
-                    }
-                }
-            }
-
-            // Find the vars that have an itemId of 0, then reassign them valid IDs. We have to do
-            // this separately from the duplicate ID check because 0 is a valid byte value, so it
-            // won't be caught by the duplicate ID check even though it's not a valid ID for our purposes.
-            var zeroIdVars = _lookup.Values.Where(elem => elem.ItemId == Muscariable.InvalidId).ToList();
-            foreach (var elem in zeroIdVars)
-            {
-                elem.ItemId = NextValidVarID();
-            }
-        }
-
         private byte NextValidVarID()
         {
+            if (_nextValidVarID == byte.MaxValue)
+            {
+                _nextValidVarID = 1;
+            }
+
             byte toReturn = _nextValidVarID;
             _nextValidVarID++;
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns a defensive copy of the list of variables in this manager. Modifying
+        /// the returned list will not modify this manager's internal list. However, you
+        /// can still modify the variables themselves, since the ones in the returned
+        /// list are the same instances as the ones in this manager.
+        /// </summary>
         public IReadOnlyList<IVariable> Variables
         {
             get
@@ -421,6 +426,16 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        /// <summary>
+        /// The owner of the variables this manager handles. This is used for determining things like
+        /// which Flowchart a variable belongs to, and for sending signals about variable changes.
+        /// By default, this is set to the manager itself, but it can be set to something else if
+        /// needed (for example, if this here is being used as a sub-manager for another object
+        /// that should be considered the real owner).
+        /// <br></br><br></br>
+        /// This property's setter makes sure to update the variables' Owner fields to that of the
+        /// value you're setting. Bookkeeping and whatnot.
+        /// </summary>
         public IVariableSource VarOwner
         {
             get
@@ -456,7 +471,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            RemoveFromCachesThenSignal(toRemove);
+            RemoveFromCaches(toRemove);
         }
 
         public void RemoveVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
@@ -502,14 +517,14 @@ namespace AtMycelia.Hyphlow
             return result as IVariable<TContent>;
         }
 
-        public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue, 
-            VariableScope scope = VariableScope.Private)
+        public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue,
+            AccessScope scope = AccessScope.Private)
         {
             return AddNewVariableOfContentType(typeof(T), key, defaultValue, scope);
         }
 
-        public Muscariable AddNewVariableOfContentType(Type contentType, string key, 
-            object defaultValue, VariableScope scope = VariableScope.Private)
+        public Muscariable AddNewVariableOfContentType(Type contentType, string key,
+            object defaultValue, AccessScope scope = AccessScope.Private)
         {
             EnsureInitialized();
             Muscariable muscaVar = VariableFactory.CreateByContentType(contentType, null);
@@ -530,7 +545,10 @@ namespace AtMycelia.Hyphlow
             RemoveVariable(toRemove as IVariable);
         }
 
-
+        /// <summary>
+        /// Gets a variable by its ID, returning it as the specified generic type 
+        /// if it is of that type. Null otherwise.
+        /// </summary>
         public T GetVariable<T>(byte itemId) where T : class, IVariable
         {
             _lookup.TryGetValue(itemId, out IVariable found);
@@ -539,9 +557,9 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// Returns a list of the variables this manager has that are of the specified variable
-        /// type. If you just want to get variables of a certain content type, use 
-        /// GetMultiVariablesOfContentType instead.
+        /// Returns a list of the variables this manager has that are of the 
+        /// specified variable type. If you just want to get variables of a
+        /// certain <i>content</i> type, use GetMultiVariablesOfContentType instead.
         /// </summary>
         public IList<T> GetMultiVariablesOfType<T>(bool strict = false) where T : IVariable
         {
@@ -551,6 +569,16 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
+        /// <summary>
+        /// Returns a list of the variables this manager has that are of the 
+        /// specified variable type. If strict is true, only variables whose 
+        /// type is <i>exactly</i> varType will be returned. If strict is false, 
+        /// variables whose type is varType or any subclass thereof will 
+        /// be returned.
+        /// <br></br> <br></br>
+        /// If you just want to get variables of a certain <i>content</i> type,
+        /// use GetMultiVariablesOfContentType instead.
+        /// </summary>
         public IList<IVariable> GetMultiVariablesOfType(Type varType, bool strict = false)
         {
             var result = _lookup.Values.Where(IsMatch).ToList();
@@ -592,7 +620,7 @@ namespace AtMycelia.Hyphlow
         }
 
         public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
-            VariableScope scope = VariableScope.Private) where TVarType : Muscariable<TValueType>, new()
+            AccessScope scope = AccessScope.Private) where TVarType : Muscariable<TValueType>, new()
         {
             EnsureInitialized();
             TVarType result = new TVarType();
@@ -620,6 +648,12 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        /// <summary>
+        /// Returns the total number of variables in this manager. You'd best use this instead of Variables.Count,
+        /// since that property returns a defensive list instead of the actual one. Using that to get the 
+        /// var-count can get expensive if this have a lot of variables and are calling it frequently.
+        /// This property gets you the count without the extra overhead.
+        /// </summary>
         public int VariableCount => _lookup.Count;
 
         IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
@@ -627,19 +661,25 @@ namespace AtMycelia.Hyphlow
         public string Name
         {
             get => _varOwner.Name;
-            set => _varOwner.Name = value;
+            set
+            {
+                string warningMessage = $"Attempted to set the name of VariableManager for {_varOwner?.Name}. " +
+                    "This is not allowed, since the manager's name is determined by its owner. " +
+                    "The name will remain unchanged.";
+                Debug.LogWarning(warningMessage);
+            }
         }
 
         public IVariable<TValHeld> AddNewVariable<TValHeld>(string key,
             TValHeld value = default,
-            VariableScope scope = VariableScope.Private)
+            AccessScope scope = AccessScope.Private)
         {
             EnsureInitialized();
             Type valueType = typeof(TValHeld);
 
             IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
 
-            newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, (IList<IVariable>)Variables);
+            newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, Variables);
             newVar.Value = value;
             newVar.Scope = scope;
             newVar.ItemId = NextValidVarID();
@@ -763,11 +803,10 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-
         public void RemoveAll(Predicate<IVariable> match)
         {
             var toRemove = _lookup.Values.Where(var => match(var)).ToList();
-            
+
             foreach (var elem in toRemove)
             {
                 RemoveVariable(elem);
@@ -790,6 +829,31 @@ namespace AtMycelia.Hyphlow
                 EditorUtility.SetDirty(unityObj);
             }
 #endif
+        }
+
+        public void Dispose()
+        {
+            Clear();
+            GetRidOfEvents();
+        }
+
+        private void GetRidOfEvents()
+        {
+            VariableAdded = null;
+            VariableRemoved = null;
+            PreVariableAdded = null;
+            PreVariableRemoved = null;
+            Refreshed = null;
+            Reordered = null;
+        }
+
+        public void ResetAllVars()
+        {
+            for (int i = 0; i < _lookup.Values.Count; i++)
+            {
+                var variable = _lookup.Values.ElementAt(i);
+                variable.OnReset();
+            }
         }
     }
 }

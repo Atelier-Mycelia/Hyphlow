@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Centralizes editor-side knowledge of which Flowchart/Blocks/Commands are currently selected.
@@ -46,27 +46,27 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return fc != null && fc.UniqueId == GetCachedFlowchartUid();
         }
 
-        public static IReadOnlyList<Block> CurrentBlocks => blockSelection;
-        private static readonly List<Block> blockSelection = new List<Block>();
-        public static IReadOnlyList<Command> CurrentCommands => commandSelection;
-        private static readonly List<Command> commandSelection = new List<Command>();
+        public static IReadOnlyList<IBlock> CurrentBlocks => (IReadOnlyList<IBlock>)blockSelection;
+        private static readonly IList<IBlock> blockSelection = new List<IBlock>();
+        public static IReadOnlyList<ICommand> CurrentCommands => (IReadOnlyList<ICommand>)commandSelection;
+        private static readonly IList<ICommand> commandSelection = new List<ICommand>();
 
         /// <summary>
         /// The "primary" block is the first block in the selection, and is the one that will 
         /// be used for things like inspector display.
         /// </summary>
-        public static Block PrimaryBlock { get; private set; }
+        public static IBlock PrimaryBlock { get; private set; }
 
         /// <summary>
         /// The "primary" command is the first command in the selection, and is the one that will 
         /// be used for things like inspector display.
         /// </summary>
-        public static Command PrimaryCommand { get; private set; }
+        public static ICommand PrimaryCommand { get; private set; }
 
-        public static event System.Action<IReadOnlyList<Block>> BlockSelectionChanged = delegate { };
-        public static event System.Action<Block, Block> PrimaryBlockChanged = delegate { };
-        public static event System.Action<IReadOnlyList<Command>> CommandSelectionChanged = delegate { };
-        public static event System.Action<Command, Command> PrimaryCommandChanged = delegate { };
+        public static event System.Action<IReadOnlyList<IBlock>> BlockSelectionChanged = delegate { };
+        public static event System.Action<IBlock, IBlock> PrimaryBlockChanged = delegate { };
+        public static event System.Action<IReadOnlyList<ICommand>> CommandSelectionChanged = delegate { };
+        public static event System.Action<ICommand, ICommand> PrimaryCommandChanged = delegate { };
 
         static EditorSelectionTracker()
         {
@@ -237,12 +237,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             ReplaceBlockSelection(toReplaceWith);
         }
 
-        private static void ReplaceBlockSelection(IEnumerable<Block> toReplaceWith)
+        private static void ReplaceBlockSelection(IEnumerable<IBlock> toReplaceWith)
         {
             blockSelection.Clear();
             if (toReplaceWith != null)
             {
-                foreach (Block block in toReplaceWith)
+                foreach (IBlock block in toReplaceWith)
                 {
                     if (block != null)
                     {
@@ -251,12 +251,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 }
             }
 
-            Block previous = PrimaryBlock;
+            IBlock previous = PrimaryBlock;
             PrimaryBlock = blockSelection.Count > 0 ?
                 blockSelection[0] :
                 null;
 
-            BlockSelectionChanged(blockSelection);
+            BlockSelectionChanged(CurrentBlocks);
             if (!ReferenceEquals(previous, PrimaryBlock))
             {
                 PrimaryBlockChanged(previous, PrimaryBlock);
@@ -271,12 +271,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             ReplaceCommandSelection(toReplaceWith);
         }
 
-        private static void ReplaceCommandSelection(IEnumerable<Command> toReplaceWith)
+        private static void ReplaceCommandSelection(IEnumerable<ICommand> toReplaceWith)
         {
             commandSelection.Clear();
             if (toReplaceWith != null)
             {
-                foreach (Command cmd in toReplaceWith)
+                foreach (ICommand cmd in toReplaceWith)
                 {
                     if (cmd != null)
                     {
@@ -285,12 +285,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 }
             }
 
-            Command previous = PrimaryCommand;
+            ICommand previous = PrimaryCommand;
             PrimaryCommand = commandSelection.Count > 0 ?
                 commandSelection[0] :
                 null;
 
-            CommandSelectionChanged(commandSelection);
+            CommandSelectionChanged(CurrentCommands);
             if (!ReferenceEquals(previous, PrimaryCommand))
             {
                 PrimaryCommandChanged(previous, PrimaryCommand);
@@ -351,10 +351,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             blockSelection.Clear();
-            Block previous = PrimaryBlock;
+            IBlock previous = PrimaryBlock;
             PrimaryBlock = null;
 
-            BlockSelectionChanged(blockSelection);
+            BlockSelectionChanged(CurrentBlocks);
             if (previous != null)
             {
                 PrimaryBlockChanged(previous, null);
@@ -369,10 +369,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             commandSelection.Clear();
-            Command previous = PrimaryCommand;
+            ICommand previous = PrimaryCommand;
             PrimaryCommand = null;
 
-            CommandSelectionChanged(commandSelection);
+            CommandSelectionChanged(CurrentCommands);
             if (previous != null)
             {
                 PrimaryCommandChanged(previous, null);

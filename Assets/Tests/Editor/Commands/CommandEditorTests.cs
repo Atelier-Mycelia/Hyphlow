@@ -1,5 +1,5 @@
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow.RuntimeTesting;
 using NUnit.Framework;
 using System;
@@ -31,7 +31,7 @@ namespace VScriptingTests.FCWindowOperations
 
         protected GameObject _host;
         protected Flowchart _flowchart;
-        protected Block _block;
+        protected IBlock _block;
 
         [TearDown]
         public void TearDown()

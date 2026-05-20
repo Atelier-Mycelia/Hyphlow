@@ -5,12 +5,12 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Graphics;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     public interface IBlockDrawerUitk
     {
-        BlockButton CreateButton(Block block);
-        void UpdateButton(BlockButton button, Block block, float zoom);
+        BlockButton CreateButton(IBlock block);
+        void UpdateButton(BlockButton button, IBlock block, float zoom);
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         IPostBlockCutResponder, IPostMultiBlockCutResponder, IVisualResetter
     {
         public int Priority { get; set; } = 0;
-        private readonly Dictionary<Block, BlockBinding> blockBindings = new();
+        private readonly Dictionary<IBlock, BlockBinding> blockBindings = new();
         private FlowchartWindow owner;
         private bool isDisposed;
         private bool initialRefreshPending;
@@ -138,7 +138,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            IReadOnlyCollection<Block> present = fcContext.Document.AllBlocks;
+            IReadOnlyCollection<IBlock> present = fcContext.Document.AllBlocks;
             RemoveMissing(present);
 
             foreach (var block in present)
@@ -151,13 +151,13 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             MarkDirtyRepaint();
         }
 
-        private void RemoveMissing(IReadOnlyCollection<Block> currentBlocks)
+        private void RemoveMissing(IReadOnlyCollection<IBlock> currentBlocks)
         {
-            using ListPool<Block>.DisposableList pooledKeysHandle = ListPool<Block>.Get(out List<Block> pooledKeys);
+            using ListPool<IBlock>.DisposableList pooledKeysHandle = ListPool<IBlock>.Get(out List<IBlock> pooledKeys);
             pooledKeys.AddRange(blockBindings.Keys);
             for (int i = 0; i < pooledKeys.Count; i++)
             {
-                Block tracked = pooledKeys[i];
+                IBlock tracked = pooledKeys[i];
                 if (!ContainsBlock(currentBlocks, tracked))
                 {
                     RemoveBlock(tracked);
@@ -165,14 +165,14 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private static bool ContainsBlock(IReadOnlyCollection<Block> blocks, Block target)
+        private static bool ContainsBlock(IReadOnlyCollection<IBlock> blocks, IBlock target)
         {
             if (blocks == null)
             {
                 return false;
             }
 
-            if (blocks is ICollection<Block> collection)
+            if (blocks is ICollection<IBlock> collection)
             {
                 return collection.Contains(target);
             }
@@ -188,7 +188,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return false;
         }
 
-        private void RemoveBlock(Block block)
+        private void RemoveBlock(IBlock block)
         {
             if (!blockBindings.TryGetValue(block, out BlockBinding binding))
             {
@@ -212,7 +212,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             MarkDirtyRepaint();
         }
 
-        private void EnsureBlockVisual(Block block)
+        private void EnsureBlockVisual(IBlock block)
         {
             if (block == null)
             {
@@ -265,7 +265,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             drawer.UpdateButton(binding.Button, block, CurrentZoom);
         }
 
-        private void ScheduleInitialRefresh(BlockButton button, Block block)
+        private void ScheduleInitialRefresh(BlockButton button, IBlock block)
         {
             if (button == null || block == null)
             {
@@ -299,7 +299,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
             foreach (var pair in blockBindings)
             {
-                Block block = pair.Key;
+                IBlock block = pair.Key;
                 BlockButton button = pair.Value.Button;
                 if (block == null || button == null)
                 {
@@ -354,12 +354,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             UpdateBlockLayouts();
         }
 
-        public void OnMultiBlocksSelected(IList<Block> blocks)
+        public void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
             UpdateButtonForMultiBlocks(blocks);
         }
 
-        private void UpdateButtonForMultiBlocks(IList<Block> blocks)
+        private void UpdateButtonForMultiBlocks(IList<IBlock> blocks)
         {
             for (int i = 0; i < blocks.Count; i++)
             {
@@ -367,7 +367,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void UpdateButtonForBlock(Block block)
+        private void UpdateButtonForBlock(IBlock block)
         {
             // It's possible that this is being called in response to a block from another
             // Flowchart being deselected due to a Flowchart change. In that case, we won't
@@ -387,19 +387,19 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        public void OnBlockDeselected(Block block)
+        public void OnBlockDeselected(IBlock block)
         {
             UpdateButtonForBlock(block);
         }
 
-        public void OnMultiBlocksDeselected(IList<Block> blocks)
+        public void OnMultiBlocksDeselected(IList<IBlock> blocks)
         {
             UpdateButtonForMultiBlocks(blocks);
         }
 
         #endregion
 
-        public void OnBlockSelected(Block block)
+        public void OnBlockSelected(IBlock block)
         {
             UpdateButtonForBlock(block);
         }
@@ -423,7 +423,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        public void OnPreBlockDeletion(IList<Block> blocks)
+        public void OnPreBlockDeletion(IList<IBlock> blocks)
         {
             for (int i = 0; i < blocks.Count; i++)
             {
@@ -432,7 +432,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        public void OnPreBlockDeletion(Block block)
+        public void OnPreBlockDeletion(IBlock block)
         {
             RemoveBlock(block);
         }
@@ -465,7 +465,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             #endregion
         }
 
-        public bool TryGetBlockRect(Block block, out Rect rect)
+        public bool TryGetBlockRect(IBlock block, out Rect rect)
         {
             rect = default;
             if (block == null)
@@ -586,12 +586,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        public void OnBlockCreated(Block block)
+        public void OnBlockCreated(IBlock block)
         {
             UpdateButtonForBlock(block);
         }
 
-        public void OnPostBlockDeletion(ushort blockId)
+        public void OnPostBlockDeletion(byte blockId)
         {
             // Why do this in post? It's because by the time that the pre signal fires, the
             // block(s) are still registered in the Flowchart. That leads to the
@@ -602,18 +602,18 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             RefreshBlocks();
         }
 
-        public void OnPostMultiBlockDeletion(IList<ushort> blockIds)
+        public void OnPostMultiBlockDeletion(IList<byte> blockIds)
         {
             ClearAll();
             RefreshBlocks();
         }
 
-        public void OnPostBlockCut(ushort blockId)
+        public void OnPostBlockCut(byte blockId)
         {
             OnPostBlockDeletion(blockId);
         }
 
-        public void OnPostMultiBlockCut(IList<ushort> blockIds)
+        public void OnPostMultiBlockCut(IList<byte> blockIds)
         {
             OnPostMultiBlockDeletion(blockIds);
         }

@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using AtMycelia.Collections;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Clipboard for copying and pasting Flowchart blocks. Stores a list of 
@@ -25,12 +25,12 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Window = window;
         }
 
-        public void Copy(IEnumerable<Block> blocks)
+        public void Copy(IEnumerable<IBlock> blocks)
         {
             Copy(blocks, false);
         }
 
-        public void Copy(IEnumerable<Block> blocks, bool isCut)
+        public void Copy(IEnumerable<IBlock> blocks, bool isCut)
         {
             origBlocks.Clear();
             _entries.Clear();
@@ -41,9 +41,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         public int EntryCount => _entries.Count;
         public bool HasEntries => _entries.Count > 0;
-        protected IList<Block> origBlocks = new List<Block>();
+        protected IList<IBlock> origBlocks = new List<IBlock>();
 
-        public virtual bool HasEntriesFor(IList<Block> blocks)
+        public virtual bool HasEntriesFor(IList<IBlock> blocks)
         {
             bool result = true;
 
@@ -58,7 +58,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return result;
         }
 
-        public virtual bool HasEntryFor(Block block)
+        public virtual bool HasEntryFor(IBlock block)
         {
             bool result = (from elem in origBlocks
                            where elem.Equals(block)
@@ -119,7 +119,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 .Select(entry => entry.PasteBlock(Window, Flowchart))
                 .ToList();
 
-            var pastedById = new Dictionary<ushort, Block>();
+            var pastedById = new Dictionary<ushort, IBlock>();
             for (int i = 0; i < _entries.Count && i < pasted.Count; i++)
             {
                 pastedById[(ushort)_entries[i].BlockID] = pasted[i];

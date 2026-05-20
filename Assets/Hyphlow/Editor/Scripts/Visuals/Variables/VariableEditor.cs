@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityObject = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(Variable), true)]
     public class VariableEditor : CommandEditor
@@ -72,7 +72,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 if (!isManagedRef && selectedLegacy != null &&
                     flowchartBelongingToCommand != null &&
                     selectedLegacy.gameObject != flowchartBelongingToCommand.gameObject &&
-                    selectedLegacy.Scope == VariableScope.Private)
+                    selectedLegacy.Scope == AccessScope.Private)
                 {
                     property.objectReferenceValue = null;
                     selectedLegacy = null;
@@ -232,7 +232,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static bool IsVarPublic(IVariable elem)
         {
-            return elem.Scope == VariableScope.Public;
+            return elem.Scope == AccessScope.Public;
         }
 
         private static string ComputeSiblingLegacyPath(string path)

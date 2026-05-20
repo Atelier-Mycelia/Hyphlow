@@ -6,7 +6,7 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using UIToolkitLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class SearchPanel : IDisposable
     {
@@ -24,11 +24,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
         }
 
         protected Flowchart flowchart;
-        protected IReadOnlyCollection<Block> AllBlocks
+        protected IReadOnlyCollection<IBlock> AllBlocks
         {
             get => flowchart != null ?
                 flowchart.Blocks :
-                Array.Empty<Block>();
+                Array.Empty<IBlock>();
         }
 
         public VisualElement Root { get; }
@@ -49,7 +49,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 resultList = new ListView
                 {
-                    itemsSource = new List<Block>(),
+                    itemsSource = new List<IBlock>(),
                     fixedItemHeight = resultItemHeight,
                     selectionType = SelectionType.Single,
                     style = { height = resultListHeight }
@@ -103,8 +103,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             UIToolkitLabel uitkLabel = (UIToolkitLabel)element;
-            IList<Block> blocksInResults = (IList<Block>)resultList.itemsSource;
-            Block currentBlock = blocksInResults[index];
+            IList<IBlock> blocksInResults = (IList<IBlock>)resultList.itemsSource;
+            IBlock currentBlock = blocksInResults[index];
 
             if (currentBlock != null)
             {
@@ -120,7 +120,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 BlockChosen(selected);
             }
         }
-        public event Action<Block> BlockChosen = delegate { };
+        public event Action<IBlock> BlockChosen = delegate { };
 
         protected virtual void AddUIToRoot()
         {
@@ -137,7 +137,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected virtual void RebindResults()
         {
-            IList<Block> resultsToShow = FilterUtils.FilterBlocks(AllBlocks, Query);
+            IList<IBlock> resultsToShow = FilterUtils.FilterBlocks(AllBlocks, Query);
 
             resultList.itemsSource = (System.Collections.IList)resultsToShow;
             resultList.RefreshItems();

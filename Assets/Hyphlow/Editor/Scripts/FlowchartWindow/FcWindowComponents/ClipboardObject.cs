@@ -3,7 +3,7 @@ using UnityEditor;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class ClipboardObject
     {
@@ -57,7 +57,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         internal sealed class ObjectReferenceSnapshot
         {
-            public ObjectReferenceSnapshot(string propertyPath, ushort blockId, string blockName, 
+            public ObjectReferenceSnapshot(string propertyPath, byte blockId, string blockName, 
                 string flowchartId)
             {
                 PropertyPath = propertyPath;
@@ -77,7 +77,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             public string PropertyPath { get; }
             public bool IsBlock { get; }
-            public ushort BlockId { get; }
+            public byte BlockId { get; }
             public string BlockName { get; }
             public string FlowchartId { get; }
             public string FlowchartName { get; }

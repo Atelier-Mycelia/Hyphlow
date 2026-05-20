@@ -2,7 +2,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Clipboard for copying and pasting Flowchart commands. Stores copies of the selected 
@@ -65,19 +65,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            Block block = flowchart.SelectedBlock;
+            IBlock block = flowchart.SelectedBlock;
             int lastSelectedIndex = 0;
             for (int i = block.CommandList.Count - 1; i >= 0; --i)
             {
-                Command command = block.CommandList[i];
-                foreach (Command selectedCommand in flowchart.SelectedCommands)
+                ICommand command = block.CommandList[i];
+                foreach (ICommand selectedCommand in flowchart.SelectedCommands)
                 {
                     if (command == selectedCommand)
                     {
                         command.OnCommandRemoved(block);
-                        Undo.DestroyObjectImmediate(command);
+                        Undo.DestroyObjectImmediate(command as Command);
 
-                        Undo.RecordObject(block, "Delete");
+                        Undo.RecordObject(block as Block, "Delete");
                         block.CommandList.RemoveAt(i);
 
                         lastSelectedIndex = i;
@@ -91,7 +91,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (lastSelectedIndex < block.CommandList.Count)
             {
-                Command nextCommand = block.CommandList[lastSelectedIndex];
+                ICommand nextCommand = block.CommandList[lastSelectedIndex];
                 flowchart.AddSelectedCommand(nextCommand);
             }
         }

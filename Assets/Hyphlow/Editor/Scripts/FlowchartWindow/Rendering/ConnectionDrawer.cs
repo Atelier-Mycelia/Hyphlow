@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public sealed class ConnectionDrawer : IDisposable
     {
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        private static Rect CalculateWindowRect(Block block, Flowchart fc)
+        private static Rect CalculateWindowRect(IBlock block, Flowchart fc)
         {
             Rect modelRect = block._NodeRect;
 

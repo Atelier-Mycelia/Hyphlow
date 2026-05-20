@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Default UITK drawer that produces tinted buttons sized to block text.
@@ -21,7 +21,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 throw new ArgumentNullException(nameof(graphicsGenerator));
         }
 
-        public BlockButton CreateButton(Block block)
+        public BlockButton CreateButton(IBlock block)
         {
             FlowchartWindowConfig config = FlowchartWindow.Config;
             VisualTreeAsset blockTemplate = config != null ? config.BlockUxml : null;
@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return button;
         }
 
-        public void UpdateButton(BlockButton button, Block block, float zoom)
+        public void UpdateButton(BlockButton button, IBlock block, float zoom)
         {
             if (button == null || block == null)
             {
@@ -46,6 +46,6 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
     public interface IBlockDrawer
     {
-        void Draw(Block toDraw, DrawBlockContext drawCtx);
+        void Draw(IBlock toDraw, DrawBlockContext drawCtx);
     }
 }

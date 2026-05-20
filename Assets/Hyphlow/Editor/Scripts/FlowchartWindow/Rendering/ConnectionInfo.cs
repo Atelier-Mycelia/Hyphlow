@@ -1,12 +1,12 @@
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public readonly struct ConnectionInfo
     {
-        public readonly Block FromBlock;
-        public readonly Block ToBlock;
+        public readonly IBlock FromBlock;
+        public readonly IBlock ToBlock;
         public readonly bool Highlight;
 
-        public ConnectionInfo(Block fromBlock, Block toBlock, bool highlight)
+        public ConnectionInfo(IBlock fromBlock, IBlock toBlock, bool highlight)
         {
             FromBlock = fromBlock;
             ToBlock = toBlock;
