@@ -2,9 +2,9 @@
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using Block = AtMycelia.Hyphlow.Block;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using AtMycelia.Hyphlow;
 
 namespace VScriptingTests.FCWindowOperations

@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Keeps the click-and-drag selection box updated based on user input.

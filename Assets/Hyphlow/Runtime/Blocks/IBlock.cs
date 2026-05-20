@@ -13,6 +13,7 @@ namespace AtMycelia.Hyphlow
     public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable,
         ICommandResetter
     {
+        Flowchart ParentFlowchart { get; }
         bool SuppressAllAutoSelections { get; set; }
         ExecutionState ExecutionState { get; set; }
         new string Key { get; set; }

@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Attribute = System.Attribute;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Helper functions for generating the markdown files for Commands and Events.

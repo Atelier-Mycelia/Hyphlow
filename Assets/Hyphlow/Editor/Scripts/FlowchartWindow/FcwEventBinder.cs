@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     internal sealed class FcwEventBinder
     {

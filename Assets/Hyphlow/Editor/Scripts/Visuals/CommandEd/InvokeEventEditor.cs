@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(InvokeEvent))]
     public class InvokeEventEditor : CommandEditor 

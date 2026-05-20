@@ -8,7 +8,7 @@ using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomPropertyDrawer(typeof(VarDataTagFilter))]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]

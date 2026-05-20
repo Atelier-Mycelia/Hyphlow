@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class ExportPackageMenuItems : MonoBehaviour
     {

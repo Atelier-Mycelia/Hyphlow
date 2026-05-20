@@ -430,6 +430,11 @@ namespace AtMycelia.Hyphlow
             VsaSignals.VsaDisabled(this);
         }
 
+        protected virtual void OnDestroy()
+        {
+            VsaSignals.VsaDestroyed(name, _uniqueId);
+        }
+
         protected virtual void OnValidate()
         {
             if (!AssetDatabase.Contains(this))

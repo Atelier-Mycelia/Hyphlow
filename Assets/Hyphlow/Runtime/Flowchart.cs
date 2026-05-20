@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 
 
 #if UNITY_EDITOR
@@ -162,12 +162,6 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void Awake()
         {
-            if (!this.IsInTheScene)
-            {
-                // Don't do anything if this isn't even in the scene yet
-                return;
-            }
-
             EnsureSubmanagerComponents();
 
             RegisterLegacyVars();
@@ -311,7 +305,7 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                if (!gameObject.scene.IsValid() || !gameObject.scene.isLoaded)
+                if (gameObject == null || !gameObject.scene.IsValid() || !gameObject.scene.isLoaded)
                 {
                     return false;
                 }
@@ -333,7 +327,6 @@ namespace AtMycelia.Hyphlow
             AssertOwnership();//
 #if UNITY_EDITOR
             RefreshEditorCaches();
-            UpdateHideFlags();
 #endif
             CleanupComponents();
             UpdateVersion();
@@ -351,39 +344,7 @@ namespace AtMycelia.Hyphlow
         }
 #endif
 
-#if UNITY_EDITOR
-
-        public virtual void GetVariableManagerMigrationData(out VariableManager legacyManager,
-            out IList<Muscariable> oldMuscariables,
-            out IList<Variable> legacyVariables)
-        {
-            legacyManager = legacyVariableManager;
-            oldMuscariables = _oldMuscariables;
-            legacyVariables = _legacyVariables;
-        }
-
-        public virtual void ClearVariableManagerMigrationData()
-        {
-            _oldMuscariables.Clear();
-            _legacyVariables.Clear();
-            legacyVariableManager.Clear();
-            EditorUtility.SetDirty(this);
-        }
-
-        public virtual void RefreshVariableManagerForEditorReload()
-        {
-            if (!IsInTheScene || Application.isPlaying)
-            {
-                return;
-            }
-
-            EnsureSubmanagerComponents();
-            AssertOwnership();
-        }
-
-#endif
-
-        public IReorderableVariableSource VariableManager
+        public IVariableManager VariableManager
         {
             get
             {
@@ -688,27 +649,6 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// Set the block objects to be hidden or visible depending on the hideComponents property.
-        /// </summary>
-        public virtual void UpdateHideFlags()
-        {
-            foreach (var elem in Blocks)
-            {
-                if (elem == null)
-                {
-                    continue;
-                }
-
-                elem.HideFlags = HideFlags.HideInInspector;
-
-                if (elem.Owner != null && elem.Owner.gameObject != gameObject)
-                {
-                    elem.HideFlags = HideFlags.HideInHierarchy;
-                }
-            }
-        }
-
-        /// <summary>
         /// Clears the list of selected commands.
         /// </summary>
         public virtual void ClearSelectedCommands()
@@ -904,6 +844,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void StopBlock(string blockName)
         {
+            EnsureSubmanagerComponents();
             _execManager.StopBlock(blockName);
         }
 
@@ -912,6 +853,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void StopAllBlocks()
         {
+            EnsureSubmanagerComponents();
             _execManager.StopAllBlocks();
         }
 
@@ -972,6 +914,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void ReorderVariables(IList<IVariable> newOrder)
         {
+            EnsureSubmanagerComponents();
             VariableManager.ReorderVariables(newOrder);
         }
 
@@ -984,21 +927,12 @@ namespace AtMycelia.Hyphlow
         {
             if (resetCommands)
             {
-                var commands = GetComponents<Command>();
-                for (int i = 0; i < commands.Length; i++)
-                {
-                    var command = commands[i];
-                    command.OnReset();
-                }
+                _blockManager.ResetCommands();
             }
 
             if (resetVariables)
             {
-                for (int i = 0; i < _legacyVariables.Count; i++)
-                {
-                    var variable = _legacyVariables[i];
-                    variable.OnReset();
-                }
+                VariableManager.ResetAllVars();
             }
         }
 
@@ -1007,35 +941,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool HasExecutingBlocks()
         {
-            var blocks = GetComponents<IBlock>();
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                var block = blocks[i];
-                if (block.IsExecuting)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Returns a list of all executing blocks in this Flowchart.
-        /// </summary>
-        public virtual List<IBlock> GetExecutingBlocks()
-        {
-            var executingBlocks = new List<IBlock>();
-            var blocks = GetComponents<IBlock>();
-            for (int i = 0; i < blocks.Length; i++)
-            {
-                var block = blocks[i];
-                if (block.IsExecuting)
-                {
-                    executingBlocks.Add(block);
-                }
-            }
-
-            return executingBlocks;
+            return _execManager.HasExecutingBlocks();
         }
 
         /// <summary>
@@ -1056,7 +962,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        private StringVarSubstituter _stringVarSubstituter = new StringVarSubstituter();
+        private readonly StringVarSubstituter _stringVarSubstituter = new StringVarSubstituter();
         public const string SubstituteVariableRegexString = StringVarSubstituter.SubstituteVariableRegexString;
 
         public virtual void DetermineSubstituteVariables(string str, IList<IVariable> vars)
@@ -1106,26 +1012,26 @@ namespace AtMycelia.Hyphlow
         #endregion
 
         [HideInInspector]
-        [SerializeField] private string uniqueId = string.Empty;
+        [SerializeField] private string _uniqueId = string.Empty;
         /// <summary>
         /// Unique identifier not specific to localization. Don't assign to this 
         /// unless you know what you're doing.
         /// </summary>
         public string UniqueId
         {
-            get => uniqueId;
+            get => _uniqueId;
             set
             {
-                if (!string.IsNullOrEmpty(uniqueId))
+                if (!string.IsNullOrEmpty(_uniqueId))
                 {
                     Debug.LogWarning($"Assigning a new unique ID to {this.name}, a " +
-                        $"Flowchart that already has one. Old ID: {uniqueId}, New ID: " +
+                        $"Flowchart that already has one. Old ID: {_uniqueId}, New ID: " +
                         $"{value}. If this was intentional, make sure you know what " +
                         $"you're doing.");
                 }
 
-                string prevId = uniqueId;
-                uniqueId = value;
+                string prevId = _uniqueId;
+                _uniqueId = value;
             }
         }
 
@@ -1158,23 +1064,6 @@ namespace AtMycelia.Hyphlow
                 }
 
                 Refresh();
-                EnsureBlocksHaveAValidSize();
-                void EnsureBlocksHaveAValidSize()
-                {
-                    IList<IBlock> blocks = GetComponents<IBlock>();//
-                    for (int i = 0; i < blocks.Count; i++)
-                    {
-                        var currentBlock = blocks[i];
-                        Rect nodeRect = currentBlock._NodeRect;
-                        if (nodeRect.size.Equals(Vector2.zero))
-                        {
-                            string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. There may be an underlying problem.";
-                            Debug.LogWarning(logMessage);
-                            Rect fixedRect = new Rect(nodeRect.position, defaultBlockSize);
-                            currentBlock._NodeRect = fixedRect;
-                        }
-                    }
-                }
 
             };
 
@@ -1183,7 +1072,7 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void AssertUniqueID()
         {
-            if (string.IsNullOrEmpty(uniqueId))
+            if (string.IsNullOrEmpty(_uniqueId))
             {
                 UniqueId = Guid.NewGuid().ToString();
 #if UNITY_EDITOR
@@ -1226,7 +1115,8 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => ((IVariableSource<Muscariable>)_varManager).Variables;
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => 
+            ((IMuscariableSource)_varManager).Variables;
 
         private void EnsureVariableManagerComponent()
         {
@@ -1250,7 +1140,6 @@ namespace AtMycelia.Hyphlow
         public static void ResetStaticsForTest()
         {
         }
-
 
         public virtual void OnTearDown()
         {
@@ -1450,7 +1339,6 @@ namespace AtMycelia.Hyphlow
         
         public bool Remove(ICommand cmd, bool triggerSignals = true) => _blockManager.Remove(cmd, triggerSignals);
             
-
         /// <summary>
         /// Removes all Commands from this Flowchart. Returns true
         /// if any Commands were removed, false if there weren't any to remove.

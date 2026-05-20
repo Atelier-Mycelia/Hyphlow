@@ -1,4 +1,4 @@
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,7 +29,8 @@ namespace AtMycelia.Hyphlow
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Block : Node, IBlock, IEquatable<Block>, ICommandSource, IRefreshable, IHasKey
+    public class Block : Node, IBlock, IEquatable<Block>, ICommandSource, IRefreshable, IHasKey,
+        ISerializationCallbackReceiver
     {
         [SerializeField] protected AccessScope _scope = AccessScope.Public;
 
@@ -107,6 +108,24 @@ namespace AtMycelia.Hyphlow
 
         protected Action _lastOnCompleteAction;
 
+        public virtual Flowchart ParentFlowchart
+        {
+            get
+            {
+                if (this == null)
+                {
+                    return null;
+                }
+
+                if (_owner == null || _owner is not Flowchart)
+                {
+                    _owner = GetComponent<Flowchart>();
+                }
+
+                return _owner as Flowchart;
+            }
+        }
+
         /// <summary>
         // Index of last command executed before the current one.
         // -1 indicates no previous command.
@@ -140,6 +159,11 @@ namespace AtMycelia.Hyphlow
             Refresh();
         }
 
+        protected virtual void OnEnable()
+        {
+            Refresh();
+        }
+
         public virtual void Refresh()
         {
             AssertOwnershipAndUpdateIndexes();
@@ -164,6 +188,11 @@ namespace AtMycelia.Hyphlow
                 }
                 command.ParentBlock = this;
                 command.CommandIndex = index++;
+            }
+
+            if (EventHandler != null)
+            {
+                EventHandler.ParentBlock = this;
             }
         }
 
@@ -260,6 +289,7 @@ namespace AtMycelia.Hyphlow
             set
             {
                 _eventHandler = value;
+                _eventHandler.ParentBlock = this;
                 _legacyEventHandler = value as EventHandler;
             }
         }
@@ -676,8 +706,8 @@ namespace AtMycelia.Hyphlow
 
         public HideFlags HideFlags
         {
-            get { return gameObject.hideFlags; }
-            set { gameObject.hideFlags = value; }
+            get { return hideFlags; }
+            set { hideFlags = value; }
         }
 
         Component IBlock.Owner
@@ -831,6 +861,36 @@ namespace AtMycelia.Hyphlow
                     command.OnReset();
                 }
             }
+        }
+
+        public void OnBeforeSerialize()
+        {
+        }
+
+        private void OnValidate()
+        {
+            hideFlags = HideFlags.HideInInspector;
+        }
+
+        public void OnAfterDeserialize()
+        {
+#if UNITY_EDITOR
+            MigrateLegacyHandler();
+            void MigrateLegacyHandler()
+            {
+                if (_legacyEventHandler != null)
+                {
+                    EditorApplication.delayCall += () =>
+                    {
+                        if (this != null && _legacyEventHandler != null)
+                        {
+                            EventHandler = _legacyEventHandler;
+                            _legacyEventHandler = null;
+                        }
+                    };
+                }
+            }
+#endif
         }
     }
 }

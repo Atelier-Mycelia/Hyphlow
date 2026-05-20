@@ -10,7 +10,7 @@ using UnityRandom = UnityEngine.Random;
 using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.EditorUtils;
 using AtMycelia.Collections;
 using AtMycelia;

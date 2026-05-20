@@ -38,6 +38,7 @@ namespace AtMycelia.Hyphlow
 						continue;
 					}
 
+					block.Refresh();
 					_blockManager.Add(block, false);
 				}
 			}
@@ -171,7 +172,7 @@ namespace AtMycelia.Hyphlow
 
 		public byte NextValidId()
 		{
-			return ((IBlockManager)_blockManager).NextValidId();
+			return (_blockManager).NextValidId();
 		}
 
 		public void ResetCommands()

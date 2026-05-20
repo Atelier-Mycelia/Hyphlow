@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Linq;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Static class that hooks into the hierachy changed and item gui callbacks to put
@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             flowchartIDs.Clear();
 
-            if (EditorUtils.HyphlowEditorPreferences.hideMushroomInHierarchy)
+            if (EditorExt.HyphlowEditorPreferences.hideMushroomInHierarchy)
                 return;
 
             var flowcharts = GameObject.FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 initalHierarchyCheckFlag = false;
             }
 
-            if (EditorUtils.HyphlowEditorPreferences.hideMushroomInHierarchy)
+            if (EditorExt.HyphlowEditorPreferences.hideMushroomInHierarchy)
                 return;
 
             // place the icon to the left of the element

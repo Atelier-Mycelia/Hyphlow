@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public readonly struct ConnectionInfo
     {

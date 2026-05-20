@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Graphics;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     public interface IBlockDrawerUitk
     {

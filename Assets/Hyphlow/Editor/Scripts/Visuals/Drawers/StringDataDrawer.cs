@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomPropertyDrawer(typeof(StringData), true)]
     public class StringDataDrawer : VariableDataDrawerBase

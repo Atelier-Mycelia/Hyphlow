@@ -3,11 +3,12 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEditorInternal;
 using System.Reflection;
+using UnityEd = UnityEditor.Editor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor (typeof(Command), true)]
-    public class CommandEditor : Editor 
+    public class CommandEditor : UnityEd
     {
         // Note that unlike PropertyDrawers, Editor subclasses each work with
         // their own instance of the inspected property. Thus, it's fine

@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     internal sealed class FcwClipboardCoordinator
     {

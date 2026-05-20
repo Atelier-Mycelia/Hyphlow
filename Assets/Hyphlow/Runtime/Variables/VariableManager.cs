@@ -23,6 +23,12 @@ namespace AtMycelia.Hyphlow
         void ResetAllVars();
     }
 
+    /// <summary>
+    /// This class is responsible for the maintenance and upkeep of a collection of variables.
+    /// It provides functionality to add, remove, retrieve, and reorder variables, as well as to ensure
+    /// that each variable has a unique and valid ID. The manager also handles initialization and
+    /// cleanup of variables, and it can notify listeners when variables are added or removed.
+    /// </summary>
     [Serializable]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public sealed class VariableManager : IVariableManager, IMuscariableSource,
@@ -166,25 +172,11 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
-        public void MigrateLegacyVariables(IList<Muscariable> oldMuscariables, IList<Variable> oldLegacyVariables)
+        public void MigrateLegacyVariables(IList<Variable> oldLegacyVariables)
         {
             EnsureInitialized();//
 
             bool addedAny = false;
-
-            if (oldMuscariables != null)
-            {
-                for (int i = 0; i < oldMuscariables.Count; i++)
-                {
-                    var muscariable = oldMuscariables[i];
-                    if (muscariable == null || IsRegistered(muscariable))
-                    {
-                        continue;
-                    }
-                    _muscariables.Add(muscariable);
-                    addedAny = true;
-                }
-            }
 
             if (oldLegacyVariables != null)
             {

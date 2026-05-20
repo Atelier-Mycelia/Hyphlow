@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
 
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -65,6 +64,7 @@ namespace AtMycelia.Hyphlow
 			_legacyBlocks.RemoveAll(block => block == null);
 
 			EnsureValidIdsForAllOurBlocks();
+			EnsureBlocksHaveValidSizes();
 			RefreshLookup();
 		}
 
@@ -105,6 +105,25 @@ namespace AtMycelia.Hyphlow
 				}
 			}
 		}
+
+		private void EnsureBlocksHaveValidSizes()
+		{
+			for (int i = 0; i < _legacyBlocks.Count; i++)
+			{
+				var currentBlock = _legacyBlocks[i];
+				Rect nodeRect = currentBlock._NodeRect;
+				if (nodeRect.size.Equals(Vector2.zero))
+				{
+					string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. " +
+						$"There may be an underlying problem.";
+					Debug.LogWarning(logMessage);
+					Rect fixedRect = new Rect(nodeRect.position, _defaultConfig.BlockSize);
+					currentBlock._NodeRect = fixedRect;
+				}
+			}
+		}
+
+		private static FlowchartGlobalDefaults _defaultConfig => FlowchartGlobalDefaults.S;
 
 		public byte NextValidId()
 		{

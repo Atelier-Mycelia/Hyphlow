@@ -1,7 +1,7 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public sealed class VariableRegistryConfigPostprocessor : AssetPostprocessor
     {

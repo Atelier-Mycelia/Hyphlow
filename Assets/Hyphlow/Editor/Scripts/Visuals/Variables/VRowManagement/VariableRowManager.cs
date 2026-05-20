@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class VariableRowManager : IDisposable
     {

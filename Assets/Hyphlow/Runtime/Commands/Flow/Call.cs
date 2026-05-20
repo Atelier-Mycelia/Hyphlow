@@ -44,7 +44,7 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("targetSequence")]
         [Tooltip("Block to start executing")]
         [FormerlySerializedAs("targetBlock")]
-        [SerializeField] protected IBlock _targetBlock;
+        [SerializeField] protected Block _targetBlock;
 
         [Tooltip("Label to start execution at. Takes priority over startIndex.")]
         [FormerlySerializedAs("startLabel")]

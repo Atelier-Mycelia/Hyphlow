@@ -1,8 +1,8 @@
 ﻿using UnityEngine.Assertions;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using System.Reflection;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     static public class TestUtils
     {

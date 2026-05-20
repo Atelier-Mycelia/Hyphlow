@@ -2,21 +2,32 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     [CustomEditor(typeof(Flowchart))]
     public class FlowchartEditor : Editor
     {
+        private const bool _debugInspectorLifecycle = false;
+
         public static bool FlowchartDataStale { get; set; }
 
         protected virtual void OnEnable()
         {
+            LogLifecycle(nameof(OnEnable), "Entered");
+
             if (EraseOrphanedInstance())
             {
+                LogLifecycle(nameof(OnEnable), "Orphaned instance detected and destroyed");
                 return;
             }
 
             addTexture = HyphlowEditorSysAssets.AddSmall;
+            LogLifecycle(nameof(OnEnable), $"AddSmall texture assigned? {addTexture != null}");
+        }
+
+        protected virtual void OnDisable()
+        {
+            LogLifecycle(nameof(OnDisable), "Entered");
         }
 
         /// <summary>
@@ -34,6 +45,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
             catch (System.NullReferenceException)
             {
+                LogLifecycle(nameof(EraseOrphanedInstance), "NullReferenceException while reading serializedObject");
                 DestroyImmediate(this);
                 return true;
             }
@@ -45,13 +57,44 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         public override VisualElement CreateInspectorGUI()
         {
+            LogLifecycle(nameof(CreateInspectorGUI), "Entered");
+
             var rootElement = new VisualElement();
             var uxml = Resources.Load<VisualTreeAsset>(_pathToUxml);
-            var inspectorRoot = uxml.CloneTree();
-            Button flowchartWindowButton = inspectorRoot.Q<Button>(_openFlowchartWindowButtonName);
-            flowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
-            rootElement.Add(inspectorRoot);
 
+            if (uxml == null)
+            {
+                LogLifecycle(nameof(CreateInspectorGUI), $"UXML not found at '{_pathToUxml}'");
+                rootElement.Add(new HelpBox(
+                    $"Flowchart inspector UXML not found at Resources path '{_pathToUxml}'.",
+                    HelpBoxMessageType.Error));
+                return rootElement;
+            }
+
+            var inspectorRoot = uxml.CloneTree();
+            if (inspectorRoot == null)
+            {
+                LogLifecycle(nameof(CreateInspectorGUI), "CloneTree returned null");
+                rootElement.Add(new HelpBox("Failed to build Flowchart inspector UI.", HelpBoxMessageType.Error));
+                return rootElement;
+            }
+
+            Button flowchartWindowButton = inspectorRoot.Q<Button>(_openFlowchartWindowButtonName);
+            if (flowchartWindowButton == null)
+            {
+                LogLifecycle(nameof(CreateInspectorGUI), $"Button '{_openFlowchartWindowButtonName}' not found");
+                inspectorRoot.Add(new HelpBox(
+                    $"Missing button '{_openFlowchartWindowButtonName}' in FlowchartInspector.uxml.",
+                    HelpBoxMessageType.Warning));
+            }
+            else
+            {
+                flowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
+                LogLifecycle(nameof(CreateInspectorGUI), "OpenFlowchartWindow button wired");
+            }
+
+            rootElement.Add(inspectorRoot);
+            LogLifecycle(nameof(CreateInspectorGUI), "Returning inspector root");
             return rootElement;
         }
 
@@ -60,7 +103,25 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         protected virtual void OpenFlowchartWindow(ClickEvent clickEvent)
         {
+            LogLifecycle(nameof(OpenFlowchartWindow), "Button clicked");
             FlowchartWindow.BringUp();
+        }
+
+        private void LogLifecycle(string source, string message)
+        {
+            if (!_debugInspectorLifecycle)
+            {
+                return;
+            }
+
+            string targetInfo = target != null ? 
+                $"{target.name} ({target.GetType().Name})" : 
+                "null";
+            string activeObject = Selection.activeObject != null ?
+                $"{Selection.activeObject.name} ({Selection.activeObject.GetType().Name})" :
+                "null";
+
+            Debug.Log($"[FlowchartEditor::{source}] {message} | target={targetInfo} | activeObject={activeObject}");
         }
     }
 }

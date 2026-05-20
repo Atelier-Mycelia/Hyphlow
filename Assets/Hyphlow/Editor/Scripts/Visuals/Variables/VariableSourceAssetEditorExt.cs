@@ -1,4 +1,4 @@
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Extension methods for VariableSourceAsset to be used in the editor.

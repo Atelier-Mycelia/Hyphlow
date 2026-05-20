@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     // The prefab names are prefixed with Fungus to avoid clashes with any other prefabs in the project
     public class NarrativeMenuItems 

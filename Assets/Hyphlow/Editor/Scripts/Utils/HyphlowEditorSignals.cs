@@ -2,7 +2,7 @@ using System;
 using UnityEngine.UIElements;
 using BaseObj = System.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class HyphlowEditorSignals
     {

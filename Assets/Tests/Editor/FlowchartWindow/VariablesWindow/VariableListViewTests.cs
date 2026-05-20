@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;

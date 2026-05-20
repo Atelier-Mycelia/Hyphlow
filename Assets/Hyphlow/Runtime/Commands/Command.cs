@@ -394,6 +394,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         protected virtual void OnValidate()
         {
+            hideFlags = HideFlags.HideInInspector;
             RefreshForVarDataStability();
             RefreshVariableCache();
 #if UNITY_EDITOR
