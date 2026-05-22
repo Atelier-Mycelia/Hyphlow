@@ -66,16 +66,18 @@ namespace AtMycelia.Hyphlow
                 asStringVar != null &&
                 !string.IsNullOrEmpty(asStringVar.Value))
             {
-                flowchart.DetermineSubstituteVariables(asStringVar.Value, referencedVariables);
+                VarSubstitutor.DetermineSubstitutionVariables(asStringVar.Value, flowchart, referencedVariables);
             }
 
             string text = _data.BoxedValue as string;
             if (!string.IsNullOrEmpty(text))
             {
-                flowchart.DetermineSubstituteVariables(text, referencedVariables);
+                VarSubstitutor.DetermineSubstitutionVariables(text, flowchart, referencedVariables);
             }
         }
 #endif
+
+        private static IStringVarSubstitutor VarSubstitutor => HyphlowConstants.DefaultStringVarSubstitutor;
 
         public string GetDataDescription()
         {

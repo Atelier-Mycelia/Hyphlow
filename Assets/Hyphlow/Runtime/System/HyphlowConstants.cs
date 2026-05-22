@@ -42,6 +42,7 @@ namespace AtMycelia.Hyphlow
         public const string PathToRuntimeResourceFolder = "Runtime";
         public const string PathToEditorResourceFolder = "Editor";
 
+        public static IStringVarSubstitutor DefaultStringVarSubstitutor => StringVarSubstitutionService.Shared;
 
         /// <summary>
         /// This is relative to a Resources folder.
