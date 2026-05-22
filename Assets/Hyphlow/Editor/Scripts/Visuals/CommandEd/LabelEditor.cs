@@ -68,7 +68,12 @@ namespace AtMycelia.Hyphlow.EditorExt
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(keyProp);
-            keyProp.stringValue = flowchart.GetUniqueLabelKey(keyProp.stringValue, t);
+
+            //keyProp.stringValue = flowchart.GetUniqueLabelKey(keyProp.stringValue, t);
+            // ^Not going to enforce a unique key here. The user is supposed to enforce
+            // unique keys themselves by setting up a StringVar-holding Flowchart with all the
+            // label keys, and then assigning the Label Command one of those. With good usage
+            // of vars, the user shouldn't run into any duplicate key issues.
 
             serializedObject.ApplyModifiedProperties();
         }

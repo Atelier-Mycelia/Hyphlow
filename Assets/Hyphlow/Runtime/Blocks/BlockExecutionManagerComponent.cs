@@ -122,7 +122,6 @@ namespace AtMycelia.Hyphlow
             _owner = GetComponent<Flowchart>();
         }
 
-        public bool ExecuteIfHasBlock(string blockName) => _manager.ExecuteIfHasBlock(blockName, ExecuteBlock);
         public void ExecuteBlock(string blockName) => _manager.ExecuteBlock(blockName);
         public void StopBlock(string blockName) => _manager.StopBlock(blockName);
         public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null) => _manager.ExecuteBlock(block, commandIndex, onComplete);
@@ -139,11 +138,6 @@ namespace AtMycelia.Hyphlow
         protected virtual void OnDestroy()
         {
             Dispose();
-        }
-
-        public bool ExecuteIfHasBlock(string blockName, Action<string> executeByName)
-        {
-            return _manager.ExecuteIfHasBlock(blockName, executeByName);
         }
 
         public void ExecuteBlock(byte blockId)

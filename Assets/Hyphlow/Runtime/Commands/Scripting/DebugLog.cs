@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -24,38 +25,40 @@ namespace AtMycelia.Hyphlow
                  "Debug Log", 
                  "Writes a log message to the debug console.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
     public class DebugLog : Command 
     {
         [Tooltip("Display type of debug log info")]
-        [SerializeField] protected DebugLogType logType;
+        [FormerlySerializedAs("logType")]
+        [SerializeField] protected DebugLogType _logType;
 
         [Tooltip("Text to write to the debug log. Supports variable substitution, e.g. {$Myvar}")]
-        [SerializeField] protected StringDataMulti logMessage = new StringDataMulti();
+        [FormerlySerializedAs("logMessage")]
+        [SerializeField] protected StringDataMulti _logMessage = new StringDataMulti();
 
         #region Public members
 
-        public override void OnEnter ()
+        public override void OnEnter()
         {
             var flowchart = GetFlowchart();
-            string message = logMessage.Value;
+            string message = _logMessage.Value;
 
             if (flowchart != null)
             {
-                message = flowchart.SubstituteVariables(message);
+                message = StringVarSubstituter.SubstituteVariables(message, flowchart);
             }
 
-            switch (logType)
+            switch (_logType)
             {
-            case DebugLogType.Info:
-                Debug.Log(message);
-                break;
-            case DebugLogType.Warning:
-                Debug.LogWarning(message);
-                break;
-            case DebugLogType.Error:
-                Debug.LogError(message);
-                break;
+                case DebugLogType.Info:
+                    Debug.Log(message);
+                    break;
+                case DebugLogType.Warning:
+                    Debug.LogWarning(message);
+                    break;
+                case DebugLogType.Error:
+                    Debug.LogError(message);
+                    break;
             }
 
             Continue();
@@ -63,7 +66,7 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            return logMessage.GetDescription();
+            return _logMessage.GetDescription();
         }
 
         public override Color GetButtonColor()
@@ -73,7 +76,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(Variable variable)
         {
-            return ReferenceEquals(logMessage.VarRef, variable) || base.HasReference(variable);
+            return ReferenceEquals(_logMessage.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion
@@ -83,13 +86,18 @@ namespace AtMycelia.Hyphlow
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
-            var f = GetFlowchart();
-            if (f == null)
+            if (ParentBlock == null)
             {
                 return;
             }
 
-            f.DetermineSubstituteVariables(logMessage.Value, _referencedVariables);
+            var fc = ParentBlock.ParentFlowchart;
+            if (fc == null)
+            {
+                return;
+            }
+
+            StringVarSubstituter.DetermineSubstitutionVariables(_logMessage.Value, fc, _referencedVariables);
         }
 #endif
         #endregion Editor caches

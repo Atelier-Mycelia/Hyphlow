@@ -167,38 +167,9 @@ namespace AtMycelia.Hyphlow
             return FindBlock(blockName) != null;
         }
 
-        public bool ExecuteIfHasBlock(string blockName, Action<string> executeByName)
-        {
-            if (!HasBlock(blockName))
-            {
-                return false;
-            }
-
-            executeByName?.Invoke(blockName);
-            return true;
-        }
-
         public void ExecuteBlock(string blockName)
         {
-            if (_blockManager == null)
-            {
-                Debug.LogError("Cannot execute block by name because BlockManager is null.");
-                return;
-            }
-
             IBlock block = _blockManager.GetBlock(blockName);
-            if (block == null)
-            {
-                Debug.LogError($"Block {blockName} + does not exist");
-                return;
-            }
-
-            if (block.IsExecuting)
-            {
-                Debug.LogWarning($"Block {blockName} + does not exist");
-                return;
-            }
-
             bool success = ExecuteBlock(block);
             if (!success)
             {
@@ -263,12 +234,21 @@ namespace AtMycelia.Hyphlow
             }
 
             SubscribeBlock(block);
-
             ValidateBlockForExecution(out isValid, block);
             if (!isValid)
             {
                 return false;
             }
+
+            if (!block.Enabled)
+            {
+                onComplete?.Invoke();
+                return false;
+            }
+            // ^We have this separate from ValidateBlockForExecution because in cases of 
+            // trying to execute disabled blocks, we want to treat it as if the execution 
+            // completes in the same frame this func is called. Hence the 
+            // onComplete being invoked here.
 
             IEnumerator coroutine = ExecutionCoroutine(block, commandIndex, onComplete);
             _coroutineRunner.StartCoroutine(coroutine);

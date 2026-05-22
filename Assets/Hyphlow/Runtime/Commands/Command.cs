@@ -209,10 +209,11 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// Called by OnValidate
+        /// Called by OnValidate.
         /// 
-        /// Child classes to specialise to add variable references to referencedVariables, either directly or
-        /// via the use of Flowchart.DetermineSubstituteVariables
+        /// Child classes to specialise to add variable references to referencedVariables, 
+        /// either directly or via the use of an IStringVarSubstitutor to parse strings
+        /// for variable references.
         /// </summary>
         protected virtual void RefreshVariableCache()
         {
@@ -285,6 +286,11 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Flowchart GetFlowchart()
         {
+            if (ParentBlock != null)
+            {
+                return ParentBlock.ParentFlowchart;
+            }
+
             var flowchart = GetComponent<Flowchart>();
             if (flowchart == null &&
                 transform.parent != null)
@@ -566,5 +572,7 @@ namespace AtMycelia.Hyphlow
                 }
             }
         }
+
+        protected static IStringVarSubstitutor StringVarSubstituter => HyphlowConstants.DefaultStringVarSubstitutor;
     }
 }

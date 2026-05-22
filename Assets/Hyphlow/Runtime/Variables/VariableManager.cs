@@ -186,9 +186,7 @@ namespace AtMycelia.Hyphlow
                     }
 
                     EnsureValidIdFor(legacyVar);
-
-                    _legacyVariables.Add(legacyVar);
-                    _lookup[legacyVar.ItemId] = legacyVar;
+                    AddAsMuscari(legacyVar);
                     addedAny = true;
                 }
             }

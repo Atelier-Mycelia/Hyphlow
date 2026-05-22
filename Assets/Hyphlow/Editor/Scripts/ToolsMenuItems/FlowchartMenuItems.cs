@@ -22,7 +22,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (flowchart != null)
             {
                 flowchart.Version = HyphlowConstants.CurrentVersion;
-                flowchart.ApplyDefaultConfigToFirstBlock();
                 EditorUtility.SetDirty(flowchart);
             }
         }
