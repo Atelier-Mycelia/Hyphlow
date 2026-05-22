@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [InitializeOnLoad]
     public static class BlockInspectorManager
     {
-        private const bool _debugSelectionRouting = true;
+        private const bool _debugSelectionRouting = false;
 
         static BlockInspectorManager()
         {

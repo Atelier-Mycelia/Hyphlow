@@ -287,10 +287,10 @@ namespace AtMycelia.Hyphlow
             _variableManager.Clear();
         }
 
-        public Muscariable AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
+        public Muscariable<TContentType> AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
             AccessScope scope = AccessScope.Private)
         {
-            return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
+            return (Muscariable<TContentType>)_variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
         }
 
         protected virtual void OnValidate()

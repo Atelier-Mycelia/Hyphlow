@@ -77,15 +77,15 @@ namespace VScriptingTests.FCWindowOperations
         }
 
         protected static FieldInfo FI_ActiveBlockEditor =>
-            typeof(BlockInspectorEditor).GetField("activeBlockEditor",
+            typeof(BlockInspectorEditor).GetField("_activeBlockEditor",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
         protected static FieldInfo FI_ActiveCommandEditor =>
-            typeof(BlockInspectorEditor).GetField("activeCommandEditor",
+            typeof(BlockInspectorEditor).GetField("_activeCommandEditor",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
         protected static FieldInfo FI_CachedCommandEditors =>
-            typeof(BlockInspectorEditor).GetField("cachedCommandEditors",
+            typeof(BlockInspectorEditor).GetField("_cachedCommandEditors",
                 BindingFlags.Static | BindingFlags.NonPublic);
 
         protected BlockEditor GetActiveBlockEditor() =>

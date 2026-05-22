@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
+using AtMycelia.Hyphlow.EditorExt;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -309,6 +311,22 @@ namespace AtMycelia.Hyphlow
 		{
 			_lookup.TryGetValue(id, out IBlock result);
 			return result;
+		}
+
+		public bool AddRange(ICollection<Block> blocks, bool triggerSignals = true)
+		{
+			if (blocks == null)
+			{
+				Debug.LogError("Cannot add null collection of Blocks to BlockManager.");
+				return false;
+			}
+			bool anyAdded = false;
+			foreach (Block block in blocks)
+			{
+				bool added = Add(block, triggerSignals);
+				anyAdded |= added;
+			}
+			return anyAdded;
 		}
 
 		public bool Add(IBlock block, bool triggerSignals = true)

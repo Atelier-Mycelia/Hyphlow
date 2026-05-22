@@ -332,7 +332,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     }
 
     [RowVisualHandler("Hidden", typeof(object), "Generic",
-        "UIToolkitTemplates/VarRows/_VariableRowTemplate")]
+        "Editor/UIToolkitTemplates/VarRows/_VariableRowTemplate")]
     public class DefaultRowVisualHandler : RowVisualHandler<object>
     {
     }

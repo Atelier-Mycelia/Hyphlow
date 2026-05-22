@@ -1,7 +1,6 @@
 using AtMycelia.Collections;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
@@ -399,10 +398,12 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         private byte NextValidVarID()
         {
+            #region Wrap around if we hit the max value
             if (_nextValidVarID == byte.MaxValue)
             {
                 _nextValidVarID = 1;
             }
+            #endregion
 
             byte toReturn = _nextValidVarID;
             _nextValidVarID++;
@@ -465,7 +466,16 @@ namespace AtMycelia.Hyphlow
 
         public void RemoveVariable(IVariable toRemove)
         {
-            bool alreadyRegistered = _lookup.Values.Contains(toRemove);
+            bool alreadyRegistered = false;
+            foreach (var elem in _lookup.Values)
+            {
+                if (ReferenceEquals(elem, toRemove))
+                {
+                    alreadyRegistered = true;
+                    break;
+                }
+            }
+
             if (!alreadyRegistered)
             {
                 return;
@@ -509,12 +519,21 @@ namespace AtMycelia.Hyphlow
 
 
         /// <summary>
-        /// Gets a variable by name, returning it as the specified generic type if it is of that type. Null otherwise.
+        /// Gets a variable by name, returning it as the specified generic type 
+        /// if it is of that type. Null otherwise.
         /// </summary>
-        public IVariable<TContent> GetVariable<TContent>(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable<TContent> GetVariable<TContent>(string name,
+            StringComparison strCompare = StringComparison.Ordinal)
         {
-            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result as IVariable<TContent>;
+            foreach (var variable in _lookup.Values)
+            {
+                if (variable.Key.Equals(name, strCompare))
+                {
+                    return variable as IVariable<TContent>;
+                }
+            }
+
+            return null;
         }
 
         public Muscariable AddNewVariableOfContentType<T>(string key, T defaultValue,
@@ -563,9 +582,17 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public IList<T> GetMultiVariablesOfType<T>(bool strict = false) where T : IVariable
         {
-            var result = GetMultiVariablesOfType(typeof(T), strict)
-                .OfType<T>()
-                .ToList();
+            IList<IVariable> raw = GetMultiVariablesOfType(typeof(T), strict);
+            IList<T> result = new List<T>();
+
+            for (int i = 0; i < raw.Count; i++)
+            {
+                if (raw[i] is T typed)
+                {
+                    result.Add(typed);
+                }
+            }
+
             return result;
         }
 
@@ -581,46 +608,75 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public IList<IVariable> GetMultiVariablesOfType(Type varType, bool strict = false)
         {
-            var result = _lookup.Values.Where(IsMatch).ToList();
-            bool IsMatch(IVariable var)
+            IList<IVariable> result = new List<IVariable>();
+
+            foreach (var variable in _lookup.Values)
             {
+                bool isMatch;
                 if (strict)
                 {
-                    return var.GetType() == varType;
+                    isMatch = variable.GetType() == varType;
                 }
                 else
                 {
-                    return varType.IsAssignableFrom(var.GetType());
+                    isMatch = varType.IsAssignableFrom(variable.GetType());
+                }
+
+                if (isMatch)
+                {
+                    result.Add(variable);
                 }
             }
+
             return result;
         }
 
         public IList<T> GetMultiVariablesOfContentType<T>()
         {
-            var result = GetMultiVariablesOfContentType(typeof(T)).OfType<T>().ToList();
+            IList<IVariable> raw = GetMultiVariablesOfContentType(typeof(T));
+            IList<T> result = new List<T>();
+
+            for (int i = 0; i < raw.Count; i++)
+            {
+                if (raw[i] is T typed)
+                {
+                    result.Add(typed);
+                }
+            }
+
             return result;
         }
 
-        public IList<IVariable> GetMultiVariablesOfContentType(Type contentType, bool strict = false)
+        public IList<IVariable> GetMultiVariablesOfContentType(Type contentType,
+            bool strict = false)
         {
-            return _lookup.Values.Where(IsMatch).ToList();
+            IList<IVariable> result = new List<IVariable>();
 
-            bool IsMatch(IVariable var)
+            foreach (var variable in _lookup.Values)
             {
+                bool isMatch;
                 if (strict)
                 {
-                    return var.ContentType == contentType;
+                    isMatch = variable.ContentType == contentType;
                 }
                 else
                 {
-                    return contentType.IsAssignableFrom(var.ContentType);
+                    isMatch = contentType.IsAssignableFrom(variable.ContentType);
+                }
+
+                if (isMatch)
+                {
+                    result.Add(variable);
                 }
             }
+
+            return result;
         }
 
-        public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", TValueType initValue = default,
-            AccessScope scope = AccessScope.Private) where TVarType : Muscariable<TValueType>, new()
+        public TVarType AddNewMuscari<TValueType, TVarType>(string key = "", 
+            TValueType initValue = default,
+            AccessScope scope = AccessScope.Private) where TVarType : 
+            Muscariable<TValueType>, new()
         {
             EnsureInitialized();
             TVarType result = new TVarType();
@@ -649,23 +705,49 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// Returns the total number of variables in this manager. You'd best use this instead of Variables.Count,
-        /// since that property returns a defensive list instead of the actual one. Using that to get the 
-        /// var-count can get expensive if this have a lot of variables and are calling it frequently.
+        /// Returns the total number of variables in this manager. You'd 
+        /// best use this instead of Variables.Count, since that property 
+        /// returns a defensive list instead of the actual one. Using 
+        /// that to get the var-count can get expensive if this has a 
+        /// lot of variables and you are calling it frequently.
         /// This property gets you the count without the extra overhead.
         /// </summary>
         public int VariableCount => _lookup.Count;
 
-        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => Variables.Cast<Muscariable>().ToList();
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables
+        {
+            get
+            {
+                IReadOnlyList<IVariable> vars = Variables;
+                var result = new List<Muscariable>(vars.Count);
+
+                for (int i = 0; i < vars.Count; i++)
+                {
+                    if (vars[i] is Muscariable muscariable)
+                    {
+                        result.Add(muscariable);
+                    }
+                    else
+                    {
+                        throw new InvalidCastException(
+                            $"Unable to cast variable of type " +
+                            $"{vars[i].GetType().Name} to {nameof(Muscariable)}.");
+                    }
+                }
+
+                return result;
+            }
+        }
 
         public string Name
         {
             get => _varOwner.Name;
             set
             {
-                string warningMessage = $"Attempted to set the name of VariableManager for {_varOwner?.Name}. " +
-                    "This is not allowed, since the manager's name is determined by its owner. " +
-                    "The name will remain unchanged.";
+                string warningMessage = $"Attempted to set the name of " +
+                    $"VariableManager for {_varOwner?.Name}. This is not " +
+                    $"allowed, since the manager's name is determined by " +
+                    $"its owner. The name will remain unchanged.";
                 Debug.LogWarning(warningMessage);
             }
         }
@@ -677,7 +759,8 @@ namespace AtMycelia.Hyphlow
             EnsureInitialized();
             Type valueType = typeof(TValHeld);
 
-            IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) as IVariable<TValHeld>;
+            IVariable<TValHeld> newVar = VariableFactory.CreateByContentType(valueType) 
+                as IVariable<TValHeld>;
 
             newVar.Key = UniqueKeyGenerator.GetUniqueKeyFor(key, Variables);
             newVar.Value = value;
@@ -698,16 +781,12 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// This function exists to help make sure we don't lose our vars during any setup process (especially
-        /// those in unit tests). This should be called at the beginning of any public function that modifies
-        /// the variables in any way, to ensure that if we haven't been initialized yet for some reason, 
-        /// we will be before we try to do anything with the vars. 
-        /// 
-        /// This is especially important for functions that might be called from outside the manager, since 
-        /// we can't guarantee that the caller will have called Initialize() first. It's less crucial for 
-        /// private functions that are only called from other functions in this class, since we can just 
-        /// make sure to call EnsureInitialized() at the beginning of those public functions, but it 
-        /// doesn't hurt to be extra safe.
+        /// This function exists to help make sure we don't lose our vars during 
+        /// any setup process (especially those in unit tests). This should be 
+        /// called at the beginning of any public function that modifies the 
+        /// variables in any way, to ensure that if we haven't been initialized 
+        /// yet for some reason, we will be before we try to do anything 
+        /// with the vars. 
         /// </summary>
         private void EnsureInitialized()
         {
@@ -737,8 +816,15 @@ namespace AtMycelia.Hyphlow
 
         public T GetVariableOfType<T>() where T : class, IVariable
         {
-            var result = _lookup.Values.OfType<T>().FirstOrDefault();
-            return result;
+            foreach (var elem in _lookup.Values)
+            {
+                if (elem is T typed)
+                {
+                    return typed;
+                }
+            }
+
+            return null;
         }
 
         IVariable IVariableSource.GetVariable(string name, StringComparison strCompare)
@@ -746,18 +832,28 @@ namespace AtMycelia.Hyphlow
             return GetVariable(name, strCompare);
         }
 
-        public IVariable GetVariable(string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariable(string name,
+            StringComparison strCompare = StringComparison.Ordinal)
         {
-            var result = _lookup.Values.FirstOrDefault(var => var.Key.Equals(name, strCompare));
-            return result;
+            foreach (var variable in _lookup.Values)
+            {
+                if (variable.Key.Equals(name, strCompare))
+                {
+                    return variable;
+                }
+            }
+
+            return null;
         }
 
-        public T GetVariableOfType<T>(string name, StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
+        public T GetVariableOfType<T>(string name, 
+            StringComparison strCompare = StringComparison.Ordinal) where T : class, IVariable
         {
             return GetVariableOfType(typeof(T), name, strCompare) as T;
         }
 
-        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariableOfType(Type type, string name, 
+            StringComparison strCompare = StringComparison.Ordinal)
         {
             IVariable result = null;
             var found = GetVariable(name, strCompare);
@@ -775,12 +871,23 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            var orderedSnapshot = newlyOrderedVars.ToList();
-            var whatWeGot = _lookup.Values.ToList();
+            var orderedSnapshot = new List<IVariable>(newlyOrderedVars.Count);
+            for (int i = 0; i < newlyOrderedVars.Count; i++)
+            {
+                orderedSnapshot.Add(newlyOrderedVars[i]);
+            }
+
+            var whatWeGot = new List<IVariable>(_lookup.Values.Count);
+            foreach (var variable in _lookup.Values)
+            {
+                whatWeGot.Add(variable);
+            }
+
             if (!orderedSnapshot.SameContentsAs(whatWeGot))
             {
-                Debug.LogWarning("Attempted to reorder variables with a list that doesn't have the same " +
-                    "contents as the current variables. Reorder aborted.");
+                Debug.LogWarning("Attempted to reorder variables with a list " +
+                    "that doesn't have the same contents as the current variables. " +
+                    "Reorder aborted.");
                 return;
             }
 
@@ -798,18 +905,29 @@ namespace AtMycelia.Hyphlow
                 foreach (var variable in _lookup.Values)
                 {
                     variable.Init(variable.BoxedValue);
-                    // ^To accomodate any changes that might have been made to the variables while in edit mode, since those changes won't be serialized and thus would be lost when entering play mode if we didn't do this.
+                    // ^To accomodate any changes that might have been made
+                    // to the variables while in edit mode, since those changes
+                    // won't be serialized and thus would be lost when entering
+                    // play mode if we didn't do this.
                 }
             }
         }
 
         public void RemoveAll(Predicate<IVariable> match)
         {
-            var toRemove = _lookup.Values.Where(var => match(var)).ToList();
+            var toRemove = new List<IVariable>();
 
-            foreach (var elem in toRemove)
+            foreach (var elem in _lookup.Values)
             {
-                RemoveVariable(elem);
+                if (match(elem))
+                {
+                    toRemove.Add(elem);
+                }
+            }
+
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                RemoveVariable(toRemove[i]);
             }
         }
 
@@ -849,10 +967,15 @@ namespace AtMycelia.Hyphlow
 
         public void ResetAllVars()
         {
-            for (int i = 0; i < _lookup.Values.Count; i++)
+            var snapshot = new List<IVariable>(_lookup.Values.Count);
+            foreach (var variable in _lookup.Values)
             {
-                var variable = _lookup.Values.ElementAt(i);
-                variable.OnReset();
+                snapshot.Add(variable);
+            }
+
+            for (int i = 0; i < snapshot.Count; i++)
+            {
+                snapshot[i].OnReset();
             }
         }
     }

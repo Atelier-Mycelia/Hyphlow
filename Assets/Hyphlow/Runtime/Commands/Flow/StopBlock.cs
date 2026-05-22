@@ -19,6 +19,11 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Name of the Block to stop")]
         [SerializeField] protected StringData blockName = new StringData("");
 
+        public string GetLocationIdentifier()
+        {
+            return LocationIdentifier;
+        }
+
         #region Public members
 
         public override void OnEnter()

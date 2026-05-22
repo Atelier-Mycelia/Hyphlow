@@ -39,6 +39,7 @@ namespace VScriptingTests.VariableRows
         [SetUp]
         public void SetUp()
         {
+            VariableTypeDiscovery.DiscoverAndRegister();
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             Undo.ClearAll();

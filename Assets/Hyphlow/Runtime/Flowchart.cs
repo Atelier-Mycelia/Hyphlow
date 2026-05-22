@@ -188,7 +188,7 @@ namespace AtMycelia.Hyphlow
 
         private void RefreshBlockAndCommandCache()
         {
-            EnsureBlockManagerComponent();
+            EnsureSubmanagerComponents();
             _blockManager.Owner = this;
             _blockManager.Refresh();
         }

@@ -34,7 +34,6 @@ namespace AtMycelia.Hyphlow
             set => name = value;
         }
 
-        public virtual IReadOnlyList<IBlock> Blocks => _manager.Blocks;
 
         public MonoBehaviour CoroutineRunner { get => _manager.CoroutineRunner; set => _manager.CoroutineRunner = value; }
 
@@ -121,92 +120,6 @@ namespace AtMycelia.Hyphlow
             }
 
             _owner = GetComponent<Flowchart>();
-        }
-
-        public void ApplyDefaultConfigToFirstBlock()
-        {
-            if (_manager.Blocks.Count == 0)
-            {
-                return;
-            }
-
-            IBlock firstBlock = null;
-            for (int i = 0; i < _manager.Blocks.Count; i++)
-            {
-                var elem = _manager.Blocks[i];
-                if (elem == null)
-                {
-                    continue;
-                }
-
-                if (firstBlock == null || elem.ItemId < firstBlock.ItemId)
-                {
-                    firstBlock = elem;
-                }
-            }
-
-            if (firstBlock == null)
-            {
-                return;
-            }
-
-            var config = FlowchartGlobalDefaults.S;
-            firstBlock.Scope = config.NewBlockScope;
-            firstBlock.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(config.FirstBlockName, _manager.Blocks,
-                ignoreItem: firstBlock, defaultKey: config.FirstBlockName);
-            ApplyConfiguredEventHandlerToFirstBlock(firstBlock);
-        }
-
-        private void ApplyConfiguredEventHandlerToFirstBlock(IBlock block)
-        {
-            if (block == null)
-            {
-                return;
-            }
-
-            Type configuredType = FlowchartGlobalDefaults.S.FirstBlockEventHandlerType;
-            if (configuredType == null)
-            {
-                return;
-            }
-
-            bool invalidType =
-                !typeof(EventHandler).IsAssignableFrom(configuredType) ||
-                configuredType.IsAbstract ||
-                configuredType.IsInterface;
-            if (invalidType)
-            {
-                Debug.LogError($"Configured first-block event handler type is invalid: {configuredType}");
-                return;
-            }
-
-            bool needsReplacement = block.EventHandler == null || block.EventHandler.GetType() != configuredType;
-            if (!needsReplacement)
-            {
-                return;
-            }
-
-            if (block.EventHandler != null)
-            {
-                if (Application.isPlaying)
-                {
-                    Destroy(block.EventHandler as UnityObj);
-                }
-                else
-                {
-                    DestroyImmediate(block.EventHandler as UnityObj);
-                }
-            }
-
-            IEventHandler newHandler = gameObject.AddComponent(configuredType) as EventHandler;
-            if (newHandler == null)
-            {
-                Debug.LogError($"Failed to add EventHandler of type {configuredType} to Flowchart {name}.");
-                return;
-            }
-
-            newHandler.ParentBlock = block;
-            block.EventHandler = newHandler;
         }
 
         public bool ExecuteIfHasBlock(string blockName) => _manager.ExecuteIfHasBlock(blockName, ExecuteBlock);

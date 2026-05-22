@@ -18,13 +18,13 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         static DefaultFlowchartConfigMaintenance()
         {
-            AssemblyReloadEvents.afterAssemblyReload -= EnsureDefaultFlowchartConfigAsset;
-            AssemblyReloadEvents.afterAssemblyReload += EnsureDefaultFlowchartConfigAsset;
+            AssemblyReloadEvents.afterAssemblyReload -= EnsureFcGlobalDefaults;
+            AssemblyReloadEvents.afterAssemblyReload += EnsureFcGlobalDefaults;
 
-            EditorApplication.delayCall += EnsureDefaultFlowchartConfigAsset;
+            EditorApplication.delayCall += EnsureFcGlobalDefaults;
         }
 
-        private static void EnsureDefaultFlowchartConfigAsset()
+        public static void EnsureFcGlobalDefaults()
         {
             string[] guids = AssetDatabase.FindAssets(SearchFilter);
             List<string> foundPaths = new List<string>(guids.Length);

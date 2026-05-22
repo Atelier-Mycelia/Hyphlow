@@ -71,7 +71,6 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 Flowchart.ClearSelectedBlocks();
             }
             
-
             Flowchart.SelectedBlock = block;
             Flowchart.AddToSelection(block);
         }
