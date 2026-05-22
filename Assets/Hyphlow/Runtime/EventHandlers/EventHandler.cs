@@ -98,7 +98,7 @@ namespace AtMycelia.Hyphlow
 				ParentBlock.SuppressNextAutoSelection = true;
 			}
 
-			_fChart.ExecuteBlock(ParentBlock.BlockName);
+			_fChart.ExecuteBlock(ParentBlock);
 			return true;
 		}
 

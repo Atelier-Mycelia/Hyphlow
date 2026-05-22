@@ -102,10 +102,8 @@ namespace AtMycelia.Hyphlow
             }
 
             Variable toRemove = _legacyVariables[index];
-            if (triggerSignals)
-            {
-                RemoveFromCaches(toRemove, triggerSignals);
-            }
+            RemoveFromCaches(toRemove, triggerSignals);
+            
             return toRemove;
         }
 
@@ -142,7 +140,7 @@ namespace AtMycelia.Hyphlow
                 throw new IndexOutOfRangeException(errorMessage);
             }
             Muscariable toRemove = _muscariables[index];
-            RemoveFromCaches(toRemove);
+            RemoveFromCaches(toRemove, triggerSignals);
             return toRemove;
         }
 
@@ -246,6 +244,26 @@ namespace AtMycelia.Hyphlow
             }
 
             Muscariable muscari = toAdd.ToMuscariable();
+            // It's possible that we've already added this. Thus, we need to check
+            // our current muscaris, comparing certain fields see if we can find a
+            // match. If we do, we'll just return the existing one instead of
+            // adding a new one.
+            for (int i = 0; i < _muscariables.Count; i++)
+            {
+                var existing = _muscariables[i];
+                bool sameKey = existing.Key == muscari.Key;
+                bool sameContentType = existing.ContentType == muscari.ContentType;
+                bool sameValue = Equals(existing.BoxedValue, muscari.BoxedValue);
+                bool sameScope = existing.Scope == muscari.Scope;
+                bool alreadyAddedIt = sameKey && sameContentType && sameValue && sameScope;
+                // Why not check for the same id? To avoid a false positive. If we added
+                // that var already, we might've changed the muscari ver's id so it doesn't
+                // share one with any other muscaris we might've already had at the time.
+                if (alreadyAddedIt)
+                {
+                    return null;
+                }
+            }
             Integrate(muscari);
             return muscari;
         }
@@ -741,7 +759,7 @@ namespace AtMycelia.Hyphlow
 
         public string Name
         {
-            get => _varOwner.Name;
+            get => _varOwner?.Name;
             set
             {
                 string warningMessage = $"Attempted to set the name of " +
@@ -770,7 +788,8 @@ namespace AtMycelia.Hyphlow
             IVariable toRegister = newVar;
             AddVariable(toRegister);
 
-            if (Application.IsPlaying(VarOwner as UnityObj))
+            UnityObj ownerAsUobj = VarOwner as UnityObj;
+            if (ownerAsUobj != null && Application.IsPlaying(ownerAsUobj))
             {
                 newVar.Init(value);
             }
