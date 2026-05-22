@@ -34,7 +34,7 @@ namespace AtMycelia.Hyphlow
             if (loopingCond == null)
             {
                 // No enclosing loop command found, just continue
-                Debug.LogError("Break called but found no enclosing looping construct." + GetLocationIdentifier());
+                Debug.LogError("Break called but found no enclosing looping construct." + LocationIdentifier);
                 Continue();
             }
             else

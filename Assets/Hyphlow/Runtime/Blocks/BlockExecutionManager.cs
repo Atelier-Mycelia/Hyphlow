@@ -2,13 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using AtMycelia.Hyphlow.EditorExt;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace AtMycelia.Hyphlow
 {
-    public interface IBlockExecutionManager : IBlockExecutor, IDisposable, 
+    public interface IBlockExecutionManager : IBlockExecutor, IDisposable,
         IHasName, IRefreshable
     {
-        
     }
 
     public interface ICommandResetter
@@ -16,28 +20,18 @@ namespace AtMycelia.Hyphlow
         void ResetCommands();
     }
 
+    /// <summary>
+    /// Manages execution of blocks and commands.
+    /// </summary>
     [Serializable]
     public sealed class BlockExecutionManager : IBlockExecutionManager, IDisposable
     {
-        [SerializeField] [HideInInspector] private MonoBehaviour _coroutineRunner;
-
-        public void Initialize(IBlockManager blockManager, MonoBehaviour coroutineRunner)
-        {
-            _blockManager = blockManager;
-            _blockManager.BlockOwner = coroutineRunner;
-            CoroutineRunner = coroutineRunner;
-            Refresh();
-        }
-
-        private IBlockManager _blockManager;
-
+        [SerializeField, HideInInspector] private MonoBehaviour _coroutineRunner;
+        
         public MonoBehaviour CoroutineRunner
         {
             get => _coroutineRunner;
-            set
-            {
-                _coroutineRunner = value;
-            }
+            set => _coroutineRunner = value;
         }
 
         public string Name
@@ -56,57 +50,110 @@ namespace AtMycelia.Hyphlow
 
         private static readonly string _defaultName = "UnownedBlockLogicManager";
 
-        /// <summary>
-        /// To make sure this is working with the right stuff.
-        /// </summary>
-        public void Refresh()
+        public void Initialize(IBlockManager blockManager, MonoBehaviour coroutineRunner)
         {
-            RefreshCaches();
+            _blockManager = blockManager;
+            if (_blockManager != null)
+            {
+                _blockManager.BlockOwner = coroutineRunner;
+            }
+
+            CoroutineRunner = coroutineRunner;
+            Refresh();
         }
 
-        private void RefreshCaches()
+        private IBlockManager _blockManager;
+
+        public void Refresh()
         {
-            _executingCommands ??= new Dictionary<byte, ICommand>();
-            _executingBlocks ??= new Dictionary<byte, IBlock>();
+            RebuildSubscriptionsAndCaches();
+        }
+
+        private void RebuildSubscriptionsAndCaches()
+        {
             _executingCommands.Clear();
             _executingBlocks.Clear();
+            UnsubscribeAll();
 
-            for (int i = 0; i < _blockManager.Blocks.Count; i++)
+            if (_blockManager == null || _blockManager.Blocks == null)
             {
-                var block = _blockManager.Blocks[i];
-                if (block != null && block.IsExecuting)
-                {
-                    _executingBlocks[block.ItemId] = block;
-                }
-                else
+                return;
+            }
+
+            IReadOnlyList<IBlock> blocks = _blockManager.Blocks;
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                IBlock block = blocks[i];
+                if (block == null)
                 {
                     continue;
                 }
 
-                for (int j = 0; j < block.CommandList.Count; j++)
+                SubscribeBlock(block);
+
+                if (block.IsExecuting)
                 {
-                    var cmd = block.CommandList[j];
-                    if (cmd != null && cmd.IsExecuting)
+                    _executingBlocks[block.ItemId] = block;
+                }
+
+                IList<ICommand> commands = block.CommandList;
+                for (int j = 0; j < commands.Count; j++)
+                {
+                    ICommand command = commands[j];
+                    if (command == null)
                     {
-                        _executingCommands[cmd.ItemId] = cmd;
+                        continue;
+                    }
+
+                    SubscribeCommand(command);
+
+                    if (command.IsExecuting)
+                    {
+                        _executingCommands[command.ItemId] = command;
                     }
                 }
             }
         }
 
-        private IDictionary<byte, ICommand> _executingCommands = new Dictionary<byte, ICommand>();
-        private IDictionary<byte, IBlock> _executingBlocks = new Dictionary<byte, IBlock>();
+        private readonly IDictionary<byte, ICommand> _executingCommands = new Dictionary<byte, ICommand>();
+        private readonly IDictionary<byte, IBlock> _executingBlocks = new Dictionary<byte, IBlock>();
+
+        private void UnsubscribeAll()
+        {
+            foreach (IBlock block in _subscribedBlocks)
+            {
+                if (block == null)
+                {
+                    continue;
+                }
+
+                block.ExecStarted -= OnBlockExecStarted;
+                block.ExecEnded -= OnBlockExecEnded;
+            }
+            _subscribedBlocks.Clear();
+
+            foreach (ICommand command in _subscribedCommands)
+            {
+                if (command == null)
+                {
+                    continue;
+                }
+
+                command.ExecStarted -= OnCommandExecStarted;
+                command.ExecEnded -= OnCommandExecEnded;
+            }
+            _subscribedCommands.Clear();
+        }
 
         /// <summary>
         /// Returns the block with the given name, if it exists and is executing.
         /// </summary>
         public IBlock FindBlock(string blockName)
         {
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
+            foreach (var pair in _executingBlocks)
             {
-                var block = blocks[i];
-                if (block != null && block.BlockName == blockName && block.IsExecuting)
+                IBlock block = pair.Value;
+                if (block != null && block.BlockName == blockName)
                 {
                     return block;
                 }
@@ -115,116 +162,285 @@ namespace AtMycelia.Hyphlow
             return null;
         }
 
-        /// <summary>
-        /// Returns true if the block with the given name exists and is executing.
-        /// </summary>
         public bool HasBlock(string blockName)
         {
             return FindBlock(blockName) != null;
         }
 
-        public bool ExecuteIfHasBlock(string blockName, Action<string> executeByName)
-        {
-            if (!HasBlock(blockName))
-            {
-                return false;
-            }
-
-            executeByName?.Invoke(blockName);
-            return true;
-        }
-
         public void ExecuteBlock(string blockName)
         {
-            var block = _blockManager.GetBlock(blockName);
-            if (block == null)
-            {
-                Debug.LogError("Block " + blockName + " does not exist");
-                return;
-            }
-
-            if (block.IsExecuting)
-            {
-                Debug.LogWarning("Block " + blockName + " is already executing");
-                return;
-            }
-
+            IBlock block = _blockManager.GetBlock(blockName);
             bool success = ExecuteBlock(block);
             if (!success)
             {
-                Debug.LogWarning("Block " + blockName + " failed to execute");
+                Debug.LogWarning($"Block {blockName} failed to execute");
             }
         }
 
-        /// <summary>
-        /// Returns true if execution successfully started, false if it failed to start 
-        /// (e.g. block is already executing, or block is not associated with this manager).
-        /// </summary>
-        public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
+        public void ExecuteBlock(byte blockId)
         {
+            if (_blockManager == null)
+            {
+                Debug.LogError("Cannot execute block by ID because BlockManager is null.");
+                return;
+            }
+
+            IBlock toExecute = _blockManager.GetBlock(blockId);
+            ValidateBlockAsEntity(out bool isValid, toExecute);
+            if (!isValid)
+            {
+                return;
+            }
+
+            ExecuteBlock(toExecute);
+        }
+
+        private void ValidateBlockAsEntity(out bool isValid, IBlock block)
+        {
+            isValid = false;
             if (block == null)
             {
                 Debug.LogError("Block must not be null");
+                return;
+            }
+
+            if (_blockManager == null)
+            {
+                Debug.LogError("Cannot execute block because BlockManager is null.");
+                return;
+            }
+
+            bool considerWorkingWithIt = block == _blockManager.GetBlock(block.ItemId);
+            if (!considerWorkingWithIt)
+            {
+                string errorMessage = $"Block {block.BlockName} either doesn't exist, " +
+                    $"is not associated with this manager, or has stale registration.";
+                Debug.LogError(errorMessage);
+                return;
+            }
+
+            isValid = true;
+        }
+
+        /// <summary>
+        /// Returns true if execution started.
+        /// </summary>
+        public bool ExecuteBlock(IBlock block, int commandIndex = 0, Action onComplete = null)
+        {
+            ValidateBlockAsEntity(out bool isValid, block);
+            if (!isValid)
+            {
                 return false;
             }
 
-            bool weShouldWorkWithIt = block == _blockManager.GetBlock(block.ItemId);
-            string errorMessage;
-            if (!weShouldWorkWithIt)
+            SubscribeBlock(block);
+            ValidateBlockForExecution(out isValid, block);
+            if (!isValid)
             {
-                errorMessage = $"Block {block.BlockName} either doesn't exist, " +
-                    $"is not executing, or is not associated with this manager.";
-                Debug.LogError(errorMessage);
                 return false;
             }
+
+            if (!block.Enabled)
+            {
+                onComplete?.Invoke();
+                return false;
+            }
+            // ^We have this separate from ValidateBlockForExecution because in cases of 
+            // trying to execute disabled blocks, we want to treat it as if the execution 
+            // completes in the same frame this func is called. Hence the 
+            // onComplete being invoked here.
+
+            IEnumerator coroutine = ExecutionCoroutine(block, commandIndex, onComplete);
+            _coroutineRunner.StartCoroutine(coroutine);
+            return true;
+        }
+
+        private void ValidateBlockForExecution(out bool isValid, IBlock block)
+        {
+            ValidateBlockAsEntity(out isValid, block);
+            if (!isValid)
+            {
+                return;
+            }
+            isValid = false;
 
             if (block.IsExecuting)
             {
-                errorMessage = $"Block {block.BlockName} is already executing and cannot " +
+                string errorMessage = $"Block {block.BlockName} is already executing and cannot " +
                     $"be executed again until it's done.";
                 Debug.LogWarning(errorMessage);
-                return false;
+                return;
             }
 
             if (_coroutineRunner == null)
             {
-                errorMessage = $"Cannot execute block {block.BlockName} because " +
+                string errorMessage = $"Cannot execute block {block.BlockName} because " +
                     $"BlockLogicManager has no CoroutineRunner.";
                 Debug.LogError(errorMessage);
-                return false;
+                return;
             }
 
-            _coroutineRunner.StartCoroutine(block.Execute(commandIndex, onComplete));
-            return true;
+            var commands = block.Commands;
+            if (commands == null || commands.Count == 0)
+            {
+                Debug.LogWarning($"Block {block.BlockName} has no commands to execute.");
+                return;
+            }
+
+            isValid = true;
         }
 
-        private IEnumerator ExecutionCoroutine(IBlock toExecute, int commandIndex, Action onComplete = null)
+        private IEnumerator ExecutionCoroutine(IBlock blockToExec, int commandIndex, Action onComplete = null)
         {
-            if (commandIndex >= toExecute.CommandList.Count)
+            // We assume that the block is valid for execution. We also assume that
+            // the block's CommandList is not null and has not changed since the
+            // start of execution, as these are both things that should be guaranteed
+            // by the block's validity for execution. If either of these assumptions
+            // is violated, then it's likely that something has gone very wrong in
+            // the execution environment, and we allow exceptions to be thrown in
+            // that case rather than trying to handle them gracefully.
+            IList<ICommand> commandsAtStart = blockToExec.CommandList;
+
+            onComplete ??= delegate { };
+
+            if (commandIndex < 0 || commandIndex >= commandsAtStart.Count)
             {
                 string warningMessage = $"Command index {commandIndex} is out of range " +
-                    $"for Block {toExecute.BlockName}. Executing from the start of the " +
+                    $"for Block {blockToExec.BlockName}. Executing from the start of the " +
                     $"Block instead.";
                 Debug.LogWarning(warningMessage);
                 commandIndex = 0;
             }
-            onComplete ??= delegate { };
-            _lastOnCompleteActions[toExecute] = onComplete;
-            toExecute.ExecutionCount++;
-            _executionCountsAtStart[toExecute] = toExecute.ExecutionCount;
 
-            Flowchart fc = toExecute.GetFlowchart();
-            toExecute.ExecutionState = ExecutionState.Executing;
-            BlockSignals.BlockExecStarted(toExecute);
+            _lastOnCompleteActions[blockToExec] = onComplete;
 
-            bool doAutoSelect = !toExecute.SuppressNextAutoSelection && toExecute.CommandList.Count > 0;
-            if (doAutoSelect)
+            blockToExec.ExecutionCount++;
+            int executionCountAtStart = blockToExec.ExecutionCount;
+            _executionCountsAtStart[blockToExec] = executionCountAtStart;
+
+            Flowchart flowchart = (Flowchart)blockToExec.Owner;
+            blockToExec.ExecutionState = ExecutionState.Executing;
+            blockToExec.NextExecCmdIndex = commandIndex;
+            blockToExec.ActiveCommand = null;
+            blockToExec.PreviousActiveCommandIndex = -1;
+
+            bool suppressSelectionChanges = false;
+            TrySelectExecutingBlockAtStart(blockToExec, flowchart, 
+                commandIndex, ref suppressSelectionChanges);
+
+            int commandCursor = 0;
+            while (true)
             {
-                fc.SelectedBlock = toExecute;
-                fc.ClearSelectedCommands();
-                fc.AddSelectedCommand(toExecute.CommandList[commandIndex]);
+                // The reason we care (and need) the NextExecCmdIndex property is because
+                // some Commands may require you to execute a different Command next
+                // instead of the one that would normally follow in sequence. This is
+                // especially relevant for Label and Jump.
+                if (blockToExec.NextExecCmdIndex > -1)
+                {
+                    commandCursor = blockToExec.NextExecCmdIndex;
+                    blockToExec.NextExecCmdIndex = -1;
+                }
+
+                IList<ICommand> commands = blockToExec.CommandList;
+                if (commands == null || commandCursor >= commands.Count)
+                {
+                    break;
+                }
+
+                #region Move Command Cursor to Next Valid Command to Execute
+                while (commandCursor < commands.Count)
+                {
+                    ICommand candidate = commands[commandCursor];
+                    if (candidate != null && candidate.Enabled &&
+                        !candidate.SkipExecution)
+                    {
+                        break;
+                    }
+
+                    commandCursor++;
+                }
+                #endregion
+
+                bool movedTooFar = commandCursor >= commands.Count;
+                // ^This can happen when the last command(s) in a block are disabled or set
+                // to skip execution. In that case, we consider the block done executing
+                // and exit.
+                if (movedTooFar)
+                {
+                    break;
+                }
+
+                #region Handle Case Where Active Command Was Somehow Invalidated Since Last Command Executed
+                if (blockToExec.ActiveCommand == null)
+                {
+                    blockToExec.PreviousActiveCommandIndex = -1;
+                }
+                else
+                {
+                    blockToExec.PreviousActiveCommandIndex = 
+                        blockToExec.ActiveCommand.CommandIndex;
+                }
+                #endregion
+
+                ICommand command = commands[commandCursor];
+                SubscribeCommand(command);
+                blockToExec.ActiveCommand = command;
+
+                TrySelectExecutingCommand(flowchart, blockToExec, 
+                    commands, commandCursor, suppressSelectionChanges);
+
+                command.IsExecuting = true;
+                command.ExecutionIconTimer = Time.realtimeSinceStartup + 
+                    HyphlowConstants.ExecutingIconFadeTime;
+                BlockSignals.DoCommandExecute(blockToExec, command, 
+                    commandCursor, commands.Count);
+
+#if UNITY_EDITOR
+                try
+                {
+                    command.Execute();
+                }
+                catch (Exception)
+                {
+                    Debug.LogError("Rethrowing Exception thrown by:" + 
+                        command.LocationIdentifier);
+                    throw;
+                }
+#else
+                command.Execute();
+#endif
+
+                while (blockToExec.NextExecCmdIndex == -1 && 
+                    blockToExec.ExecutionState == ExecutionState.Executing)
+                {
+                    yield return null;
+                }
+
+#if UNITY_EDITOR
+                if (flowchart != null)
+                {
+                    FlowchartEditorQol editorQol = flowchart.EditorQol;
+                    float stepPause = editorQol != null ? editorQol.StepPause : 0f;
+                    if (stepPause > 0f)
+                    {
+                        yield return new WaitForSeconds(stepPause);
+                    }
+                }
+#endif
+
+                command.IsExecuting = false;
+
+                if (blockToExec.ExecutionState != ExecutionState.Executing)
+                {
+                    break;
+                }
             }
-            yield return null;
+
+            if (blockToExec.ExecutionState == ExecutionState.Executing &&
+                executionCountAtStart == blockToExec.ExecutionCount)
+            {
+                ReturnToIdle(blockToExec, true);
+            }
         }
 
         private readonly IDictionary<IBlock, Action> _lastOnCompleteActions = new Dictionary<IBlock, Action>();
@@ -241,18 +457,83 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            block.Stop();
+            StopBlockInternal(block);
+        }
+
+        public void StopBlock(byte blockId)
+        {
+            if (!_executingBlocks.TryGetValue(blockId, out IBlock block) || block == null)
+            {
+                if (_blockManager == null || _blockManager.GetBlock(blockId) == null)
+                {
+                    Debug.LogError($"Block with ID {blockId} does not exist.");
+                    return;
+                }
+
+                return;
+            }
+
+            StopBlockInternal(block);
         }
 
         public void StopAllBlocks()
         {
             var executing = ExecutingBlocks;
-            // ^So we don't mutate the dictionary while iterating over it.
-            // We want to stop all executing blocks, so we make a copy of
-            // the values and iterate over that.
-            foreach (IBlock toStop in executing)
+            for (int i = 0; i < executing.Count; i++)
             {
-                toStop.Stop();
+                StopBlockInternal(executing[i]);
+            }
+        }
+
+        private void StopBlockInternal(IBlock block)
+        {
+            if (block == null || block.ExecutionState != ExecutionState.Executing)
+            {
+                return;
+            }
+
+            ICommand active = block.ActiveCommand;
+            if (active != null)
+            {
+                active.IsExecuting = false;
+                _executingCommands.Remove(active.ItemId);
+            }
+
+            block.NextExecCmdIndex = int.MaxValue;
+            ReturnToIdle(block, true);
+        }
+
+        private void ReturnToIdle(IBlock block, bool invokeOnComplete)
+        {
+            if (block == null)
+            {
+                return;
+            }
+
+            block.ExecutionState = ExecutionState.Idle;
+            OnBlockExecEnded(block);
+
+            block.ActiveCommand = null;
+            block.PreviousActiveCommandIndex = -1;
+            block.NextExecCmdIndex = -1;
+
+            if (_executionCountsAtStart.ContainsKey(block))
+            {
+                _executionCountsAtStart.Remove(block);
+            }
+
+            BlockSignals.BlockExecEnded(block);
+
+            if (!invokeOnComplete)
+            {
+                _lastOnCompleteActions.Remove(block);
+                return;
+            }
+
+            if (_lastOnCompleteActions.TryGetValue(block, out Action callback))
+            {
+                _lastOnCompleteActions.Remove(block);
+                callback?.Invoke();
             }
         }
 
@@ -261,46 +542,14 @@ namespace AtMycelia.Hyphlow
             return _executingBlocks.Count > 0;
         }
 
-        #region IBlockSource Implementation
-        public IReadOnlyList<IBlock> Blocks => _blockManager.Blocks;
-
         public IReadOnlyList<IBlock> ExecutingBlocks
         {
             get
             {
-                var result = new List<IBlock>(_executingBlocks.Values);
-                return result;
+                return new List<IBlock>(_executingBlocks.Values);
             }
         }
 
-        public bool Contains(IBlock block) => _blockManager.Contains(block);
-        public IBlock GetBlock(byte id) => _blockManager.GetBlock(id);
-
-        /// <summary>
-        /// Returns true if the given command is currently executing and is associated with this manager.
-        /// </summary>
-        public bool Contains(ICommand cmd)
-        {
-            if (cmd == null)
-            {
-                return false;
-            }
-            bool result = _executingCommands.TryGetValue(cmd.ItemId, out ICommand found) 
-                && ReferenceEquals(cmd, found);
-            return result;
-        }
-
-        public bool ClearBlocks(bool triggerSignals)
-        {
-            return _blockManager.ClearBlocks(triggerSignals);
-        }
-        #endregion
-
-        /// <summary>
-        /// Returns the command with the given ID (if it is executing).
-        /// If it's either not executing or involved with this manager, 
-        /// returns null.
-        /// </summary>
         public ICommand GetCommandWithId(byte id)
         {
             _executingCommands.TryGetValue(id, out ICommand cmd);
@@ -309,50 +558,171 @@ namespace AtMycelia.Hyphlow
 
         public void Dispose()
         {
+            UnsubscribeAll();
+
             _coroutineRunner = null;
+            _blockManager = null;
+
+            _executingCommands.Clear();
+            _executingBlocks.Clear();
+            _lastOnCompleteActions.Clear();
+            _executionCountsAtStart.Clear();
         }
 
-        /// <summary>
-        /// Returns the block with the given name, if it exists and is executing. 
-        /// Otherwise, returns null.
-        /// </summary>
-        public IBlock GetBlock(string name)
+        private void SubscribeBlock(IBlock block)
         {
-            if (string.IsNullOrEmpty(name))
+            if (block == null || _subscribedBlocks.Contains(block))
             {
-                return null;
+                return;
             }
 
-            foreach (IBlock block in _executingBlocks.Values)
+            block.ExecStarted += OnBlockExecStarted;
+            block.ExecEnded += OnBlockExecEnded;
+            _subscribedBlocks.Add(block);
+
+            EnsureCommandSubscriptions(block);
+        }
+
+        private readonly ISet<IBlock> _subscribedBlocks = new HashSet<IBlock>();
+
+        private void SubscribeCommand(ICommand command)
+        {
+            if (command == null || _subscribedCommands.Contains(command))
             {
-                if (block != null && block.BlockName == name)
+                return;
+            }
+
+            command.ExecStarted += OnCommandExecStarted;
+            command.ExecEnded += OnCommandExecEnded;
+            _subscribedCommands.Add(command);
+        }
+
+        private readonly ISet<ICommand> _subscribedCommands = new HashSet<ICommand>();
+
+        private void OnCommandExecStarted(ICommand command)
+        {
+            if (command == null)
+            {
+                return;
+            }
+
+            _executingCommands[command.ItemId] = command;
+        }
+
+        private void OnCommandExecEnded(ICommand command)
+        {
+            if (command == null)
+            {
+                return;
+            }
+
+            _executingCommands.Remove(command.ItemId);
+        }
+
+        private void EnsureCommandSubscriptions(IBlock block)
+        {
+            if (block == null || block.CommandList == null)
+            {
+                return;
+            }
+
+            IList<ICommand> commands = block.CommandList;
+            for (int i = 0; i < commands.Count; i++)
+            {
+                SubscribeCommand(commands[i]);
+            }
+        }
+
+        private void OnBlockExecStarted(IBlock block)
+        {
+            if (block == null)
+            {
+                return;
+            }
+
+            _executingBlocks[block.ItemId] = block;
+            EnsureCommandSubscriptions(block);
+        }
+
+        private void OnBlockExecEnded(IBlock block)
+        {
+            if (block == null)
+            {
+                return;
+            }
+
+            _executingBlocks.Remove(block.ItemId);
+
+            var cmdIdsToRemove = new List<byte>();
+            foreach (var pair in _executingCommands)
+            {
+                ICommand cmd = pair.Value;
+                if (cmd == null || cmd.ParentBlock == block)
                 {
-                    return block;
+                    cmdIdsToRemove.Add(pair.Key);
                 }
             }
-            return null;
+
+            for (int i = 0; i < cmdIdsToRemove.Count; i++)
+            {
+                _executingCommands.Remove(cmdIdsToRemove[i]);
+            }
         }
 
-        public void ExecuteBlock(byte blockId)
+        private static void TrySelectExecutingBlockAtStart(IBlock block, Flowchart flowchart,
+            int commandIndex, ref bool suppressSelectionChanges)
         {
-            IBlock toExecute = _blockManager.GetBlock(blockId);
-            if (toExecute == null)
+#if UNITY_EDITOR
+            if (flowchart == null)
             {
-                Debug.LogError($"Block with ID {blockId} does not exist.");
                 return;
             }
-            ExecuteBlock(toExecute);
+
+            if (block.SuppressAllAutoSelections || block.SuppressNextAutoSelection)
+            {
+                block.SuppressNextAutoSelection = false;
+                suppressSelectionChanges = true;
+                return;
+            }
+
+            if (Selection.activeGameObject == flowchart.gameObject &&
+                commandIndex >= 0 &&
+                commandIndex < block.CommandList.Count)
+            {
+                flowchart.SelectedBlock = block;
+                flowchart.ClearSelectedCommands();
+                flowchart.AddSelectedCommand(block.CommandList[commandIndex]);
+            }
+#endif
         }
 
-        public void StopBlock(byte blockId)
+        private static void TrySelectExecutingCommand(Flowchart flowchart, IBlock block, IList<ICommand> commands,
+            int commandIndex, bool suppressSelectionChanges)
         {
-            IBlock toStop = _blockManager.GetBlock(blockId);
-            if (toStop == null)
+#if UNITY_EDITOR
+            if (flowchart == null || suppressSelectionChanges)
             {
-                Debug.LogError($"Block with ID {blockId} does not exist.");
                 return;
             }
-            toStop.Stop();
+
+            if (Selection.activeGameObject != flowchart.gameObject || !flowchart.IsActive())
+            {
+                return;
+            }
+
+            bool shouldAutoSelect =
+                (flowchart.SelectedCommandCount == 0 && commandIndex == 0) ||
+                (flowchart.SelectedCommandCount == 1 &&
+                 flowchart.SelectedCommands[0].CommandIndex == block.PreviousActiveCommandIndex);
+
+            if (!shouldAutoSelect)
+            {
+                return;
+            }
+
+            flowchart.ClearSelectedCommands();
+            flowchart.AddSelectedCommand(commands[commandIndex]);
+#endif
         }
     }
 }

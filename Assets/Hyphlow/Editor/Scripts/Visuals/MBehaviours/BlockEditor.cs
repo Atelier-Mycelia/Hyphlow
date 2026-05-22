@@ -72,7 +72,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 				if (monoBehaviours[i] is IBlockCaller blockCaller &&
 					blockCaller.MayCallBlock(targetBlock))
 				{
-					callerNames.Add(blockCaller.GetLocationIdentifier());
+					callerNames.Add(blockCaller.LocationIdentifier);
 				}
 			}
 

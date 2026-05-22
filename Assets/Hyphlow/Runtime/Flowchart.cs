@@ -1,4 +1,3 @@
-using AtMycelia.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +8,6 @@ using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using AtMycelia.Hyphlow.EditorExt;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -26,7 +24,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [ExecuteInEditMode]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Flowchart : MonoBehaviour, ISubstitutionHandler, IReorderableMuscariableSource,
+    public class Flowchart : MonoBehaviour, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
         IBackwardsCompatibilityApplier, IBlockSource, ICommandRemovable
     {
@@ -188,7 +186,7 @@ namespace AtMycelia.Hyphlow
 
         private void RefreshBlockAndCommandCache()
         {
-            EnsureBlockManagerComponent();
+            EnsureSubmanagerComponents();
             _blockManager.Owner = this;
             _blockManager.Refresh();
         }
@@ -232,7 +230,6 @@ namespace AtMycelia.Hyphlow
             Refresh();
             ToggleSubs(true);
 
-            StringSubstituter.RegisterHandler(this);
             FlowchartSignals.FlowchartEnabled(this);
         }
 
@@ -432,7 +429,6 @@ namespace AtMycelia.Hyphlow
             ToggleSubs(false);
             StopAllBlocks();
             StopAllCoroutines();
-            StringSubstituter.UnregisterHandler(this);
             FlowchartSignals.FlowchartDisabled(this);
         }
 
@@ -717,62 +713,13 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual IBlock CreateBlock(Vector2 position, string blockName = null)
         {
-            bool creatingFirstBlock = _blockManager.BlockCount == 0;
-
-            if (creatingFirstBlock)
-            {
-                blockName ??= GlobalDefaults.FirstBlockName;
-            }
-            else
-            {
-                blockName ??= GlobalDefaults.NewBlockName;
-            }
-
-            Block created = gameObject.AddComponent<Block>();
-#if UNITY_EDITOR
-            created._NodeRect = new Rect(position, defaultBlockSize);
-#endif
-            created.Scope = GlobalDefaults.NewBlockScope;
-
-            EnsureBlockManagerComponent();
-            _blockManager.Owner = this;
-            _blockManager.Add(created, false);
-
-
-            BlockSignals.BlockCreated(created);
-            return created;
+            EnsureSubmanagerComponents();
+            return _blockManager.CreateBlock(position, blockName);
         }
-
-        public virtual void ApplyDefaultConfigToFirstBlock()
-        {
-            RefreshBlockAndCommandCache();
-            if (_blockManager.BlockCount == 0)
-            {
-                return;
-            }
-
-            IBlock firstBlock = _blockManager.Blocks[0];
-
-            if (firstBlock == null)
-            {
-                return;
-            }
-
-            firstBlock.Scope = GlobalDefaults.NewBlockScope;
-        }
-
-        protected static Vector2 defaultBlockSize = new Vector2(300, 100);
 
         public virtual IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
         {
-            IList<IBlock> blocksCreated = new Block[positions.Count];
-            for (int i = 0; i < positions.Count; i++)
-            {
-                Vector2 currentPos = positions[i];
-                IBlock newBlock = CreateBlock(currentPos);
-                blocksCreated[i] = newBlock;
-            }
-            return blocksCreated;
+            return _blockManager.CreateMultiBlocks(positions);
         }
 
         /// <summary>
@@ -780,42 +727,14 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual IBlock GetBlock(string blockName)
         {
-            EnsureBlockManagerComponent();
-            var blocks = _blockManager.Blocks;
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                var block = blocks[i];
-                if (block != null && block.BlockName == blockName)
-                {
-                    return block;
-                }
-            }
-
-            return null;
+            EnsureSubmanagerComponents();
+            return _blockManager.GetBlock(blockName);
         }
 
         public virtual IBlock GetBlock(byte itemId)
         {
-            IBlock result = _blockManager.GetBlock(itemId);
-            return result;
-        }
-
-        /// <summary>
-        /// Checks availability of the block in the Flowchart.
-        /// You can use this method in a UI event. e.g. to test availability block, before handle it.
-        public virtual bool ContainsBlockNamed(string blockName)
-        {
-            var block = _blockManager.GetBlock(blockName);
-            return block != null;
-        }
-
-        /// <summary>
-        /// Executes the block if it is available in the Flowchart.
-        /// You can use this method in a UI event. e.g. to try executing block without confidence in its existence.
-        public virtual bool ExecuteIfHasBlock(string blockName)
-        {
             EnsureSubmanagerComponents();
-            return _execManager.ExecuteIfHasBlock(blockName);
+            return _blockManager.GetBlock(itemId);
         }
 
         /// <summary>
@@ -860,50 +779,6 @@ namespace AtMycelia.Hyphlow
         protected static FlowchartGlobalDefaults GlobalDefaults => FlowchartGlobalDefaults.S;
         #endregion
 
-        /// <summary>
-        /// Returns a new Label key that is guaranteed not to clash with any existing Label in the Block.
-        /// </summary>
-        public virtual string GetUniqueLabelKey(string originalKey, Label ignoreLabel)
-        {
-            int suffix = 0;
-            string baseKey = originalKey.Trim();
-
-            // No empty keys allowed
-            if (baseKey.Length == 0)
-            {
-                baseKey = "New Label";
-            }
-
-            var block = ignoreLabel.ParentBlock;
-
-            string key = baseKey;
-            while (true)
-            {
-                bool collision = false;
-                var commandList = block.CommandList;
-                for (int i = 0; i < commandList.Count; i++)
-                {
-                    var command = commandList[i];
-                    Label label = command as Label;
-                    if (label == null || label == ignoreLabel)
-                    {
-                        continue;
-                    }
-                    if (label.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        collision = true;
-                        suffix++;
-                        key = baseKey + suffix;
-                    }
-                }
-
-                if (!collision)
-                {
-                    return key;
-                }
-            }
-        }
-
         #region Variable-Handling
 
         /// <summary>
@@ -925,6 +800,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void ResetFlowchart(bool resetCommands, bool resetVariables)
         {
+            EnsureSubmanagerComponents();
             if (resetCommands)
             {
                 _blockManager.ResetCommands();
@@ -941,72 +817,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool HasExecutingBlocks()
         {
+            EnsureSubmanagerComponents();
             return _execManager.HasExecutingBlocks();
-        }
-
-        /// <summary>
-        /// Substitute variables in the input text with the format {$VarName}
-        /// This will first match with private variables in this Flowchart, and then
-        /// with public variables in all Flowcharts in the scene (and any component
-        /// in the scene that implements StringSubstituter.ISubstitutionHandler).
-        /// </summary>
-        public virtual string SubstituteVariables(string input)
-        {
-            string prevResult = input;
-            string result = _stringVarSubstituter.SubstituteVariables(input, this);
-            while (prevResult != result) // Nested tags and all.
-            {
-                prevResult = result;
-                result = _stringVarSubstituter.SubstituteVariables(result, this);
-            }
-            return result;
-        }
-
-        private readonly StringVarSubstituter _stringVarSubstituter = new StringVarSubstituter();
-        public const string SubstituteVariableRegexString = StringVarSubstituter.SubstituteVariableRegexString;
-
-        public virtual void DetermineSubstituteVariables(string str, IList<IVariable> vars)
-        {
-            Regex r = new Regex(SubstituteVariableRegexString);
-
-            // Match the regular expression pattern against a text string.
-            var results = r.Matches(str);
-            for (int i = 0; i < results.Count; i++)
-            {
-                var match = results[i];
-                string varName = match.Value.Substring(2, match.Value.Length - 3);
-                var v = GetVariable(varName);
-                if (v != null)
-                {
-                    vars.Add(v);
-                }
-            }
-        }
-        #endregion
-
-        #region IStringSubstituter implementation
-
-        /// <summary>
-        /// Implementation of StringSubstituter.ISubstitutionHandler.
-        /// </summary>
-        public virtual bool SubstituteStrings(StringBuilder input)
-        {
-            if (input == null)
-            {
-                return false;
-            }
-
-            string original = input.ToString();
-            string replaced = _stringVarSubstituter.SubstituteVariables(original, this);
-            bool anyChangesApplied = !string.Equals(original, replaced, StringComparison.Ordinal);
-            if (!anyChangesApplied)
-            {
-                return false;
-            }
-
-            input.Length = 0;
-            input.Append(replaced);
-            return true;
         }
 
         #endregion
@@ -1030,13 +842,10 @@ namespace AtMycelia.Hyphlow
                         $"you're doing.");
                 }
 
-                string prevId = _uniqueId;
                 _uniqueId = value;
             }
         }
 
-
-#if UNITY_EDITOR
         private void OnValidate()
         {
             if (!this.IsInTheScene || Application.isPlaying)
@@ -1068,7 +877,6 @@ namespace AtMycelia.Hyphlow
             };
 
         }
-#endif
 
         protected virtual void AssertUniqueID()
         {
@@ -1169,7 +977,7 @@ namespace AtMycelia.Hyphlow
 
         public ICommand AddCommand(Type commandType, IBlock toAddTo)
         {
-            if (!typeof(ICommand).IsAssignableFrom(commandType))
+            if (!_iCommandType.IsAssignableFrom(commandType))
             {
                 Debug.LogError($"AddCommand: {commandType} does not inherit from Command.");
                 return null;
@@ -1196,6 +1004,8 @@ namespace AtMycelia.Hyphlow
             EditorUtility.SetDirty(this);
             return cmdAdded;
         }
+
+        private static readonly Type _iCommandType = typeof(ICommand);
 
         /// <summary>
         /// For editor operations only. Removes the blocks from the list of blocks in the flowchart,
@@ -1270,7 +1080,8 @@ namespace AtMycelia.Hyphlow
             return VariableManager.GetVariableOfType<T>(name, strCompare);
         }
 
-        public IVariable GetVariableOfType(Type type, string name, StringComparison strCompare = StringComparison.Ordinal)
+        public IVariable GetVariableOfType(Type type, string name, 
+            StringComparison strCompare = StringComparison.Ordinal)
         {
             return VariableManager.GetVariableOfType(type, name, strCompare);
         }
@@ -1293,7 +1104,8 @@ namespace AtMycelia.Hyphlow
             TContentType defaultValue = default,
             AccessScope scope = AccessScope.Private)
         {
-            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) as IVariable<TContentType>;
+            var result = _varManager.AddNewVariableOfContentType(typeof(TContentType), key) 
+                as IVariable<TContentType>;
             if (result != null)
             {
                 result.Value = defaultValue;
@@ -1313,45 +1125,63 @@ namespace AtMycelia.Hyphlow
             return _varManager.AddNewVariableOfContentType(contentType, key);
         }
 
-        public bool Contains(Block block)
-        {
-            EnsureBlockManagerComponent();
-            return _blockManager.Contains(block);
-        }
-
         public bool Remove(IBlock block, bool triggerSignals = true)
         {
+            EnsureSubmanagerComponents();
             return _blockManager.Remove(block, triggerSignals);
         }
 
         public bool RemoveBlockWithId(byte id, bool triggerSignals = true)
         {
-            EnsureBlockLogicManagerComponent();
+            EnsureSubmanagerComponents();
             return _blockManager.RemoveBlockWithId(id, triggerSignals);
         }
 
         public bool Contains(ICommand cmd)
         {
+            EnsureSubmanagerComponents();
             return _blockManager.Contains(cmd);
         }
 
-        public ICommand GetCommandWithId(byte id) => _blockManager.GetCommandWithId(id);
+        public ICommand GetCommandWithId(byte id)
+        {
+            EnsureSubmanagerComponents();
+            return _blockManager.GetCommandWithId(id);
+        }
         
-        public bool Remove(ICommand cmd, bool triggerSignals = true) => _blockManager.Remove(cmd, triggerSignals);
+        public bool Remove(ICommand cmd, bool triggerSignals = true)
+        {
+            EnsureSubmanagerComponents();
+            return _blockManager.Remove(cmd, triggerSignals);
+        }
             
         /// <summary>
         /// Removes all Commands from this Flowchart. Returns true
         /// if any Commands were removed, false if there weren't any to remove.
         /// </summary>
-        public virtual bool RemoveAllCommands(bool triggerSignals = true) => 
-            _blockManager.RemoveAllCommands(triggerSignals);
+        public virtual bool RemoveAllCommands(bool triggerSignals = true)
+        {
+            EnsureSubmanagerComponents();
+            return _blockManager.RemoveAllCommands(triggerSignals);
+        }
 
-        public bool RemoveCommandWithId(byte id, bool triggerSignals = true) => 
-            _blockManager.RemoveCommandWithId(id, triggerSignals);
+        public bool RemoveCommandWithId(byte id, bool triggerSignals = true)
+        {
+            EnsureSubmanagerComponents();
+            return _blockManager.RemoveCommandWithId(id, triggerSignals);
+        }
 
-        public bool ClearBlocks(bool triggerSignals) => _blockManager.ClearBlocks(triggerSignals);
+        public bool ClearBlocks(bool triggerSignals)
+        {
+            EnsureSubmanagerComponents();
+            return _blockManager.ClearBlocks(triggerSignals);
+        }
 
-        public bool Contains(IBlock block) => _blockManager.Contains(block);
+        public bool Contains(IBlock block)
+        {
+            EnsureSubmanagerComponents();
+            return _blockManager.Contains(block);
+        }
 
         public bool Add(IBlock block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
 

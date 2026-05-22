@@ -113,6 +113,17 @@ namespace AtMycelia.Hyphlow
         private void OnEnable()
         {
             EnsureOwner();
+#if UNITY_EDITOR
+             
+            if (!Application.isPlaying)
+            {
+                EditorApplication.delayCall += () =>
+                {
+                    MigrateAllFlowchartVariables();
+                };
+            }
+#endif
+
             _variableManager.OnEnable();
         }
 
@@ -130,12 +141,6 @@ namespace AtMycelia.Hyphlow
 #if UNITY_EDITOR
         private static void MigrateAllFlowchartVariables()
         {
-            if (Application.isPlaying)
-            {
-                //Debug.LogWarning("VariableManagerComponent: Cannot migrate while in Play Mode.");
-                return;
-            }
-
             Flowchart[] flowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             int migratedCount = 0;
             string fcsMigratedFor = "";
@@ -188,6 +193,13 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
+            // In case they are already migrated
+            for (int i = 0; i < legacyVarsToMigrate.Count; i++)
+            {
+                Variable legacyVar = legacyVarsToMigrate[i];
+                _variableManager.RemoveVariable(legacyVar);
+                // ^Since we expect the legacy stuff to get converted
+            }
             _variableManager.MigrateLegacyVariables(legacyVarsToMigrate);
 
             ClearFcLocalVarLists();
@@ -287,10 +299,10 @@ namespace AtMycelia.Hyphlow
             _variableManager.Clear();
         }
 
-        public Muscariable AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
+        public Muscariable<TContentType> AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
             AccessScope scope = AccessScope.Private)
         {
-            return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
+            return (Muscariable<TContentType>)_variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
         }
 
         protected virtual void OnValidate()

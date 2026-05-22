@@ -15,7 +15,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// </summary>
         public string PathToTemplate { get; }
         
-        public RowVisualHandlerAttribute(string menuName, Type contentType, string typeDisplayName, string pathToTemplate)
+        public RowVisualHandlerAttribute(string menuName, Type contentType, 
+            string typeDisplayName, string pathToTemplate)
         {
             bool isValid = Validate();
             bool Validate()

@@ -39,7 +39,7 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            throw new FungusException(GetLocationIdentifier() + " " + message.Value);
+            throw new FungusException(LocationIdentifier + " " + message.Value);
 
 #pragma warning disable CS0162 // Unreachable code detected
             Continue();

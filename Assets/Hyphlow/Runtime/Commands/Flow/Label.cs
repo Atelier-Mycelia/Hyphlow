@@ -12,19 +12,18 @@ namespace AtMycelia.Hyphlow
                  "Marks a position in the command list for execution to jump to.")]
     [AddComponentMenu("")]
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Label : Command
+    public class Label : Command, IHasKey
     {
         [Tooltip("Display name for the label")]
         [SerializeField] protected StringData _key = new StringData("");
 
+        public virtual string Key
+        {
+            get => _key.Value;
+            set => _key.Value = value;
+        }
+
         public override bool SkipExecution => true;
-
-        #region Public members
-
-        /// <summary>
-        /// Display name for the label
-        /// </summary>
-        public virtual string Key { get { return _key; } }
 
         public override void OnEnter()
         {
@@ -45,8 +44,6 @@ namespace AtMycelia.Hyphlow
         {
             return CommandColors.Label;
         }
-
-        #endregion
 
         public override void ApplyBackwardsCompatibility()
         {

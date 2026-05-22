@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow
@@ -8,6 +9,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     public interface ICommand : IHasItemId<byte>, IRefreshable, IHasName
     {
+        string LocationIdentifier { get; }
         /// <summary>
         /// Whether or not this command should be skipped during execution. This is good for when
         /// you have stuff like the Comment and Label Commands that aren't meant to wrap logic,
@@ -22,7 +24,8 @@ namespace AtMycelia.Hyphlow
         IBlock ParentBlock { get; set; }
         string ErrorMessage { get; }
 
-        
+        event Action<ICommand> ExecStarted;
+        event Action<ICommand> ExecEnded;
         byte CommandIndex { get; set; }
 
         bool IsExecuting { get; set; }

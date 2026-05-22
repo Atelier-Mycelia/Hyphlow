@@ -80,19 +80,6 @@ namespace AtMycelia.Hyphlow
         }
 
         private IBlockSource _blockOwner;
-
-        public void Execute()
-        {
-            if (Block == null)
-            {
-                string errorMessage = $"Tried to execute block reference, but block was null. ItemId: " +
-                    $"{_itemId}, OwningSource: {_owningSource}";
-                Debug.LogError(errorMessage);
-                return;
-            }
-
-            Block.StartExecution();
-        }
     }
 
 }

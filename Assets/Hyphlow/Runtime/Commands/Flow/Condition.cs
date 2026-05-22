@@ -24,14 +24,14 @@ namespace AtMycelia.Hyphlow
             //if looping we need the end command in order to work
             if(IsLooping && !EnsureRequiredEnd())
             {
-                Debug.LogError(GetLocationIdentifier() + " is looping but has no matching End command");
+                Debug.LogError(LocationIdentifier + " is looping but has no matching End command");
                 Continue();
                 return;
             }
 
             if ( !HasNeededProperties() )
             {
-                Debug.LogError(GetLocationIdentifier() + " cannot run due to missing required properties");
+                Debug.LogError(LocationIdentifier + " cannot run due to missing required properties");
                 Continue();
                 return;
             }
@@ -82,7 +82,7 @@ namespace AtMycelia.Hyphlow
             {
                 //nowhere to go, so we assume the block wants to stop but is missing and end, this
                 //  is also ensures back compat
-                string warningMessage = GetLocationIdentifier() + " wants to move to end but no End command found, stopping block.";
+                string warningMessage = LocationIdentifier + " wants to move to end but no End command found, stopping block.";
                 Debug.LogWarning(warningMessage, this);
                 OnExit();
                 ParentBlock.Stop();
@@ -141,7 +141,7 @@ namespace AtMycelia.Hyphlow
 
                 if (endCommand == null)
                 {
-                    Debug.LogError( GetLocationIdentifier() + "', could not find closing End command and thus cannot loop.");
+                    Debug.LogError(LocationIdentifier + "', could not find closing End command and thus cannot loop.");
                     //StopParentBlock();
                     return false;
                 }

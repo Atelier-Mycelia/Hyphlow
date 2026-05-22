@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -27,6 +29,16 @@ namespace AtMycelia.Hyphlow
         public string SubstituteVariables(string input, IVariableSource variableSource)
         {
             return _inner.SubstituteVariables(input, variableSource);
+        }
+
+        /// <summary>
+        /// Finds all variables in the input string that match the format {$VarName} and
+        /// adds them to the provided list.
+        /// </summary>
+        public void DetermineSubstitutionVariables(string input, IVariableSource variableSource, 
+            IList<IVariable> holdsResults)
+        {
+            _inner.DetermineSubstitutionVariables(input, variableSource, holdsResults);
         }
     }
 }

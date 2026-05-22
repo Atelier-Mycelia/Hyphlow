@@ -27,9 +27,12 @@ public abstract class CommandTestBase<TCommand> where TCommand : Command
         _flowchart = _go.AddComponent<Flowchart>();
         _block = _flowchart.CreateBlock(Vector2.zero) as Block;
         _block.BlockName = "TestBlock";
+
         Block legacyBlock = _block as Block;
         _command = legacyBlock.gameObject.AddComponent<TCommand>();
-        legacyBlock.CommandList.Add(_command);
+
+        // IMPORTANT: register via Block API, not CommandList.Add(...)
+        legacyBlock.Add(_command, triggerSignals: false);
 
         _cmdType = _command.GetType();
         ConfigureCommand(_command);

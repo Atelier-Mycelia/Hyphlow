@@ -209,10 +209,11 @@ namespace AtMycelia.Hyphlow
         }
 
         /// <summary>
-        /// Called by OnValidate
+        /// Called by OnValidate.
         /// 
-        /// Child classes to specialise to add variable references to referencedVariables, either directly or
-        /// via the use of Flowchart.DetermineSubstituteVariables
+        /// Child classes to specialise to add variable references to referencedVariables, 
+        /// either directly or via the use of an IStringVarSubstitutor to parse strings
+        /// for variable references.
         /// </summary>
         protected virtual void RefreshVariableCache()
         {
@@ -249,7 +250,24 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Set to true by the parent Block while the Command is executing.
         /// </summary>
-        public virtual bool IsExecuting { get; set; }
+        public virtual bool IsExecuting
+        {
+            get { return _isExecuting; }
+            set
+            {
+                if (_isExecuting == value)
+                {
+                    return;
+                }
+                _isExecuting = value;
+                if (!_isExecuting)
+                {
+                    OnStopExecuting();
+                }
+            }
+        }
+
+        private bool _isExecuting;
 
         /// <summary>
         /// Timer used to control appearance of execution icon in inspector.
@@ -268,6 +286,11 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual Flowchart GetFlowchart()
         {
+            if (ParentBlock != null)
+            {
+                return ParentBlock.ParentFlowchart;
+            }
+
             var flowchart = GetComponent<Flowchart>();
             if (flowchart == null &&
                 transform.parent != null)
@@ -290,14 +313,14 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void Continue()
         {
-            // This is a noop if the Block has already been stopped
+            // This is a no-op if the Block has already been stopped
             if (IsExecuting)
             {
                 Continue(CommandIndex + 1);
             }
         }
 
-        public Action<ICommand> StartedContinue = delegate { };
+        public event Action<ICommand> StartedContinue = delegate { };
 
         /// <summary>
         /// End execution of this command and continue execution at a specific command index.
@@ -307,7 +330,7 @@ namespace AtMycelia.Hyphlow
             OnExit();
             if (ParentBlock != null)
             {
-                ParentBlock.JumpToCommandIndex = nextCommandIndex;
+                ParentBlock.NextExecCmdIndex = nextCommandIndex;
             }
             StartedContinue(this);
         }
@@ -338,20 +361,22 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void OnEnter()
         {
-            Entered(this);
+            ExecStarted(this);
+            CommandSignals.ExecStarted(this);
         }
 
-        public Action<ICommand> Entered = delegate { };
+        public event Action<ICommand> ExecStarted = delegate { };
 
         /// <summary>
         /// Called when this command ends execution.
         /// </summary>
         public virtual void OnExit()
         {
-            Exited(this);
+            ExecEnded(this);
+            CommandSignals.ExecEnded(this);
         }
 
-        public Action<ICommand> Exited = delegate { };
+        public event Action<ICommand> ExecEnded = delegate { };
 
         /// <summary>
         /// Called when this command is reset. This happens when the Reset command is used.
@@ -374,17 +399,20 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public virtual string GetLocationIdentifier()
+        public virtual string LocationIdentifier
         {
-            if (ParentBlock == null)
+            get
             {
-                return "";
-            }
-            string fcName = ParentBlock.GetFlowchart().name;
-            string thisTypeName = this.GetType().Name;
-            string indexStr = CommandIndex.ToString();
+                if (ParentBlock == null)
+                {
+                    return "";
+                }
+                string fcName = ParentBlock.GetFlowchart().name;
+                string thisTypeName = this.GetType().Name;
+                string indexStr = CommandIndex.ToString();
 
-            return fcName + ":" + ParentBlock.BlockName + "." + thisTypeName + "#" + indexStr; 
+                return fcName + ":" + ParentBlock.BlockName + "." + thisTypeName + "#" + indexStr;
+            }
         }
 
         /// <summary>
@@ -544,5 +572,7 @@ namespace AtMycelia.Hyphlow
                 }
             }
         }
+
+        protected static IStringVarSubstitutor StringVarSubstituter => HyphlowConstants.DefaultStringVarSubstitutor;
     }
 }

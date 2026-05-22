@@ -182,5 +182,29 @@ namespace AtMycelia.Hyphlow
 
             return result;
         }
+
+        /// <summary>
+        /// Finds all variables in the input string that match the format {$VarName} and
+        /// adds them to the provided list.
+        /// </summary>
+        public virtual void DetermineSubstitutionVariables(string str, IVariableSource varSource,
+            IList<IVariable> vars)
+        {
+            // Match the regular expression pattern against a text string.
+            var results = _subVarRegex.Matches(str);
+            for (int i = 0; i < results.Count; i++)
+            {
+                var match = results[i];
+                string varName = match.Value.Substring(2, match.Value.Length - 3);
+                var elem = varSource.GetVariable(varName);
+                if (elem != null)
+                {
+                    vars.Add(elem);
+                }
+            }
+        }
+
+        private static readonly Regex _subVarRegex = new Regex(SubstituteVariableRegexString);
+
     }
 }

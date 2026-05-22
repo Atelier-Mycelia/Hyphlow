@@ -82,6 +82,7 @@ namespace VScriptingTests.FlowchartWindow.Modules
         {
             IBlock block = flowchart.CreateBlock(Vector2.zero);
             Command command = flowchartObject.AddComponent<DummyCommand>();
+            block.Add(command, false);
 
             flowchart.SelectedBlock = block;
             flowchart.SelectedCommands = new List<ICommand> { command };

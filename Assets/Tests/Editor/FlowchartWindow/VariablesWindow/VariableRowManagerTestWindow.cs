@@ -230,7 +230,7 @@ namespace VScriptingTests.VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
+            string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
             if (_variableTemplate == null)
             {
                 _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);

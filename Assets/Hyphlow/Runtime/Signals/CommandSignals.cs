@@ -17,6 +17,9 @@ namespace AtMycelia.Hyphlow
 
         public static Action<ICommand, IBlock> PreCommandRemoved = delegate { };
         public static Action<ICommand, IBlock> CommandRemoved = delegate { };
+
+        public static Action<ICommand> ExecStarted = delegate { };
+        public static Action<ICommand> ExecEnded = delegate { };
     }
 
     public interface ICommandSelectionResponder

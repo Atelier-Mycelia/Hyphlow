@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
+using AtMycelia.Hyphlow.EditorExt;
+using UnityEngine.UIElements;
+using UnityEngine.WSA;
+
+
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -18,7 +24,7 @@ namespace AtMycelia.Hyphlow
 	}
 
 	[Serializable]
-	public sealed class BlockManager : IBlockManager, IDisposable
+	public sealed class BlockManager : IBlockManager, IDisposable, IBlockCreator
 	{
 		[SerializeField] private List<Block> _legacyBlocks = new List<Block>();
 		[SerializeField] private byte _nextValidBlockId = 1;
@@ -311,6 +317,22 @@ namespace AtMycelia.Hyphlow
 			return result;
 		}
 
+		public bool AddRange(ICollection<Block> blocks, bool triggerSignals = true)
+		{
+			if (blocks == null)
+			{
+				Debug.LogError("Cannot add null collection of Blocks to BlockManager.");
+				return false;
+			}
+			bool anyAdded = false;
+			foreach (Block block in blocks)
+			{
+				bool added = Add(block, triggerSignals);
+				anyAdded |= added;
+			}
+			return anyAdded;
+		}
+
 		public bool Add(IBlock block, bool triggerSignals = true)
 		{
 			if (block == null)
@@ -338,11 +360,8 @@ namespace AtMycelia.Hyphlow
 			}
 
 			EnsureValidIdFor(toAdd);
-			bool firstBlock = _legacyBlocks.Count == 0;
-			string defaultName = firstBlock ? 
-				DefaultConfig.FirstBlockName : 
-				DefaultConfig.NewBlockName;
-			toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, _legacyBlocks, toAdd, defaultName);
+			toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, _legacyBlocks, toAdd,
+				DefaultConfig.NewBlockName);
 			if (triggerSignals)
 			{
 				PreBlockAdded(toAdd);
@@ -362,6 +381,8 @@ namespace AtMycelia.Hyphlow
 				BlockAdded(toAdd);
 			}
 		}
+
+		
 
 		private static FlowchartGlobalDefaults DefaultConfig => FlowchartGlobalDefaults.S;
 		public event Action<IBlock> PreBlockAdded = delegate { };
@@ -515,6 +536,54 @@ namespace AtMycelia.Hyphlow
 				block?.ResetCommands();
 			}
 		}
+
+		public IBlock CreateBlock(Vector2 position, string blockName = null,
+			bool triggerSignals = true)
+		{
+            #region Initialization
+            Component ownerAsComp = (Component)_blockOwner;
+			Block created = ownerAsComp.gameObject.AddComponent<Block>();
+			ApplyDefaultConfigTo(created, position);
+            #endregion
+
+            BlockSignals.BlockCreated(created);
+			Add(created, triggerSignals);
+
+			return created;
+		}
+
+		private void ApplyDefaultConfigTo(IBlock newlyCreatedBlock, Vector2 position = default)
+		{
+			#region Give it a default name/key
+			bool isFirstBlock = BlockCount == 0;
+			string suggestedName = isFirstBlock ?
+				DefaultConfig.FirstBlockName :
+				DefaultConfig.NewBlockName;
+			newlyCreatedBlock.Key = UniqueKeyGenerator.GetUniqueKeyFor(newlyCreatedBlock.Key, 
+				_legacyBlocks, newlyCreatedBlock, suggestedName);
+			// ^Needed for when we already have a block named NewBlockName, which is
+			// common when creating multiple blocks in a row.
+			#endregion
+
+			newlyCreatedBlock.Scope = DefaultConfig.NewBlockScope;
+#if UNITY_EDITOR
+			newlyCreatedBlock._NodeRect = new Rect(position, DefaultConfig.BlockSize);
+#endif
+		}
+
+		public IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
+		{
+			IList<IBlock> result = new List<IBlock>();
+
+			for (int i = 0; i < positions.Count; i++)
+			{
+				Vector2 pos = positions[i];
+				IBlock created = CreateBlock(pos);
+				result.Add(created);
+            }
+
+			return result;
+        }
 
 		public string Name
 		{

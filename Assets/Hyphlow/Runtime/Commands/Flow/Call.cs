@@ -132,7 +132,7 @@ namespace AtMycelia.Hyphlow
                         OnExit();
                         ParentBlock.Stop();
                     }
-                    StartCoroutine(_targetBlock.Execute(index, onComplete));
+                    _targetFlowchart.ExecuteBlock(_targetBlock, index, onComplete);
                 }
                 else
                 {
@@ -226,6 +226,11 @@ namespace AtMycelia.Hyphlow
             {
                 _callMode = CallMode.Stop;
             }
+        }
+
+        public string GetLocationIdentifier()
+        {
+            return LocationIdentifier;
         }
     }
 }

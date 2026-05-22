@@ -17,20 +17,20 @@ namespace AtMycelia.Hyphlow
         /// <param name="helpText">Help information to display in the inspector.</param>
         /// <param name="priority">If two command classes have the same name, the one with highest priority is listed. Negative priority removess the command from the list.</param>///
         public CommandInfoAttribute(string category, string commandName, string helpText,
-            int priority = 0, bool testOnly = false)
+            int priority = 0, bool visibleToUser = true)
         {
             this.Category = category;
             this.CommandName = commandName;
             this.HelpText = helpText;
             this.Priority = priority;
-            this.TestOnly = testOnly;
+            this.VisibleToUser = visibleToUser;
         }
 
         public string Category { get; set; }
         public string CommandName { get; set; }
         public string HelpText { get; set; }
         public int Priority { get; set; }
-        public bool TestOnly { get; set; }
+        public bool VisibleToUser { get; set; }
     }
 
 }

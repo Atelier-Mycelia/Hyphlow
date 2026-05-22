@@ -40,7 +40,7 @@ namespace AtMycelia.Hyphlow
         public override void OnEnter()
         {
             var flowchart = GetFlowchart();
-            string newText = flowchart.SubstituteVariables(_text.Value);
+            string newText = StringVarSubstituter.SubstituteVariables(_text.Value, flowchart);
             
             if (_targetTextObject == null)
             {
@@ -108,7 +108,7 @@ namespace AtMycelia.Hyphlow
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-            f.DetermineSubstituteVariables(_text, _referencedVariables);
+            StringVarSubstituter.DetermineSubstitutionVariables(_text.Value, f, _referencedVariables);
         }
 #endif
         #endregion Editor caches

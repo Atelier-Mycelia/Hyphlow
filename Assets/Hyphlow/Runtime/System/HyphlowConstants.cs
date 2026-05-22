@@ -32,26 +32,34 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public static Color DefaultProcessBlockTint = new Color(1.0f, 0.882f, 0.0f, 1.0f);
 
-        /// <summary>
-        /// The default key used for storing save game data in PlayerPrefs.
-        /// </summary>
-        public const string DefaultSaveDataKey = "save_data";
-
-        public const string FungusAudioMixer = "FungusAudioMixer";
-
         public const string UIPrefixForDeprecated = "[DEP] ";
         public const string UIPrefixForDeprecated_RichText = "<color=yellow>" + UIPrefixForDeprecated + "</color>";
 
-        
-        public const string PathToDefaultTweenAdapter = "DefaultTweenAdapter";
-        
+
+        public const string PathToDefaultTweenAdapter = "Runtime/DefaultTweenAdapter";
+
         public const string PathToSaveSysDefaultsFolder = "SaveSys/Defaults";
-        
+        public const string PathToRuntimeResourceFolder = "Runtime";
+        public const string PathToEditorResourceFolder = "Editor";
+
+        public static IStringVarSubstitutor DefaultStringVarSubstitutor => StringVarSubstitutionService.Shared;
 
         /// <summary>
         /// This is relative to a Resources folder.
         /// </summary>
-        public const string PathToVariableDisplayEditorUxml = "UIToolkitTemplates/VariableDisplayEditor";
+        public static string PathToVariableDisplayEditorUxml
+        {
+            get
+            {
+                #if UNITY_EDITOR
+                return $"{PathToEditorResourceFolder}/UIToolkitTemplates/VariableDisplayEditor";
+#else
+                string warningMessage = $"Trying to access editor-only resource {nameof(PathToVariableDisplayEditorUxml)} at runtime. This is not supported.";
+                Debug.LogWarning(warningMessage);
+                return null;
+#endif
+            }
+        }
 
         /// <summary>
         /// The default name of the Input EventSystem, stored in the resources folder.

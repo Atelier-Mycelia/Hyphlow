@@ -94,7 +94,7 @@ namespace AtMycelia.Hyphlow
             }
             catch (Exception)
             {
-                Debug.LogError("Rethrowing Exception thrown by:" + GetLocationIdentifier());
+                Debug.LogError("Rethrowing Exception thrown by:" + LocationIdentifier);
                 throw;
             }
         }

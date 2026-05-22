@@ -102,7 +102,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 {
                     var keyPair = filteredAttributes[i];
                     CommandInfoAttribute cmdInfo = keyPair.Value;
-                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName);
+                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName) || !cmdInfo.VisibleToUser;
                     if (shouldExclude)
                     {
                         filteredAttributes.RemoveAt(i);

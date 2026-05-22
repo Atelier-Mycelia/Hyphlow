@@ -247,11 +247,11 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Refresh()
         {
-            EnsureContentsAreMarkedAsGlobal();
             EnsureValidUniqueId();
 
             _varManager.VarOwner = this;
             _varManager.Refresh();
+            EnsureContentsAreMarkedAsGlobal();
         }
 
         private void EnsureContentsAreMarkedAsGlobal()
