@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
 using AtMycelia.Hyphlow.EditorExt;
-using UnityEngine.UIElements;
-using UnityEngine.WSA;
+
 
 
 
@@ -540,13 +539,13 @@ namespace AtMycelia.Hyphlow
 		public IBlock CreateBlock(Vector2 position, string blockName = null,
 			bool triggerSignals = true)
 		{
-            #region Initialization
-            Component ownerAsComp = (Component)_blockOwner;
+			#region Initialization
+			Component ownerAsComp = (Component)_blockOwner;
 			Block created = ownerAsComp.gameObject.AddComponent<Block>();
 			ApplyDefaultConfigTo(created, position);
-            #endregion
+			#endregion
 
-            BlockSignals.BlockCreated(created);
+			BlockSignals.BlockCreated(created);
 			Add(created, triggerSignals);
 
 			return created;
@@ -580,10 +579,10 @@ namespace AtMycelia.Hyphlow
 				Vector2 pos = positions[i];
 				IBlock created = CreateBlock(pos);
 				result.Add(created);
-            }
+			}
 
 			return result;
-        }
+		}
 
 		public string Name
 		{

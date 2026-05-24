@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorExt;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
@@ -13,6 +12,7 @@ using Type = System.Type;
 using StringComparison = System.StringComparison;
 using AtMycelia.EditorUtils;
 using AtMycelia;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.VariableOperations
 {

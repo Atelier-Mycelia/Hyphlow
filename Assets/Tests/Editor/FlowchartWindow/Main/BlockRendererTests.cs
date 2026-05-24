@@ -3,9 +3,9 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using AtMycelia.Hyphlow;
+using UnityEngine.UIElements;
 using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow.EditorExt.FcWindow;
-using UnityEngine.UIElements;
 
 namespace VScriptingTests.FCWindowOperations
 {

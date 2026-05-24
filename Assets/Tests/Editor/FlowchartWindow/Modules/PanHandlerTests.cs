@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using FcWindow = AtMycelia.Hyphlow.EditorExt.FcWindow.FlowchartWindow;
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 
 namespace VScriptingTests.FcW.Modules
 {

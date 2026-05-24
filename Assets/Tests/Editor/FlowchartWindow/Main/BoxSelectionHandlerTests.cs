@@ -2,8 +2,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {

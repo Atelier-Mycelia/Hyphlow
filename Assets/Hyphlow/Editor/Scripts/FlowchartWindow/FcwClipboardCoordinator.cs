@@ -2,23 +2,23 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     internal sealed class FcwClipboardCoordinator
     {
-        public AmanitaClipboard EnsureClipboard(AmanitaClipboard current, IFlowchartHostCore host)
+        public HyphlowClipboard EnsureClipboard(HyphlowClipboard current, IFlowchartHostCore host)
         {
-            return current ?? new AmanitaClipboard(host);
+            return current ?? new HyphlowClipboard(host);
         }
 
-        public BlockClipboard GetBlockClipboard(AmanitaClipboard current)
+        public BlockClipboard GetBlockClipboard(HyphlowClipboard current)
         {
             return current?.BlockClipboard;
         }
 
-        public AmanitaClipboard SetBlockClipboard(AmanitaClipboard current, BlockClipboard blockClipboard)
+        public HyphlowClipboard SetBlockClipboard(HyphlowClipboard current, BlockClipboard blockClipboard)
         {
             CommandClipboard commandClipboard = current?.CommandClipboard ?? new CommandClipboard();
-            return new AmanitaClipboard(blockClipboard, commandClipboard);
+            return new HyphlowClipboard(blockClipboard, commandClipboard);
         }
 
-        public bool HasClipboard(AmanitaClipboard current)
+        public bool HasClipboard(HyphlowClipboard current)
         {
             return current?.BlockClipboard != null && current.BlockClipboard.HasEntries;
         }
