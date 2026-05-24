@@ -125,6 +125,7 @@ namespace AtMycelia.Hyphlow
                 return false;
             }
 
+#pragma warning disable CS0162 // Unreachable code detected
             for (int i = 0; i < sourcesToConsider.Count; i++)
             {
                 VariableSourceAsset source = sourcesToConsider[i];
@@ -134,6 +135,7 @@ namespace AtMycelia.Hyphlow
                 break;
                 
             }
+#pragma warning restore CS0162 // Unreachable code detected
 
             bool result = variable != null;
             return result;

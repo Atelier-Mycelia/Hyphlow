@@ -195,7 +195,7 @@ namespace AtMycelia.Hyphlow
 
         public bool MayCallBlock(IBlock block)
         {
-            return block == _targetBlock;
+            return ReferenceEquals(block, _targetBlock);
         }
 
         #endregion

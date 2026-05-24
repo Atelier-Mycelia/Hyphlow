@@ -127,7 +127,7 @@ namespace VScriptingTests.FcW.Modules
         private sealed class TestFlowchartWindow : FcWindow
         {
             private new void OnEnable() { }
-            private new void OnDisable() { }
+            private void OnDisable() { }
             private new void OnDestroy() { }
         }
     }

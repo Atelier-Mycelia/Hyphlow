@@ -114,9 +114,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
+#pragma warning disable CS0162 // Unreachable code detected
             string targetInfo = target != null ? 
                 $"{target.name} ({target.GetType().Name})" : 
                 "null";
+#pragma warning restore CS0162 // Unreachable code detected
             string activeObject = Selection.activeObject != null ?
                 $"{Selection.activeObject.name} ({Selection.activeObject.GetType().Name})" :
                 "null";
