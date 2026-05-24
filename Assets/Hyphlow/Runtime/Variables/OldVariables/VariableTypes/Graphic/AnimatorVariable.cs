@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Graphic", "Animator", typeof(Animator), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class AnimatorVariable : VariableBase<Animator>
     {
     }

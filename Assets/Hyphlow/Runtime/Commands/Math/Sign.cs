@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Sign",
                  "Command to execute and store the result of a Sign")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Sign : BaseUnaryMathCommand
     {
         public override void OnEnter()

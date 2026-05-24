@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Numeric", "Boolean", typeof(bool), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class BooleanVariable : VariableBase<bool>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

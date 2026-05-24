@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     /// Temporary buffer object used when copying and pasting commands.
     /// </summary>
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class CommandCopyBuffer : Block 
     {
         protected static CommandCopyBuffer instance;

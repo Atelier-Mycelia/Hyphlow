@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Label", 
                  "Marks a position in the command list for execution to jump to.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Label : Command, IHasKey
     {
         [Tooltip("Display name for the label")]

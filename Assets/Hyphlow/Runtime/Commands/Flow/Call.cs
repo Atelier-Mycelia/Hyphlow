@@ -34,7 +34,7 @@ namespace AtMycelia.Hyphlow
                  "Call", 
                  "Execute another block in the same Flowchart as the command, or in a different Flowchart.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Call : Command, IBlockCaller
     {
         [Tooltip("Flowchart which contains the block to execute. If none is specified then the current Flowchart is used.")]
@@ -97,9 +97,12 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
+                
+
                 if (_targetBlock.IsExecuting)
                 {
-                    Debug.LogWarning(_targetBlock.BlockName + " cannot be called/executed, it is already running.");
+                    string logMessage = $"{_targetBlock.BlockName}  is already running.";
+                    Debug.LogWarning(logMessage, this);
                     Continue();
                     return;
                 }
@@ -124,8 +127,13 @@ namespace AtMycelia.Hyphlow
                     }
                 }
 
-                if (_targetFlowchart == null ||
-                    _targetFlowchart.Equals(GetFlowchart()))
+                Flowchart ourFc = this.ParentBlock.ParentFlowchart;
+                if (_targetFlowchart == null)
+                {
+                    _targetFlowchart = ourFc;
+                }
+
+                if (_targetFlowchart == ourFc)
                 {
                     if (_callMode == CallMode.StopThenCall)
                     {

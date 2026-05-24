@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "GameObject",
                  "Get or Set a property of a GameObject component")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class GameObjectProperty : BaseVariableProperty
     {
 		//generated property

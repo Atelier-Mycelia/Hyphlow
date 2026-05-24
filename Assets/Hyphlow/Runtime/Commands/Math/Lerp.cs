@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Lerp",
                  "Linearly Interpolate from A to B")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Lerp : Command
     {
         public enum Mode

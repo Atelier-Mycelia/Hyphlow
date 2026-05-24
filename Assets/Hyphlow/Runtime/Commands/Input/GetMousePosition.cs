@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Get Mouse Position",
                  "Store various interpretations of Input.mousePosition")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class GetMousePosition : Command
     {
         [VariableProperty(typeof(Vector2Variable))]

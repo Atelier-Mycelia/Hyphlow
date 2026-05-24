@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
+using AtMycelia.Hyphlow.EditorExt;
 using System;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {

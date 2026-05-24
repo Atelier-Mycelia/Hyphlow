@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Random Integer", 
                  "Sets an integer variable to a random value in the defined range.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class RandomInteger : Command 
     {
         [Tooltip("The variable whos value will be set")]

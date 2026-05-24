@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
+﻿using AtMycelia.Hyphlow.EditorExt;
+using NUnit.Framework;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {

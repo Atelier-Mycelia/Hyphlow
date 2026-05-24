@@ -15,7 +15,7 @@ using UnityEditor;
 namespace AtMycelia.Hyphlow
 {
     [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Hyphlow/VariableSource")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource,
         IForceResetUidHandler, IRefreshable
     {

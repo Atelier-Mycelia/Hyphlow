@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Comment", 
                  "Use comments to record design notes and reminders about your game.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Comment : Command
     {   
         [Tooltip("Name of Commenter")]

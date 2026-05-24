@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Arithmetic",
                  "Vector3 add, sub, mul, div arithmetic")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3Arithmetic : Command
     {
         [SerializeField]

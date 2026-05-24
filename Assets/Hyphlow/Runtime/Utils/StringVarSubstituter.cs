@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     /// <summary>
     /// Backwards-compatible wrapper for older call sites.
     /// Prefer IStringVarSubstitutor with StringVarSubstitutionService.Shared.

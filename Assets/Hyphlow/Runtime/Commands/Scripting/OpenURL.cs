@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Scripting",
                  "Open URL",
                  "Opens the specified URL in the browser.")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class OpenURL : Command
     {
         [Tooltip("URL to open in the browser")]

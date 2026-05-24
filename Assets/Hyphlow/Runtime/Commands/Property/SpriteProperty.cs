@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
 				 "Sprite",
 				 "Get or Set a property of a Sprite component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class SpriteProperty : BaseVariableProperty
 	{
 		//generated property

@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(AudioClip), typeof(IVariable<AudioClip>))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class AudioClipData : VariableData<AudioClip>
 	{
 		[SerializeField]
@@ -42,7 +42,7 @@ namespace AtMycelia.Hyphlow
 	/// </summary>
 	[System.Serializable]
 	[VariableData(typeof(AudioSource), typeof(IVariable<AudioSource>))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class AudioSourceData : VariableData<AudioSource>
 	{
 		[SerializeField]

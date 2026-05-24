@@ -23,7 +23,7 @@ namespace AtMycelia.Hyphlow
                  "Fullscreen", 
                  "Sets the application to fullscreen, windowed or toggles the current state.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Fullscreen : Command 
     {
         [SerializeField] protected FullscreenMode fullscreenMode;

@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("UnityGeneral", "UnityObject", typeof(UnityObj), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ObjectVariable : VariableBase<UnityObj>
     {
     }

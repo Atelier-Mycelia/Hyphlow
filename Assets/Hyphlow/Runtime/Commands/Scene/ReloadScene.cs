@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Reload",
                  "Reload the current scene")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ReloadScene : Command
     {
         [Tooltip("Image to display while loading the scene")]

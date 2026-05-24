@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Stop Flowchart", 
                  "Stops execution of all Blocks in a Flowchart")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class StopFlowchart : Command
     {       
         [Tooltip("Stop all executing Blocks in the Flowchart that contains this command")]

@@ -25,7 +25,7 @@ namespace AtMycelia.Hyphlow
                  "Debug Log", 
                  "Writes a log message to the debug console.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class DebugLog : Command 
     {
         [Tooltip("Display type of debug log info")]

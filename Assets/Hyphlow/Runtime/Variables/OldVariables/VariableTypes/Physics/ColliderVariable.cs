@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Physics/ThreeD", "Collider", typeof(Collider), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ColliderVariable : VariableBase<Collider>
     { }
 

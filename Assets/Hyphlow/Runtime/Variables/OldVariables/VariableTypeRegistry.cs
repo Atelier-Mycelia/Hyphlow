@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// A registry and instantiator for legacy and muscari types alike.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class VariableTypeRegistry
     {
         private static readonly IList<Type> _legacyTypes = new List<Type>();

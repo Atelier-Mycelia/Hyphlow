@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "InvLerp",
                  "Calculates the inverse lerp, the percentage a value is between two others.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class InvLerp : Command
     {
         [Tooltip("Clamp percentage to 0-1?")]

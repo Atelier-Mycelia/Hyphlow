@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Trig",
                  "Command to execute and store the result of basic trigonometry")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Trig : BaseUnaryMathCommand
     {
         public enum Function

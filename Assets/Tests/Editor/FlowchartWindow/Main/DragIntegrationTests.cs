@@ -4,11 +4,11 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using FcWindow = AtMycelia.Hyphlow.EditorExt.FcWindow.FlowchartWindow;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations.Integration
 {

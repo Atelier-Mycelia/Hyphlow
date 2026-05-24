@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Normalise",
                  "Normalise a Vector3")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3Normalise : Command
     {
         [SerializeField]

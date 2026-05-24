@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Collider), typeof(ColliderVariable))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ColliderThreeDData : VariableData<Collider>
     {
         [SerializeField]
@@ -43,7 +43,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Collider2D), typeof(Collider2DVariable))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ColliderTwoDData : VariableData<Collider2D>
     {
         [SerializeField]
@@ -77,7 +77,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Rigidbody), typeof(RigidbodyVariable))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class RigidbodyThreeDData : VariableData<Rigidbody>
     {
         [SerializeField]
@@ -112,7 +112,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Rigidbody2D), typeof(Rigidbody2DVariable))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class RigidbodyTwoDData : VariableData<Rigidbody2D>
     {
         [SerializeField]
