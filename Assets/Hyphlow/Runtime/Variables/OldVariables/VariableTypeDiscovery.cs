@@ -87,7 +87,7 @@ namespace AtMycelia.Hyphlow
                 bool weAreInTestScene = sceneName.Contains("Test");
                 if (attr.IsTest && (!weAreInTestScene || Application.isEditor))
                 {
-                    Debug.Log($"Excluding test type {typeToCheck.Name} from variable type registry" +
+                    Debug.Log($"Excluding test type {typeToCheck.Name} from variable type registry " +
                         $"because the active scene is not a test scene.");
                     return true;
                 }

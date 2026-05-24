@@ -285,7 +285,9 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
+#pragma warning disable CS0162 // Unreachable code detected
             string activeObj = Selection.activeObject != null ? $"{Selection.activeObject.name} ({Selection.activeObject.GetType().Name})" : "null";
+#pragma warning restore CS0162 // Unreachable code detected
             string activeGo = Selection.activeGameObject != null ? Selection.activeGameObject.name : "null";
             string tracked = trackedFlowchart != null ? trackedFlowchart.name : "null";
 
@@ -311,7 +313,9 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
+#pragma warning disable CS0162 // Unreachable code detected
             UnityEngine.Object active = Selection.activeObject;
+#pragma warning restore CS0162 // Unreachable code detected
             bool activeIsHiddenInspector = active is BlockInspector;
             string activeName = active != null ? $"{active.name} ({active.GetType().Name})" : "null";
 
