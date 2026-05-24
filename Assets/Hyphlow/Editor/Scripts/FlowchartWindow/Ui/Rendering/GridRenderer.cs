@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     /// UITK-based grid renderer that redraws only when flowchart context changes,
     /// using FlowchartWindowSignals instead of the per-frame IMGUI loop.
     /// </summary>
-    public sealed class GridRenderer : VisualElement, IFlowchartWindowModule,  IDisposable,
+    public sealed class GridRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
         IScrollWheelMoveResponder, IWindowPanResponder, IBlockSelectionResponder,
         IFlowchartChangeResponder, IVisualResetter
     {

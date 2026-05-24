@@ -4,15 +4,6 @@ using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
-    public interface IFlowchartWindowModule : IDisposable
-    {
-        /// <summary>
-        /// Lower number, sooner execution; Modules are executed in ascending order of this value.
-        /// </summary>
-        int Priority { get; set; }
-        void Initialize(FlowchartWindow window);
-    }
-
     /// <summary>
     /// Dispatcher for events related to the flowchart as a whole, such as flowchart changes, 
     /// command selection, and window panning.
