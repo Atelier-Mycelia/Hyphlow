@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Numeric", "Vector2", typeof(Vector2), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector2Variable : VariableBase<Vector2>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

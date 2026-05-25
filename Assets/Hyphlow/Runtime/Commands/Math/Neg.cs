@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Negate",
                  "Negate a float")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Neg : BaseUnaryMathCommand
     {
         public override void OnEnter()

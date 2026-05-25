@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class FlowchartRegistry
     {
         private static readonly bool _readAssetFlowchartsInRuntime = false;

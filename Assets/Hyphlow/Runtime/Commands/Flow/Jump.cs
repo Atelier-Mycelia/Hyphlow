@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Move execution to a specific Label command in the same block")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Jump : Command
     {
         [Tooltip("Name of a label in this block to jump to")]

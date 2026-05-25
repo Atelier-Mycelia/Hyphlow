@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(int), typeof(IVariable<int>))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class IntegerData : VariableData<int>
     {
         [SerializeField]
@@ -46,7 +46,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [VariableData(typeof(float), typeof(IVariable<float>))]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class FloatData : VariableData<float>
     {
         [SerializeField]
@@ -105,7 +105,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(bool), typeof(IVariable<bool>))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class BooleanData : VariableData<bool>
     {
         [SerializeField]
@@ -141,7 +141,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Vector2), typeof(IVariable<Vector2>))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector2Data : VariableData<Vector2>
     {
         [SerializeField]
@@ -177,7 +177,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [VariableData(typeof(Vector3), typeof(IVariable<Vector3>))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3Data : VariableData<Vector3>
     {
         [SerializeField]

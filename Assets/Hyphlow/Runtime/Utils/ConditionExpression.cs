@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     [System.Serializable]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ConditionExpression
     {
         [SerializeField]

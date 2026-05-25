@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow
                  "For",
                  "Loop over a fixed integer range, similar to a common for loop.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class LoopRange : Condition
     {
         [Tooltip("Starting value for the counter variable")]

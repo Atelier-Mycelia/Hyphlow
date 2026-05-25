@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Set Collider", 
                  "Sets all collider (2d or 3d) components on the target objects to be active / inactive")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetCollider : Command
     {       
         [Tooltip("A list of gameobjects containing collider components to be set active / inactive")]

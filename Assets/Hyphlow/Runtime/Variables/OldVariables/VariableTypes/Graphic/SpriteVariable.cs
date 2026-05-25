@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Graphic", "Sprite", typeof(Sprite), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SpriteVariable : VariableBase<Sprite>
     {
     }

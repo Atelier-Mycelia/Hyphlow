@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
         ISerializationCallbackReceiver, IBackwardsCompatibilityApplier, ICommand
     {

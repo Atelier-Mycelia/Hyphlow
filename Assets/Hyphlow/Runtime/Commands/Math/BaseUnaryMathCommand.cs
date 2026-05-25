@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     /// Base class for all simple Unary
     /// </summary>
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class BaseUnaryMathCommand : Command
     {
         [Tooltip("Value to be passed in to the function.")]

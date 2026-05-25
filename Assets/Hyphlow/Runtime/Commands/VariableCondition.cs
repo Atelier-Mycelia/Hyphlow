@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class VariableCondition : Condition, ISerializationCallbackReceiver
     {
         public enum AnyOrAll

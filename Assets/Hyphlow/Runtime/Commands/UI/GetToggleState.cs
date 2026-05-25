@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI",
                  "Get Toggle State",
                  "Gets the state of a toggle UI object and stores it in a boolean variable.")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class GetToggleState : Command 
     {
         [Tooltip("Target toggle object to get the value from")]

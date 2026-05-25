@@ -20,7 +20,7 @@ namespace AtMycelia.Hyphlow
                  "The scene to be loaded must be added to the scene list in Build Settings.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class LoadScene : Command
     {
         [Tooltip("Name of the scene to load. The scene must also be added to the build settings.")]

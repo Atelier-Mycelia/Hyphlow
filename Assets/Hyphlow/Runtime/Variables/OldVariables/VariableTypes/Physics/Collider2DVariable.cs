@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Physics/TwoD", "Collider2D", typeof(Collider2D), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Collider2DVariable : VariableBase<Collider2D>
     { }
 

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "Transform",
 				 "Get or Set a property of a Transform component")]
 	[AddComponentMenu("")]
-	[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class TransformProperty : BaseVariableProperty
 	{
 		//generated property

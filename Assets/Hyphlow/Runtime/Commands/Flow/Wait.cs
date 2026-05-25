@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Waits for period of time before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Wait : Command
     {
         [Tooltip("Duration to wait for")]

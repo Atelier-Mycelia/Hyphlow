@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "ToVector2",
                  "Convert Hyphlow Vector3 to Hyphlow Vector2")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3ToVector2 : Command
     {
         [SerializeField]

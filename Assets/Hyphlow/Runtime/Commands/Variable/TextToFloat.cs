@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Variable",
         "Text To Float",
         "Takes the value of a Text field and applies the float version of it to a Float Variable")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class TextToFloat : Command
     {
         [SerializeField] protected GameObjectData hasTextField;

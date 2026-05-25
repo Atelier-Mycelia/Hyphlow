@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI",
                  "Set Toggle State",
                  "Sets the state of a toggle UI object")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetToggleState : Command 
     {
         [Tooltip("Target toggle object to set the state on")]

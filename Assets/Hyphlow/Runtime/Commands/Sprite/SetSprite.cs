@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow
                  "Set Sprite", 
                  "Changes the sprite property of a list of Sprite Renderers.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetSprite : Command 
     {
         [Tooltip("List of sprites to set the sprite property on")]

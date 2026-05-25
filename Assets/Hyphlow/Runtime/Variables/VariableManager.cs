@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow
     /// cleanup of variables, and it can notify listeners when variables are added or removed.
     /// </summary>
     [Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public sealed class VariableManager : IVariableManager, IMuscariableSource,
         IReorderableMuscariableSource
     {

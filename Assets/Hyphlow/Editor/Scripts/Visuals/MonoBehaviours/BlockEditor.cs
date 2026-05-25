@@ -17,21 +17,20 @@ namespace AtMycelia.Hyphlow.EditorExt
 
 		public static bool SelectedBlockDataStale { get; set; }
 
-		protected Texture2D upIcon;
-		protected Texture2D downIcon;
-		protected Texture2D addIcon;
-		protected Texture2D duplicateIcon;
-		protected Texture2D deleteIcon;
+		protected Texture2D _upIcon;
+		protected Texture2D _downIcon;
+		protected Texture2D _addIcon;
+		protected Texture2D _duplicateIcon;
+		protected Texture2D _deleteIcon;
 		
-		private CommandListAdaptor commandListAdaptor;
-		private SerializedProperty commandListProperty;
+		private CommandListAdaptor _commandListAdaptor;
+		private SerializedProperty _commandListProperty;
 
-		private Rect lastEventPopupPos, lastCMDpopupPos;
+		private Rect _lastEventPopupPos, _lastCMDpopupPos;
 
-		private string callersString;
-		private bool callersFoldout;
+		private string _callersString;
+		private bool _callersFoldout;
 
-	
 		protected virtual void OnEnable()
 		{
 			//this appears to happen when leaving playmode
@@ -45,20 +44,20 @@ namespace AtMycelia.Hyphlow.EditorExt
 				return;
 			}
 
-			upIcon = HyphlowEditorSysAssets.Up;
-			downIcon = HyphlowEditorSysAssets.Down;
-			addIcon = HyphlowEditorSysAssets.Add;
-			duplicateIcon = HyphlowEditorSysAssets.Duplicate;
-			deleteIcon = HyphlowEditorSysAssets.Delete;
+			_upIcon = HyphlowEditorSysAssets.Up;
+			_downIcon = HyphlowEditorSysAssets.Down;
+			_addIcon = HyphlowEditorSysAssets.Add;
+			_duplicateIcon = HyphlowEditorSysAssets.Duplicate;
+			_deleteIcon = HyphlowEditorSysAssets.Delete;
 
-			commandListProperty = serializedObject.FindProperty("_commandList");
-			commandListProperty ??= serializedObject.FindProperty("_legacyCommandList");
-			commandListAdaptor = new CommandListAdaptor(target as Block, commandListProperty);
+			_commandListProperty = serializedObject.FindProperty("_commandList");
+			_commandListProperty ??= serializedObject.FindProperty("_legacyCommandList");
+			_commandListAdaptor = new CommandListAdaptor(target as Block, _commandListProperty);
 		}
 
 		protected void CacheCallerString()
 		{
-			if (!string.IsNullOrEmpty(callersString))
+			if (!string.IsNullOrEmpty(_callersString))
 			{
 				return;
 			}
@@ -76,7 +75,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 				}
 			}
 
-			callersString = callerNames.Count > 0 ? string.Join("\n", callerNames) : "None";
+			_callersString = callerNames.Count > 0 ? string.Join("\n", callerNames) : "None";
 		}
 
 		public virtual void DrawBlockName(Flowchart flowchart)
@@ -179,7 +178,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
 			EditorGUILayout.Space();
 
-			commandListAdaptor.DrawCommandList();
+			_commandListAdaptor.DrawCommandList();
 
 			HandleContextMenuInput();
 			HandleKeyboardShortcuts(flowchart);
@@ -234,11 +233,11 @@ namespace AtMycelia.Hyphlow.EditorExt
 		private void DrawCallersSection()
 		{
 			EditorGUI.indentLevel++;
-			if (callersFoldout = EditorGUILayout.Foldout(callersFoldout, "Callers"))
+			if (_callersFoldout = EditorGUILayout.Foldout(_callersFoldout, "Callers"))
 			{
 				CacheCallerString();
 				GUI.enabled = false;
-				EditorGUILayout.TextArea(callersString);
+				EditorGUILayout.TextArea(_callersString);
 				GUI.enabled = true;
 			}
 			EditorGUI.indentLevel--;
@@ -326,12 +325,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 		{
 			// Remove any null entries in the command list.
 			// This can happen when a command class is deleted or renamed.
-			for (int i = commandListProperty.arraySize - 1; i >= 0; --i)
+			for (int i = _commandListProperty.arraySize - 1; i >= 0; --i)
 			{
-				SerializedProperty commandProperty = commandListProperty.GetArrayElementAtIndex(i);
+				SerializedProperty commandProperty = _commandListProperty.GetArrayElementAtIndex(i);
 				if (commandProperty.objectReferenceValue == null)
 				{
-					commandListProperty.DeleteArrayElementAtIndex(i);
+					_commandListProperty.DeleteArrayElementAtIndex(i);
 				}
 			}
 		}
@@ -360,13 +359,13 @@ namespace AtMycelia.Hyphlow.EditorExt
 				Event.current.Use();
 			}
 
-			if (GUILayout.Button(upIcon))
+			if (GUILayout.Button(_upIcon))
 			{
 				SelectPrevious();
 			}
 
 			// Down Button
-			if (GUILayout.Button(downIcon))
+			if (GUILayout.Button(_downIcon))
 			{
 				SelectNext();
 			}
@@ -378,12 +377,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 			var pos = EditorGUILayout.GetControlRect(false, 0, EditorStyles.objectField);
 			if (pos.x != 0)
 			{
-				lastCMDpopupPos = pos;
-				lastCMDpopupPos.x += EditorGUIUtility.labelWidth;
-				lastCMDpopupPos.y += EditorGUIUtility.singleLineHeight * 2;
+				_lastCMDpopupPos = pos;
+				_lastCMDpopupPos.x += EditorGUIUtility.labelWidth;
+				_lastCMDpopupPos.y += EditorGUIUtility.singleLineHeight * 2;
 			}
 			// Add Button
-			if (GUILayout.Button(addIcon))
+			if (GUILayout.Button(_addIcon))
 			{
 				//this may be less reliable for HDPI scaling but previous method using editor window height is now returning 
 				//  null in 2019.2 suspect ongoing ui changes, so default to screen.height and then attempt to get the better result
@@ -391,20 +390,20 @@ namespace AtMycelia.Hyphlow.EditorExt
 				if (EditorWindow.focusedWindow != null) h = (int)EditorWindow.focusedWindow.position.height;
 				else if (EditorWindow.mouseOverWindow != null) h = (int)EditorWindow.mouseOverWindow.position.height;
 
-				CommandSelectorPopupWindowContent.ShowCommandMenu(lastCMDpopupPos, "", target as Block,
+				CommandSelectorPopupWindowContent.ShowCommandMenu(_lastCMDpopupPos, "", target as Block,
 					(int)(EditorGUIUtility.currentViewWidth),
-					(int)(h - lastCMDpopupPos.y));
+					(int)(h - _lastCMDpopupPos.y));
 			}
 
 			// Duplicate Button
-			if (GUILayout.Button(duplicateIcon))
+			if (GUILayout.Button(_duplicateIcon))
 			{
 				Copy();
 				Paste();
 			}
 
 			// Delete Button
-			if (GUILayout.Button(deleteIcon))
+			if (GUILayout.Button(_deleteIcon))
 			{
 				Delete();
 			}
@@ -412,8 +411,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 			GUILayout.EndHorizontal();
 
 		}
-
-		
 
 		protected virtual void DrawEventHandlerGUI(Flowchart flowchart)
 		{
@@ -439,15 +436,15 @@ namespace AtMycelia.Hyphlow.EditorExt
 			var pos = EditorGUILayout.GetControlRect(true, 0, EditorStyles.objectField);
 			if (pos.x != 0)
 			{
-				lastEventPopupPos = pos;
-				lastEventPopupPos.x += EditorGUIUtility.labelWidth;
-				lastEventPopupPos.y += EditorGUIUtility.singleLineHeight;
+				_lastEventPopupPos = pos;
+				_lastEventPopupPos.x += EditorGUIUtility.labelWidth;
+				_lastEventPopupPos.y += EditorGUIUtility.singleLineHeight;
 			}
 			EditorGUILayout.BeginHorizontal();
 			EditorGUILayout.PrefixLabel(new GUIContent("Execute On Event"));
 			if (EditorGUILayout.DropdownButton(new GUIContent(currentHandlerName), FocusType.Passive))
 			{
-				EventSelectorPopupWindowContent.DoEventHandlerPopUp(lastEventPopupPos, currentHandlerName, block, (int)(EditorGUIUtility.currentViewWidth - lastEventPopupPos.x), 200);
+				EventSelectorPopupWindowContent.DoEventHandlerPopUp(_lastEventPopupPos, currentHandlerName, block, (int)(EditorGUIUtility.currentViewWidth - _lastEventPopupPos.x), 200);
 			}
 			EditorGUILayout.EndHorizontal();
 
@@ -469,7 +466,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 				}
 			}
 		}
-
 
 		public static void BlockField(SerializedProperty property, GUIContent label, GUIContent nullLabel,
 			Flowchart flowchart, AccessScope allowedScope = AccessScope.Null)
@@ -510,7 +506,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
 			property.objectReferenceValue = block;
 		}
-
 
 		public static Block BlockField(Rect position, GUIContent nullLabel, Flowchart flowchart, Block block)
 		{
@@ -784,6 +779,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 				return;
 			}
 
+			int indexOfCmdBefore = -1, indexOfCmdAfter = -1;
+			// ^So we can select the next (or previous) command after deletion for better UX.
 			int lastSelectedIndex = 0;
 			var commandList = flowchart.SelectedBlock.CommandList;
 			for (int i = commandList.Count - 1; i >= 0; --i)
@@ -799,6 +796,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 						Undo.DestroyObjectImmediate(selectedCommand as UnityObj);
 
 						Undo.RecordObject(flowchart.SelectedBlock as UnityObj, "Delete");
+						indexOfCmdBefore = i - 1;
+						indexOfCmdAfter = i;
 						commandList.RemoveAt(i);
 
 						lastSelectedIndex = i;
@@ -811,10 +810,15 @@ namespace AtMycelia.Hyphlow.EditorExt
 			Undo.RecordObject(flowchart, "Delete");
 			flowchart.ClearSelectedCommands();
 
-			if (lastSelectedIndex < flowchart.SelectedBlock.CommandList.Count)
+			if (indexOfCmdAfter < commandList.Count)
 			{
-				var nextCommand = flowchart.SelectedBlock.CommandList[lastSelectedIndex];
-				block.GetFlowchart().AddSelectedCommand(nextCommand);
+				var nextCommand = commandList[indexOfCmdAfter];
+				flowchart.AddSelectedCommand(nextCommand);
+			}
+			else if (indexOfCmdBefore >= 0)
+			{
+				var previousCommand = commandList[indexOfCmdBefore];
+				flowchart.AddSelectedCommand(previousCommand);
 			}
 
 			Repaint();

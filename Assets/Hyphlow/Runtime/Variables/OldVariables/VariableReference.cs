@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
     /// you will need to subclass this.
     /// </summary>
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class VariableReference
     {
         // What we do is store the id of the var, and then return the var itself based on

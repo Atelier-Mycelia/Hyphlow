@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Break",
                  "Force a loop to terminate immediately.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Break : Command
     {
         #region Public members

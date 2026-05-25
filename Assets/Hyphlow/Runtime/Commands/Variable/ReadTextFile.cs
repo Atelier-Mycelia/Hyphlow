@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Variable",
                  "Read Text File",
                  "Reads in a text file and stores the contents in a string variable")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ReadTextFile : Command
     {
         [Tooltip("Text file to read into the string variable")]

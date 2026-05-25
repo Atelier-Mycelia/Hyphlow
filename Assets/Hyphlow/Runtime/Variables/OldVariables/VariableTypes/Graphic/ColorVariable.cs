@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Graphic", "Color", typeof(Color), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ColorVariable : VariableBase<Color>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)
