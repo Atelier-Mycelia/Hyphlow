@@ -272,7 +272,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-			if (animatorVar == variable || inOutVar == variable)
+            if (ReferenceEquals(animatorVar, variable) || ReferenceEquals(inOutVar, variable))
 				return true;
 
 			return false;

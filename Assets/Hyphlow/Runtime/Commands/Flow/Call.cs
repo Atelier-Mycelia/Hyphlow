@@ -105,7 +105,14 @@ namespace AtMycelia.Hyphlow
             _targetBlock = null;
             _targetFlowchart = null;
 #if UNITY_EDITOR
-            EditorApplication.delayCall += () => EditorUtility.SetDirty(this);
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+                EditorUtility.SetDirty(this);
+            };
 #endif
         }
 

@@ -55,7 +55,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            return (variable == this.variable) || minValue.integerRef == variable || maxValue.integerRef == variable;
+            return ReferenceEquals(variable, this.variable) || ReferenceEquals(minValue.integerRef, variable) || ReferenceEquals(maxValue.integerRef, variable);
         }
 
         public override Color GetButtonColor()

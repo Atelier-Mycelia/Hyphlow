@@ -131,7 +131,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            if (colorVar == variable || inOutVar == variable)
+            if (ReferenceEquals(colorVar, variable) || ReferenceEquals(inOutVar, variable))
                 return true;
 
             return false;

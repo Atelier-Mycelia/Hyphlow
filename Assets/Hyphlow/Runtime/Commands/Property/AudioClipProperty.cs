@@ -119,7 +119,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-			if (ReferenceEquals(audioClipData.VarRef, variable) || inOutVar == variable)
+            if (ReferenceEquals(audioClipData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
 				return true;
 
 			return false;

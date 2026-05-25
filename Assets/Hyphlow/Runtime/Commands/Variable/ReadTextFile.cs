@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow
         
         public override bool HasReference(IVariable variable)
         {
-            return (variable == stringVariable);
+            return ReferenceEquals(variable, stringVariable);
         }
         
         public override Color GetButtonColor()

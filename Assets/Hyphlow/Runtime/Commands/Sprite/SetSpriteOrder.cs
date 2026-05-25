@@ -88,7 +88,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            return orderInLayer.integerRef == variable || base.HasReference(variable);
+            return ReferenceEquals(orderInLayer.integerRef, variable) || base.HasReference(variable);
         }
 
         #endregion

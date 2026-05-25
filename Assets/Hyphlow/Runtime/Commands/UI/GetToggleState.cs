@@ -56,7 +56,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            return toggleState == variable || 
+            return ReferenceEquals(toggleState, variable) || 
                 base.HasReference(variable);
         }
 

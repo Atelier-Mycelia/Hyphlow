@@ -89,8 +89,8 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            if (_rb.rigidbody2DRef == variable || _force.vector2Ref == variable || _forceScaleFactor.floatRef == variable ||
-                _atPosition.vector2Ref == variable)
+            if (ReferenceEquals(_rb.rigidbody2DRef, variable) || ReferenceEquals(_force.vector2Ref, variable) || ReferenceEquals(_forceScaleFactor.floatRef, variable) ||
+                ReferenceEquals(_atPosition.vector2Ref, variable))
                 return true;
 
             return false;

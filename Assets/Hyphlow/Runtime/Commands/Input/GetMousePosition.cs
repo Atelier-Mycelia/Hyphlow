@@ -82,17 +82,17 @@ namespace AtMycelia.Hyphlow
                     (worldDirection != null ? worldDirection.Key + " " : "");
         }
 
-        public override Color GetButtonColor()
+        public override Color GetButtonColor()//
         {
             return CommandColors.Flow;
         }
 
         public override bool HasReference(IVariable variable)
         {
-            return (screenPosition == variable ||
-                viewPosition == variable ||
-                worldPosition == variable ||
-                worldDirection == variable);
+            return ReferenceEquals(screenPosition, variable) || 
+                ReferenceEquals(viewPosition, variable) ||
+                ReferenceEquals(worldPosition, variable) ||
+                ReferenceEquals(worldDirection, variable);
         }
     }
 }

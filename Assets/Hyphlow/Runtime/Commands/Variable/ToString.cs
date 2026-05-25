@@ -52,7 +52,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            return (variable == this.variable) || outValue == variable;
+            return ReferenceEquals(variable, this.variable) || ReferenceEquals(outValue, variable);
         }
 
         public override Color GetButtonColor()

@@ -74,8 +74,8 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            return startingValue.integerRef == variable || endValue.integerRef == variable ||
-                counter.integerRef == variable || step.integerRef == variable ||
+            return ReferenceEquals(startingValue.integerRef, variable) || ReferenceEquals(endValue.integerRef, variable) ||
+                ReferenceEquals(counter.integerRef, variable) || ReferenceEquals(step.integerRef, variable) ||
                 base.HasReference(variable);
         }
 

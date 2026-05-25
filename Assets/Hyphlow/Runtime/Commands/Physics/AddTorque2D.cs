@@ -49,7 +49,7 @@ namespace AtMycelia.Hyphlow
         
         public override bool HasReference(IVariable variable)
         {
-            if (_rb.rigidbody2DRef == variable || _force.floatRef == variable)
+            if (ReferenceEquals(_rb.rigidbody2DRef, variable) || ReferenceEquals(_force.floatRef, variable))
                 return true;
 
             return false;

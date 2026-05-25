@@ -119,7 +119,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-			if (vector3Var == variable || inOutVar == variable)
+         if (ReferenceEquals(vector3Var, variable) || ReferenceEquals(inOutVar, variable))
 				return true;
 
 			return false;

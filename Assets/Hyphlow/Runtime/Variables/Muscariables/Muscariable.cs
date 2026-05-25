@@ -523,12 +523,6 @@ namespace AtMycelia.Hyphlow
         // Keep defaults: Assign supported; Equals/NotEquals from base are fine.
         // You can extend later for numeric T to support + - * / or relational ops.
 
-        public static bool operator ==(GenericMuscariable a, GenericMuscariable b)
-            => a.Value == b.Value;
-
-        public static bool operator !=(GenericMuscariable a, GenericMuscariable b)
-            => a.Value != b.Value;
-
         public override bool Equals(object obj)
         {
             if (obj is not GenericMuscariable other) return false;

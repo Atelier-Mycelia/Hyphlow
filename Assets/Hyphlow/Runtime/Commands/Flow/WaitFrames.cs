@@ -56,7 +56,7 @@ namespace AtMycelia.Hyphlow
 
         public override bool HasReference(IVariable variable)
         {
-            return frameCount.integerRef == variable || base.HasReference(variable);
+            return ReferenceEquals(frameCount.integerRef, variable) || base.HasReference(variable);
         }
 
         #endregion
