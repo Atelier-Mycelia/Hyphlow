@@ -50,7 +50,7 @@ namespace AtMycelia.Hyphlow
             return outValue.Key + " = " + variable.Key + ".ToString";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return (variable == this.variable) || outValue == variable;
         }

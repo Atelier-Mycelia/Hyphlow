@@ -116,7 +116,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Physics;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (_rb.rigidbody2DRef == variable)
                 return true;

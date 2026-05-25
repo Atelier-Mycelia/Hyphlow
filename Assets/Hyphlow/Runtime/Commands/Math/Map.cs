@@ -54,7 +54,7 @@ namespace AtMycelia.Hyphlow
                 newRangeLower.Value.ToString() + "-" + newRangeUpper.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(initialRangeLower.VarRef, variable) || 
                 ReferenceEquals(initialRangeUpper.VarRef, variable) || 

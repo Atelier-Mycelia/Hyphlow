@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow
             return outValue.floatRef.Key + " = " + Mode.Clamp.ToString() + (mode != Mode.Clamp ? " & " + mode.ToString() : "");
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(lower.VarRef, variable) || 
                 ReferenceEquals(upper.VarRef, variable) || 

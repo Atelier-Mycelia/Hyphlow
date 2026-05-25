@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.ConditionalLogic;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_targetLabel.VarRef, variable) ||
                 base.HasReference(variable);

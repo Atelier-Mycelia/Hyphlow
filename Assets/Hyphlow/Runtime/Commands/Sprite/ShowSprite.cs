@@ -78,7 +78,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Sprite;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_visible.VarRef, variable) || base.HasReference(variable);
         }

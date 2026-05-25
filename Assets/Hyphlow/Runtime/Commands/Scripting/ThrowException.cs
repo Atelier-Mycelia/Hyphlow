@@ -51,7 +51,7 @@ namespace AtMycelia.Hyphlow
             return message.Value;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, message.VarRef) || base.HasReference(variable);
         }

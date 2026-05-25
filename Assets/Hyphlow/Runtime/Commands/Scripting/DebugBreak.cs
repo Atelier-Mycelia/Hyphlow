@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow
             return enabled.Value ? "enabled" : "disabled";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, enabled.VarRef);
         }

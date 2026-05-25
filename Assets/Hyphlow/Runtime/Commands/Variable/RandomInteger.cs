@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow
             return variable.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return (variable == this.variable) || minValue.integerRef == variable || maxValue.integerRef == variable;
         }

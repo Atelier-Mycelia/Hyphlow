@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow
             return new Color32(253, 253, 150, 255);
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(blockName.VarRef, variable) || base.HasReference(variable);
         }

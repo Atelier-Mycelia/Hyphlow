@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow
             return a.Key + " " + method.ToString() + " " + b.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, message.VarRef) ||
                 variable == a || variable == b ||

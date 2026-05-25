@@ -122,7 +122,7 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_interactableState.VarRef, variable) || base.HasReference(variable);
         }

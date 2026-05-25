@@ -515,8 +515,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("NoShow",
-        "",
+    [VariableInfo("NoShow", "",
         typeof(object),
         showInMenu: false)]
     public class GenericMuscariable : Muscariable<object>

@@ -67,7 +67,7 @@ namespace AtMycelia.Hyphlow
                 value.GetDescription() + " = " + slider.name;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(value.VarRef, variable) || base.HasReference(variable);
         }

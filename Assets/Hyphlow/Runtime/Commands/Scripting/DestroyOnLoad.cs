@@ -34,7 +34,7 @@ namespace AtMycelia.Hyphlow
             return target.Value != null ? target.Value.name : "Error: no target set";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, target.VarRef);
         }

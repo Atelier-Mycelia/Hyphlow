@@ -17,8 +17,6 @@ namespace AtMycelia.Hyphlow
     [System.Serializable]
     public class BlockReference
     {
-        [FormerlySerializedAs("block")]
-        [FormerlySerializedAs("_block")]
         [SerializeField] private byte _itemId = InvalidId;
         [SerializeField] private UnityObj _owningSource;
 
@@ -42,6 +40,13 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        protected virtual void RefreshOwner()
+        {
+            _blockOwner ??= _owningSource as IBlockSource;
+        }
+
+        private IBlockSource _blockOwner;
+
         public IBlock Block
         {
             get
@@ -64,7 +69,7 @@ namespace AtMycelia.Hyphlow
                 else
                 {
                     _itemId = value.ItemId;
-                    BlockOwner = value.GetFlowchart();
+                    BlockOwner = value.ParentFlowchart;
                 }
             }
         }
@@ -74,12 +79,6 @@ namespace AtMycelia.Hyphlow
             RefreshOwner();
         }
 
-        protected virtual void RefreshOwner()
-        {
-            _blockOwner ??= _owningSource as IBlockSource;
-        }
-
-        private IBlockSource _blockOwner;
     }
 
 }

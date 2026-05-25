@@ -133,7 +133,7 @@ namespace AtMycelia.Hyphlow.Legacy
             return true;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(targetColor.VarRef, variable) || 
                 ReferenceEquals(targetAlpha.VarRef, variable) ||

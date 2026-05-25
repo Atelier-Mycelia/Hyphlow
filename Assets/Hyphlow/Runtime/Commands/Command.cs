@@ -202,12 +202,6 @@ namespace AtMycelia.Hyphlow
         
         protected IList<IVariable> _referencedVariables = new List<IVariable>();
 
-        //used by var list adapter to highlight variables 
-        public bool IsVariableReferenced(IVariable variable)
-        {
-            return _referencedVariables.Contains(variable) || HasReference(variable);
-        }
-
         /// <summary>
         /// Called by OnValidate.
         /// 
@@ -390,15 +384,6 @@ namespace AtMycelia.Hyphlow
         public virtual void GetConnectedBlocks(ref IList<IBlock> toPopulate)
         {}
 
-        /// <summary>
-        /// Returns true if this command references the variable.
-        /// Used to highlight variables in the variable list when a command is selected.
-        /// </summary>
-        public virtual bool HasReference(Variable variable)
-        {
-            return false;
-        }
-
         public virtual string LocationIdentifier
         {
             get
@@ -500,7 +485,11 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public bool HasReference(IVariable variable)
+        /// <summary>
+        /// Returns true if this command references the variable.
+        /// Used to highlight variables in the variable list when a command is selected.
+        /// </summary>
+        public virtual bool HasReference(IVariable variable)
         {
             return false;
         }

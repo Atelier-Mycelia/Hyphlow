@@ -121,7 +121,7 @@ namespace AtMycelia.Hyphlow
 			return CommandColors.Flow;
 		}
 
-		public override bool HasReference(Variable variable)
+		public override bool HasReference(IVariable variable)
 		{
 			if (ReferenceEquals(vector4Data.VarRef, variable) || ReferenceEquals(inOutVar, variable))
 				return true;

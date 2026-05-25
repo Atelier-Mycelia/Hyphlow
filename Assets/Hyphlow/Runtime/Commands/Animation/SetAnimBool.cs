@@ -52,7 +52,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Animation;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_animator.VarRef, variable) || 
                 ReferenceEquals(_parameterName.VarRef, variable) || 

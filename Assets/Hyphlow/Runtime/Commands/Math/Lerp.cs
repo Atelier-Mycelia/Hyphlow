@@ -66,7 +66,7 @@ namespace AtMycelia.Hyphlow
             return mode.ToString() + " [" + a.Value.ToString() + "-" + b.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(a.VarRef, variable) || 
                 ReferenceEquals(b.VarRef, variable) || 

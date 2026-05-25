@@ -100,7 +100,7 @@ namespace AtMycelia.Hyphlow
             return propertyName == "targetObjects";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(activeState.VarRef, variable) || base.HasReference(variable);
         }

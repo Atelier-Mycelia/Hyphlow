@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow
             return outValue.floatRef.Key + " = [" + a.Value.ToString() + "-" + b.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(a.VarRef, variable) ||
                 ReferenceEquals(b.VarRef, variable) ||

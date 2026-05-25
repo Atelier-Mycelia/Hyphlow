@@ -352,10 +352,6 @@ namespace AtMycelia.Hyphlow
             {
                 return null;
             }
-            if (_owner == null)
-            {
-                _owner = GetComponent<Flowchart>();
-            }
             return _owner as Flowchart;
         }
 
@@ -736,6 +732,12 @@ namespace AtMycelia.Hyphlow
         protected virtual void OnValidate()
         {
             hideFlags = HideFlags.HideInInspector;
+#if UNITY_EDITOR
+            if (_owner == null)
+            {
+                EditorApplication.delayCall += () => _owner = GetComponent<Flowchart>();
+            }
+#endif
         }
 
         public virtual void OnAfterDeserialize()

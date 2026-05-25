@@ -86,7 +86,7 @@ namespace AtMycelia.Hyphlow
             targetSprites.Add(null);
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return orderInLayer.integerRef == variable || base.HasReference(variable);
         }

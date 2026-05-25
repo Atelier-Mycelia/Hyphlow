@@ -133,7 +133,7 @@ namespace AtMycelia.Hyphlow
             return summary.ToString();
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return _anyVar.HasReference(variable);
         }

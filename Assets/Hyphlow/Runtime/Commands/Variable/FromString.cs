@@ -61,9 +61,9 @@ namespace AtMycelia.Hyphlow
             return outValue.Key + ".Parse " + sourceString.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (variable == sourceString) || (variable == outValue);
+            return ReferenceEquals(variable, sourceString) || ReferenceEquals(variable,  outValue);
         }
 
         public override Color GetButtonColor()

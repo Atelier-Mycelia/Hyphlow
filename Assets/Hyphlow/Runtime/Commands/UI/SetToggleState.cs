@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow
             return toggle.name + " = " + value.GetDescription();
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(value.VarRef, variable) || base.HasReference(variable);
         }
