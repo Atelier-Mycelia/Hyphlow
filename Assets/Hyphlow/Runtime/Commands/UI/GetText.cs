@@ -19,7 +19,8 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("String variable to store the text value in")]
         [ContentTypeConstraint(typeof(string))]
-        [SerializeField] protected VariableReference stringVariable = new VariableReference();
+        [SerializeField] [FormerlySerializedAs("stringVariable")]
+protected VariableReference stringVariable = new VariableReference();
 
         protected override void RefreshVariableDataCache()
         {
@@ -68,7 +69,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(stringVariable.Variable, variable) || 
                 base.HasReference(variable);

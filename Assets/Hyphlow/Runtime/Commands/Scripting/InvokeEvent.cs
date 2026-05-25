@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System;
 using UnityEngine.Events;
@@ -37,40 +38,52 @@ namespace AtMycelia.Hyphlow
     public class InvokeEvent : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]
-        [SerializeField] protected string description = "";
+        [SerializeField] [FormerlySerializedAs("description")]
+protected string description = "";
 
         [Tooltip("Delay (in seconds) before the methods will be called")]
-        [SerializeField] protected float delay;
+        [SerializeField] [FormerlySerializedAs("delay")]
+protected float delay;
 
         [Tooltip("Selects type of method parameter to pass")]
-        [SerializeField] protected InvokeType invokeType;
+        [SerializeField] [FormerlySerializedAs("invokeType")]
+protected InvokeType invokeType;
 
         [Tooltip("List of methods to call. Supports methods with no parameters or exactly one string, int, float or object parameter.")]
-        [SerializeField] protected UnityEvent staticEvent = new UnityEvent();
+        [SerializeField] [FormerlySerializedAs("staticEvent")]
+protected UnityEvent staticEvent = new UnityEvent();
 
         [Tooltip("Boolean parameter to pass to the invoked methods.")]
-        [SerializeField] protected BooleanData booleanParameter;
+        [SerializeField] [FormerlySerializedAs("booleanParameter")]
+protected BooleanData booleanParameter;
 
         [Tooltip("List of methods to call. Supports methods with one boolean parameter.")]
-        [SerializeField] protected BooleanEvent booleanEvent = new BooleanEvent();
+        [SerializeField] [FormerlySerializedAs("booleanEvent")]
+protected BooleanEvent booleanEvent = new BooleanEvent();
 
         [Tooltip("Integer parameter to pass to the invoked methods.")]
-        [SerializeField] protected IntegerData integerParameter;
+        [SerializeField] [FormerlySerializedAs("integerParameter")]
+protected IntegerData integerParameter;
         
         [Tooltip("List of methods to call. Supports methods with one integer parameter.")]
-        [SerializeField] protected IntegerEvent integerEvent = new IntegerEvent();
+        [SerializeField] [FormerlySerializedAs("integerEvent")]
+protected IntegerEvent integerEvent = new IntegerEvent();
 
         [Tooltip("Float parameter to pass to the invoked methods.")]
-        [SerializeField] protected FloatData floatParameter;
+        [SerializeField] [FormerlySerializedAs("floatParameter")]
+protected FloatData floatParameter;
         
         [Tooltip("List of methods to call. Supports methods with one float parameter.")]
-        [SerializeField] protected FloatEvent floatEvent = new FloatEvent();
+        [SerializeField] [FormerlySerializedAs("floatEvent")]
+protected FloatEvent floatEvent = new FloatEvent();
 
         [Tooltip("String parameter to pass to the invoked methods.")]
-        [SerializeField] protected StringDataMulti stringParameter;
+        [SerializeField] [FormerlySerializedAs("stringParameter")]
+protected StringDataMulti stringParameter;
 
         [Tooltip("List of methods to call. Supports methods with one string parameter.")]
-        [SerializeField] protected StringEvent stringEvent = new StringEvent();
+        [SerializeField] [FormerlySerializedAs("stringEvent")]
+protected StringEvent stringEvent = new StringEvent();
 
         protected override void RefreshVariableDataCache()
         {
@@ -162,7 +175,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(booleanParameter.VarRef, variable) || 
                 ReferenceEquals(integerParameter.VarRef, variable) ||

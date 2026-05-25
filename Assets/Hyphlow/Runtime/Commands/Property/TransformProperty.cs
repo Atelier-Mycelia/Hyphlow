@@ -39,9 +39,11 @@ namespace AtMycelia.Hyphlow
 		}
 
 		[SerializeField]
+[FormerlySerializedAs("property")]
 		protected Property property = Property.Position;
 
 		[SerializeField]
+[FormerlySerializedAs("transformData")]
 		protected TransformData transformData;
 
 		[SerializeField]
@@ -199,7 +201,7 @@ namespace AtMycelia.Hyphlow
 			return CommandColors.Flow;
 		}
 
-		public override bool HasReference(Variable variable)
+		public override bool HasReference(IVariable variable)
 		{
 			if (ReferenceEquals(transformData.VarRef, variable) || 
 				ReferenceEquals(_inOutVar.Variable, variable))
@@ -222,6 +224,7 @@ namespace AtMycelia.Hyphlow
 		[SerializeField]
 		[HideInInspector]
 		[FormerlySerializedAs("inOutVar")]
+[FormerlySerializedAs("inOutVarOld")]
 		protected Variable inOutVarOld;
 
 	}

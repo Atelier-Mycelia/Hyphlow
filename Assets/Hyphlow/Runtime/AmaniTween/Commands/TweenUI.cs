@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -11,16 +12,19 @@ namespace AtMycelia.Hyphlow
     public abstract class TweenUI : Command 
     {
         [Tooltip("List of objects to be affected by the tween")]
-        [SerializeField] protected List<GameObject> targetObjects = new List<GameObject>();
+        [SerializeField] [FormerlySerializedAs("targetObjects")]
+protected List<GameObject> targetObjects = new List<GameObject>();
 
         //[Tooltip("Type of tween easing to apply")]
         //[SerializeField] protected LeanTweenType tweenType = LeanTweenType.easeOutQuad;
 
         [Tooltip("Whether to wait until this Command completes before continuing execution")]
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [SerializeField] [FormerlySerializedAs("waitUntilFinished")]
+protected BooleanData waitUntilFinished = new BooleanData(true);
         
         [Tooltip("Time for the tween to complete")]
-        [SerializeField] protected FloatData duration = new FloatData(1f);
+        [SerializeField] [FormerlySerializedAs("duration")]
+protected FloatData duration = new FloatData(1f);
 
         protected virtual void Awake()
         {
@@ -149,7 +153,7 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(waitUntilFinished.VarRef, variable) || 
                 ReferenceEquals(duration.VarRef, variable) || base.HasReference(variable);

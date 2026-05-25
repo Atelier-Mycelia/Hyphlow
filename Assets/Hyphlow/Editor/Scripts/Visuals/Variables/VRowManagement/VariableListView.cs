@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -64,7 +64,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected virtual void InitListViewStructure()
         {
-            _listDisplay.itemsSource = varsToDisplay;
+            _listDisplay.itemsSource = _varsToDisplay;
             _listDisplay.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
             _listDisplay.reorderable = true;
             _listDisplay.selectionType = SelectionType.Single;
@@ -95,7 +95,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 {
                     _listDisplay.bindItem = (rowHolder, index) =>
                     {
-                        bool indexInRange = index < varsToDisplay.Count;
+                        bool indexInRange = index < _varsToDisplay.Count;
                         if (!indexInRange)
                         {
                             rowHolder.userData = null;
@@ -103,7 +103,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                             return;
                         }
 
-                        IVariable currentVar = varsToDisplay[index];
+                        IVariable currentVar = _varsToDisplay[index];
                         if (currentVar == null)
                         {
                             rowHolder.userData = null;
@@ -207,15 +207,15 @@ namespace AtMycelia.Hyphlow.EditorExt
             UpdateCount();
         }
 
-        public virtual IReadOnlyList<IVariable> VarsToDisplay => varsToDisplay;
+        public virtual IReadOnlyList<IVariable> VarsToDisplay => _varsToDisplay;
 
-        protected readonly List<IVariable> varsToDisplay = new();
+        protected readonly List<IVariable> _varsToDisplay = new();
         // ^Meant to be separate from that held by the source or FC
 
         protected virtual void OnItemReordered(int from, int to)
         {
-            if (from == to || varsToDisplay.Count == 0) return;
-            OrderChanged?.Invoke(varsToDisplay);
+            if (from == to || _varsToDisplay.Count == 0) return;
+            OrderChanged?.Invoke(_varsToDisplay);
         }
 
         protected virtual VariableRow GetOrCreateRow(IVariable variable)
@@ -273,24 +273,24 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            if (toAdd == null || varsToDisplay.ContainsReference(toAdd))
+            if (toAdd == null || _varsToDisplay.ContainsReference(toAdd))
             {
                 string logMessage = $"Tried to add a null variable to VariableListView.";
                 Debug.LogWarning(logMessage);
                 return;
             }
 
-            varsToDisplay.Add(toAdd);
+            _varsToDisplay.Add(toAdd);
             Refresh();
         }
 
         public virtual void RemoveVariable(IVariable variable)
         {
             if (variable == null) return;
-            int idx = varsToDisplay.IndexOf(variable);
+            int idx = _varsToDisplay.IndexOf(variable);
             if (idx < 0) return;
 
-            varsToDisplay.RemoveAt(idx);
+            _varsToDisplay.RemoveAt(idx);
             ReleaseRow(variable);
             Refresh();
         }
@@ -298,12 +298,12 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual void SetVariables(IEnumerable<IVariable> varsToSet)
         {
             ReleaseAllActiveRows();
-            varsToDisplay.Clear();
+            _varsToDisplay.Clear();
             if (varsToSet != null)
             {
                 foreach (var elem in varsToSet)
                     if (elem != null)
-                        varsToDisplay.Add(elem);
+                        _varsToDisplay.Add(elem);
             }
             Refresh();
         }
@@ -311,7 +311,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual void Clear()
         {
             ReleaseAllActiveRows();
-            varsToDisplay.Clear();
+            _varsToDisplay.Clear();
             Refresh();
         }
 
@@ -321,15 +321,15 @@ namespace AtMycelia.Hyphlow.EditorExt
             UpdateCount();
         }
 
-        public int RowCount => varsToDisplay.Count;
+        public int RowCount => _varsToDisplay.Count;
         public IReadOnlyList<VariableRow> Rows => _activeRows.Values.ToList();
 
         IReadOnlyList<IVariable> IVariableListView.VarsToDisplay => VarsToDisplay;
 
         public VariableRow RowAtIndex(int index)
         {
-            if ((uint)index >= (uint)varsToDisplay.Count) return null;
-            var v = varsToDisplay[index];
+            if ((uint)index >= (uint)_varsToDisplay.Count) return null;
+            var v = _varsToDisplay[index];
             _activeRows.TryGetValue(v, out var row);
             return row;
         }
@@ -340,7 +340,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             if (_countDisplay != null)
             {
-                _countDisplay.text = $"Count: {varsToDisplay.Count}";
+                _countDisplay.text = $"Count: {_varsToDisplay.Count}";
             }
         }
 
@@ -351,7 +351,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
 
             ReleaseAllActiveRows();
-            varsToDisplay.Clear();
+            _varsToDisplay.Clear();
 
             DisposeListDisplay();
             void DisposeListDisplay()
@@ -448,7 +448,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
 
             ReleaseAllActiveRows();
-            varsToDisplay.Clear();
+            _varsToDisplay.Clear();
             var sourceToAdd = source.Where(IsValidVar);
 
             static bool IsValidVar(IVariable elem)
@@ -457,7 +457,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return elem != null && (elem is not UnityObj unityObj || unityObj != null);
             }
 
-            varsToDisplay.AddRange(sourceToAdd);
+            _varsToDisplay.AddRange(sourceToAdd);
             Refresh();
         }
 
@@ -468,7 +468,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         #region For tests only
         public virtual void ForceMaterializeAllRowsForTests()
         {
-            if (_listDisplay == null || varsToDisplay.Count == 0)
+            if (_listDisplay == null || _varsToDisplay.Count == 0)
                 return;
 
             VisualElement container;
@@ -493,9 +493,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             PrepRowsForTheVars();
             void PrepRowsForTheVars()
             {
-                for (int i = 0; i < varsToDisplay.Count; i++)
+                for (int i = 0; i < _varsToDisplay.Count; i++)
                 {
-                    var variable = varsToDisplay[i];
+                    var variable = _varsToDisplay[i];
                     if (variable == null)
                         continue;
 

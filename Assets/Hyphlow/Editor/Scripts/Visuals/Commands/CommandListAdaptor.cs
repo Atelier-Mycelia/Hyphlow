@@ -21,28 +21,28 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             this._arrayProperty = arrayProperty;
-            this.block = _block;
+            this._block = _block;
 
-            list = new ReorderableList(arrayProperty.serializedObject, arrayProperty,
+            _list = new ReorderableList(arrayProperty.serializedObject, arrayProperty,
                 draggable: true, displayHeader: true,
                 displayAddButton: false, displayRemoveButton: false);
 
             HookUpCallbacks();
             void HookUpCallbacks()
             {
-                list.drawHeaderCallback = DrawHeader;
-                list.drawElementCallback = DrawItem;
-                list.onSelectCallback = SelectChanged;
+                _list.drawHeaderCallback = DrawHeader;
+                _list.drawElementCallback = DrawItem;
+                _list.onSelectCallback = SelectChanged;
             }
 
-            list.elementHeight = EditorGUIUtility.singleLineHeight + lineHeightPadding;
+            _list.elementHeight = EditorGUIUtility.singleLineHeight + _lineHeightPadding;
         }
 
         protected SerializedProperty _arrayProperty;
-        protected IBlock block;
-        protected ReorderableList list;
-        protected static readonly int lineHeightPadding = 6;
-        private bool suppressSelectCallback;
+        protected IBlock _block;
+        protected ReorderableList _list;
+        protected static readonly int _lineHeightPadding = 6;
+        private bool _suppressSelectCallback;
 
         protected virtual void DrawHeader(Rect rect)
         {
@@ -101,12 +101,12 @@ namespace AtMycelia.Hyphlow.EditorExt
             void DrawTheVisuals()
             {
                 foreach (var elem in indentRects) // For If-else Commands and such
-                    GUI.Box(elem, "", commandLabelStyle);
+                    GUI.Box(elem, "", _commandLabelStyle);
 
                 Color bgColor = DetermineBackgroundColor(flowchart, command);
                 GUI.backgroundColor = bgColor;
-                GUI.Label(labelRect, commandName, commandLabelStyle);
-                GUI.Label(summaryRect, command.GetSummary() ?? "", summaryStyle);
+                GUI.Label(labelRect, commandName, _commandLabelStyle);
+                GUI.Label(summaryRect, command.GetSummary() ?? "", _summaryStyle);
 
                 DrawExecutingIcon(iconRect, command);
             }
@@ -147,46 +147,46 @@ namespace AtMycelia.Hyphlow.EditorExt
             for (int i = 0; i < level; i++)
             {
                 var currentIndentRect = row;
-                float howFarToIndent = i * indentSize;
+                float howFarToIndent = i * _indentSize;
                 // ^Can vary depending on how far we're nesting the relevant Commands
                 currentIndentRect.x += howFarToIndent;
-                currentIndentRect.width = indentSize + indentPadding;
-                currentIndentRect.y -= yDownwardOffset;
-                currentIndentRect.height += heightPadding;
+                currentIndentRect.width = _indentSize + _indentPadding;
+                currentIndentRect.y -= _yDownwardOffset;
+                currentIndentRect.height += _heightPadding;
                 result.Add(currentIndentRect);
             }
 
             return result;
         }
 
-        protected static readonly float indentSize = 20, indentPadding = 1,
-            yDownwardOffset = 2, heightPadding = 5;
+        protected static readonly float _indentSize = 20, _indentPadding = 1,
+            _yDownwardOffset = 2, _heightPadding = 5;
 
         protected virtual Rect CalculateLabelRect(Rect row, int level)
         {
             Rect result = row;
-            float howFarToIndent = level * indentSize;
+            float howFarToIndent = level * _indentSize;
             result.x += howFarToIndent;
-            result.y -= yDownwardOffset;
+            result.y -= _yDownwardOffset;
             result.width -= howFarToIndent;
-            result.height += heightPadding;
+            result.height += _heightPadding;
             return result;
         }
 
         protected virtual Rect CalculateSummaryRect(Rect labelRect, string commandName)
         {
             Rect result = labelRect;
-            result.x += summaryRectXOffset;
+            result.x += _summaryRectXOffset;
             return result;
         }
 
-        protected static readonly float summaryRectXOffset = 100;
+        protected static readonly float _summaryRectXOffset = 100;
 
         protected virtual Rect CalculateIconRect(Rect labelRect, Command command)
         {
             Rect result = labelRect;
-            result.x += result.width - iconWidth - 5;
-            result.width = result.height = iconWidth;
+            result.x += result.width - _iconWidth - 5;
+            result.width = result.height = _iconWidth;
             result.y += (labelRect.height - result.height) * 0.25f;
             return result;
         }
@@ -221,7 +221,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             return cmd.IsExecuting || cmd.ExecutionIconTimer > Time.realtimeSinceStartup;
         }
 
-        protected static readonly int iconWidth = 20;
+        protected static readonly int _iconWidth = 20;
 
         protected virtual Color DetermineBackgroundColor(Flowchart flowchart, Command cmd)
         {
@@ -229,28 +229,28 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (flowchart.SelectedCommands.Contains(cmd))
             {
-                result = selectedCmdColor;
+                result = _selectedCmdColor;
             }
 
             if (!cmd.enabled)
             {
-                result = disabledCmdColor;
+                result = _disabledCmdColor;
             }
 
             return result;
         }
 
-        protected static readonly Color disabledCmdColor = Color.grey,
-            selectedCmdColor = Color.green;
+        protected static readonly Color _disabledCmdColor = Color.grey,
+            _selectedCmdColor = Color.green;
 
         protected virtual string BuildCommandNameLabel(Flowchart f, Command cmd)
         {
-            // Get all CommandInfoAttributes on this type (won’t throw)
+            // Get all CommandInfoAttributes on this type (wonï¿½t throw)
             var infos = cmd.GetType()
                            .GetCustomAttributes(typeof(CommandInfoAttribute), inherit: false)
                            .OfType<CommandInfoAttribute>();
 
-            // Pick the first available or fall back to the GameObject’s name
+            // Pick the first available or fall back to the GameObjectï¿½s name
             string baseName = infos
                 .Select(attr => attr.CommandName)
                 .FirstOrDefault()
@@ -277,34 +277,34 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual void DrawCommandList()
         {
             
-            if (summaryStyle == null)
+            if (_summaryStyle == null)
             {
-                summaryStyle = new GUIStyle();
-                summaryStyle.fontSize = 10;
-                summaryStyle.padding.top += 5;
-                summaryStyle.richText = true;
-                summaryStyle.wordWrap = false;
-                summaryStyle.clipping = TextClipping.Clip;
+                _summaryStyle = new GUIStyle();
+                _summaryStyle.fontSize = 10;
+                _summaryStyle.padding.top += 5;
+                _summaryStyle.richText = true;
+                _summaryStyle.wordWrap = false;
+                _summaryStyle.clipping = TextClipping.Clip;
             }
 
-            if (commandLabelStyle == null)
+            if (_commandLabelStyle == null)
             {
-                commandLabelStyle = new GUIStyle(GUI.skin.label);
-                commandLabelStyle.normal.background = HyphlowEditorSysAssets.CommandBackground;
-                commandLabelStyle.normal.textColor = Color.black;
+                _commandLabelStyle = new GUIStyle(GUI.skin.label);
+                _commandLabelStyle.normal.background = HyphlowEditorSysAssets.CommandBackground;
+                _commandLabelStyle.normal.textColor = Color.black;
                 int borderSize = 5;
-                commandLabelStyle.border.top = borderSize;
-                commandLabelStyle.border.bottom = borderSize;
-                commandLabelStyle.border.left = borderSize;
-                commandLabelStyle.border.right = borderSize;
-                commandLabelStyle.alignment = TextAnchor.MiddleLeft;
-                commandLabelStyle.richText = true;
-                commandLabelStyle.fontSize = 11;
-                commandLabelStyle.padding.top -= 1;
-                commandLabelStyle.alignment = TextAnchor.MiddleLeft;
+                _commandLabelStyle.border.top = borderSize;
+                _commandLabelStyle.border.bottom = borderSize;
+                _commandLabelStyle.border.left = borderSize;
+                _commandLabelStyle.border.right = borderSize;
+                _commandLabelStyle.alignment = TextAnchor.MiddleLeft;
+                _commandLabelStyle.richText = true;
+                _commandLabelStyle.fontSize = 11;
+                _commandLabelStyle.padding.top -= 1;
+                _commandLabelStyle.alignment = TextAnchor.MiddleLeft;
             }
 
-            if (block.CommandList.Count == 0)
+            if (_block.CommandList.Count == 0)
             {
                 if (!HyphlowEditorPreferences.suppressHelpBoxes)
                 {
@@ -314,12 +314,12 @@ namespace AtMycelia.Hyphlow.EditorExt
             else
             {
                 EditorGUI.indentLevel++;
-                list.DoLayoutList();
+                _list.DoLayoutList();
                 EditorGUI.indentLevel--;
             }
         }
 
-        protected GUIStyle summaryStyle, commandLabelStyle;
+        protected GUIStyle _summaryStyle, _commandLabelStyle;
 
         public float fixedItemHeight;
 
@@ -335,9 +335,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private void SelectChanged(ReorderableList list)
         {
-            if (suppressSelectCallback)
+            if (_suppressSelectCallback)
             {
-                suppressSelectCallback = false;
+                _suppressSelectCallback = false;
                 return;
             }
 
@@ -381,8 +381,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             bool actionKey = EditorGUI.actionKey;
             bool alreadySelected = flowchart.SelectedCommands.Contains(command);
 
-            suppressSelectCallback = true;
-            list.index = index;
+            _suppressSelectCallback = true;
+            _list.index = index;
 
             BlockEditor.actionList.Add(delegate
             {

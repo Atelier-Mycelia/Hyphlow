@@ -19,12 +19,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 throw new ArgumentNullException(nameof(window));
             }
 
-            owner = window;
-            isDisposed = false;
+            _owner = window;
+            _isDisposed = false;
         }
 
-        private FlowchartWindow owner;
-        private bool isDisposed;
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
@@ -34,16 +34,16 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private void TriggerRepaint()
         {
             // Without this func, we'd have a lot more boilerplate in the other event responses.
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
             EditorApplication.delayCall += () =>
             {
-                if (owner != null)
+                if (_owner != null)
                 {
-                    owner.Repaint();
+                    _owner.Repaint();
                 }
             };
         }
@@ -60,13 +60,13 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
-            owner = null;
+            _isDisposed = true;
+            _owner = null;
         }
 
         public void OnPostMultiBlockDeletion(IList<short> blockIds)

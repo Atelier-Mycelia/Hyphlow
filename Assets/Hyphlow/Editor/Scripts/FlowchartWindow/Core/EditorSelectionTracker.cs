@@ -17,15 +17,15 @@ namespace AtMycelia.Hyphlow.EditorExt
     {
         private const string LastSelectedFlowchartUidKey = "AtMycelia.Hyphlow.Editor.LastSelectedFlowchartUid";
 
-        public static Flowchart ActiveFlowchart => activeFlowchart;
-        private static Flowchart activeFlowchart;
+        public static Flowchart ActiveFlowchart => _activeFlowchart;
+        private static Flowchart _activeFlowchart;
         public static Flowchart LastActiveFlowchart
         {
             get
             {
-                if (activeFlowchart != null)
+                if (_activeFlowchart != null)
                 {
-                    return activeFlowchart;
+                    return _activeFlowchart;
                 }
 
                 Flowchart fromSelection = FindFlowchartFromSelection();
@@ -46,10 +46,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             return fc != null && fc.UniqueId == GetCachedFlowchartUid();
         }
 
-        public static IReadOnlyList<IBlock> CurrentBlocks => (IReadOnlyList<IBlock>)blockSelection;
-        private static readonly IList<IBlock> blockSelection = new List<IBlock>();
-        public static IReadOnlyList<ICommand> CurrentCommands => (IReadOnlyList<ICommand>)commandSelection;
-        private static readonly IList<ICommand> commandSelection = new List<ICommand>();
+        public static IReadOnlyList<IBlock> CurrentBlocks => (IReadOnlyList<IBlock>)_blockSelection;
+        private static readonly IList<IBlock> _blockSelection = new List<IBlock>();
+        public static IReadOnlyList<ICommand> CurrentCommands => (IReadOnlyList<ICommand>)_commandSelection;
+        private static readonly IList<ICommand> _commandSelection = new List<ICommand>();
 
         /// <summary>
         /// The "primary" block is the first block in the selection, and is the one that will 
@@ -194,15 +194,15 @@ namespace AtMycelia.Hyphlow.EditorExt
                 flowchart = null;
             }
 
-            bool alreadySelected = ReferenceEquals(activeFlowchart, flowchart) ||
+            bool alreadySelected = ReferenceEquals(_activeFlowchart, flowchart) ||
                 (flowchart != null && flowchart.UniqueId == GetCachedFlowchartUid());
             if (alreadySelected)
             {
                 return;
             }
 
-            Flowchart previous = activeFlowchart;
-            activeFlowchart = flowchart;
+            Flowchart previous = _activeFlowchart;
+            _activeFlowchart = flowchart;
             UpdateSelectionCache(flowchart);
             SyncSelectionsFromFlowchart(flowchart);
             SelectedFlowchartChanged(previous, flowchart);
@@ -239,21 +239,21 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ReplaceBlockSelection(IEnumerable<IBlock> toReplaceWith)
         {
-            blockSelection.Clear();
+            _blockSelection.Clear();
             if (toReplaceWith != null)
             {
                 foreach (IBlock block in toReplaceWith)
                 {
                     if (block != null)
                     {
-                        blockSelection.Add(block);
+                        _blockSelection.Add(block);
                     }
                 }
             }
 
             IBlock previous = PrimaryBlock;
-            PrimaryBlock = blockSelection.Count > 0 ?
-                blockSelection[0] :
+            PrimaryBlock = _blockSelection.Count > 0 ?
+                _blockSelection[0] :
                 null;
 
             BlockSelectionChanged(CurrentBlocks);
@@ -273,21 +273,21 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ReplaceCommandSelection(IEnumerable<ICommand> toReplaceWith)
         {
-            commandSelection.Clear();
+            _commandSelection.Clear();
             if (toReplaceWith != null)
             {
                 foreach (ICommand cmd in toReplaceWith)
                 {
                     if (cmd != null)
                     {
-                        commandSelection.Add(cmd);
+                        _commandSelection.Add(cmd);
                     }
                 }
             }
 
             ICommand previous = PrimaryCommand;
-            PrimaryCommand = commandSelection.Count > 0 ?
-                commandSelection[0] :
+            PrimaryCommand = _commandSelection.Count > 0 ?
+                _commandSelection[0] :
                 null;
 
             CommandSelectionChanged(CurrentCommands);
@@ -345,12 +345,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ClearBlockSelectionInternal()
         {
-            if (blockSelection.Count == 0 && PrimaryBlock == null)
+            if (_blockSelection.Count == 0 && PrimaryBlock == null)
             {
                 return;
             }
 
-            blockSelection.Clear();
+            _blockSelection.Clear();
             IBlock previous = PrimaryBlock;
             PrimaryBlock = null;
 
@@ -363,12 +363,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ClearCommandSelectionInternal()
         {
-            if (commandSelection.Count == 0 && PrimaryCommand == null)
+            if (_commandSelection.Count == 0 && PrimaryCommand == null)
             {
                 return;
             }
 
-            commandSelection.Clear();
+            _commandSelection.Clear();
             ICommand previous = PrimaryCommand;
             PrimaryCommand = null;
 
@@ -387,20 +387,20 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public static Flowchart ResolveActiveFlowchart(bool attemptSceneFallback = true)
         {
-            if (activeFlowchart != null && !IsFlowchartInAllowedContext(activeFlowchart))
+            if (_activeFlowchart != null && !IsFlowchartInAllowedContext(_activeFlowchart))
             {
-                activeFlowchart = null;
+                _activeFlowchart = null;
             }
 
-            if (activeFlowchart != null)
+            if (_activeFlowchart != null)
             {
-                return activeFlowchart;
+                return _activeFlowchart;
             }
 
             Flowchart fromSelection = FindFlowchartFromSelection();
             if (fromSelection != null)
             {
-                activeFlowchart = fromSelection; 
+                _activeFlowchart = fromSelection; 
                 // Not going with the method here, for the sake of avoiding more signaling than needed
                 return fromSelection;
             }
@@ -409,7 +409,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (basedOnCache != null)
             {
-                activeFlowchart = basedOnCache;
+                _activeFlowchart = basedOnCache;
                 return basedOnCache;
             }
 
@@ -447,7 +447,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ClearActiveFlowchartIfNull()
         {
-            if (activeFlowchart == null)
+            if (_activeFlowchart == null)
             {
                 SetActiveFlowchart(null);
             }
@@ -463,17 +463,17 @@ namespace AtMycelia.Hyphlow.EditorExt
             // Why do this check? Because in some cases (entering play mode, for example), the
             // cleanup method can be called multiple times, and we only want to run this
             // logic once per "cleanup event".
-            if (isCleaningUp)
+            if (_isCleaningUp)
             {
                 return;
             }
 
-            isCleaningUp = true;
+            _isCleaningUp = true;
 
             ToggleSubs(false);
         }
 
-        private static bool isCleaningUp;
+        private static bool _isCleaningUp;
 
     }
 }

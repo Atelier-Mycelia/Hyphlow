@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [CustomEditor (typeof(Label))]
     public class LabelEditor : CommandEditor
     {
-        protected SerializedProperty keyProp;
+        protected SerializedProperty _keyProp;
         
         public static void LabelField(SerializedProperty property, 
                                       GUIContent labelText, 
@@ -52,7 +52,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             base.OnEnable();
 
-            keyProp = serializedObject.FindProperty("_key");
+            _keyProp = serializedObject.FindProperty("_key");
         }
         
         public override void DrawCommandGUI()
@@ -67,7 +67,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(keyProp);
+            EditorGUILayout.PropertyField(_keyProp);
 
             //keyProp.stringValue = flowchart.GetUniqueLabelKey(keyProp.stringValue, t);
             // ^Not going to enforce a unique key here. The user is supposed to enforce

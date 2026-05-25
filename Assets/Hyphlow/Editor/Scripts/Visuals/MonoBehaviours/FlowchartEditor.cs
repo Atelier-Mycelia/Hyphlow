@@ -21,8 +21,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
-            addTexture = HyphlowEditorSysAssets.AddSmall;
-            LogLifecycle(nameof(OnEnable), $"AddSmall texture assigned? {addTexture != null}");
+            _addTexture = HyphlowEditorSysAssets.AddSmall;
+            LogLifecycle(nameof(OnEnable), $"AddSmall texture assigned? {_addTexture != null}");
         }
 
         protected virtual void OnDisable()
@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             return false;
         }
 
-        protected Texture2D addTexture;
+        protected Texture2D _addTexture;
 
         public override VisualElement CreateInspectorGUI()
         {

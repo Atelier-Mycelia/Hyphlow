@@ -49,7 +49,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 foreach (var kv in pairs)
                     _visualHandlerLookup[kv.Key] = kv.Value;
 
-                allVisualHandlerTypes = discovered; // consistent with the lookup now
+                _allVisualHandlerTypes = discovered; // consistent with the lookup now
             }
         }
 
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             catch (ReflectionTypeLoadException e) { return e.Types.Where(typeEl => typeEl != null); }
         }
 
-        private static IEnumerable<Type> allVisualHandlerTypes;
+        private static IEnumerable<Type> _allVisualHandlerTypes;
 
         public static IDictionary<Type, Type> VisualHandlerLookup
         {

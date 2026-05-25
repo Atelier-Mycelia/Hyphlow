@@ -16,10 +16,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public int Priority { get; set; } = 0;
         public SelectionBoxDragTrackerUitk(FlowchartContext context)
         {
-            fcContext = context ?? throw new ArgumentNullException(nameof(context));
+            _fcContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private readonly FlowchartContext fcContext;
+        private readonly FlowchartContext _fcContext;
         
         public void Initialize(FlowchartWindow window)
         {
@@ -28,14 +28,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 throw new ArgumentNullException(nameof(window));
             }
 
-            isDisposed = false;
+            _isDisposed = false;
         }
 
-        private bool isDisposed;
+        private bool _isDisposed;
 
         public void OnEmptySpaceLeftMouseDown(PointerEventInfo info, Event evt)
         {
-            if (fcContext.Selection.BlockCount > 0)
+            if (_fcContext.Selection.BlockCount > 0)
             {
                 _shouldTrack = false;
                 return; // This can happen right after adding a Block, which selects it.
@@ -53,28 +53,28 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
-            if (fcContext.Selection.BlockCount > 0)
+            if (_fcContext.Selection.BlockCount > 0)
             {
                 _shouldTrack = false;
                 return; // This can happen right after adding a Block, which selects it.
                         // We don't want to start a box selection in that case.
             }
-            if (isDisposed || evt == null || !_shouldTrack)
+            if (_isDisposed || evt == null || !_shouldTrack)
             {
                 return;
             }
 
-            var interaction = fcContext.Interaction;
+            var interaction = _fcContext.Interaction;
             interaction.SelectionBoxStartPos = info.FlowchartPosition;
             interaction.SelectionBox = Rect.MinMaxRect(
                 info.FlowchartPosition.x,
@@ -87,12 +87,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null || !_shouldTrack)
+            if (_isDisposed || evt == null || !_shouldTrack)
             {
                 return;
             }
 
-            var interaction = fcContext.Interaction;
+            var interaction = _fcContext.Interaction;
             Vector2 start = interaction.SelectionBoxStartPos;
             Vector2 current = info.FlowchartPosition;
             Vector2 diff = new Vector2(Mathf.Abs(start.x - current.x), Mathf.Abs(start.y - current.y));
@@ -118,20 +118,20 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null || !_shouldTrack)
+            if (_isDisposed || evt == null || !_shouldTrack)
             {
                 return;
             }
 
-            var interaction = fcContext.Interaction;
+            var interaction = _fcContext.Interaction;
             bool releasedMouseOnValidSpot = interaction.SelectionBoxStartPos.x >= 0;
-            bool validFc = fcContext.Flowchart != null;
+            bool validFc = _fcContext.Flowchart != null;
             if (!(releasedMouseOnValidSpot && interaction.SelectionBoxDragOngoing && validFc))
             {
                 return;
             }
 
-            SelectBlocksOverlappedByBox(fcContext, interaction.SelectionBox);
+            SelectBlocksOverlappedByBox(_fcContext, interaction.SelectionBox);
 
             interaction.ResetSelectionBox();
             interaction.SelectionBoxDragOngoing = false;

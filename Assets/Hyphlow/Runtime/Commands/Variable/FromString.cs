@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -16,11 +17,13 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("Source of string data to parse into another variables value")]
         [VariableProperty(typeof(StringVariable))]
-        [SerializeField] protected StringVariable sourceString;
+        [SerializeField] [FormerlySerializedAs("sourceString")]
+protected StringVariable sourceString;
 
         [Tooltip("The variable type to be parsed and value stored within")]
         [VariableProperty(typeof(IntegerVariable), typeof(FloatVariable))]
-        [SerializeField] protected Variable outValue;
+        [SerializeField] [FormerlySerializedAs("outValue")]
+protected Variable outValue;
 
         public override void OnEnter()
         {
@@ -61,9 +64,9 @@ namespace AtMycelia.Hyphlow
             return outValue.Key + ".Parse " + sourceString.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (variable == sourceString) || (variable == outValue);
+            return ReferenceEquals(variable, sourceString) || ReferenceEquals(variable,  outValue);
         }
 
         public override Color GetButtonColor()

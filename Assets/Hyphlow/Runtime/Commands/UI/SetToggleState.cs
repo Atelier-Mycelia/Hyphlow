@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,10 +16,12 @@ namespace AtMycelia.Hyphlow
     public class SetToggleState : Command 
     {
         [Tooltip("Target toggle object to set the state on")]
-        [SerializeField] protected Toggle toggle;
+        [SerializeField] [FormerlySerializedAs("toggle")]
+protected Toggle toggle;
 
         [Tooltip("Boolean value to set the toggle state to.")]
-        [SerializeField] protected BooleanData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected BooleanData value;
 
         protected override void RefreshVariableDataCache()
         {
@@ -53,7 +56,7 @@ namespace AtMycelia.Hyphlow
             return toggle.name + " = " + value.GetDescription();
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(value.VarRef, variable) || base.HasReference(variable);
         }

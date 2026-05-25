@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -25,6 +26,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the Update messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected UpdateMessageFlags FireOn = UpdateMessageFlags.Update;
 
         private void Update()

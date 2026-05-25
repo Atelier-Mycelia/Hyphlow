@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public int Priority { get; set; } = 0;
         public SelectionBoxRenderer(FlowchartContext context)
         {
-            fcContext = context ?? throw new ArgumentNullException(nameof(context));
+            _fcContext = context ?? throw new ArgumentNullException(nameof(context));
 
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
@@ -28,8 +28,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             generateVisualContent += OnGenerateVisualContent;
         }
 
-        private readonly FlowchartContext fcContext;
-        private bool isDisposed;
+        private readonly FlowchartContext _fcContext;
+        private bool _isDisposed;
 
         public void Initialize(FlowchartWindow window)
         {
@@ -38,7 +38,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 throw new ArgumentNullException(nameof(window));
             }
 
-            isDisposed = false;
+            _isDisposed = false;
             BringToFront();
         }
 
@@ -49,12 +49,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
             UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             generateVisualContent -= OnGenerateVisualContent;
             RemoveFromHierarchy();
@@ -74,7 +74,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            if (fcContext.Interaction.SelectionBox == Rect.zero)
+            if (_fcContext.Interaction.SelectionBox == Rect.zero)
             {
                 return;
             }
@@ -110,7 +110,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void RequestRepaint()
         {
-            if (isDisposed || !_shouldRender)
+            if (_isDisposed || !_shouldRender)
             {
                 return;
             }
@@ -120,12 +120,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnGenerateVisualContent(MeshGenerationContext mgc)
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            var interaction = fcContext.Interaction;
+            var interaction = _fcContext.Interaction;
             bool thereIsBoxToRender = interaction != null && interaction.SelectionBoxDragOngoing && 
                 interaction.HasSelectionBox;
             if (!thereIsBoxToRender)
@@ -146,14 +146,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             Painter2D painter = mgc.painter2D;
             painter.lineWidth = OutlineWidth;
-            painter.strokeColor = OutlineColor;
-            painter.fillColor = FillColor;
+            painter.strokeColor = _OutlineColor;
+            painter.fillColor = _FillColor;
             return painter;
         }
 
         private const float OutlineWidth = 1f;
-        private static readonly Color OutlineColor = new Color(0.27f, 0.54f, 0.93f, 0.9f);
-        private static readonly Color FillColor = new Color(0.27f, 0.54f, 0.93f, 0.15f);
+        private static readonly Color _OutlineColor = new Color(0.27f, 0.54f, 0.93f, 0.9f);
+        private static readonly Color _FillColor = new Color(0.27f, 0.54f, 0.93f, 0.15f);
 
         void DrawTheBox(Painter2D painter, Rect selectionBox)
         {
@@ -169,7 +169,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void ResetVisuals()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }

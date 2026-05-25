@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using AtMycelia.AmaniTween;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,10 +28,14 @@ namespace AtMycelia.Hyphlow.Legacy
     [MovedFrom("AtMycelia.Amanita.VScripting.Legacy")]
     public class FadeUI : TweenUI 
     {
-        [SerializeField] protected FadeMode fadeMode = FadeMode.Alpha;
-        [SerializeField] protected ColorData targetColor = new ColorData(Color.white);
-        [SerializeField] protected FloatData targetAlpha = new FloatData(1f);
-        [SerializeField] protected ScriptableObject fadeTweener;
+        [SerializeField] [FormerlySerializedAs("fadeMode")]
+protected FadeMode fadeMode = FadeMode.Alpha;
+        [SerializeField] [FormerlySerializedAs("targetColor")]
+protected ColorData targetColor = new ColorData(Color.white);
+        [SerializeField] [FormerlySerializedAs("targetAlpha")]
+protected FloatData targetAlpha = new FloatData(1f);
+        [SerializeField] [FormerlySerializedAs("fadeTweener")]
+protected ScriptableObject fadeTweener;
 
         protected override void ValidateTweeners()
         {
@@ -133,7 +138,7 @@ namespace AtMycelia.Hyphlow.Legacy
             return true;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(targetColor.VarRef, variable) || 
                 ReferenceEquals(targetAlpha.VarRef, variable) ||

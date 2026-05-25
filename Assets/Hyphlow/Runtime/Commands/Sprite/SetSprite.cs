@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 // Snippet added by ducksonthewater, 2019-01-03 - www.ducks-on-the-water.com
 
 using UnityEngine;
@@ -18,10 +19,12 @@ namespace AtMycelia.Hyphlow
     public class SetSprite : Command 
     {
         [Tooltip("List of sprites to set the sprite property on")]
-        [SerializeField] protected List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
+        [SerializeField] [FormerlySerializedAs("spriteRenderers")]
+protected List<SpriteRenderer> spriteRenderers = new List<SpriteRenderer>();
 
         [Tooltip("The sprite set on the target sprite renderers")]
-        [SerializeField] protected Sprite sprite;
+        [SerializeField] [FormerlySerializedAs("sprite")]
+protected Sprite sprite;
 
         #region Public members
 

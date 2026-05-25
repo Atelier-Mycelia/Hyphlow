@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -16,13 +17,16 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("The variable whos value will be set")]
         [VariableProperty(typeof(IntegerVariable))]
-        [SerializeField] protected IntegerVariable variable;
+        [SerializeField] [FormerlySerializedAs("variable")]
+protected IntegerVariable variable;
 
         [Tooltip("Minimum value for random range")]
-        [SerializeField] protected IntegerData minValue;
+        [SerializeField] [FormerlySerializedAs("minValue")]
+protected IntegerData minValue;
 
         [Tooltip("Maximum value for random range")]
-        [SerializeField] protected IntegerData maxValue;
+        [SerializeField] [FormerlySerializedAs("maxValue")]
+protected IntegerData maxValue;
 
         protected override void RefreshVariableDataCache()
         {
@@ -53,9 +57,9 @@ namespace AtMycelia.Hyphlow
             return variable.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (variable == this.variable) || minValue.integerRef == variable || maxValue.integerRef == variable;
+            return ReferenceEquals(variable, this.variable) || ReferenceEquals(minValue.integerRef, variable) || ReferenceEquals(maxValue.integerRef, variable);
         }
 
         public override Color GetButtonColor()

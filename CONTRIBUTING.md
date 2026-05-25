@@ -29,6 +29,13 @@
 	- Serialized fields
 		- Good chance that derived classes will need access to at least some of those
 	- Callbacks (e.g., `OnTriggerEnter`, `OnCollisionEnter`, etc.)
+- What should be at the top of a class's definition (in order):
+	- Serialized fields
+	- Lifecycle fields (in order of expected execution)
+- Helper funcs should be defined just after the funcs that first call them, to make it easier to 
+read the code in a top-down manner.
+	- If a helper func is called by multiple other funcs, put it under the first such
+	 caller
 
 ## Project Organization Guidelines
 - When proposing folder reorganizations for scripts, avoid creating a new folder for a single script.

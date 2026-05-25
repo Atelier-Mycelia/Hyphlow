@@ -27,10 +27,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         IPostBlockCutResponder, IPostMultiBlockCutResponder, IVisualResetter
     {
         public int Priority { get; set; } = 0;
-        private readonly Dictionary<IBlock, BlockBinding> blockBindings = new();
-        private FlowchartWindow owner;
-        private bool isDisposed;
-        private bool initialRefreshPending;
+        private readonly Dictionary<IBlock, BlockBinding> _blockBindings = new();
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
+        private bool _initialRefreshPending;
 
         /// <summary>
         /// Binds a block to its visual representation and event handlers.
@@ -43,8 +43,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         
         public BlockRenderer(FlowchartContext context, IBlockDrawerUitk blockDrawer)
         {
-            fcContext = context ?? throw new ArgumentNullException(nameof(context));
-            drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
+            _fcContext = context ?? throw new ArgumentNullException(nameof(context));
+            _drawer = blockDrawer ?? throw new ArgumentNullException(nameof(blockDrawer));
 
             style.position = Position.Absolute;
             style.flexGrow = 1f;
@@ -71,13 +71,13 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             RefreshBlocks();
         }
 
-        private readonly FlowchartContext fcContext;
-        private readonly IBlockDrawerUitk drawer;
+        private readonly FlowchartContext _fcContext;
+        private readonly IBlockDrawerUitk _drawer;
 
         public void Initialize(FlowchartWindow window)
         {
-            owner = window;
-            initialRefreshPending = true;
+            _owner = window;
+            _initialRefreshPending = true;
             ToggleSubs(false);
             ToggleSubs(true);
             TryRefreshAfterLayout();
@@ -90,7 +90,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
-            if (!initialRefreshPending)
+            if (!_initialRefreshPending)
             {
                 return;
             }
@@ -105,7 +105,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void TryRefreshAfterLayout()
         {
-            if (!initialRefreshPending)
+            if (!_initialRefreshPending)
             {
                 return;
             }
@@ -120,25 +120,25 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
-            initialRefreshPending = false;
+            _initialRefreshPending = false;
             RefreshBlocks();
         }
 
         public void RefreshBlocks()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            Flowchart flowchart = fcContext.Flowchart;
+            Flowchart flowchart = _fcContext.Flowchart;
             if (flowchart == null)
             {
                 ClearAll();
                 return;
             }
 
-            IReadOnlyCollection<IBlock> present = fcContext.Document.AllBlocks;
+            IReadOnlyCollection<IBlock> present = _fcContext.Document.AllBlocks;
             RemoveMissing(present);
 
             foreach (var block in present)
@@ -154,7 +154,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private void RemoveMissing(IReadOnlyCollection<IBlock> currentBlocks)
         {
             using ListPool<IBlock>.DisposableList pooledKeysHandle = ListPool<IBlock>.Get(out List<IBlock> pooledKeys);
-            pooledKeys.AddRange(blockBindings.Keys);
+            pooledKeys.AddRange(_blockBindings.Keys);
             for (int i = 0; i < pooledKeys.Count; i++)
             {
                 IBlock tracked = pooledKeys[i];
@@ -190,7 +190,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void RemoveBlock(IBlock block)
         {
-            if (!blockBindings.TryGetValue(block, out BlockBinding binding))
+            if (!_blockBindings.TryGetValue(block, out BlockBinding binding))
             {
                 return;
             }
@@ -208,7 +208,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 buttonToRemove.Dispose();
             }
 
-            blockBindings.Remove(block);
+            _blockBindings.Remove(block);
             MarkDirtyRepaint();
         }
 
@@ -219,10 +219,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
-            bool blockAlreadyDrawn = blockBindings.TryGetValue(block, out BlockBinding binding);
+            bool blockAlreadyDrawn = _blockBindings.TryGetValue(block, out BlockBinding binding);
             if (!blockAlreadyDrawn)
             {
-                BlockButton button = drawer.CreateButton(block);
+                BlockButton button = _drawer.CreateButton(block);
                 button.name = block.BlockName;
                 button.style.position = Position.Absolute;
 
@@ -245,7 +245,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                     // window opens, the button is rendered at the right size. For some reason, putting
                     // RefreshBlocks in Initialize doesn't work...
                     button.UnregisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
-                    drawer.UpdateButton(button, capturedBlock, CurrentZoom);
+                    _drawer.UpdateButton(button, capturedBlock, CurrentZoom);
                     UpdateBlockLayouts();
                 }
                 button.RegisterCallback<GeometryChangedEvent>(OnButtonGeometryChanged);
@@ -258,11 +258,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                     ClickHandler = OnClick
                 };
                 
-                blockBindings.Add(block, binding);
+                _blockBindings.Add(block, binding);
                 Add(button);
             }
 
-            drawer.UpdateButton(binding.Button, block, CurrentZoom);
+            _drawer.UpdateButton(binding.Button, block, CurrentZoom);
         }
 
         private void ScheduleInitialRefresh(BlockButton button, IBlock block)
@@ -279,12 +279,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                     return;
                 }
 
-                if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button != button)
+                if (!_blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button != button)
                 {
                     return;
                 }
 
-                drawer.UpdateButton(button, block, CurrentZoom);
+                _drawer.UpdateButton(button, block, CurrentZoom);
                 UpdateBlockLayouts();
             }).ExecuteLater(1);
         }
@@ -297,7 +297,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             Vector2 scroll = CurrentScroll;
             float zoom = CurrentZoom;
 
-            foreach (var pair in blockBindings)
+            foreach (var pair in _blockBindings)
             {
                 IBlock block = pair.Key;
                 BlockButton button = pair.Value.Button;
@@ -312,7 +312,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 button.style.left = viewPos.x;
                 button.style.top = viewPos.y;
 
-                drawer.UpdateButton(button, block, zoom);
+                _drawer.UpdateButton(button, block, zoom);
             }
         }
 
@@ -320,7 +320,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             get
             {
-                Flowchart flowchart = fcContext.Flowchart;
+                Flowchart flowchart = _fcContext.Flowchart;
                 return flowchart != null ? flowchart.ScrollPos : Vector2.zero;
             }
         }
@@ -329,7 +329,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             get
             {
-                Flowchart flowchart = fcContext.Flowchart;
+                Flowchart flowchart = _fcContext.Flowchart;
                 float zoom = flowchart != null ? flowchart.Zoom : 1f;
                 return Mathf.Approximately(zoom, 0f) ? 1f : zoom;
             }
@@ -339,7 +339,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
             ClearAll();
-            initialRefreshPending = true;
+            _initialRefreshPending = true;
             TryRefreshAfterLayout();
             SchedulePostLayoutRefresh();
         }
@@ -376,9 +376,9 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 return;
             }
-            if (blockBindings.TryGetValue(block, out BlockBinding binding))
+            if (_blockBindings.TryGetValue(block, out BlockBinding binding))
             {
-                drawer.UpdateButton(binding.Button, block, CurrentZoom);
+                _drawer.UpdateButton(binding.Button, block, CurrentZoom);
             }
             else
             {
@@ -406,13 +406,13 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void ClearAll()
         {
-            foreach (var entry in blockBindings)
+            foreach (var entry in _blockBindings)
             {
                 UnregisterInputForwarders(entry.Value.Button);
                 UnsubClickHandler(entry.Value);
                 entry.Value.Button?.Dispose();
             }
-            blockBindings.Clear();
+            _blockBindings.Clear();
         }
 
         private void UnsubClickHandler(BlockBinding binding)
@@ -440,7 +440,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
             #region Keep Blocks from blocking drag events
-            foreach (var entry in blockBindings)
+            foreach (var entry in _blockBindings)
             {
                 var button = entry.Value.Button;
                 if (button != null)
@@ -454,7 +454,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public void OnLeftMouseDragEnded(PointerEventInfo info, Event evt)
         {
             #region Let Blocks be selectable again
-            foreach (var entry in blockBindings)
+            foreach (var entry in _blockBindings)
             {
                 var button = entry.Value.Button;
                 if (button != null)
@@ -473,7 +473,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return false;
             }
 
-            if (!blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button == null)
+            if (!_blockBindings.TryGetValue(block, out BlockBinding binding) || binding.Button == null)
             {
                 return false;
             }
@@ -513,19 +513,19 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
             ToggleSubs(false);
-            isDisposed = true;
+            _isDisposed = true;
             ClearAll();
             UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
             UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             RemoveFromHierarchy();
         }
 
-        private InputSignalModule InputSignals => owner != null ? owner.InputSignals : null;
+        private InputSignalModule InputSignals => _owner != null ? _owner.InputSignals : null;
 
         private void RegisterInputForwarders(BlockButton button)
         {
@@ -580,7 +580,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            if (fcContext.Interaction.BlockDragOngoing)
+            if (_fcContext.Interaction.BlockDragOngoing)
             {
                 UpdateBlockLayouts();
             }
@@ -620,17 +620,17 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void ResetVisuals()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
             ClearAll();
-            initialRefreshPending = true;
+            _initialRefreshPending = true;
 
             if (panel != null && contentRect.width > 0f && contentRect.height > 0f)
             {
-                initialRefreshPending = false;
+                _initialRefreshPending = false;
                 RefreshBlocks();
                 SchedulePostLayoutRefresh();
                 return;
@@ -644,7 +644,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             schedule.Execute(() =>
             {
-                if (isDisposed)
+                if (_isDisposed)
                 {
                     return;
                 }

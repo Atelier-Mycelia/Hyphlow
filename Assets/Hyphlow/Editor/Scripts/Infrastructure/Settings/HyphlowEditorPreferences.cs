@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     public static class HyphlowEditorPreferences
     {
         // Have we loaded the prefs yet
-        private static bool prefsLoaded = false;
+        private static bool _prefsLoaded = false;
         private const string HIDE_MUSH_KEY = "hideMushroomInHierarchy";
         private const string USE_LEGACY_MENUS = "useLegacyMenus";
         private const string USE_GRID_SNAP = "useGridSnap";
@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         private static void PreferencesGUI()
         {
             // Load the preferences
-            if (!prefsLoaded)
+            if (!_prefsLoaded)
             {
                 LoadOnScriptLoad();
             }
@@ -149,7 +149,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
             suppressHelpBoxes = EditorPrefs.GetBool(SUPPRESS_HELP_BOXES, false);
             navigateCmdListWithArrows = EditorPrefs.GetBool(NAV_CMD_WITH_ARROWS, false);
-            prefsLoaded = true;
+            _prefsLoaded = true;
         }
     }
     

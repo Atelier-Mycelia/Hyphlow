@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -22,14 +23,19 @@ namespace AtMycelia.Hyphlow
         }
         
         [SerializeField]
+[FormerlySerializedAs("mode")]
         protected Mode mode = Mode.Clamp;
 
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("lower")]
+[FormerlySerializedAs("upper")]
+[FormerlySerializedAs("value")]
         protected FloatData lower, upper, value;
 
         [Tooltip("Result put here, if using pingpong don't use the same var for value as outValue.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()
@@ -73,7 +79,7 @@ namespace AtMycelia.Hyphlow
             return outValue.floatRef.Key + " = " + Mode.Clamp.ToString() + (mode != Mode.Clamp ? " & " + mode.ToString() : "");
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(lower.VarRef, variable) || 
                 ReferenceEquals(upper.VarRef, variable) || 

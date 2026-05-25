@@ -26,14 +26,14 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public int ForceRepaintCount { get; set; }
 
-        private Flowchart flowchart;
+        private Flowchart _flowchart;
 
         public Flowchart Flowchart
         {
-            get { return flowchart; }
+            get { return _flowchart; }
             set
             {
-                flowchart = value;
+                _flowchart = value;
                 Document.Flowchart = value;
                 Selection.Flowchart = value;
             }
@@ -44,10 +44,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public IList<IBlock> QueuedForDeletion
         {
-            get { return queuedForDeletion; }
+            get { return _queuedForDeletion; }
             set
             {
-                queuedForDeletion.Clear();
+                _queuedForDeletion.Clear();
                 if (value == null)
                 {
                     return;
@@ -55,12 +55,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 
                 foreach (var block in value)
                 {
-                    queuedForDeletion.Add(block);
+                    _queuedForDeletion.Add(block);
                 }
             }
         }
 
-        protected IList<IBlock> queuedForDeletion = new List<IBlock>();
+        protected IList<IBlock> _queuedForDeletion = new List<IBlock>();
 
         public virtual void SnapBlocksToGrid()
         {

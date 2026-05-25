@@ -30,9 +30,9 @@ namespace AtMycelia.Hyphlow
             return outVar.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return outVar == variable;
+            return ReferenceEquals(outVar, variable);
         }
     }
 }

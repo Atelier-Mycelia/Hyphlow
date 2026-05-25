@@ -48,7 +48,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Do we want an Input.GetKeyDown, GetKeyUp or GetKey")]
         [FormerlySerializedAs("keyQueryType")]
         [SerializeField]
-        protected InputKeyQueryType keyQueryType = InputKeyQueryType.State;
+        protected InputKeyQueryType _keyQueryType = InputKeyQueryType.State;
 
         [Tooltip("Will store true or false or 0 or 1 depending on type. Sets true or -1 for negative key values.")]
         [SerializeField]
@@ -102,7 +102,7 @@ namespace AtMycelia.Hyphlow
 
         private void DoKeyCode(KeyCode key, int trueVal, ref int valToSet)
         {
-            switch (keyQueryType)
+            switch (_keyQueryType)
             {
                 case InputKeyQueryType.Down:
                     if (Input.GetKeyDown(key))
@@ -129,7 +129,7 @@ namespace AtMycelia.Hyphlow
 
         private void DoKeyName(string key, int trueVal, ref int valToSet)
         {
-            switch (keyQueryType)
+            switch (_keyQueryType)
             {
                 case InputKeyQueryType.Down:
                     if (Input.GetKeyDown(key))
@@ -173,7 +173,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             bool result = base.HasReference(variable) || 
                 ReferenceEquals(_keyCodeName.VarRef, variable) ||

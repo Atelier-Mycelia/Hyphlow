@@ -10,12 +10,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     /// </summary>
     public sealed class FlowchartModuleDispatcher
     {
-        private readonly List<IFlowchartWindowModule> modules = new List<IFlowchartWindowModule>();
-        private readonly Dictionary<Type, IList> responderBuckets = new Dictionary<Type, IList>();
+        private readonly List<IFlowchartWindowModule> _modules = new List<IFlowchartWindowModule>();
+        private readonly Dictionary<Type, IList> _responderBuckets = new Dictionary<Type, IList>();
 
         public void AddModule(IFlowchartWindowModule module)
         {
-            modules.Add(module);
+            _modules.Add(module);
 
             AddResponder<IFlowchartChangeResponder>(module);
             AddResponder<ICommandSelectionResponder>(module);
@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void RemoveModule(IFlowchartWindowModule module)
         {
-            modules.Remove(module);
+            _modules.Remove(module);
 
             RemoveResponder<IFlowchartChangeResponder>(module);
 
@@ -42,8 +42,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void ClearModules()
         {
-            modules.Clear();
-            responderBuckets.Clear();
+            _modules.Clear();
+            _responderBuckets.Clear();
         }
 
         #region Notifiers
@@ -80,7 +80,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             Type key = typeof(TResponder);
-            if (!responderBuckets.TryGetValue(key, out IList bucket))
+            if (!_responderBuckets.TryGetValue(key, out IList bucket))
             {
                 return;
             }
@@ -90,7 +90,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             if (typedBucket.Count == 0)
             {
-                responderBuckets.Remove(key);
+                _responderBuckets.Remove(key);
             }
         }
 
@@ -98,10 +98,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             where TResponder : class
         {
             Type key = typeof(TResponder);
-            if (!responderBuckets.TryGetValue(key, out IList bucket))
+            if (!_responderBuckets.TryGetValue(key, out IList bucket))
             {
                 var newBucket = new List<TResponder>();
-                responderBuckets[key] = newBucket;
+                _responderBuckets[key] = newBucket;
                 return newBucket;
             }
 
@@ -111,7 +111,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private void Broadcast<TResponder>(Action<TResponder> action)
             where TResponder : class
         {
-            if (!responderBuckets.TryGetValue(typeof(TResponder), out IList bucket))
+            if (!_responderBuckets.TryGetValue(typeof(TResponder), out IList bucket))
             {
                 return;
             }

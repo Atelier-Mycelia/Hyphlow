@@ -1,8 +1,11 @@
 using System;
+using System.Diagnostics;
 using UnityEditor;
+using UnityEngine;
 using UnityEditor.SceneManagement;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 
 namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
@@ -84,7 +87,18 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnVarValueChanged(IVariable variable, object arg2)
         {
-            FlowchartWindow.S.Refresh();
+            // Unit tests might make the FlowchartWindow null, so we need to check for that.
+            if (FlowchartWindow.S != null)
+            {
+                FlowchartWindow.S.Refresh();
+            }
+            else
+            {
+                string warningMessage = $"[Hyphlow] Variable value changed, but {nameof(FlowchartWindow)} is" +
+                    $"null. This likely means that the change was made during an editor test. If you are a" +
+                    $"user and see this message, please report it to the developers.";
+                Debug.LogWarning(warningMessage);
+            }
         }
     }
 }

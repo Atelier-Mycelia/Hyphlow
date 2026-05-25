@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,28 +14,28 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public FlowchartWindowInputHandler(params IUGUIEventHandler[] subhandlers)
         {
-            this.subhandlers = subhandlers;
+            this._subhandlers = subhandlers;
         }
 
-        protected IList<IUGUIEventHandler> subhandlers;
+        protected IList<IUGUIEventHandler> _subhandlers;
 
         public virtual bool Process(Event currentEv, FlowchartContext flowchartCtx)
         {
-            foreach (var elem in subhandlers)
+            foreach (var elem in _subhandlers)
                 if (elem.Handle(currentEv, flowchartCtx))
                     return true;
             return false;
 
         }
 
-        protected static readonly int leftMouseButton = 0;
-        protected FlowchartContext currentContext;
+        protected static readonly int _leftMouseButton = 0;
+        protected FlowchartContext _currentContext;
 
         public virtual void Dispose()
         {
-            for (var i = 0; i < subhandlers.Count; i++)
+            for (var i = 0; i < _subhandlers.Count; i++)
             {
-                var disposableHandler = subhandlers[i] as IDisposable;
+                var disposableHandler = _subhandlers[i] as IDisposable;
                 disposableHandler?.Dispose();
             }
         }

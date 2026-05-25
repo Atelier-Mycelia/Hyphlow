@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -23,6 +24,7 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Mode; Round (closest), floor(smaller) or ceil(bigger).")]
         [SerializeField]
+[FormerlySerializedAs("function")]
         protected Mode function = Mode.Round;
 
         public override void OnEnter()

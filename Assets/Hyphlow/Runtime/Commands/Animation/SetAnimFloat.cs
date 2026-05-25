@@ -23,7 +23,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected StringData _parameterName;
 
         [Tooltip("The float value to set the parameter to")]
-        [SerializeField] protected FloatData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected FloatData value;
 
         protected override void RefreshVariableDataCache()
         {
@@ -60,7 +61,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Animation;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_animator.VarRef, variable) || 
                 ReferenceEquals(_parameterName.VarRef, variable) || 

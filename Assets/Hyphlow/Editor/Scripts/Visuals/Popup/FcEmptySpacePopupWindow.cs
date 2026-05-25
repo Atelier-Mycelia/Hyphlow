@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,6 +8,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     public class FcEmptySpacePopupWindow : VisualElement, IDisposable
     {
         [SerializeField]
+[FormerlySerializedAs("visualTreeAsset")]
         private VisualTreeAsset visualTreeAsset = default;
 
         private static readonly string uxmlPath = "Editor/UIToolkitTemplates/ContextMenus/FlowchartEmptySpacePopupMenu";

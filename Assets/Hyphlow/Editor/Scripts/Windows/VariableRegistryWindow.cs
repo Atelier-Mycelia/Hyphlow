@@ -20,11 +20,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             VariableRegistryWindow wnd = GetWindow<VariableRegistryWindow>();
             wnd.titleContent = new GUIContent("Variable Registry");
-            wnd.minSize = MinSize;
+            wnd.minSize = _MinSize;
             wnd.Show();
         }
 
-        private static readonly Vector2 MinSize = new Vector2(320f, 240f);
+        private static readonly Vector2 _MinSize = new Vector2(320f, 240f);
 
         private void OnEnable()
         {

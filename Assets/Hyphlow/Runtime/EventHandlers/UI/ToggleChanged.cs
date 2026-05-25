@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,11 +19,13 @@ namespace AtMycelia.Hyphlow
     public class ToggleChanged : EventHandler
     {   
         [Tooltip("The block will execute when the state of the target UI toggle object changes.")]
-        [SerializeField] protected Toggle targetToggle;
+        [SerializeField] [FormerlySerializedAs("targetToggle")]
+protected Toggle targetToggle;
 
         [Tooltip("The new state of the UI toggle object is stored in this boolean variable.")]
         [VariableProperty(typeof(BooleanVariable))]
-        [SerializeField] protected BooleanVariable toggleState;
+        [SerializeField] [FormerlySerializedAs("toggleState")]
+protected BooleanVariable toggleState;
 
         #region Public members
 

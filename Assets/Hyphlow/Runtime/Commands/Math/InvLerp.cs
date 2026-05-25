@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -16,14 +17,19 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("Clamp percentage to 0-1?")]
         [SerializeField]
+[FormerlySerializedAs("clampResult")]
         protected bool clampResult = true;
 
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("a")]
+[FormerlySerializedAs("b")]
+[FormerlySerializedAs("value")]
         protected FloatData a, b, value;
 
         //[Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()
@@ -53,7 +59,7 @@ namespace AtMycelia.Hyphlow
             return outValue.floatRef.Key + " = [" + a.Value.ToString() + "-" + b.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(a.VarRef, variable) ||
                 ReferenceEquals(b.VarRef, variable) ||

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -15,16 +16,20 @@ namespace AtMycelia.Hyphlow
     public class PlayAnimState : Command 
     {
         [Tooltip("Reference to an Animator component in a game object")]
-        [SerializeField] protected AnimatorData animator = new AnimatorData();
+        [SerializeField] [FormerlySerializedAs("animator")]
+protected AnimatorData animator = new AnimatorData();
 
         [Tooltip("Name of the state you want to play")]
-        [SerializeField] protected StringData stateName = new StringData();
+        [SerializeField] [FormerlySerializedAs("stateName")]
+protected StringData stateName = new StringData();
 
         [Tooltip("Layer to play animation on")]
-        [SerializeField] protected IntegerData layer = new IntegerData(-1);
+        [SerializeField] [FormerlySerializedAs("layer")]
+protected IntegerData layer = new IntegerData(-1);
 
         [Tooltip("Start time of animation")]
-        [SerializeField] protected FloatData time = new FloatData(0f);
+        [SerializeField] [FormerlySerializedAs("time")]
+protected FloatData time = new FloatData(0f);
 
         protected override void RefreshVariableDataCache()
         {
@@ -62,7 +67,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Animation;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(animator.VarRef, variable) || ReferenceEquals(stateName.VarRef, variable) || 
                 ReferenceEquals(layer.VarRef, variable) || ReferenceEquals(time.VarRef, variable) || 

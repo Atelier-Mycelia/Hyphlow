@@ -16,21 +16,21 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         IFlowchartChangeResponder, IVisualResetter
     {
         public int Priority { get; set; } = 0;
-        private readonly FlowchartContext flowchartContext;
-        private readonly DrawGridContext drawGridContext;
-        private Vector2 cachedScrollPosition = new Vector2(float.NaN, float.NaN);
-        private float cachedZoom = float.NaN;
-        private Rect cachedContentRect = Rect.zero;
-        private IBlock lastSelectedBlock;
-        private bool isDisposed;
+        private readonly FlowchartContext _flowchartContext;
+        private readonly DrawGridContext _drawGridContext;
+        private Vector2 _cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+        private float _cachedZoom = float.NaN;
+        private Rect _cachedContentRect = Rect.zero;
+        private IBlock _lastSelectedBlock;
+        private bool _isDisposed;
 
-        private static readonly float SpacingScaleAtMinZoom = 0.5f;
+        private static readonly float _SpacingScaleAtMinZoom = 0.5f;
         private const float DefaultZoomLevel = 1f;
 
         public GridRenderer(FlowchartContext context, DrawGridContext gridContext)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
-            drawGridContext = gridContext ?? throw new ArgumentNullException(nameof(gridContext));
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            _drawGridContext = gridContext ?? throw new ArgumentNullException(nameof(gridContext));
 
             pickingMode = PickingMode.Ignore;
             style.flexGrow = 1f;
@@ -71,19 +71,19 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
-            Flowchart flowchart = flowchartContext.Flowchart;
+            Flowchart flowchart = _flowchartContext.Flowchart;
             if (flowchart == null)
             {
                 return;
             }
 
-            bool scrollChanged = !Mathf.Approximately(flowchart.ScrollPos.x, cachedScrollPosition.x)
-                || !Mathf.Approximately(flowchart.ScrollPos.y, cachedScrollPosition.y);
+            bool scrollChanged = !Mathf.Approximately(flowchart.ScrollPos.x, _cachedScrollPosition.x)
+                || !Mathf.Approximately(flowchart.ScrollPos.y, _cachedScrollPosition.y);
 
-            bool zoomChanged = !Mathf.Approximately(flowchart.Zoom, cachedZoom);
+            bool zoomChanged = !Mathf.Approximately(flowchart.Zoom, _cachedZoom);
 
-            bool sizeChanged = !Mathf.Approximately(contentRect.width, cachedContentRect.width)
-                || !Mathf.Approximately(contentRect.height, cachedContentRect.height);
+            bool sizeChanged = !Mathf.Approximately(contentRect.width, _cachedContentRect.width)
+                || !Mathf.Approximately(contentRect.height, _cachedContentRect.height);
 
             if (scrollChanged || zoomChanged || sizeChanged)
             {
@@ -98,12 +98,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
 
             ToggleSubs(false);
         }
@@ -112,15 +112,15 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             // Even when there's no Flowchart, we still want to generate the grid.
             float zoom = 1f;
-            if (flowchartContext.Flowchart != null)
+            if (_flowchartContext.Flowchart != null)
             {
-                zoom = Mathf.Approximately(flowchartContext.Flowchart.Zoom, 0f)
+                zoom = Mathf.Approximately(_flowchartContext.Flowchart.Zoom, 0f)
                     ? 1f
-                    : flowchartContext.Flowchart.Zoom;
+                    : _flowchartContext.Flowchart.Zoom;
             }
 
-            Vector2 scrollPos = flowchartContext.Flowchart != null
-                ? flowchartContext.Flowchart.ScrollPos
+            Vector2 scrollPos = _flowchartContext.Flowchart != null
+                ? _flowchartContext.Flowchart.ScrollPos
                 : Vector2.zero;
 
             Rect rect = contentRect;
@@ -146,15 +146,15 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             Painter2D painter = mgc.painter2D;
             painter.lineWidth = 1f;
-            painter.strokeColor = drawGridContext.GridLineColor;
+            painter.strokeColor = _drawGridContext.GridLineColor;
             painter.fillColor = Color.clear;
 
             DrawVerticalLines(painter, verticalLines, rect.height, zoom);
             DrawHorizontalLines(painter, horizontalLines, rect.width, zoom);
 
-            cachedScrollPosition = scrollPos;
-            cachedZoom = zoom;
-            cachedContentRect = rect;
+            _cachedScrollPosition = scrollPos;
+            _cachedZoom = zoom;
+            _cachedContentRect = rect;
         }
 
         private static void DrawVerticalLines(Painter2D painter, IList<float> xPositions, float viewHeight, float zoom)
@@ -188,7 +188,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             if (widthChanged || heightChanged)
             {
-                cachedContentRect = evt.newRect;
+                _cachedContentRect = evt.newRect;
                 QueueContextAwareRepaint(true);
             }
         }
@@ -210,22 +210,22 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnBlockSelected(IBlock block)
         {
-            if (ReferenceEquals(block, lastSelectedBlock))
+            if (ReferenceEquals(block, _lastSelectedBlock))
             {
                 return;
             }
 
-            lastSelectedBlock = block;
-            lastBlocksSelected.Clear();
-            lastBlocksSelected.Add(block);
+            _lastSelectedBlock = block;
+            _lastBlocksSelected.Clear();
+            _lastBlocksSelected.Add(block);
             QueueContextAwareRepaint(false);
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart next)
         {
-            lastSelectedBlock = next != null ? next.SelectedBlock : null;
-            cachedScrollPosition = new Vector2(float.NaN, float.NaN);
-            cachedZoom = float.NaN;
+            _lastSelectedBlock = next != null ? next.SelectedBlock : null;
+            _cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+            _cachedZoom = float.NaN;
             QueueContextAwareRepaint(true);
         }
 
@@ -236,45 +236,45 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private float CalculateAdaptiveSpacing(float currentZoom)
         {
-            float baseSpacing = Mathf.Approximately(drawGridContext.GridLineSpacingSize, 0f)
+            float baseSpacing = Mathf.Approximately(_drawGridContext.GridLineSpacingSize, 0f)
                 ? 1f
-                : drawGridContext.GridLineSpacingSize;
+                : _drawGridContext.GridLineSpacingSize;
 
             float minZoom = FlowchartWindow.Config.MinZoom;
             float normalized = Mathf.Clamp01(Mathf.InverseLerp(minZoom, DefaultZoomLevel, currentZoom));
-            float spacingMultiplier = Mathf.Lerp(SpacingScaleAtMinZoom, 1f, normalized);
+            float spacingMultiplier = Mathf.Lerp(_SpacingScaleAtMinZoom, 1f, normalized);
 
             return baseSpacing * spacingMultiplier;
         }
 
         public void OnMultiBlocksSelected(IList<IBlock> blocks)
         {
-            lastSelectedBlock = null; // Since that var is for when just a single one is selected.
-            bool alreadySelectedThese = blocks.SequenceEqual(lastBlocksSelected);
+            _lastSelectedBlock = null; // Since that var is for when just a single one is selected.
+            bool alreadySelectedThese = blocks.SequenceEqual(_lastBlocksSelected);
             if (alreadySelectedThese)
             {
                 return;
             }
 
-            lastBlocksSelected.Clear();
+            _lastBlocksSelected.Clear();
             foreach (Block block in blocks)
             {
-                lastBlocksSelected.Add(block);
+                _lastBlocksSelected.Add(block);
             }
         }
 
-        private readonly IList<IBlock> lastBlocksSelected = new List<IBlock>();
+        private readonly IList<IBlock> _lastBlocksSelected = new List<IBlock>();
 
         public void ResetVisuals()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            cachedScrollPosition = new Vector2(float.NaN, float.NaN);
-            cachedZoom = float.NaN;
-            cachedContentRect = Rect.zero;
+            _cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+            _cachedZoom = float.NaN;
+            _cachedContentRect = Rect.zero;
             QueueContextAwareRepaint(true);
         }
     }

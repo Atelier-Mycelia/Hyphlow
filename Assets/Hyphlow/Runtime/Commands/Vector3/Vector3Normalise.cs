@@ -16,6 +16,7 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField]
         [FormerlySerializedAs("vec3In")]
+[FormerlySerializedAs("vecThreeIn")]
         protected Vector3Data vecThreeIn;
 
         [SerializeField]
@@ -48,7 +49,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (ReferenceEquals(vecThreeIn.VarRef, variable) || 
                 ReferenceEquals(_oldVecThreeOut.VarRef, variable))

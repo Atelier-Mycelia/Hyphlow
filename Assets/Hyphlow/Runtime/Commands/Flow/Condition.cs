@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
     public abstract class Condition : Command
     {
         public override bool NonStandardPaste => true;
-        protected End endCommand;
+        protected End _endCommand;
      
         public override void OnEnter()
         {
@@ -66,17 +66,17 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void MoveToEnd()
         {
-            if(endCommand == null)
+            if(_endCommand == null)
             {
-                endCommand = FindOurEndCommand();
+                _endCommand = FindOurEndCommand();
             }
 
-            if (endCommand != null)
+            if (_endCommand != null)
             {
                 // Continue at next command after End
                 // and make the end non looping incase it gets run via index etc.
-                endCommand.Loop = false;
-                Continue(endCommand.CommandIndex + 1);
+                _endCommand.Loop = false;
+                Continue(_endCommand.CommandIndex + 1);
             }
             else
             {
@@ -135,11 +135,11 @@ namespace AtMycelia.Hyphlow
         /// <returns></returns>
         protected virtual bool EnsureRequiredEnd()
         {
-            if (endCommand == null)
+            if (_endCommand == null)
             {
-                endCommand = FindOurEndCommand();
+                _endCommand = FindOurEndCommand();
 
-                if (endCommand == null)
+                if (_endCommand == null)
                 {
                     Debug.LogError(LocationIdentifier + "', could not find closing End command and thus cannot loop.");
                     //StopParentBlock();
@@ -150,8 +150,8 @@ namespace AtMycelia.Hyphlow
             if (IsLooping)
             {
                 // Tell the following end command to loop back
-                endCommand.Loop = true;
-                endCommand.LoopBackIndex = CommandIndex;
+                _endCommand.Loop = true;
+                _endCommand.LoopBackIndex = CommandIndex;
             }
             return true;
         }

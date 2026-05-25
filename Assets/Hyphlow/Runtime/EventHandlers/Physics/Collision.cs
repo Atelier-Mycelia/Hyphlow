@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using AtMycelia.Events;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -155,6 +156,7 @@ namespace AtMycelia.Hyphlow
         }
 
 
-        [SerializeField] [HideInInspector] protected CollisionVariable collisionVar;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("collisionVar")]
+protected CollisionVariable collisionVar;
     }
 }

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 
@@ -29,10 +30,12 @@ namespace AtMycelia.Hyphlow
 
 		
 		[SerializeField]
+[FormerlySerializedAs("property")]
 		protected Property property;
 		
 		[SerializeField]
 		[VariableProperty(typeof(TextureVariable))]
+[FormerlySerializedAs("textureVar")]
 		protected TextureVariable textureVar;
 
 		[SerializeField]
@@ -40,6 +43,7 @@ namespace AtMycelia.Hyphlow
 						  typeof(BooleanVariable),
 						  typeof(FloatVariable),
 						  typeof(Vector2Variable))]
+[FormerlySerializedAs("inOutVar")]
 		protected Variable inOutVar;
 
 		public override void OnEnter()
@@ -130,9 +134,9 @@ namespace AtMycelia.Hyphlow
 			return CommandColors.Flow;
 		}
 
-		public override bool HasReference(Variable variable)
+		public override bool HasReference(IVariable variable)
 		{
-			if (textureVar == variable || inOutVar == variable)
+         if (ReferenceEquals(textureVar, variable) || ReferenceEquals(inOutVar, variable))
 				return true;
 
 			return false;

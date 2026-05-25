@@ -10,8 +10,10 @@ namespace AtMycelia.Hyphlow.EditorExt
         [Serializable]
         public class EditorTexture
         {
-            [SerializeField] private Texture2D free;
-            [SerializeField] private Texture2D pro;
+            [SerializeField] [FormerlySerializedAs("free")]
+private Texture2D free;
+            [SerializeField] [FormerlySerializedAs("pro")]
+private Texture2D pro;
 
             public Texture2D Texture2D
             {

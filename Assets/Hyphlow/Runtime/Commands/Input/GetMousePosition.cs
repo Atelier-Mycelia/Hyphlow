@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -16,6 +17,7 @@ namespace AtMycelia.Hyphlow
     {
         [VariableProperty(typeof(Vector2Variable))]
         [SerializeField]
+[FormerlySerializedAs("screenPosition")]
         protected Vector2Variable screenPosition;
 
         [Tooltip("If null, Camera.main is used")]
@@ -23,14 +25,17 @@ namespace AtMycelia.Hyphlow
 
         [VariableProperty(typeof(Vector2Variable))]
         [SerializeField]
+[FormerlySerializedAs("viewPosition")]
         protected Vector2Variable viewPosition;
 
         [VariableProperty(typeof(Vector3Variable))]
         [SerializeField]
+[FormerlySerializedAs("worldPosition")]
         protected Vector3Variable worldPosition;
 
         [VariableProperty(typeof(Vector3Variable))]
         [SerializeField]
+[FormerlySerializedAs("worldDirection")]
         protected Vector3Variable worldDirection;
 
         public override void OnEnter()
@@ -82,17 +87,17 @@ namespace AtMycelia.Hyphlow
                     (worldDirection != null ? worldDirection.Key + " " : "");
         }
 
-        public override Color GetButtonColor()
+        public override Color GetButtonColor()//
         {
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (screenPosition == variable ||
-                viewPosition == variable ||
-                worldPosition == variable ||
-                worldDirection == variable);
+            return ReferenceEquals(screenPosition, variable) || 
+                ReferenceEquals(viewPosition, variable) ||
+                ReferenceEquals(worldPosition, variable) ||
+                ReferenceEquals(worldDirection, variable);
         }
     }
 }

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -14,10 +15,12 @@ namespace AtMycelia.Hyphlow
     public class StopBlock : Command, IBlockCaller
     {
         [Tooltip("Flowchart containing the Block. If none is specified, the parent Flowchart is used.")]
-        [SerializeField] protected Flowchart flowchart;
+        [SerializeField] [FormerlySerializedAs("flowchart")]
+protected Flowchart flowchart;
 
         [Tooltip("Name of the Block to stop")]
-        [SerializeField] protected StringData blockName = new StringData("");
+        [SerializeField] [FormerlySerializedAs("blockName")]
+protected StringData blockName = new StringData("");
 
         public string GetLocationIdentifier()
         {
@@ -60,7 +63,7 @@ namespace AtMycelia.Hyphlow
             return new Color32(253, 253, 150, 255);
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(blockName.VarRef, variable) || base.HasReference(variable);
         }

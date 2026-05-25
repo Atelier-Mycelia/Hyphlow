@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -14,11 +15,13 @@ namespace AtMycelia.Hyphlow
     public class ReadTextFile : Command
     {
         [Tooltip("Text file to read into the string variable")]
-        [SerializeField] protected TextAsset textFile;
+        [SerializeField] [FormerlySerializedAs("textFile")]
+protected TextAsset textFile;
 
         [Tooltip("String variable to store the tex file contents in")]
         [VariableProperty(typeof(StringVariable))]
-        [SerializeField] protected StringVariable stringVariable;
+        [SerializeField] [FormerlySerializedAs("stringVariable")]
+protected StringVariable stringVariable;
 
         #region Public members
 
@@ -51,9 +54,9 @@ namespace AtMycelia.Hyphlow
             return stringVariable.Key;
         }
         
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (variable == stringVariable);
+            return ReferenceEquals(variable, stringVariable);
         }
         
         public override Color GetButtonColor()

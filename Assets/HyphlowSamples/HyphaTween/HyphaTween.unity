@@ -970,9 +970,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7d417659cd54a6787f70f763950c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentMbBlock: {fileID: 470391104}
+  _parentMbBlock: {fileID: 470391089}
   _parentBlockReference:
-    _itemId: 9
+    _itemId: 1
     _owningSource: {fileID: 470391090}
   _suppressBlockAutoSelect: 0
   _message:
@@ -3866,8 +3866,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _itemId: 93
   _indentLevel: 0
-  commenterName: 
-  commentText: Look at the first immediately, then return to prev rotation
+  _commenterName: 
+  _commentText: Look at the first immediately, then return to prev rotation
 --- !u!114 &868139080
 MonoBehaviour:
   m_ObjectHideFlags: 2

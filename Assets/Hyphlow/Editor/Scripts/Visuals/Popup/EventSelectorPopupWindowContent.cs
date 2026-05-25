@@ -68,10 +68,10 @@ namespace AtMycelia.Hyphlow.EditorExt
                 {
                     var obsAttr = item.GetCustomAttribute<System.ObsoleteAttribute>();
 
-                    var fliStr = (info.Category.Length > 0 ? info.Category + CATEGORY_CHAR : "")
+                    var fliStr = (info.Category.Length > 0 ? info.Category + _CATEGORY_CHAR : "")
                         + (obsAttr != null ? HyphlowConstants.UIPrefixForDeprecated_RichText : "")
                         + info.EventHandlerName;
-                    allItems.Add(new FilteredListItem(i, fliStr, info.HelpText));
+                    _allItems.Add(new FilteredListItem(i, fliStr, info.HelpText));
                 }
 
                 i++;

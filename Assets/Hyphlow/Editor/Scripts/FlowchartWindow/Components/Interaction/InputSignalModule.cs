@@ -7,7 +7,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// Detects raw IMGUI input inside the UITK flowchart window and relays it to FlowchartWindowSignals.
-    /// Call <see cref="OnGUI(Event)"/> from the owning window’s OnGUI loop.
+    /// Call <see cref="OnGUI(Event)"/> from the owning windowï¿½s OnGUI loop.
     /// </summary>
     public sealed class InputSignalModule : IFlowchartWindowModule, IDisposable
     {
@@ -15,21 +15,21 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public void Initialize(FlowchartWindow window)
         {
             RegisterPointerCallbacks(false);
-            owner = window != null ? 
+            _owner = window != null ? 
                 window : 
                 throw new ArgumentNullException(nameof(window));
             RegisterPointerCallbacks(true);
-            isDisposed = false;
+            _isDisposed = false;
         }
 
         private void RegisterPointerCallbacks(bool on)
         {
-            if (owner == null)
+            if (_owner == null)
             {
                 return;
             }
 
-            VisualElement root = owner.rootVisualElement;
+            VisualElement root = _owner.rootVisualElement;
             if (on)
             {
                 root.RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
@@ -62,7 +62,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private bool ShouldHandleUiEvent(EventBase evt)
         {
-            if (isDisposed || owner == null || evt == null)
+            if (_isDisposed || _owner == null || evt == null)
             {
                 return false;
             }
@@ -72,9 +72,9 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void MarkUitkInput()
         {
-            useUitkInput = true;
+            _useUitkInput = true;
         }
-        private bool useUitkInput;
+        private bool _useUitkInput;
         // ^When true, OnGUI (an IMGUI function) will do nothing so we don't respond to input events
         // more times per frame than intended.
 
@@ -216,17 +216,17 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private Vector2 ToPanelSpace(Vector2 flowchartPosition)
         {
-            if (graphicsRenderer == null && owner != null)
+            if (_graphicsRenderer == null && _owner != null)
             {
-                graphicsRenderer = owner.rootVisualElement.Q<FcwGraphicsRenderer>();
+                _graphicsRenderer = _owner.rootVisualElement.Q<FcwGraphicsRenderer>();
             }
 
-            if (graphicsRenderer == null)
+            if (_graphicsRenderer == null)
             {
                 return flowchartPosition;
             }
 
-            Vector3 world = graphicsRenderer.worldTransform.MultiplyPoint3x4(flowchartPosition);
+            Vector3 world = _graphicsRenderer.worldTransform.MultiplyPoint3x4(flowchartPosition);
             return new Vector2(world.x, world.y);
         }
 
@@ -253,14 +253,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             if (guiEvent.PanInput())
             {
                 //Debug.Log("Pan input started");
-                activePanAnchor = guiEvent.mousePosition;
+                _activePanAnchor = guiEvent.mousePosition;
             }
 
             return guiEvent.PanInput();
         }
 
-        private bool isDisposed;
-        private FlowchartWindow owner;
+        private bool _isDisposed;
+        private FlowchartWindow _owner;
 
         private static bool IsImGuiPointerEvent(EventType eventType)
         {
@@ -358,7 +358,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             if (!IsMouseOverBlock(_pointerUpInfo.PanelPosition))
             {
                 FlowchartWindowSignals.EmptySpaceLeftMouseUp(_pointerUpInfo, guiEvent);
-                if (owner.FcContext.Interaction.BlockHitInLastMouseDown == null)
+                if (_owner.FcContext.Interaction.BlockHitInLastMouseDown == null)
                 {
                     Debug.Log("Empty space left-clicked");
                     FlowchartWindowSignals.EmptySpaceLeftClicked(_pointerUpInfo);
@@ -379,7 +379,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 FlowchartWindowSignals.EmptySpaceRightMouseUp(_pointerUpInfo, guiEvent);
 
-                if (owner.FcContext.Interaction.BlockHitInLastMouseDown == null)
+                if (_owner.FcContext.Interaction.BlockHitInLastMouseDown == null)
                 {
                     Debug.Log("Empty space right-clicked");
                     FlowchartWindowSignals.EmptySpaceRightClicked(_pointerUpInfo);
@@ -401,39 +401,39 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             if (guiEvent.MiddleMouseButton() || guiEvent.RightDragInput())
             {
-                activePanAnchor = null;
+                _activePanAnchor = null;
             }
         }
 
-        private Vector2? activePanAnchor;
+        private Vector2? _activePanAnchor;
         // When the user is panning with middle mouse button (or alt + left), we need to keep 
         // track of the last mouse position to calculate deltas. That last mouse position
         // is stored here.
 
         private void HandleLeftDragRelease(Event guiEvent)
         {
-            if (!isLeftDragActive || !guiEvent.LeftMouseButton() || guiEvent.alt)
+            if (!_isLeftDragActive || !guiEvent.LeftMouseButton() || guiEvent.alt)
             {
                 return;
             }
 
-            isLeftDragActive = false;
+            _isLeftDragActive = false;
             FlowchartWindowSignals.LeftMouseDragEnded(_pointerUpInfo, guiEvent);
         }
 
         private void HandleRightDragRelease(Event guiEvent)
         {
-            if (!isRightDragActive || !guiEvent.RightMouseButton())
+            if (!_isRightDragActive || !guiEvent.RightMouseButton())
             {
                 return;
             }
 
-            isRightDragActive = false;
+            _isRightDragActive = false;
             FlowchartWindowSignals.RightMouseDragEnded(_pointerUpInfo, guiEvent);
         }
 
-        private bool isLeftDragActive;
-        private bool isRightDragActive;
+        private bool _isLeftDragActive;
+        private bool _isRightDragActive;
 
         private void HandleMouseDrag(Event guiEvent)
         {
@@ -444,9 +444,9 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 if (guiEvent.LeftDragInput())
                 {
-                    if (!isLeftDragActive)
+                    if (!_isLeftDragActive)
                     {
-                        isLeftDragActive = true;
+                        _isLeftDragActive = true;
                         FlowchartWindowSignals.LeftMouseDragStarted(_mouseDragInfo, guiEvent);
                     }
                     else
@@ -461,9 +461,9 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 if (guiEvent.RightDragInput())
                 {
-                    if (!isRightDragActive)
+                    if (!_isRightDragActive)
                     {
-                        isRightDragActive = true;
+                        _isRightDragActive = true;
                         FlowchartWindowSignals.RightMouseDragStarted(_mouseDragInfo, guiEvent);
                     }
                     else
@@ -473,7 +473,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 }
             }
 
-            if (!activePanAnchor.HasValue || !guiEvent.PanInput())
+            if (!_activePanAnchor.HasValue || !guiEvent.PanInput())
             {
                 Debug.Log("No active pan anchor or no pan input");
                 return;
@@ -482,7 +482,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             HandlePanning();
             void HandlePanning()
             {
-                Vector2 movementSinceLastFrame = guiEvent.mousePosition - activePanAnchor.Value;
+                Vector2 movementSinceLastFrame = guiEvent.mousePosition - _activePanAnchor.Value;
                 if (movementSinceLastFrame.sqrMagnitude > Mathf.Epsilon)
                 {
                     //Debug.Log("Panning");
@@ -490,7 +490,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                     FlowchartWindowSignals.WindowPanned();
                 }
 
-                activePanAnchor = guiEvent.mousePosition;
+                _activePanAnchor = guiEvent.mousePosition;
             }
 
             guiEvent.Use();
@@ -510,22 +510,22 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
-            isLeftDragActive = false;
-            isRightDragActive = false;
-            activePanAnchor = null;
+            _isDisposed = true;
+            _isLeftDragActive = false;
+            _isRightDragActive = false;
+            _activePanAnchor = null;
             RegisterPointerCallbacks(false);
-            owner = null;
+            _owner = null;
         }
 
         public void OnGUI(Event guiEvent)
         {
-            if (isDisposed || guiEvent == null)
+            if (_isDisposed || guiEvent == null)
             {
                 return;
             }
@@ -534,10 +534,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             // on any particular control type. 
             if (guiEvent.type == EventType.Layout)
             {
-                useUitkInput = false;
+                _useUitkInput = false;
             }
 
-            if (useUitkInput && IsImGuiPointerEvent(guiEvent.type))
+            if (_useUitkInput && IsImGuiPointerEvent(guiEvent.type))
             {
                 return;
             }
@@ -565,17 +565,17 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
         }
 
-        private FcwGraphicsRenderer graphicsRenderer;
+        private FcwGraphicsRenderer _graphicsRenderer;
 
         private Vector2 ToFlowchartSpace(Vector2 panelPosition)
         {
-            if (graphicsRenderer == null && owner != null)
+            if (_graphicsRenderer == null && _owner != null)
             {
-                graphicsRenderer = owner.rootVisualElement.Q<FcwGraphicsRenderer>();
+                _graphicsRenderer = _owner.rootVisualElement.Q<FcwGraphicsRenderer>();
             }
 
-            return graphicsRenderer != null
-                ? graphicsRenderer.WorldToLocal(panelPosition)
+            return _graphicsRenderer != null
+                ? _graphicsRenderer.WorldToLocal(panelPosition)
                 : panelPosition;
         }
 

@@ -1,4 +1,4 @@
-﻿//#define DEBUG
+//#define DEBUG
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -9,10 +9,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 {
     public class BlockClipboardEntry
     {
-        private readonly string blockName;
-        private readonly IList<SerializedPropertySnapshot> blockPropertySnapshots = new List<SerializedPropertySnapshot>();
-        protected IList<ClipboardObject> commands = new List<ClipboardObject>();
-        protected ClipboardObject eventHandler = null;
+        private readonly string _blockName;
+        private readonly IList<SerializedPropertySnapshot> _blockPropertySnapshots = new List<SerializedPropertySnapshot>();
+        protected IList<ClipboardObject> _commands = new List<ClipboardObject>();
+        protected ClipboardObject _eventHandler = null;
 
         public BlockClipboardEntry(IBlock block)
             : this(block, false)
@@ -21,12 +21,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public BlockClipboardEntry(IBlock block, bool isCut)
         {
-            blockName = block.BlockName;
+            _blockName = block.BlockName;
             BlockID = block.ItemId;
 
             CacheProperties(
                 new SerializedObject(block as Block),
-                blockPropertySnapshots,
+                _blockPropertySnapshots,
                 SerializedPropertyType.ObjectReference,
                 SerializedPropertyType.Generic,
                 SerializedPropertyType.ArraySize);
@@ -39,11 +39,11 @@ namespace AtMycelia.Hyphlow.EditorExt
                 }
 
                 PrepareCommandForSnapshot(commandEl as Command, isCut);
-                commands.Add(new ClipboardObject(commandEl as Command));
+                _commands.Add(new ClipboardObject(commandEl as Command));
             }
             if (block.EventHandler != null)
             {
-                eventHandler = new ClipboardObject(block.EventHandler as UnityObj);
+                _eventHandler = new ClipboardObject(block.EventHandler as UnityObj);
             }
         }
 
@@ -249,56 +249,56 @@ namespace AtMycelia.Hyphlow.EditorExt
             return $"itemId={itemId}, owner={ownerName} ({ownerType})";
         }
 
-        private static bool logHookInstalled;
-        private static bool captureCopyErrors;
-        private static string currentCopyPropertyPath;
-        private static string currentCopyPropertyType;
-        private static string currentCopyFieldType;
-        private static string currentCopyDestPropertyType;
-        private static string currentCopyDestFieldType;
-        private static string currentCopyTargetType;
+        private static bool _logHookInstalled;
+        private static bool _captureCopyErrors;
+        private static string _currentCopyPropertyPath;
+        private static string _currentCopyPropertyType;
+        private static string _currentCopyFieldType;
+        private static string _currentCopyDestPropertyType;
+        private static string _currentCopyDestFieldType;
+        private static string _currentCopyTargetType;
 
         [System.Diagnostics.Conditional("DEBUG")]
         private static void BeginCopyContext(SerializedProperty sourceProp, SerializedProperty destProp, UnityObj target)
         {
             EnsureLogHookInstalled();
 
-            captureCopyErrors = true;
-            currentCopyPropertyPath = sourceProp.propertyPath;
-            currentCopyPropertyType = sourceProp.propertyType.ToString();
-            currentCopyFieldType = sourceProp.type;
-            currentCopyDestPropertyType = destProp != null ? destProp.propertyType.ToString() : "null";
-            currentCopyDestFieldType = destProp != null ? destProp.type : "null";
-            currentCopyTargetType = target != null ? target.GetType().FullName : "null";
+            _captureCopyErrors = true;
+            _currentCopyPropertyPath = sourceProp.propertyPath;
+            _currentCopyPropertyType = sourceProp.propertyType.ToString();
+            _currentCopyFieldType = sourceProp.type;
+            _currentCopyDestPropertyType = destProp != null ? destProp.propertyType.ToString() : "null";
+            _currentCopyDestFieldType = destProp != null ? destProp.type : "null";
+            _currentCopyTargetType = target != null ? target.GetType().FullName : "null";
         }
 
         [System.Diagnostics.Conditional("DEBUG")]
         private static void EndCopyContext()
         {
-            captureCopyErrors = false;
-            currentCopyPropertyPath = null;
-            currentCopyPropertyType = null;
-            currentCopyFieldType = null;
-            currentCopyDestPropertyType = null;
-            currentCopyDestFieldType = null;
-            currentCopyTargetType = null;
+            _captureCopyErrors = false;
+            _currentCopyPropertyPath = null;
+            _currentCopyPropertyType = null;
+            _currentCopyFieldType = null;
+            _currentCopyDestPropertyType = null;
+            _currentCopyDestFieldType = null;
+            _currentCopyTargetType = null;
         }
 
         [System.Diagnostics.Conditional("DEBUG")]
         private static void EnsureLogHookInstalled()
         {
-            if (logHookInstalled)
+            if (_logHookInstalled)
             {
                 return;
             }
 
             Application.logMessageReceived += OnLogMessageReceived;
-            logHookInstalled = true;
+            _logHookInstalled = true;
         }
 
         private static void OnLogMessageReceived(string condition, string stackTrace, LogType type)
         {
-            if (!captureCopyErrors || type != LogType.Error)
+            if (!_captureCopyErrors || type != LogType.Error)
             {
                 return;
             }
@@ -309,10 +309,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             Debug.Log(
-                $"[Hyphlow] Unity copy error at '{currentCopyPropertyPath}' " +
-                $"({currentCopyPropertyType}, {currentCopyFieldType}) -> ({currentCopyDestPropertyType}, " +
-                $"{currentCopyDestFieldType}) " +
-                $"Target: {currentCopyTargetType}");
+                $"[Hyphlow] Unity copy error at '{_currentCopyPropertyPath}' " +
+                $"({_currentCopyPropertyType}, {_currentCopyFieldType}) -> ({_currentCopyDestPropertyType}, " +
+                $"{_currentCopyDestFieldType}) " +
+                $"Target: {_currentCopyTargetType}");
         }
 
         [System.Diagnostics.Conditional("DEBUG")]
@@ -397,7 +397,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             // Copy all command serialized properties
             // Copy references to match duplication behavior
-            foreach (var commandEl in commands)
+            foreach (var commandEl in _commands)
             {
                 var newCommand = flowchart.AddCommand(commandEl.type, newBlock as Block);
 
@@ -418,16 +418,16 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             // Copy event handler
-            if (eventHandler != null)
+            if (_eventHandler != null)
             {
-                var newEventHandler = Undo.AddComponent(flowchart.gameObject, eventHandler.type) as EventHandler;
-                if (HasValidTarget(eventHandler))
+                var newEventHandler = Undo.AddComponent(flowchart.gameObject, _eventHandler.type) as EventHandler;
+                if (HasValidTarget(_eventHandler))
                 {
-                    CopyProperties(eventHandler.serializedObject, newEventHandler);
+                    CopyProperties(_eventHandler.serializedObject, newEventHandler);
                 }
                 else
                 {
-                    ApplyJson(eventHandler, newEventHandler);
+                    ApplyJson(_eventHandler, newEventHandler);
                 }
 
                 newEventHandler.ParentBlock = newBlock;
@@ -435,9 +435,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             // Copy block properties, but do not copy references because those were just assigned
-            ApplyProperties(blockPropertySnapshots, newBlock as Block);
+            ApplyProperties(_blockPropertySnapshots, newBlock as Block);
 
-            string suggestedNewName = blockName + " (Copy)";
+            string suggestedNewName = _blockName + " (Copy)";
             newBlock.BlockName = UniqueKeyGenerator.GetUniqueKeyFor(suggestedNewName, flowchart.Blocks, newBlock);
 
             return newBlock;
@@ -451,16 +451,16 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            int commandCount = Mathf.Min(commands.Count, pastedBlock.CommandList.Count);
+            int commandCount = Mathf.Min(_commands.Count, pastedBlock.CommandList.Count);
             for (int i = 0; i < commandCount; i++)
             {
-                ApplyObjectReferences(commands[i], pastedBlock.CommandList[i] as UnityObj, 
+                ApplyObjectReferences(_commands[i], pastedBlock.CommandList[i] as UnityObj, 
                     flowchart, pastedBlockLookup);
             }
 
-            if (eventHandler != null && pastedBlock.EventHandler != null)
+            if (_eventHandler != null && pastedBlock.EventHandler != null)
             {
-                ApplyObjectReferences(eventHandler, pastedBlock.EventHandler as UnityObj, 
+                ApplyObjectReferences(_eventHandler, pastedBlock.EventHandler as UnityObj, 
                     flowchart, pastedBlockLookup);
             }
         }

@@ -5,65 +5,65 @@ namespace AtMycelia.Hyphlow.EditorExt
     [CustomEditor (typeof(InvokeEvent))]
     public class InvokeEventEditor : CommandEditor 
     {
-        protected SerializedProperty descriptionProp;
-        protected SerializedProperty delayProp;
-        protected SerializedProperty invokeTypeProp;
-        protected SerializedProperty staticEventProp;
-        protected SerializedProperty booleanParameterProp;
-        protected SerializedProperty booleanEventProp;
-        protected SerializedProperty integerParameterProp;
-        protected SerializedProperty integerEventProp;
-        protected SerializedProperty floatParameterProp;
-        protected SerializedProperty floatEventProp;
-        protected SerializedProperty stringParameterProp;
-        protected SerializedProperty stringEventProp;
+        protected SerializedProperty _descriptionProp;
+        protected SerializedProperty _delayProp;
+        protected SerializedProperty _invokeTypeProp;
+        protected SerializedProperty _staticEventProp;
+        protected SerializedProperty _booleanParameterProp;
+        protected SerializedProperty _booleanEventProp;
+        protected SerializedProperty _integerParameterProp;
+        protected SerializedProperty _integerEventProp;
+        protected SerializedProperty _floatParameterProp;
+        protected SerializedProperty _floatEventProp;
+        protected SerializedProperty _stringParameterProp;
+        protected SerializedProperty _stringEventProp;
 
         public override void OnEnable()
         {
             base.OnEnable();
 
-            descriptionProp = serializedObject.FindProperty("description");
-            delayProp = serializedObject.FindProperty("delay");
-            invokeTypeProp = serializedObject.FindProperty("invokeType");
-            staticEventProp = serializedObject.FindProperty("staticEvent");
-            booleanParameterProp = serializedObject.FindProperty("booleanParameter");
-            booleanEventProp = serializedObject.FindProperty("booleanEvent");
-            integerParameterProp = serializedObject.FindProperty("integerParameter");
-            integerEventProp = serializedObject.FindProperty("integerEvent");
-            floatParameterProp = serializedObject.FindProperty("floatParameter");
-            floatEventProp = serializedObject.FindProperty("floatEvent");
-            stringParameterProp = serializedObject.FindProperty("stringParameter");
-            stringEventProp = serializedObject.FindProperty("stringEvent");
+            _descriptionProp = serializedObject.FindProperty("description");
+            _delayProp = serializedObject.FindProperty("delay");
+            _invokeTypeProp = serializedObject.FindProperty("invokeType");
+            _staticEventProp = serializedObject.FindProperty("staticEvent");
+            _booleanParameterProp = serializedObject.FindProperty("booleanParameter");
+            _booleanEventProp = serializedObject.FindProperty("booleanEvent");
+            _integerParameterProp = serializedObject.FindProperty("integerParameter");
+            _integerEventProp = serializedObject.FindProperty("integerEvent");
+            _floatParameterProp = serializedObject.FindProperty("floatParameter");
+            _floatEventProp = serializedObject.FindProperty("floatEvent");
+            _stringParameterProp = serializedObject.FindProperty("stringParameter");
+            _stringEventProp = serializedObject.FindProperty("stringEvent");
         }
 
         public override void DrawCommandGUI()
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(descriptionProp);
-            EditorGUILayout.PropertyField(delayProp);
-            EditorGUILayout.PropertyField(invokeTypeProp);
+            EditorGUILayout.PropertyField(_descriptionProp);
+            EditorGUILayout.PropertyField(_delayProp);
+            EditorGUILayout.PropertyField(_invokeTypeProp);
 
-            switch ((InvokeType)invokeTypeProp.enumValueIndex)
+            switch ((InvokeType)_invokeTypeProp.enumValueIndex)
             {
             case InvokeType.Static:
-                EditorGUILayout.PropertyField(staticEventProp);
+                EditorGUILayout.PropertyField(_staticEventProp);
                 break;
             case InvokeType.DynamicBoolean:
-                EditorGUILayout.PropertyField(booleanEventProp);
-                EditorGUILayout.PropertyField(booleanParameterProp);
+                EditorGUILayout.PropertyField(_booleanEventProp);
+                EditorGUILayout.PropertyField(_booleanParameterProp);
                 break;
             case InvokeType.DynamicInteger:
-                EditorGUILayout.PropertyField(integerEventProp);
-                EditorGUILayout.PropertyField(integerParameterProp);
+                EditorGUILayout.PropertyField(_integerEventProp);
+                EditorGUILayout.PropertyField(_integerParameterProp);
                 break;
             case InvokeType.DynamicFloat:
-                EditorGUILayout.PropertyField(floatEventProp);
-                EditorGUILayout.PropertyField(floatParameterProp);
+                EditorGUILayout.PropertyField(_floatEventProp);
+                EditorGUILayout.PropertyField(_floatParameterProp);
                 break;
             case InvokeType.DynamicString:
-                EditorGUILayout.PropertyField(stringEventProp);
-                EditorGUILayout.PropertyField(stringParameterProp);
+                EditorGUILayout.PropertyField(_stringEventProp);
+                EditorGUILayout.PropertyField(_stringParameterProp);
                 break;
             }
 

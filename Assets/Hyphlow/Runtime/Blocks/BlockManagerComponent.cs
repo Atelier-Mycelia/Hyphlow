@@ -158,7 +158,13 @@ namespace AtMycelia.Hyphlow
 
 		public IList<IBlock> CreateMultiBlocks(IList<Vector2> positions)
 		{
-			throw new NotImplementedException();
+			IList<IBlock> results = new List<IBlock>(positions.Count);
+			for (int i = 0; i < positions.Count; i++)
+			{
+				IBlock blockCreated = CreateBlock(positions[i]);
+				results.Add(blockCreated);
+			}
+			return results;
 		}
 
 		public byte NextValidId()

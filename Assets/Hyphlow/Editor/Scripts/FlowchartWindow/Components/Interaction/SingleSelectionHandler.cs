@@ -13,35 +13,35 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public int Priority { get; set; } = 0;
         public SingleSelectionHandler(FlowchartContext context)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext _flowchartContext;
         
         public void Initialize(FlowchartWindow window)
         {
-            isDisposed = false;
+            _isDisposed = false;
             if (window == null)
             {
                 throw new ArgumentNullException(nameof(window));
             }
         }
 
-        private bool isDisposed;
+        private bool _isDisposed;
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
         }
 
         public void OnBlockClicked(IBlock block, Event _)
         {
-            if (!isDisposed)
+            if (!_isDisposed)
             {
                 if (_.shift || _.control || _.command)
                 {
@@ -75,11 +75,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             Flowchart.AddToSelection(block);
         }
 
-        private Flowchart Flowchart => flowchartContext.Flowchart;
+        private Flowchart Flowchart => _flowchartContext.Flowchart;
 
         public void OnBlockCreated(IBlock block)
         {
-            if (!isDisposed)
+            if (!_isDisposed)
             {
                 SetFlowchartAsSelecting(block);
             }
@@ -87,7 +87,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnEmptySpaceLeftClicked(PointerEventInfo info)
         {
-            if (isDisposed || Flowchart == null)
+            if (_isDisposed || Flowchart == null)
             {
                 return;
             }

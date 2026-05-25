@@ -36,7 +36,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
 
         static Block curBlock;
-        static protected List<KeyValuePair<System.Type, CommandInfoAttribute>> filteredAttributes;
+        static protected List<KeyValuePair<System.Type, CommandInfoAttribute>> _filteredAttributes;
 
         public CommandSelectorPopupWindowContent(string currentHandlerName, int width, int height)
             : base(currentHandlerName, width, height)
@@ -51,17 +51,17 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected override void PrepareAllItems()
         {
-            filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
+            _filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
 
-            foreach (var item in filteredAttributes)
+            foreach (var item in _filteredAttributes)
             {
                 //force lookup to orig index here to account for commmand lists being filtered by users
                 var obsAttr = item.Key.GetCustomAttribute<System.ObsoleteAttribute>();
 
-                var fliStr = (item.Value.Category.Length > 0 ? item.Value.Category + CATEGORY_CHAR : "") 
+                var fliStr = (item.Value.Category.Length > 0 ? item.Value.Category + _CATEGORY_CHAR : "") 
                     + (obsAttr != null ? HyphlowConstants.UIPrefixForDeprecated_RichText : "")
                     + item.Value.CommandName;
-                allItems.Add(new FilteredListItem(CommandTypes.IndexOf(item.Key), fliStr, item.Value.HelpText));
+                _allItems.Add(new FilteredListItem(CommandTypes.IndexOf(item.Key), fliStr, item.Value.HelpText));
             }
         }
 
@@ -79,7 +79,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             else
             {
                 //need to ensure we have filtered data 
-                filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
+                _filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
             }
 
             //old method
@@ -122,7 +122,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             // Build menu list
 
-            foreach (var keyPair in filteredAttributes)
+            foreach (var keyPair in _filteredAttributes)
             {
                 GUIContent menuItem;
                 if (keyPair.Value.Category == "")
@@ -131,7 +131,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 }
                 else
                 {
-                    menuItem = new GUIContent(keyPair.Value.Category + CATEGORY_CHAR + keyPair.Value.CommandName);
+                    menuItem = new GUIContent(keyPair.Value.Category + _CATEGORY_CHAR + keyPair.Value.CommandName);
                 }
 
                 commandMenu.AddItem(menuItem, false, AddCommandCallback, keyPair.Key);

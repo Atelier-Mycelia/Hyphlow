@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using System;
 using UnityEditor;
@@ -14,8 +15,10 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     public class LegacyFungusState : MonoBehaviour
     {
-        [SerializeField] protected Flowchart selectedFlowchart;
-        [SerializeField] protected Flowchart lastSelectedFc;
+        [SerializeField] [FormerlySerializedAs("selectedFlowchart")]
+protected Flowchart selectedFlowchart;
+        [SerializeField] [FormerlySerializedAs("lastSelectedFc")]
+protected Flowchart lastSelectedFc;
 
         private void Start()
         {

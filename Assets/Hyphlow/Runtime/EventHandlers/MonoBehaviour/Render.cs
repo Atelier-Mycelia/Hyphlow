@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -32,6 +33,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the Rendering messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected RenderMessageFlags FireOn = RenderMessageFlags.OnWillRenderObject;
 
         private void OnPostRender()

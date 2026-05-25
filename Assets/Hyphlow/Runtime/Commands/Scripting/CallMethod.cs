@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -17,13 +18,16 @@ namespace AtMycelia.Hyphlow
     public class CallMethod : Command
     {
         [Tooltip("Target monobehavior which contains the method we want to call")]
-        [SerializeField] protected GameObject targetObject;
+        [SerializeField] [FormerlySerializedAs("targetObject")]
+protected GameObject targetObject;
 
         [Tooltip("Name of the method to call")]
-        [SerializeField] protected string methodName = "";
+        [SerializeField] [FormerlySerializedAs("methodName")]
+protected string methodName = "";
 
         [Tooltip("Delay (in seconds) before the method will be called")]
-        [SerializeField] protected float delay;
+        [SerializeField] [FormerlySerializedAs("delay")]
+protected float delay;
 
         protected virtual void CallTheMethod()
         {

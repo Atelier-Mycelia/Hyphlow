@@ -83,7 +83,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            var flowchart = block.GetFlowchart();
+            var flowchart = block.ParentFlowchart;
 
             if (flowchart.SelectedBlockCount > 1)
             {
@@ -136,7 +136,11 @@ namespace AtMycelia.Hyphlow.EditorExt
             void DrawBaseBlockGUIInScrollView()
             {
                 var uiModel = flowchart.UIModel;
-                _blockScrollPos = GUILayout.BeginScrollView(_blockScrollPos, GUILayout.Height(uiModel.BlockViewHeight));
+                GUILayoutOption[] options = new GUILayoutOption[]
+                {
+                    GUILayout.Height(uiModel.BlockViewHeight)
+                };
+                _blockScrollPos = GUILayout.BeginScrollView(_blockScrollPos, options);
                 _activeBlockEditor.DrawBlockName(flowchart);
                 _activeBlockEditor.DrawBlockGUI(flowchart);
                 GUILayout.EndScrollView();

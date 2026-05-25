@@ -13,9 +13,9 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            colorValueField = ValueField as ColorField;
+            _colorValueField = ValueField as ColorField;
 
-            if (colorValueField == null)
+            if (_colorValueField == null)
             {
                 Debug.LogError($"ColorVariableRow could not find a ColorField named in the UXML template " +
                     $"for {GetType().Name}. Check your UXML.");
@@ -23,23 +23,23 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        protected ColorField colorValueField;
+        protected ColorField _colorValueField;
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (colorValueField == null)
+            if (_colorValueField == null)
             {
                 return;
             }
 
             if (on)
             {
-                colorValueField.RegisterValueChangedCallback(OnColorFieldChanged);
+                _colorValueField.RegisterValueChangedCallback(OnColorFieldChanged);
             }
             else
             {
-                colorValueField.UnregisterValueChangedCallback(OnColorFieldChanged);
+                _colorValueField.UnregisterValueChangedCallback(OnColorFieldChanged);
             }
         }
 
@@ -50,14 +50,14 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected override void ApplyVarValueToValueField()
         {
-            if (colorValueField == null || _currentVariable == null)
+            if (_colorValueField == null || _currentVariable == null)
             {
                 return;
             }
 
             Color currentCol = (Color)_currentVariable.BoxedValue;
-            colorValueField.SetValueWithoutNotify(currentCol);
-            colorValueField.MarkDirtyRepaint();
+            _colorValueField.SetValueWithoutNotify(currentCol);
+            _colorValueField.MarkDirtyRepaint();
         }
     }
 

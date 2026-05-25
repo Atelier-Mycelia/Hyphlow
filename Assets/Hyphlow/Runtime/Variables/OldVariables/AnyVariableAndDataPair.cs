@@ -51,7 +51,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public bool HasReference(Variable variable)
+        public bool HasReference(IVariable variable)
         {
             // Only legacy comparison makes sense for this signature
             return ReferenceEquals(variable, LhsVariable) || _data.HasReference(variable);

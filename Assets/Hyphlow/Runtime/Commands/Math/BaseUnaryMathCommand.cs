@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -13,10 +14,12 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("Value to be passed in to the function.")]
         [SerializeField]
+[FormerlySerializedAs("inValue")]
         protected FloatData inValue;
 
         [Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
         
         public override Color GetButtonColor()
@@ -30,7 +33,7 @@ namespace AtMycelia.Hyphlow
                    ", out: " + (outValue.VarRef != null ? outValue.VarRef.Key : outValue.Value.ToString());
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, inValue.VarRef) || ReferenceEquals(variable, outValue.VarRef);
         }

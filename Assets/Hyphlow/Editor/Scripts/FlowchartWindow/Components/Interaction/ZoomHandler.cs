@@ -12,11 +12,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         IFlowchartChangeResponder
     {
         public int Priority { get; set; } = 0;
-        private readonly FlowchartContext flowchartContext;
-        private FlowchartWindow owner;
-        private bool isDisposed;
-        private float minZoom;
-        private float maxZoom;
+        private readonly FlowchartContext _flowchartContext;
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
+        private float _minZoom;
+        private float _maxZoom;
 
         private const float DefaultZoom = 1f;
         private const float ZoomStepPerDelta = 0.1f;
@@ -24,30 +24,30 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public ZoomHandler(FlowchartContext context, float minZoomLevel = DefaultZoom, float maxZoomLevel = DefaultZoom)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
             ApplyZoomBounds(minZoomLevel, maxZoomLevel);
         }
 
         public float MinZoom
         {
-            get { return minZoom; }
-            set { ApplyZoomBounds(value, maxZoom); }
+            get { return _minZoom; }
+            set { ApplyZoomBounds(value, _maxZoom); }
         }
 
         public float MaxZoom
         {
-            get { return maxZoom; }
-            set { ApplyZoomBounds(minZoom, value); }
+            get { return _maxZoom; }
+            set { ApplyZoomBounds(_minZoom, value); }
         }
 
         public void Initialize(FlowchartWindow window)
         {
-            owner = window ?? throw new ArgumentNullException(nameof(window));
+            _owner = window ?? throw new ArgumentNullException(nameof(window));
         }
 
         public void OnScrollWheelMoved()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
@@ -65,18 +65,18 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             ApplyZoomDelta(-scrollDelta.y * ZoomStepPerDelta);
-            FlowchartWindowSignals.ZoomChanged?.Invoke(flowchartContext.Flowchart?.Zoom ?? DefaultZoom);
+            FlowchartWindowSignals.ZoomChanged?.Invoke(_flowchartContext.Flowchart?.Zoom ?? DefaultZoom);
         }
 
         public void OnFlowchartChanged(Flowchart previous, Flowchart current)
         {
-            if (isDisposed || current == null)
+            if (_isDisposed || current == null)
             {
                 return;
             }
 
             float normalized = NormalizeZoom(current.Zoom);
-            float clamped = Mathf.Clamp(normalized, minZoom, maxZoom);
+            float clamped = Mathf.Clamp(normalized, _minZoom, _maxZoom);
             if (!Mathf.Approximately(normalized, clamped))
             {
                 current.Zoom = clamped;
@@ -85,13 +85,13 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
-            owner = null;
+            _isDisposed = true;
+            _owner = null;
         }
 
         private void ApplyZoomDelta(float delta)
@@ -101,14 +101,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
-            Flowchart flowchart = flowchartContext.Flowchart;
+            Flowchart flowchart = _flowchartContext.Flowchart;
             if (flowchart == null)
             {
                 return;
             }
 
             float currentZoom = NormalizeZoom(flowchart.Zoom);
-            float targetZoom = Mathf.Clamp(currentZoom + delta, minZoom, maxZoom);
+            float targetZoom = Mathf.Clamp(currentZoom + delta, _minZoom, _maxZoom);
 
             if (Mathf.Approximately(targetZoom, currentZoom))
             {
@@ -116,7 +116,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             flowchart.Zoom = targetZoom;
-            owner?.Repaint();
+            _owner?.Repaint();
         }
 
         private void ApplyZoomBounds(float minCandidate, float maxCandidate)
@@ -131,8 +131,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 sanitizedMax = temp;
             }
 
-            minZoom = sanitizedMin;
-            maxZoom = sanitizedMax;
+            _minZoom = sanitizedMin;
+            _maxZoom = sanitizedMax;
         }
 
         private static float NormalizeZoom(float zoomValue)

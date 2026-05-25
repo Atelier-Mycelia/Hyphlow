@@ -240,7 +240,7 @@ namespace AtMycelia.Hyphlow
                 }
                 return results.Count > 0 ? 
                 new List<VariableSourceAsset>(results) : 
-                emptySources;
+                _emptySources;
             };
 
             VariableRegistryService service = new VariableRegistryService(provider, configs);
@@ -294,7 +294,7 @@ namespace AtMycelia.Hyphlow
             _registry.Rebuild();
         }
 
-        private static readonly IReadOnlyList<VariableSourceAsset> emptySources = new List<VariableSourceAsset>();
+        private static readonly IReadOnlyList<VariableSourceAsset> _emptySources = new List<VariableSourceAsset>();
         private const string DefaultConfigResourcesFolder = "AtMycelia";
 
         public static VariableRegistry Registry
@@ -333,7 +333,7 @@ namespace AtMycelia.Hyphlow
                     return new List<VariableSourceAsset>(sources);
                 }
 
-                return emptySources;
+                return _emptySources;
             }
         }
 

@@ -25,10 +25,12 @@ namespace AtMycelia.Hyphlow
         private UnityObj _owningSource;
 
         [FormerlySerializedAs("owningFc")]
-        [SerializeField] [HideInInspector] private Flowchart legacyOwningFc;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningFc")]
+private Flowchart legacyOwningFc;
 
         [FormerlySerializedAs("owningVsa")]
-        [SerializeField] [HideInInspector] private VariableSourceAsset legacyOwningVsa;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningVsa")]
+private VariableSourceAsset legacyOwningVsa;
 
         /// <summary>
         /// The key of the variable this is referencing. This is just for display purposes,

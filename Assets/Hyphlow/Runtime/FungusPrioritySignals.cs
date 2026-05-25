@@ -15,13 +15,13 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// used by increase and decrease active depth functions.
         /// </summary>
-        private static int activeDepth;
+        private static int _activeDepth;
 
         public static int CurrentPriorityDepth
         {
             get
             {
-                return activeDepth;
+                return _activeDepth;
             } 
         }
 
@@ -40,7 +40,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public static void DoIncreasePriorityDepth()
         {
-            if(activeDepth == 0)
+            if(_activeDepth == 0)
             {
                 if (OnFungusPriorityStart != null)
                 {
@@ -49,9 +49,9 @@ namespace AtMycelia.Hyphlow
             }
             if(OnFungusPriorityChange != null)
             {
-                OnFungusPriorityChange(activeDepth, activeDepth + 1);
+                OnFungusPriorityChange(_activeDepth, _activeDepth + 1);
             }
-            activeDepth++;
+            _activeDepth++;
         }
 
         /// <summary>
@@ -61,16 +61,16 @@ namespace AtMycelia.Hyphlow
         {
             if (OnFungusPriorityChange != null)
             {
-                OnFungusPriorityChange(activeDepth, activeDepth - 1);
+                OnFungusPriorityChange(_activeDepth, _activeDepth - 1);
             }
-            if(activeDepth == 1)
+            if(_activeDepth == 1)
             {
                 if(OnFungusPriorityEnd != null)
                 {
                     OnFungusPriorityEnd();
                 }
             }
-            activeDepth--;
+            _activeDepth--;
         }
 
         /// <summary>
@@ -78,18 +78,18 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public static void DoResetPriority()
         {
-            if (activeDepth == 0)
+            if (_activeDepth == 0)
                 return;
 
             if (OnFungusPriorityChange != null)
             {
-                OnFungusPriorityChange(activeDepth, 0);
+                OnFungusPriorityChange(_activeDepth, 0);
             }
             if (OnFungusPriorityEnd != null)
             {
                 OnFungusPriorityEnd();
             }
-            activeDepth = 0;
+            _activeDepth = 0;
         }
         #endregion
     }

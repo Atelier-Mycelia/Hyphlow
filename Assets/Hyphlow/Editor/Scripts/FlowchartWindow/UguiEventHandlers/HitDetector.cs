@@ -15,12 +15,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 throw new System.ArgumentNullException(nameof(window));
             }
-            owner = window;
-            isDisposed = false;
+            _owner = window;
+            _isDisposed = false;
             ToggleSubs(true);
         }
-        private FlowchartWindow owner;
-        private bool isDisposed;
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
 
         private void ToggleSubs(bool on)
         {
@@ -39,7 +39,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private void OnMouseDown(PointerEventInfo eventInfo)
         {
             IBlock blockHit = TopmostBlockOverlapping(eventInfo.PanelPosition);
-            owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
+            _owner.FcContext.Interaction.BlockHitInLastMouseDown = blockHit;
             BlockHitInLastMouseDown = blockHit;
 
             if (blockHit != null)
@@ -48,7 +48,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
         }
 
-        private FlowchartContext FcContext => owner.FcContext;
+        private FlowchartContext FcContext => _owner.FcContext;
 
         private IBlock TopmostBlockOverlapping(Vector2 mousePos)
         {
@@ -62,12 +62,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
             ToggleSubs(false);
-            isDisposed = true;
+            _isDisposed = true;
         }
 
         public void OnLeftMouseDown(PointerEventInfo info)

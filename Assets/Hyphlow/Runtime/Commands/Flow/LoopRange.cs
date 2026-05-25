@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -19,18 +20,22 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("Starting value for the counter variable")]
         [SerializeField]
+[FormerlySerializedAs("startingValue")]
         protected IntegerData startingValue;
 
         [Tooltip("End value for the counter variable, exclusive")]
         [SerializeField]
+[FormerlySerializedAs("endValue")]
         protected IntegerData endValue;
 
         [Tooltip("Optional int var to hold the current loop counter.")]
         [SerializeField]
+[FormerlySerializedAs("counter")]
         protected IntegerData counter;
 
         [Tooltip("Step size for the counter, how much does it go up by each loop. Default 1")]
         [SerializeField]
+[FormerlySerializedAs("step")]
         protected IntegerData step = new IntegerData(1);
 
         #region Public members
@@ -40,7 +45,7 @@ namespace AtMycelia.Hyphlow
         protected override void PreEvaluate()
         {
             //if we came from the end then we are already looping, if not this is first loop so prep
-            if (ParentBlock.PreviousActiveCommandIndex != endCommand.CommandIndex)
+            if (ParentBlock.PreviousActiveCommandIndex != _endCommand.CommandIndex)
             {
                 counter.Value = startingValue.Value;
             }
@@ -72,10 +77,10 @@ namespace AtMycelia.Hyphlow
             step.Value = Mathf.Abs(step.Value);
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return startingValue.integerRef == variable || endValue.integerRef == variable ||
-                counter.integerRef == variable || step.integerRef == variable ||
+            return ReferenceEquals(startingValue.integerRef, variable) || ReferenceEquals(endValue.integerRef, variable) ||
+                ReferenceEquals(counter.integerRef, variable) || ReferenceEquals(step.integerRef, variable) ||
                 base.HasReference(variable);
         }
 

@@ -12,33 +12,33 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            textValueField = ValueField as TextField;
+            _textValueField = ValueField as TextField;
 
-            if (textValueField == null)
+            if (_textValueField == null)
             {
                 Debug.LogError($"StringRowVisualHandler could not find a TextField named in the UXML template. Check your UXML.");
                 return;
             }
 
-            textValueField.isDelayed = true; // This way, the change events only fire when the user presses enter
-            textValueField.multiline = true;
+            _textValueField.isDelayed = true; // This way, the change events only fire when the user presses enter
+            _textValueField.multiline = true;
             
         }
 
-        protected TextField textValueField;
+        protected TextField _textValueField;
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (textValueField == null) return;
+            if (_textValueField == null) return;
             if (on)
             {
-                textValueField.RegisterValueChangedCallback(OnTextFieldChanged);
-                textValueField.RegisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); //
+                _textValueField.RegisterValueChangedCallback(OnTextFieldChanged);
+                _textValueField.RegisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); //
             }
             else
             {
-                textValueField.UnregisterValueChangedCallback(OnTextFieldChanged);
-                textValueField.UnregisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); 
+                _textValueField.UnregisterValueChangedCallback(OnTextFieldChanged);
+                _textValueField.UnregisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); 
             }
         }
 
@@ -54,12 +54,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected override void ApplyVarValueToValueField()
         {
-            textValueField.schedule.Execute(() =>
+            _textValueField.schedule.Execute(() =>
             {
-                if (textValueField == null) return;
+                if (_textValueField == null) return;
                 string textToApply = (string)_currentVariable.BoxedValue;
-                textValueField.SetValueWithoutNotify(textToApply);
-                textValueField.MarkDirtyRepaint();
+                _textValueField.SetValueWithoutNotify(textToApply);
+                _textValueField.MarkDirtyRepaint();
             }).ExecuteLater(1); // Delay by 1 frame to avoid UITK binding issues
         }
 

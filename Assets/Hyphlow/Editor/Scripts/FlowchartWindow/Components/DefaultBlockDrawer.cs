@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     /// </summary>
     public sealed class DefaultBlockDrawer : IBlockDrawerUitk
     {
-        private readonly IBlockGraphicsGenerator graphicsGenerator;
+        private readonly IBlockGraphicsGenerator _graphicsGenerator;
 
         public DefaultBlockDrawer()
             : this(new BlockGraphicsGenerator())
@@ -17,7 +17,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public DefaultBlockDrawer(IBlockGraphicsGenerator graphicsGenerator)
         {
-            this.graphicsGenerator = graphicsGenerator ??
+            this._graphicsGenerator = graphicsGenerator ??
                 throw new ArgumentNullException(nameof(graphicsGenerator));
         }
 
@@ -28,7 +28,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             StyleSheet baseStyleSheet = config != null ? config.BlockStyleSheet : null;
             StyleSheet selectedStyleSheet = config != null ? config.SelectedBlockStyleSheet : null;
 
-            var button = new BlockButton(graphicsGenerator);
+            var button = new BlockButton(_graphicsGenerator);
             button.Initialize(block, blockTemplate, baseStyleSheet, selectedStyleSheet);
             return button;
         }

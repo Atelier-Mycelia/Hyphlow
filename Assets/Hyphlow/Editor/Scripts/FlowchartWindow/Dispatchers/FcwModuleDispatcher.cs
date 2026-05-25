@@ -7,8 +7,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
     public abstract class FcwModuleDispatcher : IModuleDispatcher<IFlowchartWindowModule>
     {
-        private readonly List<IFlowchartWindowModule> modules = new List<IFlowchartWindowModule>();
-        private readonly Dictionary<Type, IList> responderBuckets = new Dictionary<Type, IList>();
+        private readonly List<IFlowchartWindowModule> _modules = new List<IFlowchartWindowModule>();
+        private readonly Dictionary<Type, IList> _responderBuckets = new Dictionary<Type, IList>();
         public abstract void ToggleSubs(bool on);
 
 
@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public virtual void AddModule(IFlowchartWindowModule module)
         {
-            modules.Add(module);
+            _modules.Add(module);
 
             AddAsResponder(module);
         }
@@ -43,19 +43,19 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public virtual void RemoveModule(IFlowchartWindowModule module)
         {
-            modules.Remove(module);
+            _modules.Remove(module);
             RemoveAsResponder(module);
         }
 
         public virtual void ClearModules()
         {
-            for (int i = 0; i < modules.Count; i++)
+            for (int i = 0; i < _modules.Count; i++)
             {
-                modules[i].Dispose();
+                _modules[i].Dispose();
             }
 
-            modules.Clear();
-            responderBuckets.Clear();
+            _modules.Clear();
+            _responderBuckets.Clear();
         }
 
     }

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -14,7 +15,8 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class DebugBreak : Command
     {
-        [SerializeField] new protected BooleanData enabled = new BooleanData(true);
+        [SerializeField] [FormerlySerializedAs("enabled")]
+new protected BooleanData enabled = new BooleanData(true);
 
         public override void OnEnter()
         {
@@ -29,7 +31,7 @@ namespace AtMycelia.Hyphlow
             return enabled.Value ? "enabled" : "disabled";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, enabled.VarRef);
         }
