@@ -552,7 +552,8 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool Contains(ICommand cmd)
         {
-            bool result = ReferenceEquals(_commandListDict[cmd.ItemId], cmd);
+            _commandListDict.TryGetValue(cmd.ItemId, out ICommand foundCmd);
+            bool result = ReferenceEquals(foundCmd, cmd);
             return result;
         }
 

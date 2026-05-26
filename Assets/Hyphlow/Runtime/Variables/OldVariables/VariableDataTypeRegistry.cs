@@ -48,8 +48,9 @@ namespace AtMycelia.Hyphlow
 
             IList<Type> compatibleVarTypes = attr.VariableTypes.Where((elem) => elem != null).ToList();
 
-            foreach (var varTypeEl in compatibleVarTypes)
+            for (int i = 0; i < compatibleVarTypes.Count; i++)
             {
+                Type varTypeEl = compatibleVarTypes[i];
                 _typeMap.TryAdd(varTypeEl, varDataType);
             }
         }
@@ -142,8 +143,10 @@ namespace AtMycelia.Hyphlow
                 VariableDataAttribute attr = val.GetCustomAttribute<VariableDataAttribute>();
                 if (attr != null)
                 {
-                    foreach (var varTypeEl in attr.VariableTypes)
+                    IList<Type> variableTypes = attr.VariableTypes;
+                    for (int i = 0; i < variableTypes.Count; i++)
                     {
+                        Type varTypeEl = variableTypes[i];
                         if (varTypeEl != null && varTypeEl.IsAssignableFrom(variableType))
                         {
                             return val;

@@ -81,8 +81,14 @@ namespace VScriptingTests.VariableOperations
         [TearDown]
         public void TearDown()
         {
-            foreach (var elem in _createdVars)
-                if (elem is Component legacyVarComponent) UnityObj.DestroyImmediate(legacyVarComponent);
+            for (int i = _createdVars.Count - 1; i >= 0; i--)
+            {
+                var elem = _createdVars[i];
+                if (elem is Component legacyVarComponent)
+                {
+                    UnityObj.DestroyImmediate(legacyVarComponent);
+                }
+            }
 
             _createdVars.Clear();
             _view?.Dispose();

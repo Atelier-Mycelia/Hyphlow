@@ -87,8 +87,9 @@ namespace AtMycelia.Hyphlow
 
                 _tagFilter.Clear();
 
-                foreach (var str in value)
+                for (int i = 0; i < value.Count; i++)
                 {
+                    string str = value[i];
                     _tagFilter.Add(new StringData(str));
                 }
             }

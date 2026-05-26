@@ -100,8 +100,11 @@ namespace AtMycelia.Hyphlow.EditorExt
             DrawTheVisuals();
             void DrawTheVisuals()
             {
-                foreach (var elem in indentRects) // For If-else Commands and such
+                for (int i = 0; i < indentRects.Count; i++) // For If-else Commands and such
+                {
+                    Rect elem = indentRects[i];
                     GUI.Box(elem, "", _commandLabelStyle);
+                }
 
                 Color bgColor = DetermineBackgroundColor(flowchart, command);
                 GUI.backgroundColor = bgColor;
@@ -121,8 +124,15 @@ namespace AtMycelia.Hyphlow.EditorExt
                     return;
                 }
 
-                foreach (Command selectedCommand in flowchart.SelectedCommands)
+                IList<ICommand> selectedCommands = flowchart.SelectedCommands;
+                for (int i = 0; i < selectedCommands.Count; i++)
                 {
+                    Command selectedCommand = selectedCommands[i] as Command;
+                    if (selectedCommand == null)
+                    {
+                        continue;
+                    }
+
                     if (selectedCommand.ItemId == command.ItemId)
                     {
                         if (ScrollToCommandOnDraw)

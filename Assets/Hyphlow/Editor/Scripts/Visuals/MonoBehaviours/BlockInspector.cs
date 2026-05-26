@@ -54,8 +54,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected void ClearEditors()
         {
-            foreach (CommandEditor commandEditor in _cachedCommandEditors)
+            for (int i = 0; i < _cachedCommandEditors.Count; i++)
             {
+                var commandEditor = _cachedCommandEditors[i];
                 DestroyImmediate(commandEditor);
             }
 

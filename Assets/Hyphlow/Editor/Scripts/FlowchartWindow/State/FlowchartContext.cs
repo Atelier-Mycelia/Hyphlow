@@ -53,8 +53,9 @@ namespace AtMycelia.Hyphlow.EditorExt
                     return;
                 }
 
-                foreach (var block in value)
+                for (int i = 0; i < value.Count; i++)
                 {
+                    IBlock block = value[i];
                     _queuedForDeletion.Add(block);
                 }
             }
@@ -64,8 +65,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public virtual void SnapBlocksToGrid()
         {
-            foreach (var elem in Selection.Blocks)
+            IList<IBlock> blocks = Selection.Blocks;
+            for (int i = 0; i < blocks.Count; i++)
             {
+                IBlock elem = blocks[i];
                 Undo.RecordObject(elem as Block, "Block Position");
                 elem._NodeRect = elem._NodeRect.SnapPosition(GridObjectSnap);
             }

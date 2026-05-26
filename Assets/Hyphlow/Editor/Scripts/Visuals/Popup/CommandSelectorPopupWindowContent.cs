@@ -53,8 +53,9 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             _filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
 
-            foreach (var item in _filteredAttributes)
+            for (int i = 0; i < _filteredAttributes.Count; i++)
             {
+                var item = _filteredAttributes[i];
                 //force lookup to orig index here to account for commmand lists being filtered by users
                 var obsAttr = item.Key.GetCustomAttribute<System.ObsoleteAttribute>();
 
@@ -122,8 +123,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             // Build menu list
 
-            foreach (var keyPair in _filteredAttributes)
+            for (int i = 0; i < _filteredAttributes.Count; i++)
             {
+                var keyPair = _filteredAttributes[i];
                 GUIContent menuItem;
                 if (keyPair.Value.Category == "")
                 {
@@ -131,7 +133,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 }
                 else
                 {
-                    menuItem = new GUIContent(keyPair.Value.Category + _CATEGORY_CHAR + keyPair.Value.CommandName);
+                    string text = keyPair.Value.Category + _CATEGORY_CHAR + keyPair.Value.CommandName;
+                    menuItem = new GUIContent(text);
                 }
 
                 commandMenu.AddItem(menuItem, false, AddCommandCallback, keyPair.Key);
@@ -150,7 +153,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-
         static protected void AddCommandCallback(Type commandType)
         {
             var block = curBlock;
@@ -163,8 +165,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             // Use index of last selected command in list, or end of list if nothing selected.
             int index = -1;
-            foreach (var command in flowchart.SelectedCommands)
+            for (int i = 0; i < flowchart.SelectedCommands.Count; i++)
             {
+                var command = flowchart.SelectedCommands[i];
                 if (command.CommandIndex + 1 > index)
                 {
                     index = command.CommandIndex + 1;
@@ -176,18 +179,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             var newCommand = Undo.AddComponent(block.gameObject, commandType) as Command;
-            block.Add(newCommand);
-            flowchart.AddSelectedCommand(newCommand);
-            
             Undo.RecordObject(block, "Set command type");
-            if (index < block.CommandList.Count - 1)
-            {
-                block.CommandList.Insert(index, newCommand);
-            }
-            else
-            {
-                block.CommandList.Add(newCommand);
-            }
+            byte insertIndex = (byte)Mathf.Clamp(index, 0, block.Commands.Count);
+            block.Insert(newCommand, insertIndex, true);
+            flowchart.AddSelectedCommand(newCommand);
 
             // Because this is an async call, we need to force prefab instances to record changes
             PrefabUtility.RecordPrefabInstancePropertyModifications(block);

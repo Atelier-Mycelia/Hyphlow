@@ -25,7 +25,6 @@ namespace VScriptingTests.FCWindowOperations
     class DummyBlock : Block
     {
         public override string BlockName { get; set; }
-        public override IList<ICommand> CommandList { get; } = new List<ICommand>();
 
     }
 
@@ -98,7 +97,7 @@ namespace VScriptingTests.FCWindowOperations
             var dummyCommand = holder.AddComponent<DummyCommand>();
             dummyCommand.Init("containsFOOinside");
 
-            firstBlock.CommandList.Add(dummyCommand);
+            firstBlock.Add(dummyCommand, triggerSignals: false);
             var bothBlocks = new Block[] { firstBlock, secondBlock };
             var result = FilterUtils.FilterBlocks(bothBlocks, "foo");
 
@@ -117,22 +116,23 @@ namespace VScriptingTests.FCWindowOperations
             var partial = holder.AddComponent<DummyBlock>();
             partial.BlockName = "NoName";
             var none = holder.AddComponent<DummyBlock>();
-            none.BlockName ="NothingHere";
+            none.BlockName = "NothingHere";
 
             var blocks = new Block[] { full, partial, none };
 
             var commandForFull = holder.AddComponent<DummyCommand>();
             commandForFull.Init("ignore");
 
-            full.CommandList.Add(commandForFull);
+            full.Add(commandForFull, triggerSignals: false);
 
             var commandForPartial = holder.AddComponent<DummyCommand>();
             commandForPartial.Init("lookForTHIS");
-            partial.CommandList.Add(commandForPartial);
+            partial.Add(commandForPartial, triggerSignals: false);
 
             var result = FilterUtils.FilterBlocks(blocks, "this");
 
-            Assert.AreEqual(1, result.Count);
+            string errorMessage = $"Expected 1 match for 'this', but got {result.Count}.";
+            Assert.AreEqual(1, result.Count, errorMessage);
             bool containsIt = result.Contains(partial);
             Assert.IsTrue(containsIt, "The result does not contain the partial block alone.");
             // full name match because "this" in "MatchName"? No → full only if name contains.

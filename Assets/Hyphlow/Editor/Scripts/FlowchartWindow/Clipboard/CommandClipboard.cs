@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -25,16 +26,23 @@ namespace AtMycelia.Hyphlow.EditorExt
             CommandCopyBuffer commandCopyBuffer = CommandCopyBuffer.GetInstance();
             commandCopyBuffer.Clear();
 
-            foreach (Command command in flowchart.SelectedBlock.CommandList)
+            IList<ICommand> commandList = flowchart.SelectedBlock.CommandList;
+            for (int i = 0; i < commandList.Count; i++)
             {
+                Command command = commandList[i] as Command;
+                if (command == null)
+                {
+                    continue;
+                }
+
                 if (flowchart.SelectedCommands.Contains(command))
                 {
                     System.Type type = command.GetType();
                     Command newCommand = Undo.AddComponent(commandCopyBuffer.gameObject, type) as Command;
                     FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-                    for (int i = 0; i < fields.Length; i++)
+                    for (int j = 0; j < fields.Length; j++)
                     {
-                        FieldInfo field = fields[i];
+                        FieldInfo field = fields[j];
                         bool copy = field.IsPublic;
 
                         object[] attributes = field.GetCustomAttributes(typeof(SerializeField), true);
@@ -70,8 +78,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             for (int i = block.CommandList.Count - 1; i >= 0; --i)
             {
                 ICommand command = block.CommandList[i];
-                foreach (ICommand selectedCommand in flowchart.SelectedCommands)
+                IList<ICommand> selectedCommands = flowchart.SelectedCommands;
+                for (int j = 0; j < selectedCommands.Count; j++)
                 {
+                    ICommand selectedCommand = selectedCommands[j];
                     if (command == selectedCommand)
                     {
                         command.OnCommandRemoved(block);

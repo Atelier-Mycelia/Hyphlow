@@ -54,9 +54,13 @@ namespace AtMycelia.Hyphlow.EditorExt
         private void DestroyThoroughly(IBlock block)
         {
             // Destroy each command on the block
-            foreach (var cmd in block.CommandList)
+            IList<ICommand> commands = block.CommandList;
+            for (int i = 0; i < commands.Count; i++)
+            {
+                ICommand cmd = commands[i];
                 if (cmd != null && cmd is UnityObjectMuscariable cmdUnityObj)
                     Undo.DestroyObjectImmediate(cmdUnityObj);
+            }
 
             // Destroy any event handler
             if (block.EventHandler != null && block.EventHandler is UnityObjectMuscariable ehUnityObj)

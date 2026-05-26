@@ -31,8 +31,10 @@ namespace AtMycelia.Hyphlow.EditorExt
                 SerializedPropertyType.Generic,
                 SerializedPropertyType.ArraySize);
 
-            foreach (var commandEl in block.CommandList)
+            IList<ICommand> sourceCommands = block.CommandList;
+            for (int i = 0; i < sourceCommands.Count; i++)
             {
+                ICommand commandEl = sourceCommands[i];
                 if (commandEl == null)
                 {
                     continue;
@@ -397,8 +399,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             // Copy all command serialized properties
             // Copy references to match duplication behavior
-            foreach (var commandEl in _commands)
+            for (int i = 0; i < _commands.Count; i++)
             {
+                ClipboardObject commandEl = _commands[i];
                 var newCommand = flowchart.AddCommand(commandEl.type, newBlock as Block);
 
                 if (newCommand.NonStandardPaste)
