@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 Callback = onItemClicked
             };
 
-            items.Add(newItem);
+            _items.Add(newItem);
             _menu.AddItem(label, on, () => onItemClicked());
         }
         public void AddDisabledItem(GUIContent label)
@@ -33,7 +33,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 Disabled = true,
             };
 
-            items.Add(newItem);
+            _items.Add(newItem);
             _menu.AddDisabledItem(label);
         }
         public void AddSeparator(string p = "")
@@ -48,7 +48,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         public void DropDown(Rect r) => _menu.DropDown(r);
 
         // More just a way to let people see the contents
-        public virtual IList<IContextMenuItem> Items => new List<IContextMenuItem>(items);
-        protected IList<IContextMenuItem> items = new List<IContextMenuItem>();
+        public virtual IList<IContextMenuItem> Items => new List<IContextMenuItem>(_items);
+        protected IList<IContextMenuItem> _items = new List<IContextMenuItem>();
     }
 }

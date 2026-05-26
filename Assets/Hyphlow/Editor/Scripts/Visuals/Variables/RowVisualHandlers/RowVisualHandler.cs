@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using EditorObjectField = UnityEditor.UIElements.ObjectField;
@@ -281,8 +281,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
     public abstract class RowVisualHandler<TVarContentType> : RowVisualHandler
     {
-        public override Type VarContentType => varContentType;
-        protected static readonly Type varContentType = typeof(TVarContentType);
+        public override Type VarContentType => _varContentType;
+        protected static readonly Type _varContentType = typeof(TVarContentType);
 
         protected RowVisualHandler()
         {
@@ -292,30 +292,30 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             base.RegisterVisualElements();
 
-            unityObjField = ValueField as EditorObjectField;
-            if (unityObjField != null)
+            _unityObjField = ValueField as EditorObjectField;
+            if (_unityObjField != null)
             {
-                unityObjField.objectType = varContentType;
+                _unityObjField.objectType = _varContentType;
             }
         }
 
-        protected EditorObjectField unityObjField;
+        protected EditorObjectField _unityObjField;
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (unityObjField == null)
+            if (_unityObjField == null)
             {
                 return;
             }
 
             if (on)
             {
-                unityObjField.RegisterValueChangedCallback(OnObjectFieldChanged);
+                _unityObjField.RegisterValueChangedCallback(OnObjectFieldChanged);
             }
             else
             {
-                unityObjField.UnregisterValueChangedCallback(OnObjectFieldChanged);
+                _unityObjField.UnregisterValueChangedCallback(OnObjectFieldChanged);
             }
         }
 
@@ -327,7 +327,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void NullOutVars()
         {
             base.NullOutVars();
-            unityObjField = null;
+            _unityObjField = null;
         }
     }
 

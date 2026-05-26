@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System;
 using UnityEngine;
 
@@ -16,14 +17,19 @@ namespace AtMycelia.Hyphlow
         // types that:
         // Aren't easy to serialize (like when you have a member var going off an interface)
         // Aren't in the same family tree as UnityEngine.Object
-        [SerializeField] protected Collider colliderRef;
+        [SerializeField] [FormerlySerializedAs("colliderRef")]
+protected Collider colliderRef;
 
-        [SerializeField] protected GameObject hostGO; // For ref recovery
+        [SerializeField] [FormerlySerializedAs("hostGO")]
+protected GameObject hostGO; // For ref recovery
 
         // Optional shadow data for Undo safety & runtime restore
-        [SerializeField] protected Vector3 cachedCenter;
-        [SerializeField] protected Vector3 cachedSize;
-        [SerializeField] protected bool cachedIsTrigger;
+        [SerializeField] [FormerlySerializedAs("cachedCenter")]
+protected Vector3 cachedCenter;
+        [SerializeField] [FormerlySerializedAs("cachedSize")]
+protected Vector3 cachedSize;
+        [SerializeField] [FormerlySerializedAs("cachedIsTrigger")]
+protected bool cachedIsTrigger;
 
         public ColliderThreeDMuscariable() { }
 
@@ -109,12 +115,17 @@ namespace AtMycelia.Hyphlow
         "AtMycelia.Amanita.Core")]
     public class ColliderTwoDMuscariable : Muscariable<Collider2D>
     {
-        [SerializeField] protected Collider2D colliderRef;
-        [SerializeField] protected GameObject hostGO;
+        [SerializeField] [FormerlySerializedAs("colliderRef")]
+protected Collider2D colliderRef;
+        [SerializeField] [FormerlySerializedAs("hostGO")]
+protected GameObject hostGO;
 
-        [SerializeField] protected Vector2 cachedOffset;
-        [SerializeField] protected Vector2 cachedSize;
-        [SerializeField] protected bool cachedIsTrigger;
+        [SerializeField] [FormerlySerializedAs("cachedOffset")]
+protected Vector2 cachedOffset;
+        [SerializeField] [FormerlySerializedAs("cachedSize")]
+protected Vector2 cachedSize;
+        [SerializeField] [FormerlySerializedAs("cachedIsTrigger")]
+protected bool cachedIsTrigger;
 
         public ColliderTwoDMuscariable() { }
 
@@ -202,8 +213,10 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Physics/ThreeD", "RigidbodyThreeD", typeof(Rigidbody))]
     public class RigidbodyThreeDMuscariable : Muscariable<Rigidbody>
     {
-        [SerializeField] protected Rigidbody rigidbodyRef;
-        [SerializeField] protected GameObject hostGO;
+        [SerializeField] [FormerlySerializedAs("rigidbodyRef")]
+protected Rigidbody rigidbodyRef;
+        [SerializeField] [FormerlySerializedAs("hostGO")]
+protected GameObject hostGO;
         public RigidbodyThreeDMuscariable() { }
         public override Rigidbody Value
         {
@@ -263,8 +276,10 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Physics/TwoD", "RigidbodyTwoD", typeof(Rigidbody2D))]
     public class RigidbodyTwoDMuscariable : Muscariable<Rigidbody2D>
     {
-        [SerializeField] protected Rigidbody2D rigidbodyRef;
-        [SerializeField] protected GameObject hostGO;
+        [SerializeField] [FormerlySerializedAs("rigidbodyRef")]
+protected Rigidbody2D rigidbodyRef;
+        [SerializeField] [FormerlySerializedAs("hostGO")]
+protected GameObject hostGO;
         public RigidbodyTwoDMuscariable() { }
         public override Rigidbody2D Value
         {

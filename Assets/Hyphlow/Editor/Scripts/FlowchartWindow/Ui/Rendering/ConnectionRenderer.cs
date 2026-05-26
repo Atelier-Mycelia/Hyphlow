@@ -24,19 +24,19 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private const float BlockMaxWidth = 260f;
 
         private const bool DiagnosticsEnabled = true;
-        private int diagnosticsRemaining = 6;
+        private int _diagnosticsRemaining = 6;
 
-        private readonly FlowchartContext flowchartContext;
-        private readonly DrawBlockContext drawBlockContext = new DrawBlockContext();
-        private readonly ConnectionDrawer connectionDrawer;
+        private readonly FlowchartContext _flowchartContext;
+        private readonly DrawBlockContext _drawBlockContext = new DrawBlockContext();
+        private readonly ConnectionDrawer _connectionDrawer;
 
-        private FlowchartWindow owner;
-        private bool isDisposed;
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
 
         public ConnectionRenderer(FlowchartContext context, ConnectionDrawer connectionDrawer)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
-            this.connectionDrawer = connectionDrawer ?? throw new ArgumentNullException(nameof(connectionDrawer));
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            this._connectionDrawer = connectionDrawer ?? throw new ArgumentNullException(nameof(connectionDrawer));
 
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
@@ -46,7 +46,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Initialize(FlowchartWindow window)
         {
-            owner = window != null ? 
+            _owner = window != null ? 
                 window : 
                 throw new ArgumentNullException(nameof(window));
             ToggleSubs(true);
@@ -77,18 +77,18 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
             ToggleSubs(false);
-            isDisposed = true;
+            _isDisposed = true;
 
             
             generateVisualContent -= OnGenerateVisualContent;
 
-            connectionDrawer.Dispose();
-            drawBlockContext.Dispose();
+            _connectionDrawer.Dispose();
+            _drawBlockContext.Dispose();
             RemoveFromHierarchy();
         }
 
@@ -106,57 +106,57 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnGenerateVisualContent(MeshGenerationContext mgc)
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            Flowchart flowchart = flowchartContext.Flowchart;
+            Flowchart flowchart = _flowchartContext.Flowchart;
             if (flowchart == null)
             {
                 return;
             }
 
             UpdateDrawContext();
-            LogDiagnostics($"GenerateVisualContent contentRect={contentRect} viewRect={drawBlockContext.ViewRect}");
-            connectionDrawer.Draw(mgc.painter2D, drawBlockContext, flowchartContext);
+            LogDiagnostics($"GenerateVisualContent contentRect={contentRect} viewRect={_drawBlockContext.ViewRect}");
+            _connectionDrawer.Draw(mgc.painter2D, _drawBlockContext, _flowchartContext);
         }
 
         private void LogDiagnostics(string message)
         {
-            if (!DiagnosticsEnabled || diagnosticsRemaining <= 0)
+            if (!DiagnosticsEnabled || _diagnosticsRemaining <= 0)
             {
                 return;
             }
 
-            diagnosticsRemaining--;
+            _diagnosticsRemaining--;
             //Debug.Log($"[ConnectionRenderer] {message} frame={Time.frameCount}");
         }
 
         private void UpdateDrawContext()
         {
-            if (owner != null)
+            if (_owner != null)
             {
-                flowchartContext.Position = owner.position;
+                _flowchartContext.Position = _owner.position;
             }
 
-            drawBlockContext.FlowchartCtx = flowchartContext;
-            drawBlockContext.DefaultBlockHeight = DefaultBlockHeight;
-            drawBlockContext.BlockMinWidth = BlockMinWidth;
-            drawBlockContext.BlockMaxWidth = BlockMaxWidth;
+            _drawBlockContext.FlowchartCtx = _flowchartContext;
+            _drawBlockContext.DefaultBlockHeight = DefaultBlockHeight;
+            _drawBlockContext.BlockMinWidth = BlockMinWidth;
+            _drawBlockContext.BlockMaxWidth = BlockMaxWidth;
 
             Rect viewRectSource = contentRect;
             if (viewRectSource.width <= 0f || viewRectSource.height <= 0f)
             {
-                viewRectSource = flowchartContext.Position;
+                viewRectSource = _flowchartContext.Position;
             }
 
-            drawBlockContext.ViewRect = new Rect(0f, 0f, viewRectSource.width, viewRectSource.height);
+            _drawBlockContext.ViewRect = new Rect(0f, 0f, viewRectSource.width, viewRectSource.height);
         }
 
         private void RequestRepaint()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }

@@ -108,20 +108,20 @@ namespace AtMycelia.Hyphlow
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
-            if (vec3 != null)
+            if (_vec3 != null)
             {
-                if (vec3.RepresentingVar)
+                if (_vec3.RepresentingVar)
                 {
-                    _vec3Var.Variable = vec3.VarRef;
+                    _vec3Var.Variable = _vec3.VarRef;
                 }
 
-                vec3 = null;
+                _vec3 = null;
             }
         }
 
         [SerializeField]
         [FormerlySerializedAs("vec3")]
         [HideInInspector]
-        protected Vector3Data vec3;
+        protected Vector3Data _vec3;
     }
 }

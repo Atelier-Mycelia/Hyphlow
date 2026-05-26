@@ -15,10 +15,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public int Priority { get; set; } = 0;
         public BlockDragHandler(FlowchartContext context)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext _flowchartContext;
         
         public void Initialize(FlowchartWindow window)
         {
@@ -27,49 +27,49 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 throw new ArgumentNullException(nameof(window));
             }
 
-            isDisposed = false;
+            _isDisposed = false;
         }
 
-        private bool isDisposed;
+        private bool _isDisposed;
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
         }
 
         public void OnLeftMouseDown(PointerEventInfo info)
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = _flowchartContext.Interaction;
             var topmostBlock = BlockHitTester.FindTopmostBlock(info.PanelPosition);
             interaction.BlockHitInLastMouseDown = topmostBlock;
         }
 
         public void OnLeftMouseDragStarted(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null || evt.alt)
+            if (_isDisposed || evt == null || evt.alt)
             {
                 return;
             }
 
-            var flowchart = flowchartContext.Flowchart;
-            var interaction = flowchartContext.Interaction;
+            var flowchart = _flowchartContext.Flowchart;
+            var interaction = _flowchartContext.Interaction;
 
             if (flowchart == null || !interaction.WeHitBlockInLastMouseDown)
             {
                 return;
             }
 
-            Vector2 mousePosInWindowSpace = flowchartContext.Document.ToWindowSpace(info.FlowchartPosition);
+            Vector2 mousePosInWindowSpace = _flowchartContext.Document.ToWindowSpace(info.FlowchartPosition);
             interaction.StartDragPosition = mousePosInWindowSpace - flowchart.ScrollPos;
 
             IBlock blockHit = interaction.BlockHitInLastMouseDown;
@@ -85,20 +85,20 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null || evt.alt)
+            if (_isDisposed || evt == null || evt.alt)
             {
                 return;
             }
 
-            var flowchart = flowchartContext.Flowchart;
-            var interaction = flowchartContext.Interaction;
+            var flowchart = _flowchartContext.Flowchart;
+            var interaction = _flowchartContext.Interaction;
 
             if (flowchart == null || interaction.RootBlockToDrag == null)
             {
                 return;
             }
 
-            var selection = flowchartContext.Selection.Blocks;
+            var selection = _flowchartContext.Selection.Blocks;
             bool atTheStartOfADrag = !interaction.DragUndoRecorded;
             if (atTheStartOfADrag)
             {
@@ -139,12 +139,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseUp(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null)
+            if (_isDisposed || evt == null)
             {
                 return;
             }
 
-            var interaction = flowchartContext.Interaction;
+            var interaction = _flowchartContext.Interaction;
             if (interaction.RootBlockToDrag == null)
             {
                 return;

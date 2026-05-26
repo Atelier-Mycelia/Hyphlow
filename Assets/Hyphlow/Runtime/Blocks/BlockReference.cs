@@ -17,10 +17,10 @@ namespace AtMycelia.Hyphlow
     [System.Serializable]
     public class BlockReference
     {
-        [SerializeField] private byte _itemId = InvalidId;
+        [SerializeField] private byte _itemId = _InvalidId;
         [SerializeField] private UnityObj _owningSource;
 
-        private static readonly byte InvalidId = LegacyBlock.InvalidId;
+        private static readonly byte _InvalidId = LegacyBlock.InvalidId;
         public byte ItemId
         {
             get { return _itemId; }
@@ -52,7 +52,7 @@ namespace AtMycelia.Hyphlow
             get
             {
                 RefreshOwner();
-                if (_itemId == InvalidId || _blockOwner == null)
+                if (_itemId == _InvalidId || _blockOwner == null)
                 {
                     return null;
                 }
@@ -63,7 +63,7 @@ namespace AtMycelia.Hyphlow
             {
                 if (value == null)
                 {
-                    _itemId = InvalidId;
+                    _itemId = _InvalidId;
                     BlockOwner = null;
                 }
                 else

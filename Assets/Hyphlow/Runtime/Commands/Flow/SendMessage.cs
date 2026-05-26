@@ -32,7 +32,8 @@ namespace AtMycelia.Hyphlow
     public class SendMessage : Command
     {
         [Tooltip("Target flowchart(s) to send the message to")]
-        [SerializeField] protected MessageTarget messageTarget;
+        [SerializeField] [FormerlySerializedAs("messageTarget")]
+protected MessageTarget messageTarget;
 
         [Tooltip("Name of the message to send")]
         [SerializeField] protected StringData _message = new StringData("");

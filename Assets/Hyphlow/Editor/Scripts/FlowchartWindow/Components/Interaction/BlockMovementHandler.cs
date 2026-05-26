@@ -12,10 +12,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public int Priority { get; set; } = 0;
         public BlockMovementHandler(FlowchartContext context)
         {
-            flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        private readonly FlowchartContext flowchartContext;
+        private readonly FlowchartContext _flowchartContext;
 
         public void Initialize(FlowchartWindow window)
         {
@@ -24,24 +24,24 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 throw new ArgumentNullException(nameof(window));
             }
 
-            isDisposed = false;
+            _isDisposed = false;
         }
 
-        private bool isDisposed;
+        private bool _isDisposed;
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
         }
 
         public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null || evt.alt)
+            if (_isDisposed || evt == null || evt.alt)
             {
                 return;
             }
@@ -61,9 +61,9 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             Interaction.HasDraggedSelected = true;
         }
 
-        private Flowchart Flowchart => flowchartContext.Flowchart;
-        private InteractionState Interaction => flowchartContext.Interaction;
-        private IList<IBlock> SelectedBlocks => flowchartContext.Selection.Blocks;
+        private Flowchart Flowchart => _flowchartContext.Flowchart;
+        private InteractionState Interaction => _flowchartContext.Interaction;
+        private IList<IBlock> SelectedBlocks => _flowchartContext.Selection.Blocks;
 
         private void HandleUndoStack(IList<IBlock> blocks)
         {
@@ -109,7 +109,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void OnLeftMouseUp(PointerEventInfo info, Event evt)
         {
-            if (isDisposed || evt == null)
+            if (_isDisposed || evt == null)
             {
                 return;
             }
@@ -121,7 +121,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             if (HyphlowEditorPreferences.useGridSnap)
             {
-                flowchartContext.SnapBlocksToGrid();
+                _flowchartContext.SnapBlocksToGrid();
             }
         }
 

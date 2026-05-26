@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,11 +16,13 @@ namespace AtMycelia.Hyphlow
     public class GetToggleState : Command 
     {
         [Tooltip("Target toggle object to get the value from")]
-        [SerializeField] protected Toggle toggle;
+        [SerializeField] [FormerlySerializedAs("toggle")]
+protected Toggle toggle;
 
         [Tooltip("Boolean variable to store the state of the toggle value in.")]
         [VariableProperty(typeof(BooleanVariable))]
-        [SerializeField] protected BooleanVariable toggleState;
+        [SerializeField] [FormerlySerializedAs("toggleState")]
+protected BooleanVariable toggleState;
 
         #region Public members
 

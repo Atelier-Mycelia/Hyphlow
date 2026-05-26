@@ -92,7 +92,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     float fieldX = position.x + labelWidth + 2;
                     float fieldWidth = position.width - labelWidth;
                     fieldRect = new Rect(fieldX, position.y, fieldWidth, position.height);
-                    if (fieldRect.width < MinimumValueWidth + SpaceForPopup)
+                    if (fieldRect.width < _MinimumValueWidth + SpaceForPopup)
                     {
                         fieldRect = new Rect(position.x, position.y, position.width, position.height);
                         labelRect.width = 0f;
@@ -101,8 +101,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
                 valueRect = fieldRect;
                 valueRect.width = Mathf.Max(0, fieldRect.width - SpaceForPopup);
-                float popupX = position.x + (position.width - popupWidth);
-                popupRect = new Rect(popupX, fieldRect.y, popupWidth, fieldRect.height);
+                float popupX = position.x + (position.width - _popupWidth);
+                popupRect = new Rect(popupX, fieldRect.y, _popupWidth, fieldRect.height);
 
                 prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
@@ -424,10 +424,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             return itemIdProp == null || itemIdProp.intValue == Variable.InvalidID;
         }
 
-        protected static readonly int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
-        protected static readonly int popupGap = 5;
-        protected static int SpaceForPopup => popupWidth + popupGap;
-        protected static readonly float MinimumValueWidth = 80f;
+        protected static readonly int _popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
+        protected static readonly int _popupGap = 5;
+        protected static int SpaceForPopup => _popupWidth + _popupGap;
+        protected static readonly float _MinimumValueWidth = 80f;
         protected static VariableRegistry VarRegistry => VariableRegistryService.Registry;
 
         private static IReadOnlyDictionary<string, IVariable> GetValidVariables(SerializedProperty varDataProp, 

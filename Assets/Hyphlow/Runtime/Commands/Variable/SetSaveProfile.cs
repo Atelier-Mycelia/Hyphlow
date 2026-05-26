@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System;
 
@@ -16,7 +17,8 @@ namespace AtMycelia.Hyphlow
     public class SetSaveProfile : Command
     {
         [Tooltip("Name of save profile to make active.")]
-        [SerializeField] protected string saveProfileName = "";
+        [SerializeField] [FormerlySerializedAs("saveProfileName")]
+protected string saveProfileName = "";
 
 		/// <summary>
 		/// Shared save profile name used by SaveVariable and LoadVariable.

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +12,10 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class InputFieldSetText : Command
     {
-        [SerializeField] protected GameObjectData inputFieldHolder;
-        [SerializeField] protected StringData text;
+        [SerializeField] [FormerlySerializedAs("inputFieldHolder")]
+protected GameObjectData inputFieldHolder;
+        [SerializeField] [FormerlySerializedAs("text")]
+protected StringData text;
 
         protected override void RefreshVariableDataCache()
         {

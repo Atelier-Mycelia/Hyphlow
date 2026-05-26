@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -47,9 +48,11 @@ namespace AtMycelia.Hyphlow
 
 
 		[SerializeField]
+[FormerlySerializedAs("property")]
 		protected Property property;
 
 		[SerializeField]
+[FormerlySerializedAs("audioSourceData")]
 		protected AudioSourceData audioSourceData;
 
 		[SerializeField]
@@ -57,6 +60,7 @@ namespace AtMycelia.Hyphlow
 						  typeof(IntegerVariable),
 						  typeof(AudioClipVariable),
 						  typeof(BooleanVariable))]
+[FormerlySerializedAs("inOutVar")]
 		protected Variable inOutVar;
 
 		public override void OnEnter()

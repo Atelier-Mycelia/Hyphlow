@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -27,6 +28,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the OnTransformChanged messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected TransformMessageFlags FireOn = TransformMessageFlags.OnTransformChildrenChanged | TransformMessageFlags.OnTransformParentChanged;
 
         private void OnTransformChildrenChanged()

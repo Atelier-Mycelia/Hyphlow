@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,6 +14,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     public class FlowchartWindow : EditorWindow, IFlowchartHostCore
     {
         [SerializeField]
+[FormerlySerializedAs("m_VisualTreeAsset")]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
         /// <summary>

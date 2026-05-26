@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -85,7 +86,9 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        [SerializeField] [HideInInspector] protected Texture2D cursorTexture;
-        [SerializeField] [HideInInspector] protected Vector2 hotSpot;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("cursorTexture")]
+protected Texture2D cursorTexture;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("hotSpot")]
+protected Vector2 hotSpot;
     }
 }

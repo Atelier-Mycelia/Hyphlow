@@ -20,15 +20,15 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 throw new ArgumentNullException(nameof(window));
             }
 
-            owner = window;
-            isDisposed = false;
+            _owner = window;
+            _isDisposed = false;
 
             EnsurePopupsExist();
             ToggleSubs(true);
         }
 
-        private FlowchartWindow owner;
-        private bool isDisposed;
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
 
         private void EnsurePopupsExist()
         {
@@ -62,15 +62,15 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 BlockSignals.BlockRightClicked -= OnBlockRightClicked;
             }
 
-            if (owner != null)
+            if (_owner != null)
             {
                 if (on)
                 {
-                    owner.rootVisualElement.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+                    _owner.rootVisualElement.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
                 }
                 else
                 {
-                    owner.rootVisualElement.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+                    _owner.rootVisualElement.UnregisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
                 }
             }
 
@@ -100,7 +100,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnDeleteButtonClicked()
         {
-            if (isDisposed || owner == null)
+            if (_isDisposed || _owner == null)
             {
                 return;
             }
@@ -119,11 +119,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             get
             {
-                if (owner == null)
+                if (_owner == null)
                 {
                     return null;
                 }
-                return owner.Clipboard;
+                return _owner.Clipboard;
             }
         }
 
@@ -135,11 +135,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnEmptySpaceRightClicked(PointerEventInfo info)
         {
-            if (isDisposed || owner == null)
+            if (_isDisposed || _owner == null)
             {
                 return;
             }
-            bool anyBlocksSelected = owner.FcContext.Selection.BlockCount > 0;
+            bool anyBlocksSelected = _owner.FcContext.Selection.BlockCount > 0;
             if (anyBlocksSelected)
             {
                 return;
@@ -166,14 +166,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void UpdatePosCache()
         {
-            lastPopupFlowchartPosition = _lastRightClickInfo.FlowchartPosition;
-            lastPopupPanelPosition = _lastRightClickInfo.PanelPosition;
-            lastPopupWindowPosition = Root.WorldToLocal(_lastRightClickInfo.PanelPosition);
+            _lastPopupFlowchartPosition = _lastRightClickInfo.FlowchartPosition;
+            _lastPopupPanelPosition = _lastRightClickInfo.PanelPosition;
+            _lastPopupWindowPosition = Root.WorldToLocal(_lastRightClickInfo.PanelPosition);
         }
 
-        private Vector2? lastPopupFlowchartPosition;
-        private Vector2? lastPopupPanelPosition;
-        private Vector2? lastPopupWindowPosition;
+        private Vector2? _lastPopupFlowchartPosition;
+        private Vector2? _lastPopupPanelPosition;
+        private Vector2? _lastPopupWindowPosition;
 
         private void EnsureOnScreenAtFront(VisualElement popup)
         {
@@ -186,18 +186,18 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             popup.BringToFront();
         }
 
-        private VisualElement Root => owner.rootVisualElement;
+        private VisualElement Root => _owner.rootVisualElement;
 
         private void PositionRelativeToMouse(VisualElement popup)
         {
-            Vector2 anchor = lastPopupWindowPosition ?? _lastRightClickInfo.PanelPosition;
+            Vector2 anchor = _lastPopupWindowPosition ?? _lastRightClickInfo.PanelPosition;
             popup.style.left = anchor.x;
             popup.style.top = anchor.y;
         }
 
         private void OnBlockLeftClicked(IBlock block, Event @event)
         {
-            if (isDisposed || owner == null)
+            if (_isDisposed || _owner == null)
             {
                 return;
             }
@@ -208,7 +208,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnBlockRightClicked(IBlock block, PointerEventInfo info)
         {
-            if (isDisposed || owner == null)
+            if (_isDisposed || _owner == null)
             {
                 return;
             }
@@ -227,7 +227,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             EnsureOnScreenAtFront(_blockPopup);
             PositionRelativeToMouse(_blockPopup);
             _blockPopup.TargetBlock = block;
-            _blockPopup.FlowchartContext = owner.FcContext;
+            _blockPopup.FlowchartContext = _owner.FcContext;
         }
 
         public void OnRightClick(PointerEventInfo info)
@@ -237,7 +237,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void HandleDismissClick(PointerEventInfo info)
         {
-            if (isDisposed || !IsPopupVisible)
+            if (_isDisposed || !IsPopupVisible)
             {
                 return;
             }
@@ -258,7 +258,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnKeyDown(KeyDownEvent evt)
         {
-            if (isDisposed || !IsPopupVisible || evt == null)
+            if (_isDisposed || !IsPopupVisible || evt == null)
             {
                 return;
             }
@@ -279,7 +279,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnAddButtonClicked()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
@@ -292,7 +292,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             HideEmptySpacePopup();
         }
 
-        private FlowchartContext FcContext => owner.FcContext;
+        private FlowchartContext FcContext => _owner.FcContext;
         private Flowchart FChart => FcContext?.Flowchart;
 
         IBlock AddNewBlockToWindowAndFlowchart()
@@ -300,12 +300,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             Vector2 blockLocation = DecideWhereToPlaceBlock();
             Vector2 DecideWhereToPlaceBlock()
             {
-                Vector2 windowSpaceMousePos = lastPopupWindowPosition ?? Vector2.zero;
+                Vector2 windowSpaceMousePos = _lastPopupWindowPosition ?? Vector2.zero;
                 float zoom = Mathf.Approximately(FChart.Zoom, 0f) ?
                     1f :
                     FChart.Zoom;
                 Vector2 mousePosInFcSpace = (windowSpaceMousePos / zoom) - FChart.ScrollPos;
-                mousePosInFcSpace -= offset;
+                mousePosInFcSpace -= _offset;
                 return mousePosInFcSpace;
             }
 
@@ -313,34 +313,34 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             return newBlock;
         }
 
-        private readonly Vector2 offset = new Vector2(70f, 15f);
+        private readonly Vector2 _offset = new Vector2(70f, 15f);
         private void OnPasteButtonClicked()
         {
-            if (isDisposed || owner == null)
+            if (_isDisposed || _owner == null)
             {
                 return;
             }
 
-            HyphlowClipboard clipboard = owner.Clipboard;
+            HyphlowClipboard clipboard = _owner.Clipboard;
             if (clipboard == null || !clipboard.HasBlockEntries)
             {
                 return;
             }
 
-            Vector2 windowSpaceMousePos = lastPopupWindowPosition ?? Vector2.zero;
+            Vector2 windowSpaceMousePos = _lastPopupWindowPosition ?? Vector2.zero;
             clipboard.BlockClipboard.Paste(windowSpaceMousePos);
-            owner.UpdateBlockCollection();
+            _owner.UpdateBlockCollection();
             HideEmptySpacePopup();
         }
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
             ToggleSubs(false);
 
             _emptySpacePopup?.Dispose();
@@ -349,7 +349,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             _blockPopup?.Dispose();
             _blockPopup = null;
 
-            owner = null;
+            _owner = null;
         }
 
     }

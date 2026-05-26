@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 using AtMycelia.AmaniTween.VScripting;
 using UnityObj = UnityEngine.Object;
 
-namespace AmaniTweenTests.Commands
+namespace HyphaTweenTests.Commands
 {
     public class MoveTransformPlayModeTests : CommandTestBase<MoveTransformPlayModeTests.MoveTransformTestWrapper>
     {

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -22,6 +23,7 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Which log to use, natural or base 10")]
         [SerializeField]
+[FormerlySerializedAs("mode")]
         protected Mode mode = Mode.Natural;
 
         public override void OnEnter()

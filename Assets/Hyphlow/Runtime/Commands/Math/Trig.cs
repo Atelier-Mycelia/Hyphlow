@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -28,6 +29,7 @@ namespace AtMycelia.Hyphlow
         
         [Tooltip("Trigonometric function to run.")]
         [SerializeField]
+[FormerlySerializedAs("function")]
         protected Function function = Function.Sin;
         
         public override void OnEnter()

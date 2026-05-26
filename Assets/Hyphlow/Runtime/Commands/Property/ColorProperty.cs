@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 
@@ -30,15 +31,18 @@ namespace AtMycelia.Hyphlow
 
 		
         [SerializeField]
+[FormerlySerializedAs("property")]
         protected Property property;
 		
         [SerializeField]
         [VariableProperty(typeof(ColorVariable))]
+[FormerlySerializedAs("colorVar")]
         protected ColorVariable colorVar;
 
         [SerializeField]
         [VariableProperty(typeof(FloatVariable),
                           typeof(ColorVariable))]
+[FormerlySerializedAs("inOutVar")]
         protected Variable inOutVar;
 
         public override void OnEnter()

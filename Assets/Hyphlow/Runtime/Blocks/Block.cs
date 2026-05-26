@@ -735,7 +735,14 @@ namespace AtMycelia.Hyphlow
 #if UNITY_EDITOR
             if (_owner == null)
             {
-                EditorApplication.delayCall += () => _owner = GetComponent<Flowchart>();
+                EditorApplication.delayCall += () =>
+                    {
+                        if (this == null)
+                        {
+                            return;
+                        }
+                        _owner = GetComponent<Flowchart>();
+                    };
             }
 #endif
         }

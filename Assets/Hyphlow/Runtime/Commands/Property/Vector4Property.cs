@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 namespace AtMycelia.Hyphlow
@@ -25,14 +26,17 @@ namespace AtMycelia.Hyphlow
 
 		
 		[SerializeField]
+[FormerlySerializedAs("property")]
 		protected Property property;
 		
 		[SerializeField]
+[FormerlySerializedAs("vector4Data")]
 		protected Vector4Data vector4Data;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
 						  typeof(Vector4Variable))]
+[FormerlySerializedAs("inOutVar")]
 		protected Variable inOutVar;
 
 		public override void OnEnter()

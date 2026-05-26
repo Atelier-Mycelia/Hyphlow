@@ -8,30 +8,30 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            numericField = ValueField as TextValueField<T>;
+            _numericField = ValueField as TextValueField<T>;
             
-            if (numericField == null)
+            if (_numericField == null)
             {
                 Debug.LogError($"NumericRowVisualHandler could not find a TextValueField<{typeof(T).Name}> " +
                     $"named in the UXML template. Check your UXML.");
                 return;
             }
 
-            numericField.isDelayed = true; // So changes only fire on enter or focus lost
+            _numericField.isDelayed = true; // So changes only fire on enter or focus lost
         }
 
-        protected TextValueField<T> numericField;
+        protected TextValueField<T> _numericField;
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
             if (on)
             {
-                numericField.RegisterValueChangedCallback(OnValueFieldChanged);
+                _numericField.RegisterValueChangedCallback(OnValueFieldChanged);
             }
             else
             {
-                numericField.UnregisterValueChangedCallback(OnValueFieldChanged);
+                _numericField.UnregisterValueChangedCallback(OnValueFieldChanged);
             }
         }
 
@@ -42,8 +42,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected override void ApplyVarValueToValueField()
         {
-            numericField?.SetValueWithoutNotify((T)_currentVariable.BoxedValue);
-            numericField.MarkDirtyRepaint();
+            _numericField?.SetValueWithoutNotify((T)_currentVariable.BoxedValue);
+            _numericField.MarkDirtyRepaint();
         }
     }
 
@@ -84,37 +84,37 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            toggleField = ValueField as Toggle;
-            if (toggleField == null)
+            _toggleField = ValueField as Toggle;
+            if (_toggleField == null)
             {
                 Debug.LogError($"BoolRowVisualHandler could not find a Toggle named in the UXML template. Check your UXML.");
                 return;
             }
         }
 
-        protected Toggle toggleField;
+        protected Toggle _toggleField;
 
         protected override void ApplyVarValueToValueField()
         {
-            toggleField.SetValueWithoutNotify((bool)_currentVariable.BoxedValue);
-            toggleField.MarkDirtyRepaint();
+            _toggleField.SetValueWithoutNotify((bool)_currentVariable.BoxedValue);
+            _toggleField.MarkDirtyRepaint();
         }
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (toggleField == null)
+            if (_toggleField == null)
             {
                 return;
             }
 
             if (on)
             {
-                toggleField.RegisterValueChangedCallback(OnToggleFieldChanged);
+                _toggleField.RegisterValueChangedCallback(OnToggleFieldChanged);
             }
             else
             {
-                toggleField.UnregisterValueChangedCallback(OnToggleFieldChanged);
+                _toggleField.UnregisterValueChangedCallback(OnToggleFieldChanged);
             }
         }
 
@@ -133,37 +133,37 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector2Field = ValueField as Vector2Field;
-            if (vector2Field == null)
+            _vector2Field = ValueField as Vector2Field;
+            if (_vector2Field == null)
             {
                 Debug.LogError($"VectorTwoRowVisualHandler could not find a Vector2Field named in the UXML template. Check your UXML.");
                 return;
             }
         }
 
-        protected Vector2Field vector2Field;
+        protected Vector2Field _vector2Field;
 
         protected override void ApplyVarValueToValueField()
         {
-            vector2Field.SetValueWithoutNotify((Vector2)_currentVariable.BoxedValue);
-            vector2Field.MarkDirtyRepaint();
+            _vector2Field.SetValueWithoutNotify((Vector2)_currentVariable.BoxedValue);
+            _vector2Field.MarkDirtyRepaint();
         }
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (vector2Field == null)
+            if (_vector2Field == null)
             {
                 return;
             }
 
             if (on)
             {
-                vector2Field.RegisterValueChangedCallback(OnVector2FieldChanged);
+                _vector2Field.RegisterValueChangedCallback(OnVector2FieldChanged);
             }
             else
             {
-                vector2Field.UnregisterValueChangedCallback(OnVector2FieldChanged);
+                _vector2Field.UnregisterValueChangedCallback(OnVector2FieldChanged);
             }
         }
 
@@ -182,36 +182,36 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector3Field = ValueField as Vector3Field;
-            if (vector3Field == null)
+            _vector3Field = ValueField as Vector3Field;
+            if (_vector3Field == null)
             {
                 Debug.LogError($"VectorThreeRowVisualHandler could not find a Vector3Field named in the UXML template. Check your UXML.");
                 return;
             }
         }
 
-        protected Vector3Field vector3Field;
+        protected Vector3Field _vector3Field;
 
         protected override void ApplyVarValueToValueField()
         {
-            vector3Field.SetValueWithoutNotify((Vector3)_currentVariable.BoxedValue);
-            vector3Field.MarkDirtyRepaint();
+            _vector3Field.SetValueWithoutNotify((Vector3)_currentVariable.BoxedValue);
+            _vector3Field.MarkDirtyRepaint();
         }
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (vector3Field == null)
+            if (_vector3Field == null)
             {
                 return;
             }
             if (on)
             {
-                vector3Field.RegisterValueChangedCallback(OnVector3FieldChanged);
+                _vector3Field.RegisterValueChangedCallback(OnVector3FieldChanged);
             }
             else
             {
-                vector3Field.UnregisterValueChangedCallback(OnVector3FieldChanged);
+                _vector3Field.UnregisterValueChangedCallback(OnVector3FieldChanged);
             }
         }
 
@@ -231,36 +231,36 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            vector4Field = ValueField as Vector4Field;
-            if (vector4Field == null)
+            _vector4Field = ValueField as Vector4Field;
+            if (_vector4Field == null)
             {
                 Debug.LogError($"VectorThreeRowVisualHandler could not find a Vector4Field named in the UXML template. Check your UXML.");
                 return;
             }
         }
 
-        protected Vector4Field vector4Field;
+        protected Vector4Field _vector4Field;
 
         protected override void ApplyVarValueToValueField()
         {
-            vector4Field.SetValueWithoutNotify((Vector4)_currentVariable.BoxedValue);
-            vector4Field.MarkDirtyRepaint();
+            _vector4Field.SetValueWithoutNotify((Vector4)_currentVariable.BoxedValue);
+            _vector4Field.MarkDirtyRepaint();
         }
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (vector4Field == null)
+            if (_vector4Field == null)
             {
                 return;
             }
             if (on)
             {
-                vector4Field.RegisterValueChangedCallback(OnVector4FieldChanged);
+                _vector4Field.RegisterValueChangedCallback(OnVector4FieldChanged);
             }
             else
             {
-                vector4Field.UnregisterValueChangedCallback(OnVector4FieldChanged);
+                _vector4Field.UnregisterValueChangedCallback(OnVector4FieldChanged);
             }
         }
 
@@ -279,8 +279,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected override void RegisterVisualElements()
         {
             base.RegisterVisualElements();
-            fieldController.Init(this.RowRoot);
-            if (!fieldController.IsValid)
+            _fieldController.Init(this.RowRoot);
+            if (!_fieldController.IsValid)
             {
                 Debug.LogError($"MatrixFourByFourRowVisualHandler could not find a Matrix4x4Field " +
                     $"named in the UXML template. Check your UXML.");
@@ -288,28 +288,28 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        private MatrixFourByFourFieldController fieldController = new MatrixFourByFourFieldController();
+        private MatrixFourByFourFieldController _fieldController = new MatrixFourByFourFieldController();
 
         protected override void ApplyVarValueToValueField()
         {
-            fieldController.SetValueWithoutNotify((Matrix4x4)_currentVariable.BoxedValue);
-            fieldController.MarkDirtyRepaint();
+            _fieldController.SetValueWithoutNotify((Matrix4x4)_currentVariable.BoxedValue);
+            _fieldController.MarkDirtyRepaint();
         }
 
         protected override void ToggleValueChangeSubs(bool on)
         {
             base.ToggleValueChangeSubs(on);
-            if (fieldController == null)
+            if (_fieldController == null)
             {
                 return;
             }
             if (on)
             {
-                fieldController.ValueChanged += OnFieldChanged;
+                _fieldController.ValueChanged += OnFieldChanged;
             }
             else
             {
-                fieldController.ValueChanged -= OnFieldChanged;
+                _fieldController.ValueChanged -= OnFieldChanged;
             }
         }
 

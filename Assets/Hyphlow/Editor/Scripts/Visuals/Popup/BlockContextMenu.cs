@@ -10,14 +10,14 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public class BlockContextMenu : VisualElement, IDisposable
     {
-        private static readonly string uxmlPath = "Editor/UIToolkitTemplates/ContextMenus/BlockContextMenu";
+        private static readonly string _uxmlPath = "Editor/UIToolkitTemplates/ContextMenus/BlockContextMenu";
 
         public BlockContextMenu()
         {
-            var visualTreeAsset = Resources.Load<VisualTreeAsset>(uxmlPath);
+            var visualTreeAsset = Resources.Load<VisualTreeAsset>(_uxmlPath);
             if (visualTreeAsset == null)
             {
-                Debug.LogError($"Failed to load VisualTreeAsset at path: {uxmlPath}");
+                Debug.LogError($"Failed to load VisualTreeAsset at path: {_uxmlPath}");
                 return;
             }
             VisualElement root = visualTreeAsset.Instantiate();

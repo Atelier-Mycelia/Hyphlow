@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections;
 
@@ -17,7 +18,8 @@ namespace AtMycelia.Hyphlow
     public class WaitFrames : Command
     {
         [Tooltip("Number of frames to wait for")]
-        [SerializeField] protected IntegerData frameCount = new IntegerData(1);
+        [SerializeField] [FormerlySerializedAs("frameCount")]
+protected IntegerData frameCount = new IntegerData(1);
 
         protected override void RefreshVariableDataCache()
         {

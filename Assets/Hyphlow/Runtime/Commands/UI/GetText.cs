@@ -19,7 +19,8 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("String variable to store the text value in")]
         [ContentTypeConstraint(typeof(string))]
-        [SerializeField] protected VariableReference stringVariable = new VariableReference();
+        [SerializeField] [FormerlySerializedAs("stringVariable")]
+protected VariableReference stringVariable = new VariableReference();
 
         protected override void RefreshVariableDataCache()
         {

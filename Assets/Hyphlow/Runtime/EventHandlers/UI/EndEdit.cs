@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Scripting.APIUpdating;
@@ -15,7 +16,8 @@ namespace AtMycelia.Hyphlow
     public class EndEdit : EventHandler
     {   
         [Tooltip("The UI Input Field that the user can enter text into")]
-        [SerializeField] protected InputField targetInputField;
+        [SerializeField] [FormerlySerializedAs("targetInputField")]
+protected InputField targetInputField;
         
         protected virtual void Start()
         {

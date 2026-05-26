@@ -32,10 +32,12 @@ namespace AtMycelia.Hyphlow
         [SerializeField, HideInInspector] private BlockManagerComponent _blockManager;
 
         [FormerlySerializedAs("variableManager")]
-        [SerializeField, HideInInspector] private VariableManager legacyVariableManager = new VariableManager();
+        [SerializeField, HideInInspector] [FormerlySerializedAs("legacyVariableManager")]
+private VariableManager legacyVariableManager = new VariableManager();
 
         [HideInInspector]
-        [SerializeField] protected int version = 0; 
+        [SerializeField] [FormerlySerializedAs("version")]
+protected int version = 0; 
         // ^Default to 0 to always trigger an update for older versions of Hyphlow.
 
         [HideInInspector]
@@ -459,7 +461,8 @@ namespace AtMycelia.Hyphlow
         }
 
         [HideInInspector]
-        [SerializeField] protected byte nextValidVarID = 1;
+        [SerializeField] [FormerlySerializedAs("nextValidVarID")]
+protected byte nextValidVarID = 1;
 
         protected virtual void CleanupComponents()
         {

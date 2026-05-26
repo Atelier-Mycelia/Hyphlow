@@ -9,12 +9,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 	public class EventWindow : EditorWindow
 	{
 		protected delegate void EventAction(Event e);
-		protected Dictionary<EventType, EventAction> eventTable;
-		protected Dictionary<EventType, EventAction> rawEventTable;
+		protected Dictionary<EventType, EventAction> _eventTable;
+		protected Dictionary<EventType, EventAction> _rawEventTable;
 		
 		public EventWindow()
 		{
-			eventTable = new Dictionary<EventType, EventAction> {
+			_eventTable = new Dictionary<EventType, EventAction> {
 				{ EventType.MouseDown,       e => OnMouseDown(e)       },
 				{ EventType.MouseUp,         e => OnMouseUp(e)         },
 				{ EventType.MouseDrag,       e => OnMouseDrag(e)       },
@@ -26,7 +26,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 				{ EventType.ValidateCommand, e => OnValidateCommand(e) },
 				{ EventType.ExecuteCommand,  e => OnExecuteCommand(e)  },
 			};
-			rawEventTable = new Dictionary<EventType, EventAction> {
+			_rawEventTable = new Dictionary<EventType, EventAction> {
 				{ EventType.MouseDown,       e => OnRawMouseDown(e)    },
 				{ EventType.MouseUp,         e => OnRawMouseUp(e)      },
 				{ EventType.MouseDrag,       e => OnRawMouseDrag(e)    },
@@ -53,11 +53,11 @@ namespace AtMycelia.Hyphlow.EditorExt
 		protected virtual void HandleEvents(Event guiEvent)
 		{
 			EventAction handler;
-			if (rawEventTable.TryGetValue(guiEvent.rawType, out handler))
+			if (_rawEventTable.TryGetValue(guiEvent.rawType, out handler))
 			{
 				handler.Invoke(guiEvent);
 			}
-			if (eventTable.TryGetValue(guiEvent.type, out handler))
+			if (_eventTable.TryGetValue(guiEvent.type, out handler))
 			{
 				handler.Invoke(guiEvent);
 			}

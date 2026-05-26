@@ -9,18 +9,18 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     public sealed class PanHandler : IFlowchartWindowModule, IScrollWheelDragResponder, IRightMouseDragResponder
     {
         public int Priority { get; set; } = 0;
-        private FlowchartContext flowchartContext;
-        private FlowchartWindow owner;
-        private bool isDisposed;
+        private FlowchartContext _flowchartContext;
+        private FlowchartWindow _owner;
+        private bool _isDisposed;
 
         public PanHandler(FlowchartContext context)
         {
-            flowchartContext = context;
+            _flowchartContext = context;
         }
 
         public void Initialize(FlowchartWindow window)
         {
-            owner = window != null ? 
+            _owner = window != null ? 
                 window : 
                 throw new ArgumentNullException(nameof(window));
         }
@@ -32,8 +32,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void OnDragInput(Vector2 direction)
         {
-            Flowchart flowchart = flowchartContext.Flowchart;
-            if (isDisposed || flowchart == null)
+            Flowchart flowchart = _flowchartContext.Flowchart;
+            if (_isDisposed || flowchart == null)
             {
                 Debug.LogWarning("PanHandlerUitk is disposed or Flowchart is null.");
                 return;
@@ -44,13 +44,13 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void HandlePanning(Vector2 direction)
         {
-            if (direction.sqrMagnitude <= minDirectionMagnitude)
+            if (direction.sqrMagnitude <= _minDirectionMagnitude)
             {
                 Debug.Log("Direction too small.");
                 return;
             }
 
-            Flowchart flowchart = flowchartContext.Flowchart;
+            Flowchart flowchart = _flowchartContext.Flowchart;
             float zoom = Mathf.Approximately(flowchart.Zoom, 0f) ? 1f : flowchart.Zoom;
             Vector2 directionAdjusted = direction / zoom;
 
@@ -58,7 +58,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             FlowchartWindowSignals.WindowPanned();
         }
 
-        private static readonly float minDirectionMagnitude = 0.01f;
+        private static readonly float _minDirectionMagnitude = 0.01f;
 
         public void OnRightMouseDragged(PointerEventInfo info, Event evt)
         {
@@ -72,14 +72,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
-            owner = null;
-            flowchartContext = null;
+            _isDisposed = true;
+            _owner = null;
+            _flowchartContext = null;
         }
 
         

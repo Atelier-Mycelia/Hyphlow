@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -35,6 +36,7 @@ namespace AtMycelia.Hyphlow
     public class ThrowException : Command
     {
         [SerializeField]
+[FormerlySerializedAs("message")]
         protected StringData message;
 
         public override void OnEnter()

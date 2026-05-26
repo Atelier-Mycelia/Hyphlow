@@ -32,7 +32,8 @@ namespace AtMycelia.Hyphlow
 
         [HideInInspector]
         [FormerlySerializedAs("itemID")]
-        [SerializeField] private int oldItemID = 0;
+        [SerializeField] [FormerlySerializedAs("oldItemID")]
+private int oldItemID = 0;
 
         public static readonly byte InvalidID = 0;
 

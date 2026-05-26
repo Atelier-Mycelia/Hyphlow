@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -22,14 +23,19 @@ namespace AtMycelia.Hyphlow
         }
         
         [SerializeField]
+[FormerlySerializedAs("mode")]
         protected Mode mode = Mode.Lerp;
 
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("a")]
+[FormerlySerializedAs("b")]
+[FormerlySerializedAs("percentage")]
         protected FloatData a = new FloatData(0), b = new FloatData(1), percentage;
 
         //[Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()

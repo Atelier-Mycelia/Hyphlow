@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,11 +27,14 @@ namespace AtMycelia.Hyphlow
 
         #region Legacy stuff
         [SerializeField]
+[FormerlySerializedAs("scope")]
         protected AccessScope scope = AccessScope.Private;
         [SerializeField]
+[FormerlySerializedAs("key")]
         protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemID = InvalidId;
+        [SerializeField] [FormerlySerializedAs("itemID")]
+protected byte itemID = InvalidId;
 
         #endregion
 
@@ -306,6 +310,7 @@ namespace AtMycelia.Hyphlow
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         [SerializeField]
+[FormerlySerializedAs("value")]
         protected T value;
 
         [SerializeField]
@@ -315,6 +320,7 @@ namespace AtMycelia.Hyphlow
         protected T _value;
 
         [SerializeField]
+[FormerlySerializedAs("startValue")]
         protected T startValue;
 
         protected override void ApplyLegacyDataOnAfterDeserialize()

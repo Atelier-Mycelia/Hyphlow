@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 
@@ -30,10 +31,12 @@ namespace AtMycelia.Hyphlow
 
 		
         [SerializeField]
+[FormerlySerializedAs("property")]
         protected Property property;
 		
         [SerializeField]
         [VariableProperty(typeof(MaterialVariable))]
+[FormerlySerializedAs("materialVar")]
         protected MaterialVariable materialVar;
 
         [SerializeField]
@@ -42,6 +45,7 @@ namespace AtMycelia.Hyphlow
                           typeof(Vector2Variable),
                           typeof(IntegerVariable),
                           typeof(BooleanVariable))]
+[FormerlySerializedAs("inOutVar")]
         protected Variable inOutVar;
 
         public override void OnEnter()

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -14,7 +15,8 @@ namespace AtMycelia.Hyphlow
     public class OpenURL : Command
     {
         [Tooltip("URL to open in the browser")]
-        [SerializeField] protected StringData url = new StringData();
+        [SerializeField] [FormerlySerializedAs("url")]
+protected StringData url = new StringData();
 
         protected override void RefreshVariableDataCache()
         {

@@ -159,52 +159,68 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Variable to use in expression")]
         [VariableProperty]
-        [SerializeField] protected Variable variable;
+        [SerializeField] [FormerlySerializedAs("variable")]
+protected Variable variable;
 
         [Tooltip("Boolean value to compare against")]
-        [SerializeField] protected BooleanData booleanData;
+        [SerializeField] [FormerlySerializedAs("booleanData")]
+protected BooleanData booleanData;
 
         [Tooltip("Integer value to compare against")]
-        [SerializeField] protected IntegerData integerData;
+        [SerializeField] [FormerlySerializedAs("integerData")]
+protected IntegerData integerData;
 
         [Tooltip("Float value to compare against")]
-        [SerializeField] protected FloatData floatData;
+        [SerializeField] [FormerlySerializedAs("floatData")]
+protected FloatData floatData;
 
         [Tooltip("String value to compare against")]
-        [SerializeField] protected StringDataMulti stringData;
+        [SerializeField] [FormerlySerializedAs("stringData")]
+protected StringDataMulti stringData;
 
         [Tooltip("Animator value to compare against")]
-        [SerializeField] protected AnimatorData animatorData;
+        [SerializeField] [FormerlySerializedAs("animatorData")]
+protected AnimatorData animatorData;
 
         [Tooltip("AudioSource value to compare against")]
-        [SerializeField] protected AudioSourceData audioSourceData;
+        [SerializeField] [FormerlySerializedAs("audioSourceData")]
+protected AudioSourceData audioSourceData;
 
         [Tooltip("Color value to compare against")]
-        [SerializeField] protected ColorData colorData;
+        [SerializeField] [FormerlySerializedAs("colorData")]
+protected ColorData colorData;
 
         [Tooltip("GameObject value to compare against")]
-        [SerializeField] protected GameObjectData gameObjectData;
+        [SerializeField] [FormerlySerializedAs("gameObjectData")]
+protected GameObjectData gameObjectData;
 
         [Tooltip("Material value to compare against")]
-        [SerializeField] protected MaterialData materialData;
+        [SerializeField] [FormerlySerializedAs("materialData")]
+protected MaterialData materialData;
 
         [Tooltip("Object value to compare against")]
-        [SerializeField] protected ObjectData objectData;
+        [SerializeField] [FormerlySerializedAs("objectData")]
+protected ObjectData objectData;
 
         [Tooltip("Sprite value to compare against")]
-        [SerializeField] protected SpriteData spriteData;
+        [SerializeField] [FormerlySerializedAs("spriteData")]
+protected SpriteData spriteData;
 
         [Tooltip("Texture value to compare against")]
-        [SerializeField] protected TextureData textureData;
+        [SerializeField] [FormerlySerializedAs("textureData")]
+protected TextureData textureData;
 
         [Tooltip("Transform value to compare against")]
-        [SerializeField] protected TransformData transformData;
+        [SerializeField] [FormerlySerializedAs("transformData")]
+protected TransformData transformData;
 
         [Tooltip("Vector2 value to compare against")]
-        [SerializeField] protected Vector2Data vector2Data;
+        [SerializeField] [FormerlySerializedAs("vector2Data")]
+protected Vector2Data vector2Data;
 
         [Tooltip("Vector3 value to compare against")]
-        [SerializeField] protected Vector3Data vector3Data;
+        [SerializeField] [FormerlySerializedAs("vector3Data")]
+protected Vector3Data vector3Data;
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
         {

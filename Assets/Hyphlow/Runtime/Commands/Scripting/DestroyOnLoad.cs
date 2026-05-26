@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -14,7 +15,8 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class DestroyOnLoad : Command
     {
-        [SerializeField] protected GameObjectData target;
+        [SerializeField] [FormerlySerializedAs("target")]
+protected GameObjectData target;
 
         protected override void RefreshVariableDataCache()
         {

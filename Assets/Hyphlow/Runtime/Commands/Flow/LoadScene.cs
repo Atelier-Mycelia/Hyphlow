@@ -27,7 +27,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected StringData _sceneName = new StringData("");
 
         [Tooltip("Image to display while loading the scene")]
-        [SerializeField] protected Texture2D loadingImage;
+        [SerializeField] [FormerlySerializedAs("loadingImage")]
+protected Texture2D loadingImage;
 
         protected override void RefreshVariableDataCache()
         {

@@ -6,7 +6,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 {
     public class FlowchartDocument : IDisposable
     {
-        private static readonly IBlock[] EmptyBlocks = Array.Empty<IBlock>();
+        private static readonly IBlock[] _EmptyBlocks = Array.Empty<IBlock>();
 
         public Flowchart Flowchart
         {
@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             {
                 if (Flowchart == null)
                 {
-                    return EmptyBlocks;
+                    return _EmptyBlocks;
                 }
 
                 return Flowchart.Blocks;
@@ -68,13 +68,13 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             if (Flowchart == null)
             {
-                return EmptyBlocks;
+                return _EmptyBlocks;
             }
 
             IReadOnlyCollection<IBlock> blocks = AllBlocks;
             if (blocks == null)
             {
-                return EmptyBlocks;
+                return _EmptyBlocks;
             }
 
             if (blocks.Count == 0)

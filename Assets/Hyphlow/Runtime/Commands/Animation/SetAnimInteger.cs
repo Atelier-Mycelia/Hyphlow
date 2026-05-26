@@ -23,7 +23,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected StringData _parameterName;
 
         [Tooltip("The integer value to set the parameter to")]
-        [SerializeField] protected IntegerData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected IntegerData value;
 
         protected override void RefreshVariableDataCache()
         {

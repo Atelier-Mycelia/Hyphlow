@@ -8,38 +8,38 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     internal static class ListPool<T>
     {
-        private static readonly Stack<List<T>> pool = new();
+        private static readonly Stack<List<T>> _pool = new();
 
         public static List<T> Get()
         {
-            return pool.Count > 0 ? 
-                pool.Pop() : 
+            return _pool.Count > 0 ? 
+                _pool.Pop() : 
                 new List<T>();
         }
 
         public static void Release(List<T> list)
         {
             list.Clear();
-            pool.Push(list);
+            _pool.Push(list);
         }
 
         public struct DisposableList : IDisposable
         {
-            private List<T> list;
+            private List<T> _list;
 
             public DisposableList(List<T> list)
             {
-                this.list = list;
+                this._list = list;
             }
 
-            public static implicit operator List<T>(DisposableList disposable) => disposable.list;
+            public static implicit operator List<T>(DisposableList disposable) => disposable._list;
 
             public void Dispose()
             {
-                if (list != null)
+                if (_list != null)
                 {
-                    Release(list);
-                    list = null;
+                    Release(_list);
+                    _list = null;
                 }
             }
         }

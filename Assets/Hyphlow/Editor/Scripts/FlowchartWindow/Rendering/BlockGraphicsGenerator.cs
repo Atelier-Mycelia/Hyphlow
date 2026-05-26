@@ -9,8 +9,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             var graphics = new BlockGraphics();
 
-            blockGraphicsUniqueListWorkSpace.Clear();
-            blockGraphicsConnectedWorkSpace.Clear();
+            _blockGraphicsUniqueListWorkSpace.Clear();
+            _blockGraphicsConnectedWorkSpace.Clear();
             Color defaultTint;
             if (block.EventHandler != null)
             {
@@ -21,18 +21,18 @@ namespace AtMycelia.Hyphlow.EditorExt
             else
             {
                 // Count the number of unique connections (excluding self references)
-                block.RefreshConnectedBlockCache(ref blockGraphicsConnectedWorkSpace);
-                foreach (var connectedBlock in blockGraphicsConnectedWorkSpace)
+                block.RefreshConnectedBlockCache(ref _blockGraphicsConnectedWorkSpace);
+                foreach (var connectedBlock in _blockGraphicsConnectedWorkSpace)
                 {
                     if (connectedBlock == block ||
-                        blockGraphicsUniqueListWorkSpace.Contains(connectedBlock))
+                        _blockGraphicsUniqueListWorkSpace.Contains(connectedBlock))
                     {
                         continue;
                     }
-                    blockGraphicsUniqueListWorkSpace.Add(connectedBlock);
+                    _blockGraphicsUniqueListWorkSpace.Add(connectedBlock);
                 }
 
-                if (blockGraphicsUniqueListWorkSpace.Count > 1)
+                if (_blockGraphicsUniqueListWorkSpace.Count > 1)
                 {
                     //graphics.offTexture = HyphlowEditorSysAssets.ChoiceNodeOff;
                     //graphics.onTexture = HyphlowEditorSysAssets.ChoiceNodeOn;
@@ -53,8 +53,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             return graphics;
         }
 
-        static protected IList<IBlock> blockGraphicsUniqueListWorkSpace = new List<IBlock>();
-        static protected IList<IBlock> blockGraphicsConnectedWorkSpace = new List<IBlock>();
+        static protected IList<IBlock> _blockGraphicsUniqueListWorkSpace = new List<IBlock>();
+        static protected IList<IBlock> _blockGraphicsConnectedWorkSpace = new List<IBlock>();
     }
 
     public interface IBlockGraphicsGenerator

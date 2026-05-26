@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -26,7 +27,8 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Fullscreen : Command 
     {
-        [SerializeField] protected FullscreenMode fullscreenMode;
+        [SerializeField] [FormerlySerializedAs("fullscreenMode")]
+protected FullscreenMode fullscreenMode;
 
         #region Public members
 

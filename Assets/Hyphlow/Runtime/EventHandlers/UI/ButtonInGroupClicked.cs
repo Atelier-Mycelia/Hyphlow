@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -13,7 +14,8 @@ namespace AtMycelia.Hyphlow
     public class ButtonInGroupClicked : EventHandler
     {
         [Tooltip("The buttons parented to any of these will be responded to.")]
-        [SerializeField] private GameObject[] parents;
+        [SerializeField] [FormerlySerializedAs("parents")]
+private GameObject[] parents;
 
         protected override void Awake()
         {

@@ -110,7 +110,7 @@ namespace AtMycelia.Hyphlow
         {
             IEnumerable<Type> varDataSubtypes = AppDomain.CurrentDomain.GetAssemblies()
                          .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, iVariableDataType));
+                         .Where((elem) => IsInstantiatableType(elem, _iVariableDataType));
 
             VariableDataTypeRegistry.Clear();
 
@@ -124,7 +124,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private static readonly Type iVariableDataType = typeof(IVariableData);
+        private static readonly Type _iVariableDataType = typeof(IVariableData);
 
     }
 }

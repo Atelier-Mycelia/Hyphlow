@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -16,10 +17,13 @@ namespace AtMycelia.Hyphlow
     public class AssertCommand : Command
     {
         [SerializeField]
+[FormerlySerializedAs("message")]
         protected StringData message;
 
         [SerializeField]
         [VariableProperty()]
+[FormerlySerializedAs("a")]
+[FormerlySerializedAs("b")]
         protected Variable a, b;
 
         public enum Method
@@ -29,6 +33,7 @@ namespace AtMycelia.Hyphlow
         }
 
         [SerializeField]
+[FormerlySerializedAs("method")]
         protected Method method;
 
         public override void OnEnter()

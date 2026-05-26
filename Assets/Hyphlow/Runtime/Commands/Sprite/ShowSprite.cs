@@ -17,7 +17,8 @@ namespace AtMycelia.Hyphlow
     public class ShowSprite : Command
     {
         [Tooltip("Sprite object to be made visible / invisible")]
-        [SerializeField] protected SpriteRenderer spriteRenderer;
+        [SerializeField] [FormerlySerializedAs("spriteRenderer")]
+protected SpriteRenderer spriteRenderer;
 
         [Tooltip("Make the sprite visible or invisible")]
         [SerializeField] protected BooleanData _visible = new BooleanData(false);

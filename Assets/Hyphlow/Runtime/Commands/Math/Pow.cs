@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -15,10 +16,13 @@ namespace AtMycelia.Hyphlow
     public class Pow : Command
     {
         [SerializeField]
+[FormerlySerializedAs("baseValue")]
+[FormerlySerializedAs("exponentValue")]
         protected FloatData baseValue, exponentValue;
 
         [Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()

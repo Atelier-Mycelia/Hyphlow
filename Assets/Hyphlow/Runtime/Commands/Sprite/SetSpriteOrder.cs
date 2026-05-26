@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -16,10 +17,12 @@ namespace AtMycelia.Hyphlow
     public class SetSpriteOrder : Command 
     {
         [Tooltip("List of sprites to set the order in layer property on")]
-        [SerializeField] protected List<SpriteRenderer> targetSprites = new List<SpriteRenderer>();
+        [SerializeField] [FormerlySerializedAs("targetSprites")]
+protected List<SpriteRenderer> targetSprites = new List<SpriteRenderer>();
 
         [Tooltip("The order in layer value to set on the target sprites")]
-        [SerializeField] protected IntegerData orderInLayer;
+        [SerializeField] [FormerlySerializedAs("orderInLayer")]
+protected IntegerData orderInLayer;
 
         protected override void RefreshVariableDataCache()
         {

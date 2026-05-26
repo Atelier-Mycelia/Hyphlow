@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,10 +16,12 @@ namespace AtMycelia.Hyphlow
     public class SetSliderValue : Command 
     {
         [Tooltip("Target slider object to set the value on")]
-        [SerializeField] protected Slider slider;
+        [SerializeField] [FormerlySerializedAs("slider")]
+protected Slider slider;
 
         [Tooltip("Float value to set the slider value to.")]
-        [SerializeField] protected FloatData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected FloatData value;
 
         protected BaseVariableProperty.GetSet getOrSet = BaseVariableProperty.GetSet.Set;
 

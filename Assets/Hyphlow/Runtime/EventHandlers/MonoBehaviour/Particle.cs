@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -27,11 +28,13 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the Rendering messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected ParticleMessageFlags FireOn = ParticleMessageFlags.OnParticleCollision;
 
         [Tooltip("Optional variable to store the gameobject that particle collided with.")]
         [VariableProperty(typeof(GameObjectVariable))]
-        [SerializeField] protected GameObjectVariable GOcolliderVar;
+        [SerializeField] [FormerlySerializedAs("GOcolliderVar")]
+protected GameObjectVariable GOcolliderVar;
 
         private void OnParticleCollision(GameObject other)
         {

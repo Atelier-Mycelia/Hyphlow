@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System;
 using UnityEngine;
 
@@ -9,7 +10,8 @@ namespace AtMycelia.Hyphlow
     public class ControlWithDisplay<TDisplayEnum> : Command
     {
         [Tooltip("Display type")]
-        [SerializeField] protected TDisplayEnum display;
+        [SerializeField] [FormerlySerializedAs("display")]
+protected TDisplayEnum display;
 
         protected virtual bool IsDisplayNone<TEnum>(TEnum enumValue)
         {

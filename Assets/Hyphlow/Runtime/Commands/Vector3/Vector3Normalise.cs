@@ -16,6 +16,7 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField]
         [FormerlySerializedAs("vec3In")]
+[FormerlySerializedAs("vecThreeIn")]
         protected Vector3Data vecThreeIn;
 
         [SerializeField]

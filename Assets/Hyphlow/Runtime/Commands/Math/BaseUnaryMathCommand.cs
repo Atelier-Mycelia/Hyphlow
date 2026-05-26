@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -13,10 +14,12 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("Value to be passed in to the function.")]
         [SerializeField]
+[FormerlySerializedAs("inValue")]
         protected FloatData inValue;
 
         [Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
         
         public override Color GetButtonColor()

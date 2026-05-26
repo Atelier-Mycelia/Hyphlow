@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -22,11 +22,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             get
             {
-                if (legacyTypes == null || legacyTypes.Count == 0)
+                if (_legacyTypes == null || _legacyTypes.Count == 0)
                 {
                     RefreshVariableTypeCache();
                 }
-                return legacyTypes;
+                return _legacyTypes;
             }
         }
 
@@ -34,19 +34,19 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             get
             {
-                if (muscariTypes == null || muscariTypes.Count == 0)
+                if (_muscariTypes == null || _muscariTypes.Count == 0)
                 {
                     RefreshVariableTypeCache();
                 }
-                return muscariTypes;
+                return _muscariTypes;
             }
         }
 
         /// <summary>
         /// Flowchart in context for adding variables. (Set by DoAddVariable / legacy menu path.)
         /// </summary>
-        protected static Flowchart curFlowchart;
-        protected static IMuscariableSource curSource;
+        protected static Flowchart _curFlowchart;
+        protected static IMuscariableSource _curSource;
 
         #region Lifecycle & Caching
 
@@ -62,9 +62,9 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected static void RefreshVariableTypeCache()
         {
             // Using registry instead of reflection scan for performance / determinism.
-            legacyTypes = VariableTypeRegistry.AllLegacyTypes.Where(ShouldBeShownInMenu).ToList();
-            muscariTypes = VariableTypeRegistry.AllMuscariableTypes.Where(ShouldBeShownInMenu).ToList();
-            allTypes = legacyTypes.Concat(muscariTypes).ToList();
+            _legacyTypes = VariableTypeRegistry.AllLegacyTypes.Where(ShouldBeShownInMenu).ToList();
+            _muscariTypes = VariableTypeRegistry.AllMuscariableTypes.Where(ShouldBeShownInMenu).ToList();
+            _allTypes = _legacyTypes.Concat(_muscariTypes).ToList();
             bool ShouldBeShownInMenu(Type varType)
             {
                 bool result = false;
@@ -78,7 +78,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
 
         // Cached list of concrete variable component types (legacy Variable system)
-        protected static IReadOnlyList<Type> legacyTypes, muscariTypes, allTypes;
+        protected static IReadOnlyList<Type> _legacyTypes, _muscariTypes, _allTypes;
 
         #endregion
 
@@ -127,7 +127,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     string display = MakeDisplayLabel(info);
 
                     // The original index into VariableTypes is preserved in 'typeIndex'.
-                    allItems.Add(new FilteredListItem(typeIndex, display));
+                    _allItems.Add(new FilteredListItem(typeIndex, display));
                 }
             }
         }
@@ -176,8 +176,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                                          string currentHandlerName,
                                          Flowchart toAddVarTo)
         {
-            curFlowchart = toAddVarTo;
-            curSource = toAddVarTo;
+            _curFlowchart = toAddVarTo;
+            _curSource = toAddVarTo;
 
             if (!HyphlowEditorPreferences.useLegacyMenus)
             {
@@ -186,7 +186,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             // Always build / show the legacy menu (mirrors CommandSelector pattern).
-            ShowLegacyMenu(curFlowchart);
+            ShowLegacyMenu(_curFlowchart);
         }
 
         protected const int POPUP_WIDTH = 200;
@@ -195,8 +195,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         public static void DoAddVariable(Rect position, string currentHandlerName,
             IMuscariableSource toAddVarTo, System.Action onVarAdded = null)
         {
-            curFlowchart = null;
-            curSource = toAddVarTo;
+            _curFlowchart = null;
+            _curSource = toAddVarTo;
 
             if (!HyphlowEditorPreferences.useLegacyMenus)
             {
@@ -216,7 +216,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// </summary>
         protected static void ShowLegacyMenu(Flowchart flowchart)
         {
-            GenericMenu menu = PrepMenu(allTypes);
+            GenericMenu menu = PrepMenu(_allTypes);
             menu.ShowAsContext();
         }
 
@@ -250,7 +250,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public static void ShowLegacyMenu(IVariableSource variableSource)
         {
-            GenericMenu menu = PrepMenu(muscariTypes);
+            GenericMenu menu = PrepMenu(_muscariTypes);
             menu.ShowAsContext();
         }
 
@@ -273,7 +273,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static UnityObj ResolveRecordTarget()
         {
-            if (curSource is Flowchart flowchart)
+            if (_curSource is Flowchart flowchart)
             {
                 VariableManagerComponent manager = flowchart.GetComponent<VariableManagerComponent>();
                 if (manager != null)
@@ -284,7 +284,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return flowchart;
             }
 
-            return curSource as UnityObj;
+            return _curSource as UnityObj;
         }
 
         private static void MarkDirty(UnityObj target)
@@ -321,7 +321,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             UnityObj varSourceObj = ResolveRecordTarget();
-            if (varSourceObj == null || curSource == null)
+            if (varSourceObj == null || _curSource == null)
             {
                 return;
             }
@@ -343,7 +343,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             Undo.RecordObject(varSourceObj, $"Add {typeName} Variable");
-            curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
+            _curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
             MarkDirty(varSourceObj);
         }
 

@@ -23,7 +23,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected StringData _parameterName;
 
         [Tooltip("The float value to set the parameter to")]
-        [SerializeField] protected FloatData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected FloatData value;
 
         protected override void RefreshVariableDataCache()
         {

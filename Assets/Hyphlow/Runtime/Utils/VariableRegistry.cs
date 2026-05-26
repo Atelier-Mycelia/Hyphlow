@@ -28,7 +28,7 @@ namespace AtMycelia.Hyphlow
 
         public VariableRegistry(Func<IReadOnlyList<VariableSourceAsset>> globalSourcesProvider)
         {
-            _globalSourcesProvider = globalSourcesProvider ?? (() => emptySources);
+            _globalSourcesProvider = globalSourcesProvider ?? (() => _emptySources);
             Rebuild();
 #if UNITY_EDITOR
             ToggleEditorSubs(false);
@@ -102,7 +102,7 @@ namespace AtMycelia.Hyphlow
             {
                 IReadOnlyList<VariableSourceAsset> globalSources = _globalSourcesProvider()
                     .Where(source => source != null && source != localSource as UnityObj).ToArray();
-                globalSources ??= emptySources;
+                globalSources ??= _emptySources;
 
                 foreach (var source in globalSources)
                 {
@@ -192,7 +192,7 @@ namespace AtMycelia.Hyphlow
                 }
                 else
                 {
-                    result = emptyDict;
+                    result = _emptyDict;
                 }
 
             }
@@ -264,8 +264,8 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        private static readonly IReadOnlyList<VariableSourceAsset> emptySources = new List<VariableSourceAsset>();
-        private static readonly ReadOnlyDictionary<string, IVariable> emptyDict =
+        private static readonly IReadOnlyList<VariableSourceAsset> _emptySources = new List<VariableSourceAsset>();
+        private static readonly ReadOnlyDictionary<string, IVariable> _emptyDict =
             new ReadOnlyDictionary<string, IVariable>(new Dictionary<string, IVariable>());
     }
 }

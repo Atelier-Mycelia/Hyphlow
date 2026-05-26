@@ -7,10 +7,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class UIToolkitEventUtil
     {
-        private static readonly MethodInfo registerMethod =
+        private static readonly MethodInfo _registerMethod =
             typeof(CallbackEventHandler)
                 .GetMethod(nameof(CallbackEventHandler.RegisterCallback),
-                           flags,
+                           _flags,
                            null,
                            new[] { typeof(EventCallback<>), typeof(TrickleDown) },
                            null);
@@ -44,7 +44,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                                 : nameof(CallbackEventHandler.UnregisterCallback);
 
             var firstValidMethod = typeof(CallbackEventHandler)
-                .GetMethods(flags)
+                .GetMethods(_flags)
                 .First(elem => elem.Name == methodName &&
                             elem.IsGenericMethod &&
                             elem.GetParameters().Length >= 1);
@@ -59,6 +59,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             method.Invoke(element, new object[] { typedCallback, TrickleDown.NoTrickleDown });
         }
 
-        private static BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private static BindingFlags _flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
     }
 }

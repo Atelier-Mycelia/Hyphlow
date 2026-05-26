@@ -123,6 +123,7 @@ namespace AtMycelia.Hyphlow
 
         [SerializeField]
         [HideInInspector]
+[FormerlySerializedAs("output")]
         protected Vector3Data output;
     }
 }

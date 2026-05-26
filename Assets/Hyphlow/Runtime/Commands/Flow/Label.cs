@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -56,6 +57,7 @@ namespace AtMycelia.Hyphlow
         }
 
         [HideInInspector]
-        [SerializeField] protected string key = "";
+        [SerializeField] [FormerlySerializedAs("key")]
+protected string key = "";
     }
 }

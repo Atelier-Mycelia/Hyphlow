@@ -39,11 +39,11 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             #endregion
 
             #region Create Submodules
-            gridRenderer = new GridRenderer(context, gridDrawContext);
-            blockRenderer = new BlockRenderer(context, blockDrawer);
-            selectionBoxRenderer = new SelectionBoxRenderer(context);
-            var connectionDrawer = new ConnectionDrawer(new ConnectionGatherer(blockRenderer));
-            connectionRenderer = new ConnectionRenderer(context, connectionDrawer);
+            _gridRenderer = new GridRenderer(context, gridDrawContext);
+            _blockRenderer = new BlockRenderer(context, blockDrawer);
+            _selectionBoxRenderer = new SelectionBoxRenderer(context);
+            var connectionDrawer = new ConnectionDrawer(new ConnectionGatherer(_blockRenderer));
+            _connectionRenderer = new ConnectionRenderer(context, connectionDrawer);
             #endregion
 
             #region Position and Style
@@ -54,53 +54,53 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             #endregion
 
             #region Add visual elements
-            Add(gridRenderer);
-            Add(blockRenderer);
-            Add(connectionRenderer);
-            Add(selectionBoxRenderer);
+            Add(_gridRenderer);
+            Add(_blockRenderer);
+            Add(_connectionRenderer);
+            Add(_selectionBoxRenderer);
             #endregion
 
             #region Register Submodules
-            _submodules.Add(gridRenderer);
-            _submodules.Add(blockRenderer);
-            _submodules.Add(selectionBoxRenderer);
+            _submodules.Add(_gridRenderer);
+            _submodules.Add(_blockRenderer);
+            _submodules.Add(_selectionBoxRenderer);
             _submodules.Add(_repaintTriggerer);
-            _submodules.Add(connectionRenderer);
+            _submodules.Add(_connectionRenderer);
             #endregion
         }
 
-        private readonly GridRenderer gridRenderer;
-        private readonly BlockRenderer blockRenderer;
-        private readonly SelectionBoxRenderer selectionBoxRenderer;
-        private readonly ConnectionRenderer connectionRenderer;
+        private readonly GridRenderer _gridRenderer;
+        private readonly BlockRenderer _blockRenderer;
+        private readonly SelectionBoxRenderer _selectionBoxRenderer;
+        private readonly ConnectionRenderer _connectionRenderer;
         private readonly FcWindowRepaintTriggerer _repaintTriggerer = new FcWindowRepaintTriggerer();
-        private bool isDisposed;
+        private bool _isDisposed;
 
         private readonly IList<IFlowchartWindowModule> _submodules = new List<IFlowchartWindowModule>();
         // ^ Cache of all submodules for easy iteration in event handlers.
         public IReadOnlyList<IFlowchartWindowModule> Submodules => (IReadOnlyList<IFlowchartWindowModule>)_submodules;
         public void Initialize(FlowchartWindow window)
         {
-            gridRenderer.Initialize(window);
-            connectionRenderer.Initialize(window);
-            blockRenderer.Initialize(window);
-            selectionBoxRenderer.Initialize(window);
+            _gridRenderer.Initialize(window);
+            _connectionRenderer.Initialize(window);
+            _blockRenderer.Initialize(window);
+            _selectionBoxRenderer.Initialize(window);
         }
 
         public void RefreshNow()
         {
-            gridRenderer.RefreshNow();
-            blockRenderer.RefreshBlocks();
+            _gridRenderer.RefreshNow();
+            _blockRenderer.RefreshBlocks();
         }
 
         public void Dispose()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }
 
-            isDisposed = true;
+            _isDisposed = true;
             for (int i = 0; i < _submodules.Count; i++)
             {
                 _submodules[i].Dispose();
@@ -219,7 +219,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void ResetVisuals()
         {
-            if (isDisposed)
+            if (_isDisposed)
             {
                 return;
             }

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -15,10 +16,12 @@ namespace AtMycelia.Hyphlow
     public class SetSortingLayer : Command 
     {
         [Tooltip("Root Object that will have the Sorting Layer set. Any children will also be affected")]
-        [SerializeField] protected GameObject targetObject;
+        [SerializeField] [FormerlySerializedAs("targetObject")]
+protected GameObject targetObject;
         
         [Tooltip("The New Layer Name to apply")]
-        [SerializeField] protected string sortingLayer;
+        [SerializeField] [FormerlySerializedAs("sortingLayer")]
+protected string sortingLayer;
 
         protected void ApplySortingLayer(Transform target, string layerName) 
         {

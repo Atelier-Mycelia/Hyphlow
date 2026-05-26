@@ -9,11 +9,11 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public class SelectionState : IDisposable
     {
-        private static readonly IList<IBlock> EmptyBlocks = Array.Empty<Block>();
+        private static readonly IList<IBlock> _EmptyBlocks = Array.Empty<Block>();
 
         public Flowchart Flowchart { get; set; }
 
-        public IList<IBlock> Blocks => Flowchart != null ? Flowchart.SelectedBlocks : EmptyBlocks;
+        public IList<IBlock> Blocks => Flowchart != null ? Flowchart.SelectedBlocks : _EmptyBlocks;
 
         public int BlockCount => Flowchart != null ? 
             Flowchart.SelectedBlockCount :

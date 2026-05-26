@@ -9,15 +9,15 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public sealed class BlockInspectorSynchronization
     {
-        private readonly Func<Flowchart> flowchartProvider;
-        private readonly Action<IBlock> blockSelector;
+        private readonly Func<Flowchart> _flowchartProvider;
+        private readonly Action<IBlock> _blockSelector;
 
         public BlockInspectorSynchronization(
             Func<Flowchart> flowchartProvider,
             Action<IBlock> blockSelector = null)
         {
-            this.flowchartProvider = flowchartProvider ?? throw new ArgumentNullException(nameof(flowchartProvider));
-            this.blockSelector = blockSelector;
+            this._flowchartProvider = flowchartProvider ?? throw new ArgumentNullException(nameof(flowchartProvider));
+            this._blockSelector = blockSelector;
         }
 
         public IBlock LastShownBlock { get; private set; }
@@ -38,7 +38,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            if (blockSelector != null)
+            if (_blockSelector != null)
             {
                 SelectBlock(block);
             }
@@ -111,9 +111,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private void SelectBlock(IBlock block)
         {
-            if (blockSelector != null && block != null)
+            if (_blockSelector != null && block != null)
             {
-                blockSelector(block);
+                _blockSelector(block);
             }
         }
 
@@ -131,6 +131,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        private Flowchart Flowchart => flowchartProvider != null ? flowchartProvider() : null;
+        private Flowchart Flowchart => _flowchartProvider != null ? _flowchartProvider() : null;
     }
 }

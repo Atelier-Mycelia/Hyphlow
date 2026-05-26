@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -32,16 +32,16 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public void Copy(IEnumerable<IBlock> blocks, bool isCut)
         {
-            origBlocks.Clear();
+            _origBlocks.Clear();
             _entries.Clear();
             IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy, isCut));
             _entries.AddRange(newEntries);
-            origBlocks.AddRange(blocks.ToList());
+            _origBlocks.AddRange(blocks.ToList());
         }
 
         public int EntryCount => _entries.Count;
         public bool HasEntries => _entries.Count > 0;
-        protected IList<IBlock> origBlocks = new List<IBlock>();
+        protected IList<IBlock> _origBlocks = new List<IBlock>();
 
         public virtual bool HasEntriesFor(IList<IBlock> blocks)
         {
@@ -60,7 +60,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public virtual bool HasEntryFor(IBlock block)
         {
-            bool result = (from elem in origBlocks
+            bool result = (from elem in _origBlocks
                            where elem.Equals(block)
                            select elem).Any();
             return result;
@@ -84,7 +84,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public virtual bool HasEntryWithID(int id)
         {
-            bool result = (from elem in origBlocks
+            bool result = (from elem in _origBlocks
                            where elem.ItemId == id
                            select elem).Any();
             return result;
@@ -153,7 +153,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     
         public virtual void Dispose()
         {
-            origBlocks.Clear();
+            _origBlocks.Clear();
             _entries.Clear();
             Window = null;
         }

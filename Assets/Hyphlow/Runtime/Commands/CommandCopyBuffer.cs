@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class CommandCopyBuffer : Block 
     {
-        protected static CommandCopyBuffer instance;
+        protected static CommandCopyBuffer _instance;
 
         protected virtual void Start()
         {
@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public static CommandCopyBuffer GetInstance()
         {
-            if (instance == null)
+            if (_instance == null)
             {
                 // Static variables are not serialized (e.g. when playing in the editor)
                 // We need to reaquire the static reference to the game object in this case
@@ -40,14 +40,14 @@ namespace AtMycelia.Hyphlow
                     go.hideFlags = HideFlags.HideAndDontSave;
                 }
 
-                instance = go.GetComponent<CommandCopyBuffer>();
-                if (instance == null)
+                _instance = go.GetComponent<CommandCopyBuffer>();
+                if (_instance == null)
                 {
-                    instance = go.AddComponent<CommandCopyBuffer>();
+                    _instance = go.AddComponent<CommandCopyBuffer>();
                 }
             }
 
-            return instance;
+            return _instance;
         }
 
         public virtual bool HasCommands()

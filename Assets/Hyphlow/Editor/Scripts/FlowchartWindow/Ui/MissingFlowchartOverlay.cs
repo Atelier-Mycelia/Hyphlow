@@ -7,13 +7,13 @@ namespace AtMycelia.Hyphlow.EditorExt
 {
     sealed class MissingFlowchartOverlay : IDisposable
     {
-        private readonly Action refreshHandler;
-        private UitkLabel errorLabel;
-        private Button refreshButton;
+        private readonly Action _refreshHandler;
+        private UitkLabel _errorLabel;
+        private Button _refreshButton;
 
         public MissingFlowchartOverlay(Action refreshHandler)
         {
-            this.refreshHandler = refreshHandler ?? throw new ArgumentNullException(nameof(refreshHandler));
+            this._refreshHandler = refreshHandler ?? throw new ArgumentNullException(nameof(refreshHandler));
         }
 
         public void Show(VisualElement root)
@@ -26,57 +26,57 @@ namespace AtMycelia.Hyphlow.EditorExt
             EnsureErrorLabel();
             EnsureRefreshButton();
 
-            if (errorLabel.parent == null)
+            if (_errorLabel.parent == null)
             {
-                root.Add(errorLabel);
+                root.Add(_errorLabel);
             }
 
-            if (refreshButton.parent == null)
+            if (_refreshButton.parent == null)
             {
-                root.Add(refreshButton);
+                root.Add(_refreshButton);
             }
         }
 
         public void Hide()
         {
-            errorLabel?.RemoveFromHierarchy();
-            refreshButton?.RemoveFromHierarchy();
+            _errorLabel?.RemoveFromHierarchy();
+            _refreshButton?.RemoveFromHierarchy();
         }
 
         public void Dispose()
         {
             Hide();
-            errorLabel = null;
-            refreshButton = null;
+            _errorLabel = null;
+            _refreshButton = null;
         }
 
         private void EnsureErrorLabel()
         {
-            if (errorLabel != null)
+            if (_errorLabel != null)
             {
                 return;
             }
 
-            errorLabel = new UitkLabel("No Flowcharts found in the scene. ");
-            errorLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
-            errorLabel.style.fontSize = 48;
-            errorLabel.style.color = Color.yellow;
+            _errorLabel = new UitkLabel("No Flowcharts found in the scene. ");
+            _errorLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
+            _errorLabel.style.fontSize = 48;
+            _errorLabel.style.color = Color.yellow;
         }
 
         private void EnsureRefreshButton()
         {
-            if (refreshButton != null)
+            if (_refreshButton != null)
             {
                 return;
             }
 
-            refreshButton = new Button(refreshHandler);
-            refreshButton.text = "Refresh";
-            refreshButton.style.alignSelf = Align.Center;
+            _refreshButton = new Button(_refreshHandler);
+            _refreshButton.text = "Refresh";
+            _refreshButton.style.alignSelf = Align.Center;
             Vector2 buttonSize = new Vector2(200, 50);
-            refreshButton.style.width = buttonSize.x;
-            refreshButton.style.height = buttonSize.y;
-            refreshButton.style.fontSize = 24;
+            _refreshButton.style.width = buttonSize.x;
+            _refreshButton.style.height = buttonSize.y;
+            _refreshButton.style.fontSize = 24;
         }
     }
 

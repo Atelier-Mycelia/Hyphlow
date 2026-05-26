@@ -66,8 +66,8 @@ namespace VScriptingTests.VariableOperations
             };
             _view = new VariableListView(listViewArgs);
 
-            _fiVariables = viewType.GetField("varsToDisplay", bindingFlags);
-            Assert.NotNull(_fiVariables, "varsToDisplay field not found");
+            _fiVariables = viewType.GetField("_varsToDisplay", bindingFlags);
+            Assert.NotNull(_fiVariables, "_varsToDisplay field not found");
 
             _miOnItemIndexChanged = viewType.GetMethod("OnItemReordered", bindingFlags);
             Assert.NotNull(_miOnItemIndexChanged, "OnItemReordered method not found");

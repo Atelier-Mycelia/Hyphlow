@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -14,11 +15,13 @@ namespace AtMycelia.Hyphlow
     public class ReadTextFile : Command
     {
         [Tooltip("Text file to read into the string variable")]
-        [SerializeField] protected TextAsset textFile;
+        [SerializeField] [FormerlySerializedAs("textFile")]
+protected TextAsset textFile;
 
         [Tooltip("String variable to store the tex file contents in")]
         [VariableProperty(typeof(StringVariable))]
-        [SerializeField] protected StringVariable stringVariable;
+        [SerializeField] [FormerlySerializedAs("stringVariable")]
+protected StringVariable stringVariable;
 
         #region Public members
 

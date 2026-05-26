@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,8 +13,10 @@ namespace AtMycelia.Hyphlow
 [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class TextToFloat : Command
     {
-        [SerializeField] protected GameObjectData hasTextField;
-        [SerializeField] [VariableProperty(typeof(FloatVariable))] protected FloatVariable output;
+        [SerializeField] [FormerlySerializedAs("hasTextField")]
+protected GameObjectData hasTextField;
+        [SerializeField] [VariableProperty(typeof(FloatVariable))] [FormerlySerializedAs("output")]
+protected FloatVariable output;
 
         protected override void RefreshVariableDataCache()
         {

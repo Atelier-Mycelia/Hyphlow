@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -16,12 +17,18 @@ namespace AtMycelia.Hyphlow
     {
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("initialRangeLower")]
+[FormerlySerializedAs("initialRangeUpper")]
+[FormerlySerializedAs("value")]
         protected FloatData initialRangeLower = new FloatData(0), initialRangeUpper = new FloatData(1), value;
         
         [SerializeField]
+[FormerlySerializedAs("newRangeLower")]
+[FormerlySerializedAs("newRangeUpper")]
         protected FloatData newRangeLower = new FloatData(0), newRangeUpper = new FloatData(1);
         
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()
