@@ -214,8 +214,9 @@ protected int version = 0;
                 yield break;
             }
 
-            foreach (var elem in gsEventHandler)//
+            for (int i = 0; i < gsEventHandler.Count; i++)
             {
+                var elem = gsEventHandler[i];
                 elem.Trigger();
             }
         }
@@ -259,14 +260,8 @@ protected int version = 0;
 
         public event Action<IVariable> VariableAdded
         {
-            add
-            {
-                _varManager.VariableAdded += value;
-            }
-            remove
-            {
-                _varManager.VariableAdded -= value;
-            }
+            add => _varManager.VariableAdded += value;
+            remove => _varManager.VariableAdded -= value;
         }
 
         private void OnVarRemoved(IVariable removed)
@@ -276,25 +271,15 @@ protected int version = 0;
 
         public event Action<IVariable> VariableRemoved
         {
-            add
-            {
-                _varManager.VariableRemoved += value;
-            }
-            remove
-            {
-                _varManager.VariableRemoved -= value;
-            }
+            add => _varManager.VariableRemoved += value;
+            remove => _varManager.VariableRemoved -= value;
         }
 
         public int VariableCount
         {
             get
             {
-                if (_varManager == null)
-                {
-                    _varManager = gameObject.GetOrAddComponent<VariableManagerComponent>();
-                }
-
+                EnsureSubmanagerComponents();
                 return _varManager.Variables.Count;
             }
         }
@@ -312,7 +297,7 @@ protected int version = 0;
                 //return PrefabStageUtility.GetPrefabStage(gameObject) == null;
                 return true;
 #else
-        return true;
+            return true;
 #endif
             }
         }
@@ -322,25 +307,25 @@ protected int version = 0;
             EnsureSubmanagerComponents();
 
             AssertUniqueID();
-            AssertOwnership();//
-#if UNITY_EDITOR
+            AssertOwnership();
             RefreshEditorCaches();
-#endif
             CleanupComponents();
             UpdateVersion();
         }
 
-#if UNITY_EDITOR
+
         private void RefreshEditorCaches()
         {
+#if UNITY_EDITOR
             if (Application.IsPlaying(this))
             {
                 return;
             }
 
             RefreshBlockAndCommandCache();
-        }
 #endif
+        }
+
 
         public IVariableManager VariableManager
         {
@@ -476,9 +461,10 @@ protected byte nextValidVarID = 1;
             {
                 var eventHandler = eventHandlers[i];
                 bool found = false;
-                foreach (IBlock block in _blockManager.Blocks)
+                for (int j = 0; j < Blocks.Count; j++)
                 {
-                    if (block != null && ReferenceEquals(block.EventHandler, eventHandler))
+                    var blockEl = Blocks[j];
+                    if (blockEl != null && ReferenceEquals(blockEl.EventHandler, eventHandler))
                     {
                         found = true;
                         break;
@@ -513,16 +499,18 @@ protected byte nextValidVarID = 1;
                 }
             }
 
-            foreach (IBlock blockEl in Blocks)
+            var currentBlocks = Blocks; // Cached here to reduce garbo
+            for (int i = 0; i < currentBlocks.Count; i++)
             {
+                var blockEl = currentBlocks[i];
                 if (blockEl == null || blockEl.EventHandler != null)
                 {
                     continue;
                 }
 
-                for (int i = 0; i < eventHandlers.Length; i++)
+                for (int j = 0; j < eventHandlers.Length; j++)
                 {
-                    var eventHandler = eventHandlers[i];
+                    var eventHandler = eventHandlers[j];
                     if (eventHandler != null && ReferenceEquals(eventHandler.ParentBlock, blockEl))
                     {
                         blockEl.EventHandler = eventHandler;
@@ -893,14 +881,8 @@ protected byte nextValidVarID = 1;
 
         public virtual bool AlwaysKeepGuid
         {
-            get
-            {
-                return _alwaysKeepGuid;
-            }
-            set
-            {
-                _alwaysKeepGuid = value;
-            }
+            get => _alwaysKeepGuid;
+            set => _alwaysKeepGuid = value;
         }
 
         public string Name
@@ -913,12 +895,11 @@ protected byte nextValidVarID = 1;
         {
             get
             {
-#if UNITY_EDITOR
                 if (this == null) // Possible in unit tests
                 {
                     return Array.Empty<IVariable>();
                 }
-#endif
+
                 EnsureSubmanagerComponents();
                 _varManager.Owner = this;
                 return VariableManager.Variables;

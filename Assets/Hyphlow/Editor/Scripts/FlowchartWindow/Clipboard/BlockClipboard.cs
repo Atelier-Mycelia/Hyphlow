@@ -47,8 +47,9 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             bool result = true;
 
-            foreach (var elem in blocks)
+            for (int i = 0; i < blocks.Count; i++)
             {
+                IBlock elem = blocks[i];
                 if (!HasEntryFor(elem))
                 {
                     result = false; break;
@@ -139,8 +140,9 @@ namespace AtMycelia.Hyphlow.EditorExt
                 : (worldMouse - copiedCenter);
 
             // 4) Move each block and re‐select it
-            foreach (var elem in pasted)
+            for (int i = 0; i < pasted.Count; i++)
             {
+                IBlock elem = pasted[i];
                 var elemRect = elem._NodeRect;
                 elemRect.position += delta;
                 elem._NodeRect = elemRect;

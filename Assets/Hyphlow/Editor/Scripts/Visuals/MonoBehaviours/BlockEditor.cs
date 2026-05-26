@@ -641,8 +641,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
 			flowchart.ClearSelectedCommands();
 			Undo.RecordObject(flowchart, "Select All");
-			foreach (Command command in flowchart.SelectedBlock.CommandList)
+			for (int i = 0; i < block.CommandList.Count; i++)
 			{
+				var command = block.CommandList[i];
 				flowchart.AddSelectedCommand(command);
 			}
 
@@ -681,20 +682,23 @@ namespace AtMycelia.Hyphlow.EditorExt
 			// Scan through all commands in execution order to see if each needs to be copied
 			var commandList = flowchart.SelectedBlock.CommandList;
 			var selectedCommands = flowchart.SelectedCommands;
-			foreach (Command command in commandList)
+			for (int i = 0; i < commandList.Count; i++)
 			{
+				ICommand command = commandList[i];
+				
 				if (selectedCommands.Contains(command))
 				{
 					var type = command.GetType();
 					Command newCommand = Undo.AddComponent(commandCopyBuffer.gameObject, type) as Command;
 					var fields = type.GetFields(_commandBindingFlags);
-					foreach (var field in fields)
+					for (int j = 0; j < fields.Length; j++)
 					{
+						var fieldEl = fields[j];
 						// Copy all public fields
-						bool copy = field.IsPublic;
+						bool copy = fieldEl.IsPublic;
 
 						// Copy non-public fields that have the SerializeField attribute
-						var attributes = field.GetCustomAttributes(_serializeFieldType, true);
+						var attributes = fieldEl.GetCustomAttributes(_serializeFieldType, true);
 						if (attributes.Length > 0)
 						{
 							copy = true;
@@ -702,7 +706,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
 						if (copy)
 						{
-							field.SetValue(newCommand, field.GetValue(command));
+							fieldEl.SetValue(newCommand, fieldEl.GetValue(command));
 						}
 					}
 				}
@@ -732,9 +736,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 				{
 					ICommand command = commandList[i];
 
-					foreach (ICommand selectedCommand in selectedCommands)
+					for (int j = 0; j < selectedCommands.Count; j++)
 					{
-						if (command == selectedCommand)
+						var selectedCommandEl = selectedCommands[j];
+						if (command == selectedCommandEl)
 						{
 							pasteIndex = i + 1;
 						}
@@ -742,11 +747,13 @@ namespace AtMycelia.Hyphlow.EditorExt
 				}
 			}
 
-			foreach (Command command in commandCopyBuffer.GetCommands())
-			{
-				// Using the Editor copy / paste functionality instead instead of reflection
-				// because this does a deep copy of the command properties.
-				if (ComponentUtility.CopyComponent(command))
+			var bufferCommands = commandCopyBuffer.GetCommands();
+            for (int i = 0; i < bufferCommands.Length; i++)
+            {
+				var command = bufferCommands[i];
+                // Using the Editor copy / paste functionality instead instead of reflection
+                // because this does a deep copy of the command properties.
+                if (ComponentUtility.CopyComponent(command))
 				{
 					if (ComponentUtility.PasteComponentAsNew(flowchart.gameObject))
 					{
@@ -756,8 +763,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 							null;
 						if (pastedCommand != null)
 						{
-							flowchart.SelectedBlock.Add(pastedCommand, true);
-							flowchart.SelectedBlock.CommandList.Insert(pasteIndex++, pastedCommand);
+						   flowchart.SelectedBlock.Insert(pastedCommand, (byte)pasteIndex++, true);
 						}
 					}
 
@@ -786,8 +792,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 			for (int i = commandList.Count - 1; i >= 0; --i)
 			{
 				ICommand command = commandList[i];
-				foreach (ICommand selectedCommand in flowchart.SelectedCommands)
+				for (int j = 0; j < flowchart.SelectedCommands.Count; j++)
 				{
+					var selectedCommand = flowchart.SelectedCommands[j];
 					if (command == selectedCommand)
 					{
 						command.OnCommandRemoved(block);
@@ -884,8 +891,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 				{
 					ICommand commandInBlock = flowchart.SelectedBlock.CommandList[i];
 
-					foreach (ICommand selectedCommand in flowchart.SelectedCommands)
+					for (int j = 0; j < flowchart.SelectedCommands.Count; j++)
 					{
+						var selectedCommand = flowchart.SelectedCommands[j];
 						if (commandInBlock == selectedCommand)
 						{
 							if (!firstSelectedCommandFound)
@@ -923,8 +931,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 				{
 					ICommand commandInBlock = commandList[i];
 
-					foreach (ICommand selectedCommand in flowchart.SelectedCommands)
+					for (int j = 0; j < flowchart.SelectedCommands.Count; j++)
 					{
+						var selectedCommand = flowchart.SelectedCommands[j];
+						
 						if (commandInBlock == selectedCommand)
 						{
 							lastSelectedIndex = i;
@@ -983,11 +993,13 @@ namespace AtMycelia.Hyphlow.EditorExt
 		{
 			Dictionary<string, KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = new Dictionary<string, KeyValuePair<Type, CommandInfoAttribute>>();
 
-			foreach (Type type in menuTypes)
+			for (int i = 0; i < menuTypes.Count; i++)
 			{
+				var type = menuTypes[i];
 				object[] attributes = type.GetCustomAttributes(false);
-				foreach (object obj in attributes)
+				for (int j = 0; j < attributes.Length; j++)
 				{
+					var obj = attributes[j];
 					CommandInfoAttribute infoAttr = obj as CommandInfoAttribute;
 					if (infoAttr != null)
 					{

@@ -56,7 +56,7 @@ namespace VScriptingTests.FCWindowOperations
         public IEnumerator NoCommandInfoAttribute_EarlyReturn_NoReorderableLists()
         {
             var cmd = _host.AddComponent<NoInfoCommand>();
-            _block.CommandList.Add(cmd);
+            _block.Add(cmd, triggerSignals: false);
 
             _editor = Editor.CreateEditor(cmd, typeof(CommandEditor)) as CommandEditor;
             Assert.NotNull(_editor, "Failed to create CommandEditor.");
@@ -120,7 +120,7 @@ namespace VScriptingTests.FCWindowOperations
                                   "(not under an Editor folder).";
             Assert.NotNull(_dummyArrayCommand, errorMessage);
 
-            _block.CommandList.Add(_dummyArrayCommand);
+            _block.Add(_dummyArrayCommand, triggerSignals: false);
 
             var rawEditor = Editor.CreateEditor(_dummyArrayCommand, typeof(CommandEditor));
             errorMessage = $"Editor.CreateEditor returned null. Target={_dummyArrayCommand.GetType().FullName}, " +

@@ -133,8 +133,9 @@ namespace AtMycelia.Hyphlow
 
         public static Type MuscariTypeByName(string typeName)
         {
-            foreach (var muscariType in _muscariableTypes)
+            for (int i = 0; i < _muscariableTypes.Count; i++)
             {
+                Type muscariType = _muscariableTypes[i];
                 if (muscariType.Name == typeName)
                 {
                     return muscariType;
