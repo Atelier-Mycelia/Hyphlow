@@ -74,7 +74,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
 
-            List<IVariable> candidates = validVarsInScene.Values.ToList();
+            List<IVariable> candidates = new List<IVariable>(validVarsInScene.Values);
             string[] options = validVarsInScene.Keys
                 .Prepend("<None>")
                 .ToArray();

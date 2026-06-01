@@ -1168,6 +1168,12 @@ protected byte nextValidVarID = 1;
 
         public bool Add(IBlock block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
 
+        public override string ToString()
+        {
+            string result = $"Flowchart: {name}, ID: {UniqueId}";
+            return result;
+        }
+
     }
     
 }

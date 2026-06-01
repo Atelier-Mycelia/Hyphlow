@@ -113,11 +113,6 @@ namespace AtMycelia.Hyphlow
                     return null;
                 }
 
-                if (_owner == null || _owner is not Flowchart)
-                {
-                    _owner = GetComponent<Flowchart>();
-                }
-
                 return _owner as Flowchart;
             }
         }
@@ -177,6 +172,7 @@ namespace AtMycelia.Hyphlow
         
         protected virtual void Awake()
         {
+            _owner = GetComponent<Flowchart>();
             Refresh();
         }
 
@@ -737,36 +733,30 @@ namespace AtMycelia.Hyphlow
             if (_owner == null)
             {
                 EditorApplication.delayCall += () =>
+                {
+                    if (this == null)
                     {
-                        if (this == null)
-                        {
-                            return;
-                        }
-                        _owner = GetComponent<Flowchart>();
-                    };
+                        return;
+                    }
+                    _owner = GetComponent<Flowchart>();
+                };
             }
 #endif
         }
 
         public virtual void OnAfterDeserialize()
         {
-#if UNITY_EDITOR
-            MigrateLegacyHandler();
-            void MigrateLegacyHandler()
+        }
+
+        public override string ToString()
+        {
+            string result = $"Block: {BlockName} (Id: {ItemId})";
+
+            if (this.ParentFlowchart != null)
             {
-                if (_legacyEventHandler != null)
-                {
-                    EditorApplication.delayCall += () =>
-                    {
-                        if (this != null && _legacyEventHandler != null)
-                        {
-                            EventHandler = _legacyEventHandler;
-                            _legacyEventHandler = null;
-                        }
-                    };
-                }
+                result += $" in Flowchart: {this.ParentFlowchart.name}";
             }
-#endif
+            return result;
         }
     }
 }

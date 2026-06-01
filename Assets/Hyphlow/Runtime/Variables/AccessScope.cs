@@ -5,16 +5,17 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Scope types for variables, Blocks, anything that is meant to have its
     /// access and visibility controlled. The exact meaning of these scopes
-    /// can vary based on the context in which they are used, but in general...
-    /// Private = only accessible within the local context (e.g., a specific Flowchart).
+    /// can vary based on the context in which they are used, but in general... 
+    /// <br></br> <br></br>
+    /// Private = only accessible within the local context (e.g., a specific Flowchart). <br></br>
     /// Public = accessible from any context that can refer to the container of
     /// whatever has a VScriptScope. For example, if a Flowchart has a public variable,
     /// then any other Flowchart in the scene should be able to access that variable
-    /// by referring to the Flowchart that contains it.
+    /// by referring to the Flowchart that contains it. <br></br>
     /// Global = accessible from anywhere, but in practice, all global IVariables
-    /// should be stored in a VariableSourceAsset.
+    /// should be stored in a VariableSourceAsset. <br></br>
     /// Null = not used for variables, but included for completeness and
-    /// potential future use.
+    /// potential future use. <br></br>
     /// </summary>
     [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core", "VScriptScope")]
     public enum AccessScope

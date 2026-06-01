@@ -66,6 +66,10 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("callMode")]
         [SerializeField] protected CallMode _callMode = CallMode.WaitUntilFinished;
 
+        protected override void Awake()
+        {
+            base.Awake();
+        }
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
@@ -83,40 +87,61 @@ namespace AtMycelia.Hyphlow
         /// If _targetFlowchart is null and _targetBlock is not null, the owning Flowchart
         /// is assumed to be this command's Flowchart as the intended target owner.
         /// </summary>
-        private void MigrateLegacyFieldsToBlockRef()
+        private bool MigrateLegacyFieldsToBlockRef()
         {
+            EnsureTargetBlockReference();
+
+            bool hasLegacyData = _targetBlock != null || _targetFlowchart != null;
+            if (!hasLegacyData)
+            {
+                return false; // Important: do not overwrite existing block reference data.
+            }
+
+            bool migrated = false;
+
             if (_targetBlock != null)
             {
-                _targetBlockReference.BlockOwner = _targetBlock.ParentFlowchart;
                 _targetBlockReference.Block = _targetBlock;
+
+                Flowchart resolvedOwner = _targetFlowchart ??
+                    _targetBlock.ParentFlowchart ??
+                    _targetBlock.GetFlowchart();
+
+                if (resolvedOwner != null)
+                {
+                    _targetBlockReference.BlockOwner = resolvedOwner;
+                }
+
+                migrated = _targetBlockReference.ItemId != Block.InvalidId &&
+                    _targetBlockReference.BlockOwner != null;
             }
             else if (_targetFlowchart != null)
             {
                 _targetBlockReference.Block = null;
                 _targetBlockReference.BlockOwner = _targetFlowchart;
-            }
-            else
-            {
-                _targetBlockReference.Block = null;
-                _targetBlockReference.BlockOwner = ParentBlock?.ParentFlowchart;
+                migrated = true;
             }
 
-            // So we only migrate once
+            if (!migrated)
+            {
+                return false; // Keep legacy fields so we can retry later.
+            }
+
             _targetBlock = null;
             _targetFlowchart = null;
+
 #if UNITY_EDITOR
             EditorApplication.delayCall += () =>
             {
-                if (this == null)
+                if (this != null)
                 {
-                    return;
+                    EditorUtility.SetDirty(this);
                 }
-                EditorUtility.SetDirty(this);
             };
 #endif
-        }
 
-        #region Public members
+            return true;
+        }
 
         public override void OnEnter()
         {
@@ -221,16 +246,27 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                bool belongsToAnotherFlowchart = block.ParentFlowchart != null && 
+                string blockName = block.BlockName;
+                if (blockName.Length > 18)
+                {
+                    blockName = blockName.Substring(0, 15) + "...";
+                }
+                string flowchartName = block.ParentFlowchart != null ? 
+                    block.ParentFlowchart.name : 
+                    "No Flowchart";
+                bool belongsToAnotherFlowchart = block.ParentFlowchart != null &&
                     block.ParentFlowchart != this.ParentBlock.ParentFlowchart;
-                if (belongsToAnotherFlowchart)
+                if (!belongsToAnotherFlowchart)
                 {
-                    result = $"{block.ParentFlowchart.name}.{block.BlockName}";
+                    flowchartName = "this";
                 }
-                else
+                
+                if (flowchartName.Length > 18)
                 {
-                    result = block.BlockName;
+                    flowchartName = flowchartName.Substring(0, 15) + "...";
                 }
+
+                result = $"{flowchartName}.{blockName}";
             }
             return result;
         }
@@ -252,12 +288,10 @@ namespace AtMycelia.Hyphlow
             return ReferenceEquals(block, _targetBlockReference.Block);
         }
 
-        #endregion
-
         protected override void OnValidate()
         {
             base.OnValidate();
-            MigrateLegacyFieldsToBlockRef();
+            //MigrateLegacyFieldsToBlockRef();
         }
 
         public override void ApplyBackwardsCompatibility()
@@ -278,24 +312,38 @@ namespace AtMycelia.Hyphlow
         protected override void DelayedOnValidate()
         {
             base.DelayedOnValidate();
+
             if (_callMode == CallMode.Null)
             {
                 _callMode = CallMode.Stop;
             }
+
+            MigrateLegacyFieldsToBlockRef();
         }
 
         public override void OnBeforeSerialize()
         {
             base.OnBeforeSerialize();
-            EnsureTargetBlockReference();
-            MigrateLegacyFieldsToBlockRef();
         }
 
         public override void OnAfterDeserialize()
         {
             base.OnAfterDeserialize();
             EnsureTargetBlockReference();
+
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+
+                MigrateLegacyFieldsToBlockRef();
+            };
+#else
             MigrateLegacyFieldsToBlockRef();
+#endif
         }
     }
 }
