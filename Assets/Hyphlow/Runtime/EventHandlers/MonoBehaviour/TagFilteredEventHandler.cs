@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -55,6 +56,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Only fire the event if one of the tags match. Empty means any will fire.")]
         [SerializeField]
         [HideInInspector]
+[FormerlySerializedAs("tagFilter")]
         protected string[] tagFilter;
     }
 }

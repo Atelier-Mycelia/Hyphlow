@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "ToVector2",
                  "Convert Hyphlow Vector3 to Hyphlow Vector2")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3ToVector2 : Command
     {
         [SerializeField]
@@ -49,7 +49,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (ReferenceEquals(variable, _vecThree.Variable) || 
                 ReferenceEquals(variable, _vecTwo.Variable))

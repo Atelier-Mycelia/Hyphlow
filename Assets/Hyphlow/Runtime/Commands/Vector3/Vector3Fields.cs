@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Fields",
                  "Get or Set the x,y,z fields of a vector3 via floatvars")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3Fields : Command
     {
         public enum GetSet
@@ -94,7 +94,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (ReferenceEquals(_vec3Var.Variable, variable) || 
                 ReferenceEquals(_x.VarRef, variable) || 
@@ -108,20 +108,20 @@ namespace AtMycelia.Hyphlow
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
-            if (vec3 != null)
+            if (_vec3 != null)
             {
-                if (vec3.RepresentingVar)
+                if (_vec3.RepresentingVar)
                 {
-                    _vec3Var.Variable = vec3.VarRef;
+                    _vec3Var.Variable = _vec3.VarRef;
                 }
 
-                vec3 = null;
+                _vec3 = null;
             }
         }
 
         [SerializeField]
         [FormerlySerializedAs("vec3")]
         [HideInInspector]
-        protected Vector3Data vec3;
+        protected Vector3Data _vec3;
     }
 }

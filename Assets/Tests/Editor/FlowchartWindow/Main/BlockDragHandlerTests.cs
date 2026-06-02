@@ -5,8 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow.EditorExt.FcWindow;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -135,8 +135,9 @@ namespace VScriptingTests.FCWindowOperations
         [TearDown]
         public virtual void TearDown()
         {
-            foreach (var obj in toDestroyInTearDown)
+            for (int i = 0; i < toDestroyInTearDown.Count; i++)
             {
+                var obj = toDestroyInTearDown[i];
                 if (obj != null)
                 {
                     UnityObject.DestroyImmediate(obj);

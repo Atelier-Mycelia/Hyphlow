@@ -4,11 +4,6 @@ using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
 using AtMycelia.Hyphlow.EditorExt;
-using UnityEngine.UIElements;
-using UnityEngine.WSA;
-
-
-
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -301,8 +296,9 @@ namespace AtMycelia.Hyphlow
 				return null;
 			}
 
-			foreach (Block block in _legacyBlocks)
+			for (int i = 0; i < _legacyBlocks.Count; i++)
 			{
+				Block block = _legacyBlocks[i];
 				if (block != null && block.BlockName == name)
 				{
 					return block;
@@ -325,8 +321,10 @@ namespace AtMycelia.Hyphlow
 				return false;
 			}
 			bool anyAdded = false;
-			foreach (Block block in blocks)
+			List<Block> blocksList = blocks as List<Block> ?? new List<Block>(blocks);
+			for (int i = 0; i < blocksList.Count; i++)
 			{
+				Block block = blocksList[i];
 				bool added = Add(block, triggerSignals);
 				anyAdded |= added;
 			}
@@ -540,13 +538,13 @@ namespace AtMycelia.Hyphlow
 		public IBlock CreateBlock(Vector2 position, string blockName = null,
 			bool triggerSignals = true)
 		{
-            #region Initialization
-            Component ownerAsComp = (Component)_blockOwner;
+			#region Initialization
+			Component ownerAsComp = (Component)_blockOwner;
 			Block created = ownerAsComp.gameObject.AddComponent<Block>();
 			ApplyDefaultConfigTo(created, position);
-            #endregion
+			#endregion
 
-            BlockSignals.BlockCreated(created);
+			BlockSignals.BlockCreated(created);
 			Add(created, triggerSignals);
 
 			return created;
@@ -580,10 +578,10 @@ namespace AtMycelia.Hyphlow
 				Vector2 pos = positions[i];
 				IBlock created = CreateBlock(pos);
 				result.Add(created);
-            }
+			}
 
 			return result;
-        }
+		}
 
 		public string Name
 		{

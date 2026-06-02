@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,14 +12,16 @@ namespace AtMycelia.Hyphlow
                  "Reset", 
                  "Resets the state of all commands and variables in the Flowchart.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Reset : Command
     {   
         [Tooltip("Reset state of all commands in the script")]
-        [SerializeField] protected bool resetCommands = true;
+        [SerializeField] [FormerlySerializedAs("resetCommands")]
+protected bool resetCommands = true;
 
         [Tooltip("Reset variables back to their default values")]
-        [SerializeField] protected bool resetVariables = true;
+        [SerializeField] [FormerlySerializedAs("resetVariables")]
+protected bool resetVariables = true;
 
         #region Public members
 

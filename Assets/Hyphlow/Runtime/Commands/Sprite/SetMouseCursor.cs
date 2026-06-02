@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Set Mouse Cursor", 
                  "Sets the mouse cursor sprite.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetMouseCursor : Command 
     {
         [Tooltip("Texture to use for cursor. Will use default mouse cursor if no sprite is specified")]
@@ -85,7 +86,9 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        [SerializeField] [HideInInspector] protected Texture2D cursorTexture;
-        [SerializeField] [HideInInspector] protected Vector2 hotSpot;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("cursorTexture")]
+protected Texture2D cursorTexture;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("hotSpot")]
+protected Vector2 hotSpot;
     }
 }

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -12,14 +13,16 @@ namespace AtMycelia.Hyphlow
                  "Set Sprite Order", 
                  "Controls the render order of sprites by setting the Order In Layer property of a list of sprites.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetSpriteOrder : Command 
     {
         [Tooltip("List of sprites to set the order in layer property on")]
-        [SerializeField] protected List<SpriteRenderer> targetSprites = new List<SpriteRenderer>();
+        [SerializeField] [FormerlySerializedAs("targetSprites")]
+protected List<SpriteRenderer> targetSprites = new List<SpriteRenderer>();
 
         [Tooltip("The order in layer value to set on the target sprites")]
-        [SerializeField] protected IntegerData orderInLayer;
+        [SerializeField] [FormerlySerializedAs("orderInLayer")]
+protected IntegerData orderInLayer;
 
         protected override void RefreshVariableDataCache()
         {
@@ -86,9 +89,9 @@ namespace AtMycelia.Hyphlow
             targetSprites.Add(null);
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return orderInLayer.integerRef == variable || base.HasReference(variable);
+            return ReferenceEquals(orderInLayer.integerRef, variable) || base.HasReference(variable);
         }
 
         #endregion

@@ -24,23 +24,23 @@ namespace AtMycelia.Hyphlow
                     break;
 
                 case SetOperator.Add:
-                    Value = Add(Value, toApply);
+                    Value = _Add(Value, toApply);
                     break;
 
                 case SetOperator.Subtract:
-                    Value = Sub(Value, toApply);
+                    Value = _Sub(Value, toApply);
                     break;
 
                 case SetOperator.Multiply:
-                    Value = Mul(Value, toApply);
+                    Value = _Mul(Value, toApply);
                     break;
 
                 case SetOperator.Divide:
-                    Value = Div(Value, toApply);
+                    Value = _Div(Value, toApply);
                     break;
 
                 case SetOperator.Negate:
-                    Value = Neg(Value);
+                    Value = _Neg(Value);
                     break;
 
                 default:
@@ -53,11 +53,11 @@ namespace AtMycelia.Hyphlow
         // in Apply without needing to know the specific type of T (or use
         // the dynamic keyword, which is something we want to avoid for
         // the sake of supporting Unity 2022.3).
-        protected static Func<T, T, T> Add;
-        protected static Func<T, T, T> Sub;
-        protected static Func<T, T, T> Mul;
-        protected static Func<T, T, T> Div;
-        protected static Func<T, T> Neg;
+        protected static Func<T, T, T> _Add;
+        protected static Func<T, T, T> _Sub;
+        protected static Func<T, T, T> _Mul;
+        protected static Func<T, T, T> _Div;
+        protected static Func<T, T> _Neg;
 
         public override bool Evaluate(CompareOperator op, T otherNumericValue)
         {
@@ -108,11 +108,11 @@ namespace AtMycelia.Hyphlow
     {
         static IntMuscariable()
         {
-            Add = (a, b) => a + b;
-            Sub = (a, b) => a - b;
-            Mul = (a, b) => a * b;
-            Div = (a, b) => a / b;
-            Neg = a => -a;
+            _Add = (a, b) => a + b;
+            _Sub = (a, b) => a - b;
+            _Mul = (a, b) => a * b;
+            _Div = (a, b) => a / b;
+            _Neg = a => -a;
         }
 
         public IntMuscariable() : base() { }
@@ -167,11 +167,11 @@ namespace AtMycelia.Hyphlow
     {
         static FloatMuscariable()
         {
-            Add = (a, b) => a + b;
-            Sub = (a, b) => a - b;
-            Mul = (a, b) => a * b;
-            Div = (a, b) => a / b;
-            Neg = a => -a;
+            _Add = (a, b) => a + b;
+            _Sub = (a, b) => a - b;
+            _Mul = (a, b) => a * b;
+            _Div = (a, b) => a / b;
+            _Neg = a => -a;
         }
 
         public FloatMuscariable() : base() { }
@@ -282,11 +282,11 @@ namespace AtMycelia.Hyphlow
     {
         static DoubleMuscariable()
         {
-            Add = (a, b) => a + b;
-            Sub = (a, b) => a - b;
-            Mul = (a, b) => a * b;
-            Div = (a, b) => a / b;
-            Neg = a => -a;
+            _Add = (a, b) => a + b;
+            _Sub = (a, b) => a - b;
+            _Mul = (a, b) => a * b;
+            _Div = (a, b) => a / b;
+            _Neg = a => -a;
         }
 
         public DoubleMuscariable() : base() { }

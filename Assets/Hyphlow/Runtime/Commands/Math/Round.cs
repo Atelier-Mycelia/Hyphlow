@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Round",
                  "Command to execute and store the result of a Round")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Round : BaseUnaryMathCommand
     {
         public enum Mode
@@ -23,6 +24,7 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Mode; Round (closest), floor(smaller) or ceil(bigger).")]
         [SerializeField]
+[FormerlySerializedAs("function")]
         protected Mode function = Mode.Round;
 
         public override void OnEnter()

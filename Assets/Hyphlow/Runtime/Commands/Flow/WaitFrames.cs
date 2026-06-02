@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections;
 
@@ -13,11 +14,12 @@ namespace AtMycelia.Hyphlow
                  "Waits for a number of frames before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class WaitFrames : Command
     {
         [Tooltip("Number of frames to wait for")]
-        [SerializeField] protected IntegerData frameCount = new IntegerData(1);
+        [SerializeField] [FormerlySerializedAs("frameCount")]
+protected IntegerData frameCount = new IntegerData(1);
 
         protected override void RefreshVariableDataCache()
         {
@@ -54,9 +56,9 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return frameCount.integerRef == variable || base.HasReference(variable);
+            return ReferenceEquals(frameCount.integerRef, variable) || base.HasReference(variable);
         }
 
         #endregion

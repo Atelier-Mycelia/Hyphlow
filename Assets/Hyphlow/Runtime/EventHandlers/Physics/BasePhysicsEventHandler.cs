@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using AtMycelia.Events;
 using System;
 using UnityEngine;
@@ -30,6 +31,7 @@ namespace AtMycelia.Hyphlow
 		[Tooltip("Which of the physics messages do we trigger on.")]
 		[SerializeField]
 		[EnumFlag]
+[FormerlySerializedAs("FireOn")]
 		protected PhysicsMessageType FireOn = PhysicsMessageType.Enter;
 
 		protected override void Awake()
@@ -195,6 +197,7 @@ namespace AtMycelia.Hyphlow
 
 		[SerializeField]
 		[HideInInspector]
+[FormerlySerializedAs("tagFilter")]
 		protected string[] tagFilter;
 	}
 }

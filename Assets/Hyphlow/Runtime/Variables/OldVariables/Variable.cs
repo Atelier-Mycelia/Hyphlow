@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     [RequireComponent(typeof(Flowchart))]
     [Serializable]
     [ExecuteInEditMode]
@@ -32,7 +32,8 @@ namespace AtMycelia.Hyphlow
 
         [HideInInspector]
         [FormerlySerializedAs("itemID")]
-        [SerializeField] private int oldItemID = 0;
+        [SerializeField] [FormerlySerializedAs("oldItemID")]
+private int oldItemID = 0;
 
         public static readonly byte InvalidID = 0;
 
@@ -211,7 +212,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
         public override Type ContentType => typeof(T);

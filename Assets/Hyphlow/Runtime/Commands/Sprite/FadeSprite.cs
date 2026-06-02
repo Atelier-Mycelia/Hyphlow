@@ -90,7 +90,7 @@ namespace AtMycelia.Amanita.VScripting
             return CommandColors.Sprite;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_duration.VarRef, variable) || 
                 ReferenceEquals(_targetColor.VarRef, variable) ||

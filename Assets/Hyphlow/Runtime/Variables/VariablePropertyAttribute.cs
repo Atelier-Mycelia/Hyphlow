@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     /// Attribute class for variable properties. We use these so that fields in Commands
     /// that should ONLY take variable inputs accept the intended variable types.
     /// </summary>
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public sealed class VariablePropertyAttribute : PropertyAttribute
     {
         public VariablePropertyAttribute()

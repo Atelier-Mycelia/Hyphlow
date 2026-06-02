@@ -9,7 +9,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class VariableTypeDiscovery
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
@@ -110,7 +110,7 @@ namespace AtMycelia.Hyphlow
         {
             IEnumerable<Type> varDataSubtypes = AppDomain.CurrentDomain.GetAssemblies()
                          .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, iVariableDataType));
+                         .Where((elem) => IsInstantiatableType(elem, _iVariableDataType));
 
             VariableDataTypeRegistry.Clear();
 
@@ -124,7 +124,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private static readonly Type iVariableDataType = typeof(IVariableData);
+        private static readonly Type _iVariableDataType = typeof(IVariableData);
 
     }
 }

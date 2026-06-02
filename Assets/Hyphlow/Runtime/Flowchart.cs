@@ -2,12 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using AtMycelia.Hyphlow.EditorExt;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,7 +22,7 @@ namespace AtMycelia.Hyphlow
     /// Flowchart objects may be edited visually using the Flowchart editor window.
     /// </summary>
     [ExecuteInEditMode]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Flowchart : MonoBehaviour, IReorderableMuscariableSource,
         IForceResetUidHandler, ISerializationCallbackReceiver, ITearDownResponder, IRefreshable,
         IBackwardsCompatibilityApplier, IBlockSource, ICommandRemovable
@@ -33,10 +32,12 @@ namespace AtMycelia.Hyphlow
         [SerializeField, HideInInspector] private BlockManagerComponent _blockManager;
 
         [FormerlySerializedAs("variableManager")]
-        [SerializeField, HideInInspector] private VariableManager legacyVariableManager = new VariableManager();
+        [SerializeField, HideInInspector] [FormerlySerializedAs("legacyVariableManager")]
+private VariableManager legacyVariableManager = new VariableManager();
 
         [HideInInspector]
-        [SerializeField] protected int version = 0; 
+        [SerializeField] [FormerlySerializedAs("version")]
+protected int version = 0; 
         // ^Default to 0 to always trigger an update for older versions of Hyphlow.
 
         [HideInInspector]
@@ -213,8 +214,9 @@ namespace AtMycelia.Hyphlow
                 yield break;
             }
 
-            foreach (var elem in gsEventHandler)//
+            for (int i = 0; i < gsEventHandler.Count; i++)
             {
+                var elem = gsEventHandler[i];
                 elem.Trigger();
             }
         }
@@ -258,14 +260,8 @@ namespace AtMycelia.Hyphlow
 
         public event Action<IVariable> VariableAdded
         {
-            add
-            {
-                _varManager.VariableAdded += value;
-            }
-            remove
-            {
-                _varManager.VariableAdded -= value;
-            }
+            add => _varManager.VariableAdded += value;
+            remove => _varManager.VariableAdded -= value;
         }
 
         private void OnVarRemoved(IVariable removed)
@@ -275,25 +271,15 @@ namespace AtMycelia.Hyphlow
 
         public event Action<IVariable> VariableRemoved
         {
-            add
-            {
-                _varManager.VariableRemoved += value;
-            }
-            remove
-            {
-                _varManager.VariableRemoved -= value;
-            }
+            add => _varManager.VariableRemoved += value;
+            remove => _varManager.VariableRemoved -= value;
         }
 
         public int VariableCount
         {
             get
             {
-                if (_varManager == null)
-                {
-                    _varManager = gameObject.GetOrAddComponent<VariableManagerComponent>();
-                }
-
+                EnsureSubmanagerComponents();
                 return _varManager.Variables.Count;
             }
         }
@@ -311,7 +297,7 @@ namespace AtMycelia.Hyphlow
                 //return PrefabStageUtility.GetPrefabStage(gameObject) == null;
                 return true;
 #else
-        return true;
+            return true;
 #endif
             }
         }
@@ -321,25 +307,25 @@ namespace AtMycelia.Hyphlow
             EnsureSubmanagerComponents();
 
             AssertUniqueID();
-            AssertOwnership();//
-#if UNITY_EDITOR
+            AssertOwnership();
             RefreshEditorCaches();
-#endif
             CleanupComponents();
             UpdateVersion();
         }
 
-#if UNITY_EDITOR
+
         private void RefreshEditorCaches()
         {
+#if UNITY_EDITOR
             if (Application.IsPlaying(this))
             {
                 return;
             }
 
             RefreshBlockAndCommandCache();
-        }
 #endif
+        }
+
 
         public IVariableManager VariableManager
         {
@@ -460,7 +446,8 @@ namespace AtMycelia.Hyphlow
         }
 
         [HideInInspector]
-        [SerializeField] protected byte nextValidVarID = 1;
+        [SerializeField] [FormerlySerializedAs("nextValidVarID")]
+protected byte nextValidVarID = 1;
 
         protected virtual void CleanupComponents()
         {
@@ -474,9 +461,10 @@ namespace AtMycelia.Hyphlow
             {
                 var eventHandler = eventHandlers[i];
                 bool found = false;
-                foreach (IBlock block in _blockManager.Blocks)
+                for (int j = 0; j < Blocks.Count; j++)
                 {
-                    if (block != null && ReferenceEquals(block.EventHandler, eventHandler))
+                    var blockEl = Blocks[j];
+                    if (blockEl != null && ReferenceEquals(blockEl.EventHandler, eventHandler))
                     {
                         found = true;
                         break;
@@ -511,16 +499,18 @@ namespace AtMycelia.Hyphlow
                 }
             }
 
-            foreach (IBlock blockEl in Blocks)
+            var currentBlocks = Blocks; // Cached here to reduce garbo
+            for (int i = 0; i < currentBlocks.Count; i++)
             {
+                var blockEl = currentBlocks[i];
                 if (blockEl == null || blockEl.EventHandler != null)
                 {
                     continue;
                 }
 
-                for (int i = 0; i < eventHandlers.Length; i++)
+                for (int j = 0; j < eventHandlers.Length; j++)
                 {
-                    var eventHandler = eventHandlers[i];
+                    var eventHandler = eventHandlers[j];
                     if (eventHandler != null && ReferenceEquals(eventHandler.ParentBlock, blockEl))
                     {
                         blockEl.EventHandler = eventHandler;
@@ -891,14 +881,8 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool AlwaysKeepGuid
         {
-            get
-            {
-                return _alwaysKeepGuid;
-            }
-            set
-            {
-                _alwaysKeepGuid = value;
-            }
+            get => _alwaysKeepGuid;
+            set => _alwaysKeepGuid = value;
         }
 
         public string Name
@@ -911,12 +895,11 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-#if UNITY_EDITOR
                 if (this == null) // Possible in unit tests
                 {
                     return Array.Empty<IVariable>();
                 }
-#endif
+
                 EnsureSubmanagerComponents();
                 _varManager.Owner = this;
                 return VariableManager.Variables;
@@ -1184,6 +1167,12 @@ namespace AtMycelia.Hyphlow
         }
 
         public bool Add(IBlock block, bool triggerSignals) => _blockManager.Add(block, triggerSignals);
+
+        public override string ToString()
+        {
+            string result = $"Flowchart: {name}, ID: {UniqueId}";
+            return result;
+        }
 
     }
     

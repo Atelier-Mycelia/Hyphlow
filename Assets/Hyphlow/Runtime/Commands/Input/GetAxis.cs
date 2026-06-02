@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "GetAxis",
                  "Store Input.GetAxis in a variable")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class GetAxis : Command
     {
         [SerializeField]
@@ -68,7 +68,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             bool result = ReferenceEquals(_axisName.VarRef, variable) ||
                 ReferenceEquals(_useRaw.VarRef, variable) ||

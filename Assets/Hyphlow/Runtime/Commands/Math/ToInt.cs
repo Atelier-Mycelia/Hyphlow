@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "ToInt",
                  "Command to execute and store the result of a float to int conversion")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ToInt : Command
     {
         public enum Mode
@@ -24,14 +25,17 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("To integer mode; round, floor or ceil.")]
         [SerializeField]
+[FormerlySerializedAs("function")]
         protected Mode function = Mode.RoundToInt;
 
         [Tooltip("Value to be passed in to the function.")]
         [SerializeField]
+[FormerlySerializedAs("inValue")]
         protected FloatData inValue;
 
         [Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected IntegerData outValue;
 
         protected override void RefreshVariableDataCache()
@@ -73,7 +77,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, inValue.VarRef) || 
                 ReferenceEquals(variable, outValue.VarRef);

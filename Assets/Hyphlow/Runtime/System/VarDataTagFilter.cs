@@ -7,7 +7,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class VarDataTagFilter : ITagFilterable<StringData>, ITagFilterable<string>
     {
         [Tooltip("Only fire the event if one of the tags match. Empty means any will fire.")]
@@ -87,8 +87,9 @@ namespace AtMycelia.Hyphlow
 
                 _tagFilter.Clear();
 
-                foreach (var str in value)
+                for (int i = 0; i < value.Count; i++)
                 {
+                    string str = value[i];
                     _tagFilter.Add(new StringData(str));
                 }
             }

@@ -138,7 +138,7 @@ namespace AtMycelia.Hyphlow
 
         public override Type ContentType => _data?.ContentType;
 
-        public bool HasReference(Variable var)
+        public bool HasReference(IVariable var)
         {
             bool result = false;
             if (_data is not null)

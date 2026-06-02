@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "End", 
                  "Marks the end of a conditional block.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class End : Command
     {
         #region Public members

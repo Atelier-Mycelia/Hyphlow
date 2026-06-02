@@ -1,6 +1,4 @@
-using AtMycelia.Hyphlow.EditorExt;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -26,44 +24,44 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     [RequireComponent(typeof(Flowchart))]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Block : Node, IBlock, IEquatable<IBlock>, ICommandSource, IRefreshable, IHasKey,
         ISerializationCallbackReceiver
     {
-        [SerializeField] private AccessScope _scope = AccessScope.Public;
+        [SerializeField] protected AccessScope _scope = AccessScope.Public;
 
         [FormerlySerializedAs("itemId")]
-        [SerializeField] private byte _itemId = 0; 
+        [SerializeField] protected byte _itemId = 0; 
 
         [FormerlySerializedAs("sequenceName")]
         [Tooltip("The name of the block node as displayed in the Flowchart window")]
         [FormerlySerializedAs("blockName")]
-        [SerializeField] private string _blockName = "New Block";
+        [SerializeField] protected string _blockName = "New Block";
 
         [TextArea(2, 5)]
         [Tooltip("Description text to display under the block node")]
         [FormerlySerializedAs("description")]
-        [SerializeField] private string _description = "";
+        [SerializeField] protected string _description = "";
 
         [Tooltip("An optional Event Handler which can execute the block when an event occurs")]
         [FormerlySerializedAs("eventHandler")]
         [FormerlySerializedAs("_eventHandler")]
-        [SerializeField] private EventHandler _legacyEventHandler;
+        [SerializeField] protected EventHandler _legacyEventHandler;
 
         [FormerlySerializedAs("commandList")]
         [FormerlySerializedAs("_commandList")]
-        [SerializeField] private List<Command> _legacyCommandList = new List<Command>();
+        [SerializeField] protected List<Command> _legacyCommandList = new List<Command>();
 
         [Tooltip("If true, the save system will keep track of (and when appropriate, load) " +
             "this Block's execution state.")]
         [FormerlySerializedAs("includeInSaves")]
-        [SerializeField] private bool _includeInSaves = true;
+        [SerializeField] protected bool _includeInSaves = true;
 
         [FormerlySerializedAs("loadPriority")]
-        [SerializeField] private int _loadPriority;
-        [SerializeField, HideInInspector] private UnityObj _owner;
+        [SerializeField] protected int _loadPriority;
+        [SerializeField, HideInInspector] protected UnityObj _owner;
 
-        [SerializeField, HideInInspector] private byte _nextValidCommandId = 1; 
+        [SerializeField, HideInInspector] protected byte _nextValidCommandId = 1; 
         // ^Start at 1, since 0 is reserved for InvalidId
 
         public static readonly byte InvalidId = 0;
@@ -113,11 +111,6 @@ namespace AtMycelia.Hyphlow
                 if (this == null)
                 {
                     return null;
-                }
-
-                if (_owner == null || _owner is not Flowchart)
-                {
-                    _owner = GetComponent<Flowchart>();
                 }
 
                 return _owner as Flowchart;
@@ -179,6 +172,7 @@ namespace AtMycelia.Hyphlow
         
         protected virtual void Awake()
         {
+            _owner = GetComponent<Flowchart>();
             Refresh();
         }
 
@@ -353,10 +347,6 @@ namespace AtMycelia.Hyphlow
             if (this == null)
             {
                 return null;
-            }
-            if (_owner == null)
-            {
-                _owner = GetComponent<Flowchart>();
             }
             return _owner as Flowchart;
         }
@@ -558,7 +548,8 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool Contains(ICommand cmd)
         {
-            bool result = ReferenceEquals(_commandListDict[cmd.ItemId], cmd);
+            _commandListDict.TryGetValue(cmd.ItemId, out ICommand foundCmd);
+            bool result = ReferenceEquals(foundCmd, cmd);
             return result;
         }
 
@@ -738,27 +729,34 @@ namespace AtMycelia.Hyphlow
         protected virtual void OnValidate()
         {
             hideFlags = HideFlags.HideInInspector;
+#if UNITY_EDITOR
+            if (_owner == null)
+            {
+                EditorApplication.delayCall += () =>
+                {
+                    if (this == null)
+                    {
+                        return;
+                    }
+                    _owner = GetComponent<Flowchart>();
+                };
+            }
+#endif
         }
 
         public virtual void OnAfterDeserialize()
         {
-#if UNITY_EDITOR
-            MigrateLegacyHandler();
-            void MigrateLegacyHandler()
+        }
+
+        public override string ToString()
+        {
+            string result = $"Block: {BlockName} (Id: {ItemId})";
+
+            if (this.ParentFlowchart != null)
             {
-                if (_legacyEventHandler != null)
-                {
-                    EditorApplication.delayCall += () =>
-                    {
-                        if (this != null && _legacyEventHandler != null)
-                        {
-                            EventHandler = _legacyEventHandler;
-                            _legacyEventHandler = null;
-                        }
-                    };
-                }
+                result += $" in Flowchart: {this.ParentFlowchart.name}";
             }
-#endif
+            return result;
         }
     }
 }

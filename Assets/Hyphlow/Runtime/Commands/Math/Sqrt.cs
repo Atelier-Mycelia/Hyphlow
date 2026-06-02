@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Sqrt",
                  "Command to execute and store the result of a Sqrt")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Sqrt : BaseUnaryMathCommand
     {
         public override void OnEnter()

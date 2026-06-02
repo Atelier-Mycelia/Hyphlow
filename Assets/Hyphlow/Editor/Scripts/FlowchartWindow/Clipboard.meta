@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/HyphlowSamples/PreTitleScreen.meta
+guid: b39305fd87d37f544accefcbe5cea503
+========
+guid: 1ce4015aabc2ff443aaa1f74fcb2c42e
+>>>>>>>> develop:Assets/Hyphlow/Editor/Scripts/FlowchartWindow/Clipboard.meta
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

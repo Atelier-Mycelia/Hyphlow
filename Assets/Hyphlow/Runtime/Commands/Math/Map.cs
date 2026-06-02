@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,17 +12,23 @@ namespace AtMycelia.Hyphlow
                  "Map",
                  "Map a value that exists in 1 range of numbers to another.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Map : Command
     {
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("initialRangeLower")]
+[FormerlySerializedAs("initialRangeUpper")]
+[FormerlySerializedAs("value")]
         protected FloatData initialRangeLower = new FloatData(0), initialRangeUpper = new FloatData(1), value;
         
         [SerializeField]
+[FormerlySerializedAs("newRangeLower")]
+[FormerlySerializedAs("newRangeUpper")]
         protected FloatData newRangeLower = new FloatData(0), newRangeUpper = new FloatData(1);
         
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()
@@ -54,7 +61,7 @@ namespace AtMycelia.Hyphlow
                 newRangeLower.Value.ToString() + "-" + newRangeUpper.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(initialRangeLower.VarRef, variable) || 
                 ReferenceEquals(initialRangeUpper.VarRef, variable) || 

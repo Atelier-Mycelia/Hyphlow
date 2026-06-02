@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -26,10 +27,12 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the OnAnimator messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected AnimatorMessageFlags FireOn = AnimatorMessageFlags.OnAnimatorMove;
 
         [Tooltip("IK layer to trigger on. Negative is all.")]
         [SerializeField]
+[FormerlySerializedAs("IKLayer")]
         protected int IKLayer = 1;
         
         private void OnAnimatorIK(int layer)

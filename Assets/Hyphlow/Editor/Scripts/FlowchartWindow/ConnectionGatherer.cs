@@ -16,12 +16,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     {
         private const bool DiagnosticsEnabled = true;
 
-        private IList<IBlock> connectedBlocks = new List<IBlock>();
-        private readonly IBlockRectProvider rectProvider;
+        private IList<IBlock> _connectedBlocks = new List<IBlock>();
+        private readonly IBlockRectProvider _rectProvider;
 
         public ConnectionGatherer(IBlockRectProvider rectProvider)
         {
-            this.rectProvider = rectProvider;
+            this._rectProvider = rectProvider;
         }
 
         public IList<ConnectionInfo> GatherConnections(DrawBlockContext drawCtx)
@@ -54,12 +54,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                     bool cmdIsSelected = fc.SelectedCommands.Contains(commandEl);
                     bool shouldHighlight = commandEl.IsExecuting || (blockIsSelected && cmdIsSelected);
 
-                    connectedBlocks.Clear();
-                    commandEl.GetConnectedBlocks(ref connectedBlocks);
+                    _connectedBlocks.Clear();
+                    commandEl.GetConnectedBlocks(ref _connectedBlocks);
 
-                    for (int j = 0; j < connectedBlocks.Count; j++)
+                    for (int j = 0; j < _connectedBlocks.Count; j++)
                     {
-                        IBlock dest = connectedBlocks[j];
+                        IBlock dest = _connectedBlocks[j];
                         if (dest == null || dest == blockEl || dest.GetFlowchart() != fc)
                         {
                             continue;
@@ -83,7 +83,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private Rect CalculateWindowRect(IBlock block, Flowchart fc)
         {
-            if (rectProvider != null && rectProvider.TryGetBlockRect(block, out Rect rect))
+            if (_rectProvider != null && _rectProvider.TryGetBlockRect(block, out Rect rect))
             {
                 return rect;
             }
@@ -122,7 +122,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            connectedBlocks.Clear();
+            _connectedBlocks.Clear();
         }
     }
 }

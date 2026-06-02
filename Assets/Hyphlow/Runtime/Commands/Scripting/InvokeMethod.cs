@@ -31,47 +31,58 @@ namespace AtMycelia.Hyphlow
 
         [HideInInspector]
         [Tooltip("Name of assembly containing the target component")]
-        [SerializeField] protected string targetComponentAssemblyName;
+        [SerializeField] [FormerlySerializedAs("targetComponentAssemblyName")]
+protected string targetComponentAssemblyName;
 
         [HideInInspector]
         [Tooltip("Full name of the target component")]
-        [SerializeField] protected string targetComponentFullname;
+        [SerializeField] [FormerlySerializedAs("targetComponentFullname")]
+protected string targetComponentFullname;
 
         [HideInInspector]
         [Tooltip("Display name of the target component")]
-        [SerializeField] protected string targetComponentText;
+        [SerializeField] [FormerlySerializedAs("targetComponentText")]
+protected string targetComponentText;
 
         [HideInInspector]
         [Tooltip("Name of target method to invoke on the target component")]
-        [SerializeField] protected string targetMethod;
+        [SerializeField] [FormerlySerializedAs("targetMethod")]
+protected string targetMethod;
 
         [HideInInspector]
         [Tooltip("Display name of target method to invoke on the target component")]
-        [SerializeField] protected string targetMethodText;
+        [SerializeField] [FormerlySerializedAs("targetMethodText")]
+protected string targetMethodText;
 
         [HideInInspector]
         [Tooltip("List of parameters to pass to the invoked method")]
-        [SerializeField] protected InvokeMethodParameter[] methodParameters;
+        [SerializeField] [FormerlySerializedAs("methodParameters")]
+protected InvokeMethodParameter[] methodParameters;
 
         [HideInInspector]
         [Tooltip("If true, store the return value in a flowchart variable of the same type.")]
-        [SerializeField] protected bool saveReturnValue;
+        [SerializeField] [FormerlySerializedAs("saveReturnValue")]
+protected bool saveReturnValue;
 
         [HideInInspector]
         [Tooltip("Name of Fungus variable to store the return value in")]
-        [SerializeField] protected string returnValueVariableKey;
+        [SerializeField] [FormerlySerializedAs("returnValueVariableKey")]
+protected string returnValueVariableKey;
 
         [HideInInspector]
         [Tooltip("The type of the return value")]
-        [SerializeField] protected string returnValueType;
+        [SerializeField] [FormerlySerializedAs("returnValueType")]
+protected string returnValueType;
 
         [HideInInspector]
         [Tooltip("If true, list all inherited methods for the component")]
-        [SerializeField] protected bool showInherited;
+        [SerializeField] [FormerlySerializedAs("showInherited")]
+protected bool showInherited;
 
         [HideInInspector]
         [Tooltip("The coroutine call behavior for methods that return IEnumerator")]
-        [SerializeField] protected CallMode callMode;
+        [SerializeField] [FormerlySerializedAs("callMode")]
+protected CallMode callMode;
 
         protected Type componentType;
         protected Component objComponent;

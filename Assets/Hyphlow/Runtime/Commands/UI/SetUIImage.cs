@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -16,10 +17,12 @@ namespace AtMycelia.Hyphlow
     public class SetUIImage : Command 
     {
         [Tooltip("List of UI Images to set the source image property on")]
-        [SerializeField] protected List<Image> images = new List<Image>();
+        [SerializeField] [FormerlySerializedAs("images")]
+protected List<Image> images = new List<Image>();
 
         [Tooltip("The sprite set on the source image property")]
-        [SerializeField] protected Sprite sprite;
+        [SerializeField] [FormerlySerializedAs("sprite")]
+protected Sprite sprite;
 
         #region Public members
 

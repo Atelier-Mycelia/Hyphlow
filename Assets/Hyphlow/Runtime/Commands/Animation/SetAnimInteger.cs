@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Sets an integer parameter on an Animator component to control a Unity animation")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetAnimInteger : Command
     {
         [Tooltip("Reference to an Animator component in a game object")]
@@ -23,7 +23,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected StringData _parameterName;
 
         [Tooltip("The integer value to set the parameter to")]
-        [SerializeField] protected IntegerData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected IntegerData value;
 
         protected override void RefreshVariableDataCache()
         {
@@ -60,7 +61,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Animation;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_animator.VarRef, variable) || 
                 ReferenceEquals(_parameterName.VarRef, variable) || 

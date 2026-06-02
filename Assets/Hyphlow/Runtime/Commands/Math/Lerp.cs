@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Lerp",
                  "Linearly Interpolate from A to B")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Lerp : Command
     {
         public enum Mode
@@ -22,14 +23,19 @@ namespace AtMycelia.Hyphlow
         }
         
         [SerializeField]
+[FormerlySerializedAs("mode")]
         protected Mode mode = Mode.Lerp;
 
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("a")]
+[FormerlySerializedAs("b")]
+[FormerlySerializedAs("percentage")]
         protected FloatData a = new FloatData(0), b = new FloatData(1), percentage;
 
         //[Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()
@@ -66,7 +72,7 @@ namespace AtMycelia.Hyphlow
             return mode.ToString() + " [" + a.Value.ToString() + "-" + b.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(a.VarRef, variable) || 
                 ReferenceEquals(b.VarRef, variable) || 

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -5,7 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 namespace AtMycelia.Hyphlow
 {
     [System.Serializable]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class FungusException : System.Exception
     {
         public FungusException()
@@ -35,6 +36,7 @@ namespace AtMycelia.Hyphlow
     public class ThrowException : Command
     {
         [SerializeField]
+[FormerlySerializedAs("message")]
         protected StringData message;
 
         public override void OnEnter()
@@ -51,7 +53,7 @@ namespace AtMycelia.Hyphlow
             return message.Value;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, message.VarRef) || base.HasReference(variable);
         }

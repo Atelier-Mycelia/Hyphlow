@@ -1,0 +1,281 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AtMycelia.Graphics;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
+{
+    /// <summary>
+    /// UITK-based grid renderer that redraws only when flowchart context changes,
+    /// using FlowchartWindowSignals instead of the per-frame IMGUI loop.
+    /// </summary>
+    public sealed class GridRenderer : VisualElement, IFlowchartWindowModule, IDisposable,
+        IScrollWheelMoveResponder, IWindowPanResponder, IBlockSelectionResponder,
+        IFlowchartChangeResponder, IVisualResetter
+    {
+        public int Priority { get; set; } = 0;
+        private readonly FlowchartContext _flowchartContext;
+        private readonly DrawGridContext _drawGridContext;
+        private Vector2 _cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+        private float _cachedZoom = float.NaN;
+        private Rect _cachedContentRect = Rect.zero;
+        private IBlock _lastSelectedBlock;
+        private bool _isDisposed;
+
+        private static readonly float _SpacingScaleAtMinZoom = 0.5f;
+        private const float DefaultZoomLevel = 1f;
+
+        public GridRenderer(FlowchartContext context, DrawGridContext gridContext)
+        {
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+            _drawGridContext = gridContext ?? throw new ArgumentNullException(nameof(gridContext));
+
+            pickingMode = PickingMode.Ignore;
+            style.flexGrow = 1f;
+            style.width = Length.Percent(100);
+            style.height = Length.Percent(100);
+
+            ToggleSubs(true);
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                RegisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+                RegisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
+                RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                generateVisualContent += OnGenerateVisualContent;
+            }
+            else
+            {
+                UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);
+                UnregisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
+                UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+                generateVisualContent -= OnGenerateVisualContent;
+            }
+        }
+
+        private void OnAttachedToPanel(AttachToPanelEvent evt)
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        private void QueueContextAwareRepaint(bool force)
+        {
+            if (force)
+            {
+                MarkDirtyRepaint();
+                return;
+            }
+
+            Flowchart flowchart = _flowchartContext.Flowchart;
+            if (flowchart == null)
+            {
+                return;
+            }
+
+            bool scrollChanged = !Mathf.Approximately(flowchart.ScrollPos.x, _cachedScrollPosition.x)
+                || !Mathf.Approximately(flowchart.ScrollPos.y, _cachedScrollPosition.y);
+
+            bool zoomChanged = !Mathf.Approximately(flowchart.Zoom, _cachedZoom);
+
+            bool sizeChanged = !Mathf.Approximately(contentRect.width, _cachedContentRect.width)
+                || !Mathf.Approximately(contentRect.height, _cachedContentRect.height);
+
+            if (scrollChanged || zoomChanged || sizeChanged)
+            {
+                MarkDirtyRepaint();
+            }
+        }
+
+        private void OnDetachedFromPanel(DetachFromPanelEvent evt)
+        {
+            // No action needed on detach for now.
+        }
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _isDisposed = true;
+
+            ToggleSubs(false);
+        }
+
+        private void OnGenerateVisualContent(MeshGenerationContext mgc)
+        {
+            // Even when there's no Flowchart, we still want to generate the grid.
+            float zoom = 1f;
+            if (_flowchartContext.Flowchart != null)
+            {
+                zoom = Mathf.Approximately(_flowchartContext.Flowchart.Zoom, 0f)
+                    ? 1f
+                    : _flowchartContext.Flowchart.Zoom;
+            }
+
+            Vector2 scrollPos = _flowchartContext.Flowchart != null
+                ? _flowchartContext.Flowchart.ScrollPos
+                : Vector2.zero;
+
+            Rect rect = contentRect;
+            if (rect.width <= 0f || rect.height <= 0f)
+            {
+                return;
+            }
+
+            float spacing = CalculateAdaptiveSpacing(zoom);
+
+            float viewWidth = rect.width / zoom;
+            float viewHeight = rect.height / zoom;
+
+            IList<float> verticalLines = GridUtils.GetVerticalLinePositions(
+                scrollPos.x,
+                viewWidth,
+                spacing);
+
+            IList<float> horizontalLines = GridUtils.GetHorizontalLinePositions(
+                scrollPos.y,
+                viewHeight,
+                spacing);
+
+            Painter2D painter = mgc.painter2D;
+            painter.lineWidth = 1f;
+            painter.strokeColor = _drawGridContext.GridLineColor;
+            painter.fillColor = Color.clear;
+
+            DrawVerticalLines(painter, verticalLines, rect.height, zoom);
+            DrawHorizontalLines(painter, horizontalLines, rect.width, zoom);
+
+            _cachedScrollPosition = scrollPos;
+            _cachedZoom = zoom;
+            _cachedContentRect = rect;
+        }
+
+        private static void DrawVerticalLines(Painter2D painter, IList<float> xPositions, float viewHeight, float zoom)
+        {
+            for (int i = 0; i < xPositions.Count; i++)
+            {
+                float x = xPositions[i] * zoom;
+                painter.BeginPath();
+                painter.MoveTo(new Vector2(x, 0f));
+                painter.LineTo(new Vector2(x, viewHeight));
+                painter.Stroke();
+            }
+        }
+
+        private static void DrawHorizontalLines(Painter2D painter, IList<float> yPositions, float viewWidth, float zoom)
+        {
+            for (int i = 0; i < yPositions.Count; i++)
+            {
+                float y = yPositions[i] * zoom;
+                painter.BeginPath();
+                painter.MoveTo(new Vector2(0f, y));
+                painter.LineTo(new Vector2(viewWidth, y));
+                painter.Stroke();
+            }
+        }
+
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            bool widthChanged = !Mathf.Approximately(evt.newRect.width, evt.oldRect.width);
+            bool heightChanged = !Mathf.Approximately(evt.newRect.height, evt.oldRect.height);
+
+            if (widthChanged || heightChanged)
+            {
+                _cachedContentRect = evt.newRect;
+                QueueContextAwareRepaint(true);
+            }
+        }
+
+        public void RefreshNow()
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        public void OnScrollWheelMoved()
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        public void OnWindowPanned()
+        {
+            QueueContextAwareRepaint(true);
+        }
+
+        public void OnBlockSelected(IBlock block)
+        {
+            if (ReferenceEquals(block, _lastSelectedBlock))
+            {
+                return;
+            }
+
+            _lastSelectedBlock = block;
+            _lastBlocksSelected.Clear();
+            _lastBlocksSelected.Add(block);
+            QueueContextAwareRepaint(false);
+        }
+
+        public void OnFlowchartChanged(Flowchart previous, Flowchart next)
+        {
+            _lastSelectedBlock = next != null ? next.SelectedBlock : null;
+            _cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+            _cachedZoom = float.NaN;
+            QueueContextAwareRepaint(true);
+        }
+
+        public void Initialize(FlowchartWindow window)
+        {
+            
+        }
+
+        private float CalculateAdaptiveSpacing(float currentZoom)
+        {
+            float baseSpacing = Mathf.Approximately(_drawGridContext.GridLineSpacingSize, 0f)
+                ? 1f
+                : _drawGridContext.GridLineSpacingSize;
+
+            float minZoom = FlowchartWindow.Config.MinZoom;
+            float normalized = Mathf.Clamp01(Mathf.InverseLerp(minZoom, DefaultZoomLevel, currentZoom));
+            float spacingMultiplier = Mathf.Lerp(_SpacingScaleAtMinZoom, 1f, normalized);
+
+            return baseSpacing * spacingMultiplier;
+        }
+
+        public void OnMultiBlocksSelected(IList<IBlock> blocks)
+        {
+            _lastSelectedBlock = null; // Since that var is for when just a single one is selected.
+            bool alreadySelectedThese = blocks.SequenceEqual(_lastBlocksSelected);
+            if (alreadySelectedThese)
+            {
+                return;
+            }
+
+            _lastBlocksSelected.Clear();
+            foreach (Block block in blocks)
+            {
+                _lastBlocksSelected.Add(block);
+            }
+        }
+
+        private readonly IList<IBlock> _lastBlocksSelected = new List<IBlock>();
+
+        public void ResetVisuals()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _cachedScrollPosition = new Vector2(float.NaN, float.NaN);
+            _cachedZoom = float.NaN;
+            _cachedContentRect = Rect.zero;
+            QueueContextAwareRepaint(true);
+        }
+    }
+}

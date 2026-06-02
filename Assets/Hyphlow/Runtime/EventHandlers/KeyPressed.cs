@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -28,10 +29,12 @@ namespace AtMycelia.Hyphlow
     public class KeyPressed : EventHandler
     {
         [Tooltip("The type of keypress to activate on")]
-        [SerializeField] protected KeyPressType keyPressType;
+        [SerializeField] [FormerlySerializedAs("keyPressType")]
+protected KeyPressType keyPressType;
 
         [Tooltip("Keycode of the key to activate on")]
-        [SerializeField] protected KeyCode keyCode;
+        [SerializeField] [FormerlySerializedAs("keyCode")]
+protected KeyCode keyCode;
 
         protected virtual void Update()
         {

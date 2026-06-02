@@ -11,15 +11,15 @@ using UitkLabel = UnityEngine.UIElements.Label;
 namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomPropertyDrawer(typeof(VarDataTagFilter))]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class VarDataTagFilterDrawer : PropertyDrawer
     {
         private const float LABEL_RATIO = 0.2f;
         private const float DRAG_HANDLE_WIDTH = 15f;
         private const float SPACING = 2f;
-        private static readonly GUIStyle DragHandleStyle = new GUIStyle("RL DragHandle");
+        private static readonly GUIStyle _DragHandleStyle = new GUIStyle("RL DragHandle");
 
-        private static readonly Dictionary<string, ReorderableList> ListsByPropertyPath =
+        private static readonly Dictionary<string, ReorderableList> _ListsByPropertyPath =
             new Dictionary<string, ReorderableList>();
 
         // IMGUI fallback (used by current Block/EventHandler inspector)
@@ -58,11 +58,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             string key = property.propertyPath;
 
-            if (!ListsByPropertyPath.TryGetValue(key, out ReorderableList list) ||
+            if (!_ListsByPropertyPath.TryGetValue(key, out ReorderableList list) ||
                 list.serializedProperty.serializedObject != property.serializedObject)
             {
                 list = CreateList(listProp);
-                ListsByPropertyPath[key] = list;
+                _ListsByPropertyPath[key] = list;
             }
 
             return list;
@@ -96,7 +96,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 rect.height = EditorGUI.GetPropertyHeight(element);
 
                 Rect handleRect = new Rect(rect.x, rect.y, DRAG_HANDLE_WIDTH, rect.height);
-                GUI.Label(handleRect, GUIContent.none, DragHandleStyle);
+                GUI.Label(handleRect, GUIContent.none, _DragHandleStyle);
                 EditorGUIUtility.AddCursorRect(handleRect, MouseCursor.Pan);
 
                 Rect fieldRect = rect;

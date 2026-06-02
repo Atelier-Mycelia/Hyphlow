@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
         ISerializationCallbackReceiver, IBackwardsCompatibilityApplier, ICommand
     {
@@ -72,6 +72,11 @@ namespace AtMycelia.Hyphlow
         /// by a save system.
         /// </summary>
         public virtual bool ReexecutableOnLoad => true;
+
+        protected virtual void Awake()
+        {
+             // No-op for now
+        }
 
         protected virtual void OnEnable()
         {
@@ -201,12 +206,6 @@ namespace AtMycelia.Hyphlow
 #if UNITY_EDITOR
         
         protected IList<IVariable> _referencedVariables = new List<IVariable>();
-
-        //used by var list adapter to highlight variables 
-        public bool IsVariableReferenced(IVariable variable)
-        {
-            return _referencedVariables.Contains(variable) || HasReference(variable);
-        }
 
         /// <summary>
         /// Called by OnValidate.
@@ -390,15 +389,6 @@ namespace AtMycelia.Hyphlow
         public virtual void GetConnectedBlocks(ref IList<IBlock> toPopulate)
         {}
 
-        /// <summary>
-        /// Returns true if this command references the variable.
-        /// Used to highlight variables in the variable list when a command is selected.
-        /// </summary>
-        public virtual bool HasReference(Variable variable)
-        {
-            return false;
-        }
-
         public virtual string LocationIdentifier
         {
             get
@@ -500,7 +490,11 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public bool HasReference(IVariable variable)
+        /// <summary>
+        /// Returns true if this command references the variable.
+        /// Used to highlight variables in the variable list when a command is selected.
+        /// </summary>
+        public virtual bool HasReference(IVariable variable)
         {
             return false;
         }
@@ -574,5 +568,20 @@ namespace AtMycelia.Hyphlow
         }
 
         protected static IStringVarSubstitutor StringVarSubstituter => HyphlowConstants.DefaultStringVarSubstitutor;
+
+        public override string ToString()
+        {
+            string result = $"{GetType().Name} Command (ItemId: {ItemId})";
+            if (ParentBlock != null)
+            {
+                result += $" on Block {ParentBlock.BlockName}";
+            }
+
+            if (ParentBlock.ParentFlowchart != null)
+            {
+                result += $", Flowchart: {ParentBlock.ParentFlowchart.name}";
+            }
+            return result;
+        }
     }
 }

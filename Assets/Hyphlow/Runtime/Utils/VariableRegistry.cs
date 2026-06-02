@@ -28,7 +28,7 @@ namespace AtMycelia.Hyphlow
 
         public VariableRegistry(Func<IReadOnlyList<VariableSourceAsset>> globalSourcesProvider)
         {
-            _globalSourcesProvider = globalSourcesProvider ?? (() => emptySources);
+            _globalSourcesProvider = globalSourcesProvider ?? (() => _emptySources);
             Rebuild();
 #if UNITY_EDITOR
             ToggleEditorSubs(false);
@@ -51,8 +51,10 @@ namespace AtMycelia.Hyphlow
             {
                 if (localSource != null)
                 {
-                    foreach (var toRegister in localSource.Variables)
+                    IReadOnlyList<IVariable> localVars = localSource.Variables;
+                    for (int i = 0; i < localVars.Count; i++)
                     {
+                        IVariable toRegister = localVars[i];
                         Register(toRegister.Key, toRegister);
                         bool isLegacyVariable = toRegister is Variable;
                         if (!isLegacyVariable)
@@ -74,10 +76,13 @@ namespace AtMycelia.Hyphlow
                     return cachedFcs;
                 }
 
-                foreach (var otherFc in cachedFcs)
+                for (int i = 0; i < cachedFcs.Count; i++)
                 {
-                    foreach (var toRegister in otherFc.Variables)
+                    Flowchart otherFc = cachedFcs[i];
+                    IReadOnlyList<IVariable> otherVariables = otherFc.Variables;
+                    for (int j = 0; j < otherVariables.Count; j++)
                     {
+                        IVariable toRegister = otherVariables[j];
                         bool isVisible = (toRegister.Scope & AccessScopeDefaults.VisibleToOutsiders) != 0;
                         if (!isVisible)
                         {
@@ -102,12 +107,15 @@ namespace AtMycelia.Hyphlow
             {
                 IReadOnlyList<VariableSourceAsset> globalSources = _globalSourcesProvider()
                     .Where(source => source != null && source != localSource as UnityObj).ToArray();
-                globalSources ??= emptySources;
+                globalSources ??= _emptySources;
 
-                foreach (var source in globalSources)
+                for (int i = 0; i < globalSources.Count; i++)
                 {
-                    foreach (var toRegister in source.Variables)
+                    VariableSourceAsset source = globalSources[i];
+                    IReadOnlyList<IVariable> sourceVariables = source.Variables;
+                    for (int j = 0; j < sourceVariables.Count; j++)
                     {
+                        IVariable toRegister = sourceVariables[j];
                         string key = string.Format(_globalSourceKeyFormat, source.name, toRegister.Key);
                         Register(key, toRegister);
                         bool isLegacyVariable = toRegister is Variable;
@@ -192,7 +200,7 @@ namespace AtMycelia.Hyphlow
                 }
                 else
                 {
-                    result = emptyDict;
+                    result = _emptyDict;
                 }
 
             }
@@ -264,8 +272,8 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        private static readonly IReadOnlyList<VariableSourceAsset> emptySources = new List<VariableSourceAsset>();
-        private static readonly ReadOnlyDictionary<string, IVariable> emptyDict =
+        private static readonly IReadOnlyList<VariableSourceAsset> _emptySources = new List<VariableSourceAsset>();
+        private static readonly ReadOnlyDictionary<string, IVariable> _emptyDict =
             new ReadOnlyDictionary<string, IVariable>(new Dictionary<string, IVariable>());
     }
 }

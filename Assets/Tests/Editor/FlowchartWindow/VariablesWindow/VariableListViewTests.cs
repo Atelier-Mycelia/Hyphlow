@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UIElements;
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorExt;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
@@ -13,6 +12,7 @@ using Type = System.Type;
 using StringComparison = System.StringComparison;
 using AtMycelia.EditorUtils;
 using AtMycelia;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.VariableOperations
 {
@@ -66,8 +66,8 @@ namespace VScriptingTests.VariableOperations
             };
             _view = new VariableListView(listViewArgs);
 
-            _fiVariables = viewType.GetField("varsToDisplay", bindingFlags);
-            Assert.NotNull(_fiVariables, "varsToDisplay field not found");
+            _fiVariables = viewType.GetField("_varsToDisplay", bindingFlags);
+            Assert.NotNull(_fiVariables, "_varsToDisplay field not found");
 
             _miOnItemIndexChanged = viewType.GetMethod("OnItemReordered", bindingFlags);
             Assert.NotNull(_miOnItemIndexChanged, "OnItemReordered method not found");
@@ -81,8 +81,14 @@ namespace VScriptingTests.VariableOperations
         [TearDown]
         public void TearDown()
         {
-            foreach (var elem in _createdVars)
-                if (elem is Component legacyVarComponent) UnityObj.DestroyImmediate(legacyVarComponent);
+            for (int i = _createdVars.Count - 1; i >= 0; i--)
+            {
+                var elem = _createdVars[i];
+                if (elem is Component legacyVarComponent)
+                {
+                    UnityObj.DestroyImmediate(legacyVarComponent);
+                }
+            }
 
             _createdVars.Clear();
             _view?.Dispose();

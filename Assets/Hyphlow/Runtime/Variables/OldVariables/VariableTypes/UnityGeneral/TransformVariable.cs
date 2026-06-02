@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("UnityGeneral", "Transform", typeof(Transform), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class TransformVariable : VariableBase<Transform>
     {
     }

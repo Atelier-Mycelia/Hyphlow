@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Get Text", 
                  "Gets the text property from a UI Text object and stores it in a string variable.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class GetText : Command 
     {
         [Tooltip("Text object to get text value from")]
@@ -19,7 +19,8 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("String variable to store the text value in")]
         [ContentTypeConstraint(typeof(string))]
-        [SerializeField] protected VariableReference stringVariable = new VariableReference();
+        [SerializeField] [FormerlySerializedAs("stringVariable")]
+protected VariableReference stringVariable = new VariableReference();
 
         protected override void RefreshVariableDataCache()
         {
@@ -68,7 +69,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(stringVariable.Variable, variable) || 
                 base.HasReference(variable);

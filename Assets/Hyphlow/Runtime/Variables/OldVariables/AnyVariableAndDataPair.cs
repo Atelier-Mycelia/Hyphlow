@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
     /// matching the right kind of variable with the correct data in the AnyVariableData.
     /// </summary>
     [Serializable]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class AnyVariableAndDataPair : ISerializationCallbackReceiver
     {
         [SerializeField]
@@ -51,7 +51,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public bool HasReference(Variable variable)
+        public bool HasReference(IVariable variable)
         {
             // Only legacy comparison makes sense for this signature
             return ReferenceEquals(variable, LhsVariable) || _data.HasReference(variable);

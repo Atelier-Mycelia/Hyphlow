@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,9 +13,11 @@ namespace AtMycelia.Hyphlow
     public class InputFieldTextChanged : EventHandler
     {
         [SerializeField] [VariableProperty(typeof(GameObjectVariable))]
+[FormerlySerializedAs("inputFieldHolder")]
         protected GameObjectVariable inputFieldHolder;
 
         [SerializeField] [VariableProperty(typeof(StringVariable))]
+[FormerlySerializedAs("output")]
         protected StringVariable output;
 
         protected override void Awake()

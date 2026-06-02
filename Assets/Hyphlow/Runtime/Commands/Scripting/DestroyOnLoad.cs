@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,10 +12,11 @@ namespace AtMycelia.Hyphlow
                  "DestroyOnLoad",
                  "Calls DontDestroyOnLoad on the target gameobject")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class DestroyOnLoad : Command
     {
-        [SerializeField] protected GameObjectData target;
+        [SerializeField] [FormerlySerializedAs("target")]
+protected GameObjectData target;
 
         protected override void RefreshVariableDataCache()
         {
@@ -34,7 +36,7 @@ namespace AtMycelia.Hyphlow
             return target.Value != null ? target.Value.name : "Error: no target set";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(variable, target.VarRef);
         }

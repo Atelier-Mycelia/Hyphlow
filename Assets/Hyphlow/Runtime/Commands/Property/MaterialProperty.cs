@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 
@@ -12,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Material",
                  "Get or Set a property of a Material component")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class MaterialProperty : BaseVariableProperty
     {
 		//generated property
@@ -30,10 +31,12 @@ namespace AtMycelia.Hyphlow
 
 		
         [SerializeField]
+[FormerlySerializedAs("property")]
         protected Property property;
 		
         [SerializeField]
         [VariableProperty(typeof(MaterialVariable))]
+[FormerlySerializedAs("materialVar")]
         protected MaterialVariable materialVar;
 
         [SerializeField]
@@ -42,6 +45,7 @@ namespace AtMycelia.Hyphlow
                           typeof(Vector2Variable),
                           typeof(IntegerVariable),
                           typeof(BooleanVariable))]
+[FormerlySerializedAs("inOutVar")]
         protected Variable inOutVar;
 
         public override void OnEnter()
@@ -146,9 +150,9 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            if (materialVar == variable || inOutVar == variable)
+            if (ReferenceEquals(materialVar, variable) || ReferenceEquals(inOutVar, variable))
                 return true;
 
             return false;

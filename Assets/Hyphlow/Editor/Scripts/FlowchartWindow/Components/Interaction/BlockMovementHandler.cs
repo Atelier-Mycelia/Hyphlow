@@ -1,0 +1,130 @@
+using System;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using System.Collections.Generic;
+
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
+{
+    public sealed class BlockMovementHandler : IFlowchartWindowModule, ILeftMouseDragResponder,
+        ILeftMouseUpResponder
+    {
+        public int Priority { get; set; } = 0;
+        public BlockMovementHandler(FlowchartContext context)
+        {
+            _flowchartContext = context ?? throw new ArgumentNullException(nameof(context));
+        }
+
+        private readonly FlowchartContext _flowchartContext;
+
+        public void Initialize(FlowchartWindow window)
+        {
+            if (window == null)
+            {
+                throw new ArgumentNullException(nameof(window));
+            }
+
+            _isDisposed = false;
+        }
+
+        private bool _isDisposed;
+
+        public void Dispose()
+        {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _isDisposed = true;
+        }
+
+        public void OnLeftMouseDragged(PointerEventInfo info, Event evt)
+        {
+            if (_isDisposed || evt == null || evt.alt)
+            {
+                return;
+            }
+
+            if (Flowchart == null || Interaction.RootBlockToDrag == null)
+            {
+                return;
+            }
+
+            // The SelectionState returns a defensive copy of the blocks. Thus for perf's sake, we'll cache
+            // one here and pass it to the methods that need it.
+            var blocks = SelectedBlocks;
+
+            HandleUndoStack(blocks);
+            Interaction.BlockDragOngoing = true;
+            ApplyTheMovement(ref info, blocks);
+            Interaction.HasDraggedSelected = true;
+        }
+
+        private Flowchart Flowchart => _flowchartContext.Flowchart;
+        private InteractionState Interaction => _flowchartContext.Interaction;
+        private IList<IBlock> SelectedBlocks => _flowchartContext.Selection.Blocks;
+
+        private void HandleUndoStack(IList<IBlock> blocks)
+        {
+            bool atTheStartOfADrag = !Interaction.DragUndoRecorded;
+            if (atTheStartOfADrag)
+            {
+                RegisterUndoFor(blocks);
+                Interaction.DragUndoRecorded = true;
+            }
+        }
+
+        private void RegisterUndoFor(IList<IBlock> blocks)
+        {
+            var undoTargets = blocks.OfType<Block>().ToArray();
+            if (undoTargets.Length > 0)
+            {
+                Undo.RegisterCompleteObjectUndo(undoTargets, "Adjust Block Position(s)");
+            }
+        }
+
+        private void ApplyTheMovement(ref PointerEventInfo info, IList<IBlock> blocks)
+        {
+            float zoom = Mathf.Approximately(Flowchart.Zoom, 0f) ?
+                1f :
+                Flowchart.Zoom;
+            Vector2 movementDelta = info.PanelDelta / zoom;
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                if (blocks[i] == null)
+                {
+                    Debug.LogWarning($"Block at index {i} was null. Skipping movement for this block.");
+                    continue;
+                }
+
+                IBlock blockEl = blocks[i];
+                Rect rect = blockEl._NodeRect;
+                rect.position += movementDelta;
+                blockEl._NodeRect = rect;
+                Debug.Log($"Moved block '{blockEl.BlockName}'");
+            }
+        }
+
+        public void OnLeftMouseUp(PointerEventInfo info, Event evt)
+        {
+            if (_isDisposed || evt == null)
+            {
+                return;
+            }
+
+            if (Interaction.RootBlockToDrag == null)
+            {
+                return;
+            }
+
+            if (HyphlowEditorPreferences.useGridSnap)
+            {
+                _flowchartContext.SnapBlocksToGrid();
+            }
+        }
+
+    }
+
+}

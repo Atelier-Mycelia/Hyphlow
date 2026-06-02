@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     [VariableInfo("Numeric", "Float", typeof(float), false)]
     [AddComponentMenu("")]
     [System.Serializable]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class FloatVariable : VariableBase<float>
     {
         public override bool IsArithmeticSupported(SetOperator setOperator)

@@ -28,11 +28,12 @@ namespace AtMycelia.Hyphlow
         "Blocks can listen for this message using a Message Received event handler.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SendMessage : Command
     {
         [Tooltip("Target flowchart(s) to send the message to")]
-        [SerializeField] protected MessageTarget messageTarget;
+        [SerializeField] [FormerlySerializedAs("messageTarget")]
+protected MessageTarget messageTarget;
 
         [Tooltip("Name of the message to send")]
         [SerializeField] protected StringData _message = new StringData("");
@@ -94,7 +95,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_message.VarRef, variable) || base.HasReference(variable);
         }

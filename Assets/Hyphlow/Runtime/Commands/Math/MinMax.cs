@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "MinMax",
                  "Command to store the min or max of 2 values")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class MinMax : Command
     {
         public enum Function
@@ -22,14 +23,18 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Min Or Max")]
         [SerializeField]
+[FormerlySerializedAs("function")]
         protected Function function = Function.Min;
 
         //[Tooltip("LHS Value ")]
         [SerializeField]
+[FormerlySerializedAs("inLHSValue")]
+[FormerlySerializedAs("inRHSValue")]
         protected FloatData inLHSValue, inRHSValue;
 
         //[Tooltip("Where the result of the function is stored.")]
         [SerializeField]
+[FormerlySerializedAs("outValue")]
         protected FloatData outValue;
 
         protected override void RefreshVariableDataCache()
@@ -64,7 +69,7 @@ namespace AtMycelia.Hyphlow
                 " [" + inLHSValue.Value.ToString() + " - " + inRHSValue.Value.ToString() + "]";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(inLHSValue.VarRef, variable) || 
                 ReferenceEquals(inRHSValue.VarRef, variable) || 

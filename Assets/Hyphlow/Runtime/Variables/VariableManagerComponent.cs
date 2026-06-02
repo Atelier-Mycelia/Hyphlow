@@ -327,8 +327,9 @@ namespace AtMycelia.Hyphlow
             var vManager = _variableManager;
 
             var globalVars = vManager.Variables.Where(VarIsGlobal).ToList();//
-            foreach (var globalVar in globalVars)
+            for (int i = 0; i < globalVars.Count; i++)
             {
+                var globalVar = globalVars[i];
                 globalVar.Scope = AccessScope.Public;
             }
         }
