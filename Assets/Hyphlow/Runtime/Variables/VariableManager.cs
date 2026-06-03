@@ -185,9 +185,30 @@ namespace AtMycelia.Hyphlow
                         continue;
                     }
 
+                    // Check if we already have a muscari with the same id, type and value
+                    bool alreadyHaveMatchingMuscari = false;
+                    for (int j = 0; j < _muscariables.Count; j++)
+                    {
+                        var existingMuscari = _muscariables[j];
+                        bool sameName = existingMuscari.Key.Equals(legacyVar.Key, StringComparison.OrdinalIgnoreCase);
+                        bool sameType = existingMuscari.ContentType == legacyVar.ContentType;
+                        bool sameValue = Equals(existingMuscari.BoxedValue, legacyVar.BoxedValue);
+                        if (sameName && sameType && sameValue)
+                        {
+                            // We already have a muscari that matches this legacy var, so we can skip it.
+                            alreadyHaveMatchingMuscari = true;
+                            break;
+                        }
+                    }
+
+                    if (alreadyHaveMatchingMuscari)
+                    {
+                        continue;
+                    }
                     EnsureValidIdFor(legacyVar);
                     AddAsMuscari(legacyVar);
                     addedAny = true;
+                    
                 }
             }
 

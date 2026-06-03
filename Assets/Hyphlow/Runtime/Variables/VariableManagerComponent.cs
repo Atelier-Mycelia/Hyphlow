@@ -21,7 +21,7 @@ namespace AtMycelia.Hyphlow
     /// used as a component on a GameObject. This is useful for things such as 
     /// Flowcharts, which can delegate their variable-management to another module.
     /// </summary>
-    public class VariableManagerComponent : MonoBehaviour, IVariableManager, IDisposable
+    public class VariableManagerComponent : MonoBehaviour, IVariableManager, IDisposable, IMuscariableSource
     {
         [SerializeField, HideInInspector] private UnityObj _unityObjOwner;
         [SerializeField, HideInInspector] private VariableManager _variableManager = new VariableManager();
@@ -56,6 +56,8 @@ namespace AtMycelia.Hyphlow
         public string UniqueId => _variableManager.UniqueId;
 
         public string Name { get => _variableManager.Name; set => _variableManager.Name = value; }
+
+        IReadOnlyList<Muscariable> IVariableSource<Muscariable>.Variables => ((IVariableSource<Muscariable>)_variableManager).Variables;
 
         public event Action<IVariable> VariableAdded
         {
@@ -250,6 +252,15 @@ namespace AtMycelia.Hyphlow
                 }
             }
 
+            // We don't want the old variables hanging around anymore at this point;
+            // otherwise, we might re-migrate them on the next editor update and end
+            // up with duplicates. So let's just delete them.
+            for (int i = 0; i < legacyVarsToMigrate.Count; i++)
+            {
+                Variable legacyVar = legacyVarsToMigrate[i];
+                DestroyImmediate(legacyVar);
+            }
+
             _variableManager.Refresh();
             Owner = _cachedFlowchart;
 
@@ -396,6 +407,11 @@ namespace AtMycelia.Hyphlow
         public void ResetAllVars()
         {
             _variableManager.ResetAllVars();
+        }
+
+        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, AccessScope scope)
+        {
+            return ((IMuscariableSource)_variableManager).AddNewVariableOfContentType(k, defaultVal, scope);
         }
     }
 

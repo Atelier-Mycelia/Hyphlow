@@ -22,14 +22,14 @@ namespace AtMycelia.Hyphlow
             }
 
             //if looping we need the end command in order to work
-            if(IsLooping && !EnsureRequiredEnd())
+            if (IsLooping && !EnsureRequiredEnd())
             {
                 Debug.LogError(LocationIdentifier + " is looping but has no matching End command");
                 Continue();
                 return;
             }
 
-            if ( !HasNeededProperties() )
+            if (!HasNeededProperties())
             {
                 Debug.LogError(LocationIdentifier + " cannot run due to missing required properties");
                 Continue();

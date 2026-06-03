@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1983cb934fee6c4bae9941b65c8c798, type: 3}
+  m_Name: HyphlowSamplesMessages
+  m_EditorClassIdentifier: 
+  _includeInSaves: 1
+  _uniqueId: dbd67569-78c3-4ae3-8f3c-27c7719e89c8
+  _alwaysKeepGuid: 1
+  _varManager:
+    _muscariables:
+    - rid: 588464199262797903
+    - rid: 588464199262797904
+    - rid: 588464199262798038
+    - rid: 588464199262798079
+    _legacyVariables: []
+    _nextValidVarID: 6
+    _isInitted: 0
+  _nextVarID: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: 588464199262797903
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 2
+        _key: enemyHitGround
+        _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: EnemyHitGround
+        startValue: 
+    - rid: 588464199262797904
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 2
+        _key: enemyShot
+        _itemId: 3
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: EnemyShot
+        startValue: 
+    - rid: 588464199262798038
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 2
+        _key: enemyDestroyed
+        _itemId: 4
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: EnemyDestroyed
+        startValue: 
+    - rid: 588464199262798079
+      type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: bulletFired
+        _itemId: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: 
+        _startValue: 
+        _value: BulletFired
+        startValue: 

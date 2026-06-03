@@ -26,20 +26,26 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the Update messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
-[FormerlySerializedAs("FireOn")]
-        protected UpdateMessageFlags FireOn = UpdateMessageFlags.Update;
+        [FormerlySerializedAs("FireOn")]
+        protected UpdateMessageFlags _fireOn = UpdateMessageFlags.Update;
 
         private void Update()
         {
-            if ((FireOn & UpdateMessageFlags.Update) != 0)
+            if (ShouldFireOn(UpdateMessageFlags.Update))
             {
                 ExecuteBlock();
             }
         }
 
+        private bool ShouldFireOn(UpdateMessageFlags flags)
+        {
+            bool result = (_fireOn & flags) != 0;
+            return result;
+        }
+
         private void FixedUpdate()
         {
-            if ((FireOn & UpdateMessageFlags.FixedUpdate) != 0)
+            if (ShouldFireOn(UpdateMessageFlags.FixedUpdate))
             {
                 ExecuteBlock();
             }
@@ -47,7 +53,7 @@ namespace AtMycelia.Hyphlow
 
         private void LateUpdate()
         {
-            if ((FireOn & UpdateMessageFlags.LateUpdate) != 0)
+            if (ShouldFireOn(UpdateMessageFlags.LateUpdate))
             {
                 ExecuteBlock();
             }

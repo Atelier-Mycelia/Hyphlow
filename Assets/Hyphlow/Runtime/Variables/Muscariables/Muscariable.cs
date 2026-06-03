@@ -262,7 +262,7 @@ protected byte itemID = InvalidId;
 
         public override string ToString()
         {
-            string result = $"{this.GetType().Name} w/ val: {BoxedValue})";
+            string result = $"{this.GetType().Name} named {_key} w/ val: {BoxedValue})";
             return result;
         }
 

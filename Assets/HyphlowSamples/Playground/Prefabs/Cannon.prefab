@@ -618,7 +618,7 @@ MonoBehaviour:
     _itemId: 7
     _owningSource: {fileID: 114116014992790474}
   _suppressBlockAutoSelect: 0
-  FireOn: 2
+  _fireOn: 2
 --- !u!114 &114987963891140428
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1232,8 +1232,8 @@ MonoBehaviour:
   _itemId: 21
   _indentLevel: 0
   getOrSet: 0
-  property: 1
-  transformData:
+  _property: 1
+  _transformData:
     _backingVarRef:
       _itemId: 9
       _owningSource: {fileID: 114116014992790474}
@@ -1247,7 +1247,7 @@ MonoBehaviour:
     _owningSource: {fileID: 114116014992790474}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &9103704289418209129
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1263,8 +1263,8 @@ MonoBehaviour:
   _itemId: 22
   _indentLevel: 0
   getOrSet: 0
-  property: 11
-  transformData:
+  _property: 11
+  _transformData:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 114116014992790474}
@@ -1278,7 +1278,7 @@ MonoBehaviour:
     _owningSource: {fileID: 114116014992790474}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &6664915626557825812
 MonoBehaviour:
   m_ObjectHideFlags: 2
