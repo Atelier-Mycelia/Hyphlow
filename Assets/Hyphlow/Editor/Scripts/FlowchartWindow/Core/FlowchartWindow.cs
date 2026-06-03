@@ -192,6 +192,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void CreateGUI()
         {
+            // Rebuilds can happen during editor lifecycle transitions (domain reload / play mode),
+            // so we clear first to keep the visual tree and module graph in sync.
+            rootVisualElement.Clear();
+
             _moduleHost.ClearModules();
             Clipboard = _clipboardCoordinator.EnsureClipboard(Clipboard, this);
 
@@ -304,13 +308,55 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             _refreshCoordinator.HandleRefresh(() => ActiveFlowchart, MissingOverlay, CreateGUI);
         }
 
+        private bool _isRecoveringGui;
+
+        private bool EnsureViewportManagerReady()
+        {
+            if (_viewportManager != null)
+            {
+                return true;
+            }
+
+            if (_isRecoveringGui)
+            {
+                return false;
+            }
+
+            // No active flowchart means CreateGUI will intentionally return without creating submodules.
+            if (ActiveFlowchart == null)
+            {
+                return false;
+            }
+
+            _isRecoveringGui = true;
+            try
+            {
+                // Rebuild from a clean visual tree so we don't stack duplicate roots.
+                rootVisualElement.Clear();
+                UxmlRoot = null;
+                CreateGUI();
+            }
+            finally
+            {
+                _isRecoveringGui = false;
+            }
+
+            return _viewportManager != null;
+        }
+
         private void OnGUI()
         {
+            if (!EnsureViewportManagerReady())
+            {
+                return;
+            }
+
             bool inValidState = _fcContext != null && _fcContext.Flowchart != null;
             if (!inValidState)
             {
                 return;
             }
+
             _inputDetector.OnGUI(Event.current);
             _viewportManager.OnGUI(Event.current);
         }

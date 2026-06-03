@@ -174,9 +174,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// <param name="onVarAdded">Optional callback after addition (currently unused).</param>
         public static void DoAddVariable(Rect position,
                                          string currentHandlerName,
-                                         Flowchart toAddVarTo)
+                                         IMuscariableSource toAddVarTo)
         {
-            _curFlowchart = toAddVarTo;
             _curSource = toAddVarTo;
 
             if (!HyphlowEditorPreferences.useLegacyMenus)
@@ -186,7 +185,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             // Always build / show the legacy menu (mirrors CommandSelector pattern).
-            ShowLegacyMenu(_curFlowchart);
+            ShowLegacyMenu(toAddVarTo);
         }
 
         protected const int POPUP_WIDTH = 200;

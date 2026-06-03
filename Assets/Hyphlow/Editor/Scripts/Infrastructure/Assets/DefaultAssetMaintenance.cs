@@ -28,6 +28,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         private static void DoTheEnsuring()
         {
             Debug.Log($"Doing default asset maintenance...");
+            EnsureFlowchartGlobalDefaults();
             EnsureHyphlowRuntimeSysAssets();//
             EnsureDefaultTweenAdapter();
             EnsureVariableRegistryConfigs();
@@ -77,8 +78,14 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
 
         private static readonly string _pathToRuntimeResourceFolder = "Runtime"; // Relative to Resources
-        private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia"; 
+        private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia";
         // Relative to Resources under Assets/
+
+        public static FlowchartGlobalDefaults EnsureFlowchartGlobalDefaults()
+        {
+            DefaultFlowchartConfigMaintenance.EnsureFcGlobalDefaults();
+            return FlowchartGlobalDefaults.S;
+        }
 
         public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
         {

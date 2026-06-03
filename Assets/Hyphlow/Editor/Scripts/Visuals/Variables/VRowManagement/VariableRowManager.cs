@@ -89,7 +89,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected bool _isDisposed;
         protected IReorderableVariableSource _variableSource;
-        protected Flowchart Flowchart => _variableSource as Flowchart;
+        protected VariableManagerComponent VarManagerComp => _variableSource as VariableManagerComponent;
         protected VariableManagerComponent _varManagerComponent;
         protected IVariableListView _listView;
         protected Button _addButton;
@@ -226,9 +226,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             Rect rect = _addButton.worldBound;
             // In the future, due to how Flowchart implements IVariableSource, we might
             // want just a single DoAddVariable method that takes IVariableSource.
-            if (Flowchart != null)
+            if (VarManagerComp != null)
             {
-                VariableSelectPopupWindowContent.DoAddVariable(rect, "", Flowchart);
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", VarManagerComp);
             }
             else if (_variableSource is IReorderableMuscariableSource muscaSource)
             {

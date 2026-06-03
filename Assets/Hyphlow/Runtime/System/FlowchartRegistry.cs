@@ -34,7 +34,7 @@ namespace AtMycelia.Hyphlow
         private static void OnEditorLoad()
         {
             Debug.Log("FlowchartRegistry initializing on editor load.");
-            EnsureInitialized(true);
+            EnsureInitialized(true);//
         }
 #endif
 
@@ -381,28 +381,41 @@ namespace AtMycelia.Hyphlow
         private static void ToggleEditorSubs(bool on)
         {
 #if UNITY_EDITOR
-
-            if (on)
-            {
-                EditorSceneManager.sceneOpened += OnEditorSceneOpened;
-                EditorSceneManager.sceneClosed += OnEditorSceneClosed;
-            }
-            else
-            {
-                EditorSceneManager.sceneOpened -= OnEditorSceneOpened;
-                EditorSceneManager.sceneClosed -= OnEditorSceneClosed;
-            }
+        if (on)
+        {
+            EditorSceneManager.sceneOpened += OnEditorSceneOpened;
+            EditorSceneManager.sceneClosed += OnEditorSceneClosed;
+            AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+        }
+        else
+        {
+            EditorSceneManager.sceneOpened -= OnEditorSceneOpened;
+            EditorSceneManager.sceneClosed -= OnEditorSceneClosed;
+            AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+        }
 #endif
         }
 
         private static void OnEditorSceneClosed(Scene scene)
         {
-            CaptureExistingFlowcharts();
+        #if UNITY_EDITOR
+            EditorApplication.delayCall += CaptureExistingFlowcharts;
+        #endif
         }
 
         private static void OnEditorSceneOpened(Scene scene, OpenSceneMode mode)
         {
-            CaptureExistingFlowcharts();
+        #if UNITY_EDITOR
+            EditorApplication.delayCall += CaptureExistingFlowcharts;
+        #endif
         }
+
+#if UNITY_EDITOR
+        private static void OnAfterAssemblyReload()
+        {
+            // Rebind callbacks and do a full recapture after domain reload.
+            EnsureInitialized(true);
+        }
+#endif
     }
 }

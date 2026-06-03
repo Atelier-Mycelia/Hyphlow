@@ -60,26 +60,34 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            GameObject newObject = null;
+            Transform parent = _parentTransform.Value;
 
-            if (_parentTransform.Value != null)
+            Vector3 spawnWorldPosition;
+            Quaternion spawnWorldRotation;
+
+            if (_spawnAtSelf.Value)
             {
-                newObject = GameObject.Instantiate(_sourceObject.Value, _parentTransform.Value);
+                spawnWorldPosition = transform.position;
+                spawnWorldRotation = transform.rotation;
             }
             else
             {
-                newObject = GameObject.Instantiate(_sourceObject.Value);
+                Quaternion requestedRotation = Quaternion.Euler(_spawnRotation.Value);
+                if (parent != null)
+                {
+                    spawnWorldPosition = parent.TransformPoint(_spawnPosition.Value);
+                    spawnWorldRotation = parent.rotation * requestedRotation;
+                }
+                else
+                {
+                    spawnWorldPosition = _spawnPosition.Value;
+                    spawnWorldRotation = requestedRotation;
+                }
             }
 
-            if (!_spawnAtSelf.Value)
-            {
-                Quaternion spawnRot = Quaternion.Euler(_spawnRotation.Value);
-                newObject.transform.SetLocalPositionAndRotation(_spawnPosition.Value, spawnRot);
-            }
-            else
-            {
-                newObject.transform.SetPositionAndRotation(transform.position, transform.rotation);
-            }
+            GameObject newObject = parent != null
+                ? GameObject.Instantiate(_sourceObject.Value, spawnWorldPosition, spawnWorldRotation, parent)
+                : GameObject.Instantiate(_sourceObject.Value, spawnWorldPosition, spawnWorldRotation);
 
             if (_newlySpawnedObject.Variable != null)
             {

@@ -484,6 +484,7 @@ namespace VScriptingTests.Variables
             return field.GetValue(instance);
         }
 
+        [VariableInfo("TestOnly", "TestStrMusca", typeof(string), false, IsTest = true)]
         private sealed class ResetTrackingStringMuscariable : StringMuscariable
         {
             public int ResetCalls { get; private set; }

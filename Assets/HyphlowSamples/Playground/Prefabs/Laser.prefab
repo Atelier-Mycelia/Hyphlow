@@ -403,7 +403,9 @@ MonoBehaviour:
     _nextValidVarID: 1
     _isInitted: 1
   version: 1
-  _legacyVariables: []
+  _legacyVariables:
+  - {fileID: 114979932131573080}
+  - {fileID: 114455382144078078}
   _oldMuscariables: []
   _otherSettings: []
   _flowchartSettings: {fileID: 0}
@@ -411,8 +413,7 @@ MonoBehaviour:
   _uiModel:
     _selectedLegacyBlocks:
     - {fileID: 114182131449558960}
-    _selectedLegacyCommands:
-    - {fileID: 114299940920854140}
+    _selectedLegacyCommands: []
     _owner: {fileID: 1942691996823588}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -452,13 +453,13 @@ MonoBehaviour:
     serializedVersion: 2
     x: 178
     y: 115
-    width: 107
+    width: 60
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
   _scope: 1
   _itemId: 1
-  _blockName: New Block
+  _blockName: Init
   _description: 
   _legacyEventHandler: {fileID: 114602407226986924}
   _legacyCommandList:
@@ -608,7 +609,7 @@ MonoBehaviour:
   _message:
     _backingVarRef:
       _itemId: 3
-      _owningSource: {fileID: 114526636883379746}
+      _owningSource: {fileID: 11400000, guid: 986bcfca7dec34e4aac7bd1e87cfca67, type: 2}
       legacyOwningFc: {fileID: 0}
       legacyOwningVsa: {fileID: 0}
     _value: EnemyShot
@@ -963,10 +964,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blockManager:
-    _legacyBlocks: []
+    _legacyBlocks:
+    - {fileID: 114593477394275294}
+    - {fileID: 114182131449558960}
     _nextValidBlockId: 1
-    _blockOwner: {fileID: 0}
-  _cachedFlowchart: {fileID: 0}
+    _blockOwner: {fileID: 114526636883379746}
+  _cachedFlowchart: {fileID: 114526636883379746}
 --- !u!114 &1851314910480481682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -979,10 +982,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _owner: {fileID: 0}
+  _owner: {fileID: 114526636883379746}
   _manager:
-    _coroutineRunner: {fileID: 0}
-  _unityObjBlockManager: {fileID: 0}
+    _coroutineRunner: {fileID: 114526636883379746}
+  _unityObjBlockManager: {fileID: -4757318951579707816}
   _nonUnityObjBlockManager:
     rid: -2
   references:

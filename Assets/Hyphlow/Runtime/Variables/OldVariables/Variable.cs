@@ -207,6 +207,7 @@ private int oldItemID = 0;
             _owner ??= GetComponent<Flowchart>();
         }
 
+        
     }
 
     /// <summary>
@@ -346,10 +347,18 @@ private int oldItemID = 0;
         
         public override string ToString()
         {
-            if (Value != null)
-                return Value.ToString();
+            string result;
+            if (Value == null)
+            {
+                result = "Null";
+            }
             else
-                return "Null";
+            {
+                result = $"Variable (Key: {_key}, Scope: {_scope}, Value: {Value}";
+                return result;
+            }
+
+            return result;
         }
         
         public override void Init(object startValue)

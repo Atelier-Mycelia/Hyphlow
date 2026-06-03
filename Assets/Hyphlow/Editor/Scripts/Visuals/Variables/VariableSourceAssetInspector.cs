@@ -1,6 +1,7 @@
 using AtMycelia.EditorUtils;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
@@ -33,13 +34,14 @@ namespace AtMycelia.Hyphlow.EditorExt
             _rootElement.Add(_inspectorRoot);
             BuildManager(_inspectorRoot);
             AddGlobalSourceButtons(_inspectorRoot);
+            ShowUidLabel(_inspectorRoot);
         }
 
         protected VariableRowManager _manager;
         protected RowVisualHandlerPool _handlerPool;
         protected VariableRowPool _rowPool;
         protected VisualTreeAsset _uxml;
-        protected readonly string _pathToUxml = "Editor/UIToolkitTemplates/VariableDisplayEditor";
+        protected static readonly string _pathToUxml = "Editor/UIToolkitTemplates/VariableDisplayEditor";
         protected VisualElement _rootElement;
         protected TemplateContainer _inspectorRoot;
         protected Button _registerGlobalButton;
@@ -340,7 +342,17 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static string GetRegistryConfigLabel(VariableRegistryConfig config, int index)
         {
-            return config != null ? config.name : $"Missing Config {index + 1}";
+            return config != null ? 
+                config.name : 
+                $"Missing Config {index + 1}";
+        }
+
+        private void ShowUidLabel(VisualElement inspectorRoot)
+        {
+            UitkLabel uidLabel = new UitkLabel();
+            VariableSourceAsset variableSource = (VariableSourceAsset)target;
+            uidLabel.text = $"Unique ID: {variableSource.UniqueId}";
+            inspectorRoot.Add(uidLabel);
         }
     }
 }

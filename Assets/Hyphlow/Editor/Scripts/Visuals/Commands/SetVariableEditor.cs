@@ -28,6 +28,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public override void DrawCommandGUI()
         {
+            serializedObject.Update();
+
             _setVarCommand = (SetVariable)target;
             _flowchart = _setVarCommand.GetFlowchart();
             if (_flowchart == null)
@@ -93,18 +95,22 @@ namespace AtMycelia.Hyphlow.EditorExt
             _operatorsList.Clear();
             _operatorValues.Clear();
 
-            if (_selectedVariable != null)
-            {
-                TryAdd(SetOperator.Assign);
-                TryAdd(SetOperator.Negate);
-                TryAdd(SetOperator.Add);
-                TryAdd(SetOperator.Subtract);
-                TryAdd(SetOperator.Multiply);
-                TryAdd(SetOperator.Divide);
-            }
-            else
+            if (_selectedVariable == null)
             {
                 EditorGUILayout.HelpBox("Select a variable to see available operations.", MessageType.Info);
+                return;
+            }
+
+            TryAdd(SetOperator.Assign);
+            TryAdd(SetOperator.Negate);
+            TryAdd(SetOperator.Add);
+            TryAdd(SetOperator.Subtract);
+            TryAdd(SetOperator.Multiply);
+            TryAdd(SetOperator.Divide);
+
+            if (_operatorValues.Count == 0)
+            {
+                EditorGUILayout.HelpBox("No supported operations for selected variable.", MessageType.Warning);
                 return;
             }
 
@@ -127,11 +133,33 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected void TryAdd(SetOperator op)
         {
-            if (_selectedVariable != null && _selectedVariable.IsArithmeticSupported(op))
+            if (!SupportsSetOperator(op))
             {
-                _operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
-                _operatorValues.Add(op);
+                return;
             }
+
+            _operatorsList.Add(new GUIContent(VariableUtil.GetSetOperatorDescription(op)));
+            _operatorValues.Add(op);
+        }
+
+        private bool SupportsSetOperator(SetOperator op)
+        {
+            if (_selectedVariable == null)
+            {
+                return false;
+            }
+
+            if (op == SetOperator.Assign)
+            {
+                return true;
+            }
+
+            if (op == SetOperator.Negate && _selectedVariable.ContentType == typeof(bool))
+            {
+                return true;
+            }
+
+            return _selectedVariable.IsArithmeticSupported(op);
         }
 
         protected virtual void ApplySetOperatorChoice()
@@ -157,8 +185,21 @@ namespace AtMycelia.Hyphlow.EditorExt
             var innerDataRefProp = _anyVarDataProp != null
                 ? _anyVarDataProp.FindPropertyRelative("_data")
                 : null;
+            if (innerDataRefProp == null)
+            {
+                EditorGUILayout.HelpBox("Unable to locate RHS data. Select a variable first.",
+                    MessageType.Warning);
+                return;
+            }
 
-            if (innerDataRefProp != null && innerDataRefProp.managedReferenceValue == null)
+            IVariableData rhsData = innerDataRefProp.managedReferenceValue as IVariableData;
+            bool compatibleContentTypes = false;
+            if (rhsData != null)
+            {
+                compatibleContentTypes = TypeUtils.TypesCompatible(rhsData.ContentType, 
+                    _selectedVariable.ContentType);
+            }
+            if (!compatibleContentTypes)
             {
                 var varType = _selectedVariable.GetType();
                 Type desiredDataType = VariableDataTypeRegistry.CreateForVar(varType)?.GetType();

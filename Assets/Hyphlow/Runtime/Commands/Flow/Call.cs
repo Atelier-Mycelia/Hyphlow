@@ -168,17 +168,24 @@ namespace AtMycelia.Hyphlow
 
                 if (targetBlock.IsExecuting)
                 {
-                    string logMessage = $"{targetBlock.BlockName}  is already running.";
-                    Debug.LogWarning(logMessage, this);
-                    Continue();
-                    return;
+                    if (_callMode == CallMode.StopThenCall)
+                    {
+                        targetBlock.Stop();
+                    }
+                    else
+                    {
+                        string logMessage = $"{targetBlock.BlockName} is already running.";
+                        Debug.LogWarning(logMessage, this);
+                        Continue();
+                        return;
+                    }
                 }
 
-                // Callback action for Wait Until Finished mode
                 Action onComplete = null;
                 if (_callMode == CallMode.WaitUntilFinished)
                 {
-                    onComplete = delegate {
+                    onComplete = delegate
+                    {
                         Continue();
                     };
                 }

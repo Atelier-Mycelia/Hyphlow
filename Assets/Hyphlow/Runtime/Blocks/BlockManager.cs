@@ -117,14 +117,12 @@ namespace AtMycelia.Hyphlow
 				{
 					string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. " +
 						$"There may be an underlying problem.";
-					Debug.LogWarning(logMessage);
-					Rect fixedRect = new Rect(nodeRect.position, _defaultConfig.BlockSize);
+                   Debug.LogWarning(logMessage);
+					Rect fixedRect = new Rect(nodeRect.position, DefaultConfig.BlockSize);
 					currentBlock._NodeRect = fixedRect;
 				}
 			}
 		}
-
-		private static FlowchartGlobalDefaults _defaultConfig => FlowchartGlobalDefaults.S;
 
 		public byte NextValidId()
 		{
@@ -357,7 +355,13 @@ namespace AtMycelia.Hyphlow
 				return;
 			}
 
-			EnsureValidIdFor(toAdd);
+            EnsureValidIdFor(toAdd);
+			if (toAdd == null || DefaultConfig == null)
+			{
+              Debug.LogError("Failed to ensure valid ID for Block being added to caches, or default config is missing.");
+				Debug.Break();
+				return;
+			}
 			toAdd.Key = UniqueKeyGenerator.GetUniqueKeyFor(toAdd.Key, _legacyBlocks, toAdd,
 				DefaultConfig.NewBlockName);
 			if (triggerSignals)
@@ -380,9 +384,30 @@ namespace AtMycelia.Hyphlow
 			}
 		}
 
-		
+      private static FlowchartGlobalDefaults DefaultConfig
+		{
+			get
+			{
+				FlowchartGlobalDefaults config = FlowchartGlobalDefaults.S;
+				if (config)
+				{
+					return config;
+				}
 
-		private static FlowchartGlobalDefaults DefaultConfig => FlowchartGlobalDefaults.S;
+				if (!_didLogMissingDefaultConfig)
+				{
+					Debug.LogWarning("FlowchartGlobalDefaults could not be loaded. Using in-memory defaults for this session.");
+					_didLogMissingDefaultConfig = true;
+				}
+
+				_fallbackDefaultConfig ??= ScriptableObject.CreateInstance<FlowchartGlobalDefaults>();
+				_fallbackDefaultConfig.hideFlags = HideFlags.HideAndDontSave;
+				return _fallbackDefaultConfig;
+			}
+		}
+
+		private static FlowchartGlobalDefaults _fallbackDefaultConfig;
+		private static bool _didLogMissingDefaultConfig;
 		public event Action<IBlock> PreBlockAdded = delegate { };
 		public event Action<IBlock> BlockAdded = delegate { };
 
