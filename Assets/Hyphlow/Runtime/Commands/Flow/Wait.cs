@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -13,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Waits for period of time before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Wait : Command
     {
         [Tooltip("Duration to wait for")]
