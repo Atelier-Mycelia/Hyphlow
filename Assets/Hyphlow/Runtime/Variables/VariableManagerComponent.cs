@@ -113,16 +113,12 @@ namespace AtMycelia.Hyphlow
         private void OnEnable()
         {
             EnsureOwner();
-#if UNITY_EDITOR
-             
+            #if UNITY_EDITOR
             if (!Application.isPlaying)
             {
-                EditorApplication.delayCall += () =>
-                {
-                    MigrateAllFlowchartVariables();
-                };
+                QueueMigrationIfNeeded();
             }
-#endif
+            #endif
 
             _variableManager.OnEnable();
         }
@@ -139,6 +135,38 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
+        private static bool _migrationQueued;
+
+        private static bool ShouldSkipEditorWork()
+        {
+            return EditorApplication.isCompiling ||
+                EditorApplication.isUpdating ||
+                EditorApplication.isPlayingOrWillChangePlaymode;
+        }
+
+        private void QueueMigrationIfNeeded()
+        {
+            if (_migrationQueued || ShouldSkipEditorWork())
+            {
+                return;
+            }
+
+            _migrationQueued = true;
+            EditorApplication.delayCall += RunQueuedMigration;
+        }
+
+        private static void RunQueuedMigration()
+        {
+            _migrationQueued = false;
+
+            if (ShouldSkipEditorWork())
+            {
+                return;
+            }
+
+            MigrateAllFlowchartVariables();
+        }
+
         private static void MigrateAllFlowchartVariables()
         {
             Flowchart[] flowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
@@ -312,11 +340,15 @@ namespace AtMycelia.Hyphlow
                 EnsureOwner();
             }
 
-            EditorApplication.delayCall += () =>
+#if UNITY_EDITOR
+            if (ShouldSkipEditorWork())
             {
-                MigrateAllFlowchartVariables();
-                SetGlobalVarsToPublic();
-            };
+                return;
+            }
+
+            QueueMigrationIfNeeded();
+            SetGlobalVarsToPublic();
+#endif
         }
 
         void SetGlobalVarsToPublic()

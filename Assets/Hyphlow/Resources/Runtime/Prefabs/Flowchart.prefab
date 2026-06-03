@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8960144669321678861}
   - component: {fileID: 2938136129897735517}
   - component: {fileID: -5802371578969906704}
+  - component: {fileID: 8159262041073062569}
   m_Layer: 0
   m_Name: Flowchart
   m_TagString: Untagged
@@ -49,7 +50,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 416379780770169585}
-  _blockLogicManager: {fileID: -5802371578969906704}
+  _execManager: {fileID: -5802371578969906704}
+  _blockManager: {fileID: 8159262041073062569}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -59,11 +61,12 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
+  _flowchartSettings: {fileID: 0}
   _description: 
   _uiModel:
-    _selectedBlocks:
+    _selectedLegacyBlocks:
     - {fileID: 8960144669321678861}
-    _selectedCommands: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 1624740992974776359}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -77,22 +80,13 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  _stepPause: 0
-  _colorCommands: 1
-  _hideComponents: 1
-  _saveSelection: 1
-  _showLineNumbers: 0
-  _hideCommands: []
   _includeInSaves: 1
   _saveBlocks: 1
   _saveVariables: 1
   _loadPriority: 0
   _alwaysKeepGuid: 1
-  _blockListCache:
-  - {fileID: 8960144669321678861}
-  _commands: []
   nextValidVarID: 1
-  uniqueId: 7293e7d7-cba6-42a4-b36f-bec5db279779
+  _uniqueId: 
   references:
     version: 2
     RefIds: []
@@ -120,7 +114,7 @@ MonoBehaviour:
     RefIds: []
 --- !u!114 &8960144669321678861
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -142,10 +136,12 @@ MonoBehaviour:
   _itemId: 1
   _blockName: Init
   _description: 
-  _eventHandler: {fileID: 2938136129897735517}
-  _commandList: []
+  _legacyEventHandler: {fileID: 2938136129897735517}
+  _legacyCommandList: []
   _includeInSaves: 1
   _loadPriority: 0
+  _owner: {fileID: 2276537957769623347}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 1
 --- !u!114 &2938136129897735517
 MonoBehaviour:
@@ -159,7 +155,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 8960144669321678861}
+  _parentMbBlock: {fileID: 8960144669321678861}
+  _parentBlockReference:
+    _itemId: 1
+    _owningSource: {fileID: 2276537957769623347}
   _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!114 &-5802371578969906704
@@ -176,9 +175,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _owner: {fileID: 0}
   _manager:
-    _blocks:
-      _blocks: []
-      _nextValidBlockId: 1
-    _commands: []
-    _owner: {fileID: 0}
-    _nextItemId: 1
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+--- !u!114 &8159262041073062569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624740992974776359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}

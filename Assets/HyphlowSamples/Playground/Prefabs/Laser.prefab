@@ -174,6 +174,8 @@ GameObject:
   - component: {fileID: 958645331840734462}
   - component: {fileID: 4484725498435143672}
   - component: {fileID: -8952826472531823386}
+  - component: {fileID: -4757318951579707816}
+  - component: {fileID: 1851314910480481682}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Laser
@@ -393,6 +395,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 5931047070783665450}
+  _execManager: {fileID: 1851314910480481682}
+  _blockManager: {fileID: -4757318951579707816}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -402,11 +406,12 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
-    _selectedBlocks:
+  _flowchartSettings: {fileID: 0}
+  _description: 
+  _uiModel:
+    _selectedLegacyBlocks:
     - {fileID: 114182131449558960}
-    _selectedCommands:
+    _selectedLegacyCommands:
     - {fileID: 114299940920854140}
     _owner: {fileID: 1942691996823588}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
@@ -421,34 +426,19 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 1
-  _blockListCache:
-  - {fileID: 114593477394275294}
-  - {fileID: 114182131449558960}
-  _commands:
-  - {fileID: 114751314740007556}
-  - {fileID: 114299940920854140}
-  - {fileID: 4278132626369988641}
-  - {fileID: 4484725498435143672}
-  - {fileID: -8952826472531823386}
   nextValidVarID: 3
-  uniqueId: db274a64-69a9-4f64-8ed7-a518474d93a2
+  _uniqueId: 
   references:
     version: 2
     RefIds: []
 --- !u!114 &114593477394275294
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -466,15 +456,18 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: New Block
-  description: 
-  eventHandler: {fileID: 114602407226986924}
-  commandList:
+  _scope: 1
+  _itemId: 1
+  _blockName: New Block
+  _description: 
+  _legacyEventHandler: {fileID: 114602407226986924}
+  _legacyCommandList:
   - {fileID: 4278132626369988641}
   - {fileID: 114751314740007556}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
+  _owner: {fileID: 114526636883379746}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &114602407226986924
 MonoBehaviour:
@@ -488,7 +481,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 114593477394275294}
+  _parentMbBlock: {fileID: 114593477394275294}
+  _parentBlockReference:
+    _itemId: 1
+    _owningSource: {fileID: 114526636883379746}
   _suppressBlockAutoSelect: 0
   waitForFrames: 3
 --- !u!114 &114979932131573080
@@ -511,7 +507,7 @@ MonoBehaviour:
   _value: {x: 0, y: 10}
 --- !u!114 &114751314740007556
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -521,8 +517,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d81be3d7e84da460788dccea95a3313a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 2
-  indentLevel: 0
+  _itemId: 2
+  _indentLevel: 0
   _targetGameObject:
     _backingVarRef:
       _itemId: 0
@@ -562,7 +558,7 @@ MonoBehaviour:
   _value: 3
 --- !u!114 &114182131449558960
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -580,20 +576,23 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 3
-  blockName: HitEnemy
-  description: 
-  eventHandler: {fileID: 958645331840734462}
-  commandList:
+  _scope: 1
+  _itemId: 3
+  _blockName: HitEnemy
+  _description: 
+  _legacyEventHandler: {fileID: 958645331840734462}
+  _legacyCommandList:
   - {fileID: 4484725498435143672}
   - {fileID: 114299940920854140}
   - {fileID: -8952826472531823386}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
+  _owner: {fileID: 114526636883379746}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &114299940920854140
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -603,8 +602,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c43743931d28f43f89eced820d907351, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 4
-  indentLevel: 0
+  _itemId: 4
+  _indentLevel: 0
   messageTarget: 1
   _message:
     _backingVarRef:
@@ -800,7 +799,7 @@ MonoBehaviour:
         startValue: 
 --- !u!114 &4278132626369988641
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -810,8 +809,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdffa55cff4eb6e4583b03e4d1cc1a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 5
-  indentLevel: 0
+  _itemId: 5
+  _indentLevel: 0
   _rb:
     _backingVarRef:
       _itemId: 0
@@ -862,7 +861,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75662d9886485a9478179361e82eb7bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 114182131449558960}
+  _parentMbBlock: {fileID: 114182131449558960}
+  _parentBlockReference:
+    _itemId: 3
+    _owningSource: {fileID: 114526636883379746}
   _suppressBlockAutoSelect: 0
   _tagFilter:
     _tagFilter:
@@ -893,7 +895,7 @@ MonoBehaviour:
   colliderVar: {fileID: 0}
 --- !u!114 &4484725498435143672
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -903,10 +905,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 6
-  indentLevel: 0
-  logType: 0
-  logMessage:
+  _itemId: 6
+  _indentLevel: 0
+  _logType: 0
+  _logMessage:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
@@ -917,7 +919,7 @@ MonoBehaviour:
     stringVal: 
 --- !u!114 &-8952826472531823386
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -927,8 +929,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d81be3d7e84da460788dccea95a3313a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 7
-  indentLevel: 0
+  _itemId: 7
+  _indentLevel: 0
   _targetGameObject:
     _backingVarRef:
       _itemId: 0
@@ -948,3 +950,43 @@ MonoBehaviour:
     floatRef: {fileID: 0}
     floatVal: 0
   targetGameObjectOLD: {fileID: 0}
+--- !u!114 &-4757318951579707816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}
+--- !u!114 &1851314910480481682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1942691996823588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

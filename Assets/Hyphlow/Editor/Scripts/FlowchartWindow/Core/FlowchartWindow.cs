@@ -14,7 +14,6 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     public class FlowchartWindow : EditorWindow, IFlowchartHostCore
     {
         [SerializeField]
-[FormerlySerializedAs("m_VisualTreeAsset")]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
         /// <summary>
@@ -31,6 +30,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             wnd.minSize = Config.WindowMinSize;
             wnd.Show();
             wnd.Focus();
+            wnd.Refresh();
         }
 
         public static FlowchartWindow S => _s;

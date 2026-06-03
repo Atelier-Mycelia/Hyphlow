@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
@@ -43,6 +44,31 @@ namespace AtMycelia.Hyphlow
             EnsureOwner();
             _manager.Initialize(UnderlyingBlockManager, Owner);
             Refresh();
+
+        }
+
+        protected virtual void Start()
+        {
+            if (Application.IsPlaying(this))
+            {
+                StartCoroutine(HandleGameStartedBlocks());
+            }
+        }
+
+        protected virtual IEnumerator HandleGameStartedBlocks()
+        {
+            IList<GameStarted> gsEventHandler = GetComponents<GameStarted>();
+
+            if (gsEventHandler.Count == 0)
+            {
+                yield break;
+            }
+
+            for (int i = 0; i < gsEventHandler.Count; i++)
+            {
+                var elem = gsEventHandler[i];
+                elem.Trigger();
+            }
         }
 
         private void GetNeededComponents()

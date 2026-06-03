@@ -27,6 +27,8 @@ GameObject:
   - component: {fileID: 3169451157478701340}
   - component: {fileID: 8716954193096103847}
   - component: {fileID: 6778046661250637899}
+  - component: {fileID: 4280202623686693629}
+  - component: {fileID: 4775604374903582685}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -62,6 +64,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _varManager: {fileID: 5482640307690825514}
+  _execManager: {fileID: 4775604374903582685}
+  _blockManager: {fileID: 4280202623686693629}
   legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
@@ -71,10 +75,11 @@ MonoBehaviour:
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  description: 
-  uiModel:
-    _selectedBlocks: []
-    _selectedCommands: []
+  _flowchartSettings: {fileID: 0}
+  _description: 
+  _uiModel:
+    _selectedLegacyBlocks: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 1643320542487702}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -88,36 +93,19 @@ MonoBehaviour:
       width: 0
       height: 0
     <SelectedCommandsStale>k__BackingField: 1
-  stepPause: 0
-  colorCommands: 1
-  hideComponents: 1
-  saveSelection: 1
-  showLineNumbers: 0
-  hideCommands: []
-  includeInSaves: 1
-  saveBlocks: 1
-  saveVariables: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _saveBlocks: 1
+  _saveVariables: 1
+  _loadPriority: 0
   _alwaysKeepGuid: 1
-  _blockListCache:
-  - {fileID: 114158188752211888}
-  _commands:
-  - {fileID: 114220456410977536}
-  - {fileID: 114222629582179790}
-  - {fileID: 114533871774847328}
-  - {fileID: 114197543733484370}
-  - {fileID: 114186534075702092}
-  - {fileID: 114845356377412462}
-  - {fileID: 114536672983551206}
-  - {fileID: 3169451157478701340}
   nextValidVarID: 11
-  uniqueId: fcb6e5b4-e3a5-41c3-b39b-f2092cb83e46
+  _uniqueId: 
   references:
     version: 2
     RefIds: []
 --- !u!114 &114158188752211888
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -135,11 +123,12 @@ MonoBehaviour:
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
   useCustomTint: 0
-  itemId: 1
-  blockName: Init
-  description: 
-  eventHandler: {fileID: 114271269415529472}
-  commandList:
+  _scope: 1
+  _itemId: 1
+  _blockName: Init
+  _description: 
+  _legacyEventHandler: {fileID: 114271269415529472}
+  _legacyCommandList:
   - {fileID: 114220456410977536}
   - {fileID: 8716954193096103847}
   - {fileID: 114222629582179790}
@@ -150,8 +139,10 @@ MonoBehaviour:
   - {fileID: 114533871774847328}
   - {fileID: 114197543733484370}
   - {fileID: 6778046661250637899}
-  includeInSaves: 1
-  loadPriority: 0
+  _includeInSaves: 1
+  _loadPriority: 0
+  _owner: {fileID: 114094183539183980}
+  _nextValidCommandId: 1
   suppressAllAutoSelections: 0
 --- !u!114 &114271269415529472
 MonoBehaviour:
@@ -165,12 +156,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2f6487d21a03404cb21b245f0242e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _parentBlock: {fileID: 114158188752211888}
+  _parentMbBlock: {fileID: 114158188752211888}
+  _parentBlockReference:
+    _itemId: 1
+    _owningSource: {fileID: 114094183539183980}
   _suppressBlockAutoSelect: 0
   waitForFrames: 1
 --- !u!114 &114220456410977536
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -180,8 +174,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea4da378c47144a86979765ac5e9690c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 10
-  indentLevel: 0
+  _itemId: 10
+  _indentLevel: 0
   _key:
     _backingVarRef:
       _itemId: 10
@@ -194,7 +188,7 @@ MonoBehaviour:
   key: 
 --- !u!114 &114222629582179790
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -204,8 +198,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3315ad2ebb85443909a1203d56d9344e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 2
-  indentLevel: 1
+  _itemId: 2
+  _indentLevel: 1
   _duration:
     _backingVarRef:
       _itemId: 0
@@ -218,7 +212,7 @@ MonoBehaviour:
   durationOLD: 0
 --- !u!114 &114533871774847328
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -228,8 +222,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3e86f556e074b84af1cc7eb8f8e5e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 3
-  indentLevel: 1
+  _itemId: 3
+  _indentLevel: 1
   _sourceObject:
     _backingVarRef:
       _itemId: 9
@@ -286,7 +280,7 @@ MonoBehaviour:
   spawnRotationOLD: {x: 0, y: 0, z: 0}
 --- !u!114 &114197543733484370
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -296,8 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae9ac2fcbd1d542619ab0bc7549fb264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 4
-  indentLevel: 1
+  _itemId: 4
+  _indentLevel: 1
   _targetLabel:
     _backingVarRef:
       _itemId: 10
@@ -310,7 +304,7 @@ MonoBehaviour:
   targetLabelOLD: {fileID: 0}
 --- !u!114 &114186534075702092
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -320,8 +314,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce1a662ad70c46f4b2de306ed2627a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 5
-  indentLevel: 1
+  _itemId: 5
+  _indentLevel: 1
   _variable:
     _itemId: 1
     _owningSource: {fileID: 114094183539183980}
@@ -348,7 +342,7 @@ MonoBehaviour:
   _oldVariable: {fileID: 0}
 --- !u!114 &114845356377412462
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -358,8 +352,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce1a662ad70c46f4b2de306ed2627a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 6
-  indentLevel: 1
+  _itemId: 6
+  _indentLevel: 1
   _variable:
     _itemId: 2
     _owningSource: {fileID: 114094183539183980}
@@ -458,7 +452,7 @@ MonoBehaviour:
   _value: {x: 0, y: 6, z: 0}
 --- !u!114 &114536672983551206
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -468,8 +462,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfc8e8d5ce363ec43815496d321b4d55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 8
-  indentLevel: 1
+  _itemId: 8
+  _indentLevel: 1
   _lhs:
     _backingVarRef:
       _itemId: 3
@@ -650,8 +644,7 @@ MonoBehaviour:
         itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
-        _value: {fileID: 1292638556747252, guid: cf9a0515785714a49b2d12090c78828f,
-          type: 3}
+        _value: {fileID: 1292638556747252, guid: cf9a0515785714a49b2d12090c78828f, type: 3}
         startValue: {fileID: 0}
     - rid: 3688519964252438545
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
@@ -668,7 +661,7 @@ MonoBehaviour:
         startValue: 
 --- !u!114 &3169451157478701340
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -678,8 +671,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96fb07b07bec30544a6c3c01df5345ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 9
-  indentLevel: 1
+  _itemId: 9
+  _indentLevel: 1
   _getOrSet: 1
   _vec3Var:
     _itemId: 3
@@ -713,7 +706,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  vec3:
+  _vec3:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
@@ -724,7 +717,7 @@ MonoBehaviour:
     vector3Val: {x: 0, y: 0, z: 0}
 --- !u!114 &8716954193096103847
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -734,8 +727,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c5622b8a80845c980954170295f292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 11
-  indentLevel: 0
+  _itemId: 11
+  _indentLevel: 0
   _anyOrAllConditions: 0
   _conditions:
   - _compareOperator: 0
@@ -923,7 +916,7 @@ MonoBehaviour:
         booleanVal: 0
 --- !u!114 &6778046661250637899
 MonoBehaviour:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -933,5 +926,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93cb9773f2ca04e2bbf7a68ccfc23267, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemId: 12
-  indentLevel: 0
+  _itemId: 12
+  _indentLevel: 0
+--- !u!114 &4280202623686693629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1643320542487702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16732bba93198b4888a347765e3a8cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _blockManager:
+    _legacyBlocks: []
+    _nextValidBlockId: 1
+    _blockOwner: {fileID: 0}
+  _cachedFlowchart: {fileID: 0}
+--- !u!114 &4775604374903582685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1643320542487702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _owner: {fileID: 0}
+  _manager:
+    _coroutineRunner: {fileID: 0}
+  _unityObjBlockManager: {fileID: 0}
+  _nonUnityObjBlockManager:
+    rid: -2
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

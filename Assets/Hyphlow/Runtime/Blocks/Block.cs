@@ -46,6 +46,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("An optional Event Handler which can execute the block when an event occurs")]
         [FormerlySerializedAs("eventHandler")]
         [FormerlySerializedAs("_eventHandler")]
+        [FormerlySerializedAs("_legacyEventHandler")]
         [SerializeField] protected EventHandler _legacyEventHandler;
 
         [FormerlySerializedAs("commandList")]
@@ -183,7 +184,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Refresh()
         {
-            AssertOwnershipAndUpdateIndexes();
+            AssertOwnershipAndUpdateIndexes();//
             RefreshCommandListDict();
             RefreshCommands();
             UpdateIndentLevels();
@@ -201,13 +202,65 @@ namespace AtMycelia.Hyphlow
                 {
                     continue;
                 }
+
                 command.ParentBlock = this;
                 command.CommandIndex = index++;
             }
 
-            if (EventHandler != null)
+            EnsureEventHandlerOwnership();
+        }
+
+        private void EnsureEventHandlerOwnership()
+        {
+            if (_legacyEventHandler == null)
             {
-                EventHandler.ParentBlock = this;
+                RecoverLegacyEventHandlerFromComponents();
+            }
+
+            if (_legacyEventHandler == null)
+            {
+                _eventHandler = null;
+                return;
+            }
+
+            _eventHandler = _legacyEventHandler;
+            if (!ReferenceEquals(_legacyEventHandler.ParentBlock, this))
+            {
+                _legacyEventHandler.ParentBlock = this;
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    EditorUtility.SetDirty(this);
+                    EditorUtility.SetDirty(_legacyEventHandler);
+                }
+#endif
+            }
+        }
+
+        private void RecoverLegacyEventHandlerFromComponents()
+        {
+            EventHandler[] handlersOnOwner = GetComponents<EventHandler>();
+            for (int i = 0; i < handlersOnOwner.Length; i++)
+            {
+                EventHandler candidate = handlersOnOwner[i];
+                if (candidate == null)
+                {
+                    continue;
+                }
+
+                if (ReferenceEquals(candidate.ParentBlock, this))
+                {
+                    _legacyEventHandler = candidate;
+                    _eventHandler = candidate;
+#if UNITY_EDITOR
+                    if (!Application.isPlaying)
+                    {
+                        EditorUtility.SetDirty(this);
+                        EditorUtility.SetDirty(candidate);
+                    }
+#endif
+                    return;
+                }
             }
         }
 
@@ -301,9 +354,18 @@ namespace AtMycelia.Hyphlow
             }
             set
             {
+                if (ReferenceEquals(_eventHandler, value))
+                {
+                    return;
+                }
+
                 _eventHandler = value;
-                _eventHandler.ParentBlock = this;
                 _legacyEventHandler = value as EventHandler;
+
+                if (_eventHandler != null)
+                {
+                    _eventHandler.ParentBlock = this;
+                }
             }
         }
 
@@ -746,6 +808,17 @@ namespace AtMycelia.Hyphlow
 
         public virtual void OnAfterDeserialize()
         {
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+
+                AssertOwnershipAndUpdateIndexes();
+            };
+#endif
         }
 
         public override string ToString()
