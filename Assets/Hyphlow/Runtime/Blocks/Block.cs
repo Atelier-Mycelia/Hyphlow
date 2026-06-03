@@ -219,9 +219,6 @@ namespace AtMycelia.Hyphlow
 
             if (_legacyEventHandler == null)
             {
-#if UNITY_EDITOR
-                LogEventHandlerLinkState("EnsureEventHandlerOwnership:legacy-null");
-#endif
                 _eventHandler = null;
                 return;
             }
@@ -261,7 +258,6 @@ namespace AtMycelia.Hyphlow
                         EditorUtility.SetDirty(this);
                         EditorUtility.SetDirty(candidate);
                     }
-                    LogEventHandlerLinkState("RecoverLegacyEventHandlerFromComponents:recovered");
 #endif
                     return;
                 }
@@ -820,46 +816,10 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                LogEventHandlerLinkState("OnAfterDeserialize:before");
                 AssertOwnershipAndUpdateIndexes();
-                LogEventHandlerLinkState("OnAfterDeserialize:after");
             };
 #endif
         }
-
-#if UNITY_EDITOR
-        private const bool _traceEventHandlerLinking = true;
-
-        private void LogEventHandlerLinkState(string phase)
-        {
-            if (!_traceEventHandlerLinking)
-            {
-                return;
-            }
-
-            string legacyHandlerInfo = DescribeHandler(_legacyEventHandler);
-            string runtimeHandlerInfo = DescribeHandler(_eventHandler as EventHandler);
-
-            string logMessage = $"[EH-TRACE][Block:{BlockName}#{ItemId}][{phase}] " +
-                $"legacy={legacyHandlerInfo} runtime={runtimeHandlerInfo}";
-            Debug.Log(logMessage, this);
-        }
-
-        private static string DescribeHandler(EventHandler handler)
-        {
-            if (handler == null)
-            {
-                return "null";
-            }
-
-            IBlock parent = handler.ParentBlock;
-            string parentInfo = parent != null ?
-                $"{parent.BlockName}#{parent.ItemId}" :
-                "null";
-
-            return $"{handler.GetType().Name}@{handler.GetInstanceID()} parent={parentInfo}";
-        }
-#endif
 
         public override string ToString()
         {
