@@ -29,6 +29,10 @@ namespace AtMycelia.Hyphlow.EditorExt
                 }
 
                 Flowchart fromSelection = FindFlowchartFromSelection();
+                if (fromSelection != null)
+                {
+                    return fromSelection;
+                }
 
                 Flowchart basedOnCache = FindFlowchartWithCachedId();
                 if (basedOnCache != null)
@@ -144,7 +148,12 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return null;
             }
 
-            activeObject.TryGetComponent(out Flowchart selected);
+            Flowchart selected = activeObject.GetComponent<Flowchart>();
+            if (selected == null)
+            {
+                selected = activeObject.GetComponentInParent<Flowchart>(true);
+            }
+
             if (!IsFlowchartInAllowedContext(selected))
             {
                 return null;
@@ -194,8 +203,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 flowchart = null;
             }
 
-            bool alreadySelected = ReferenceEquals(_activeFlowchart, flowchart) ||
-                (flowchart != null && flowchart.UniqueId == GetCachedFlowchartUid());
+            bool alreadySelected = ReferenceEquals(_activeFlowchart, flowchart);
             if (alreadySelected)
             {
                 return;
@@ -329,11 +337,17 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void OnUnitySelectionChanged()
         {
-            Flowchart fc = FindFlowchartFromSelection();
+            Flowchart flowchart = FindFlowchartFromSelection();
 
-            if (fc != null)
+            if (flowchart != null)
             {
-                SetActiveFlowchart(fc);
+                SetActiveFlowchart(flowchart);
+                return;
+            }
+
+            if (_activeFlowchart == null || !IsFlowchartInAllowedContext(_activeFlowchart))
+            {
+                SetActiveFlowchart(null);
             }
         }
 
@@ -389,7 +403,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             if (_activeFlowchart != null && !IsFlowchartInAllowedContext(_activeFlowchart))
             {
-                _activeFlowchart = null;
+                SetActiveFlowchart(null);
             }
 
             if (_activeFlowchart != null)
@@ -400,23 +414,25 @@ namespace AtMycelia.Hyphlow.EditorExt
             Flowchart fromSelection = FindFlowchartFromSelection();
             if (fromSelection != null)
             {
-                _activeFlowchart = fromSelection; 
-                // Not going with the method here, for the sake of avoiding more signaling than needed
-                return fromSelection;
+                SetActiveFlowchart(fromSelection);
+                return _activeFlowchart;
             }
 
             Flowchart basedOnCache = FindFlowchartWithCachedId();
-
             if (basedOnCache != null)
             {
-                _activeFlowchart = basedOnCache;
-                return basedOnCache;
+                SetActiveFlowchart(basedOnCache);
+                return _activeFlowchart;
             }
 
             if (attemptSceneFallback)
             {
                 Flowchart fallback = FindFlowchartInScene();
-                return fallback;
+                if (fallback != null)
+                {
+                    SetActiveFlowchart(fallback);
+                    return _activeFlowchart;
+                }
             }
 
             return null;
@@ -447,7 +463,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ClearActiveFlowchartIfNull()
         {
-            if (_activeFlowchart == null)
+            if (_activeFlowchart == null || !IsFlowchartInAllowedContext(_activeFlowchart))
             {
                 SetActiveFlowchart(null);
             }

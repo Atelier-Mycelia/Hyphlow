@@ -77,7 +77,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             var commandType = targetCommand.GetType();
 
-            CommandInfoAttribute commandInfoAttr = CommandEditor.GetCommandInfo(commandType);
+            CommandInfoAttribute commandInfoAttr = GetCommandInfo(commandType);
             if (commandInfoAttr == null)
             {
                 return;

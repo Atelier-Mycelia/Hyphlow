@@ -1,4 +1,6 @@
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace AtMycelia.Hyphlow.EditorExt
@@ -9,8 +11,11 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public static class DefaultAssetMaintenanceBootstrap
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        
         private static void InitAfterAssembliesLoaded()
         {
             DefaultAssetMaintenance.InitializeAfterAssembliesLoaded();

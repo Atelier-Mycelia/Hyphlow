@@ -252,6 +252,18 @@ namespace AtMycelia.Hyphlow
             // onComplete being invoked here.
 
             IEnumerator coroutine = ExecutionCoroutine(block, commandIndex, onComplete);
+            if (_coroutineRunner == null)
+            {
+                Debug.Break();
+                return false;
+            }
+            if (_coroutineRunner == null)
+            {
+                string logMessage = $"Cannot execute block {block.BlockName} because " +
+                    $"BlockLogicManager has no CoroutineRunner.";
+                Debug.LogError(logMessage);
+                Debug.DebugBreak();
+            }
             _coroutineRunner.StartCoroutine(coroutine);
             return true;
         }

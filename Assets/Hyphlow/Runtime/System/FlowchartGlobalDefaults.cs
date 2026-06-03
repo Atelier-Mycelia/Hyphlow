@@ -82,6 +82,11 @@ namespace AtMycelia.Hyphlow.EditorExt
                 if (_s == null)
                 {
                     _s = Resources.Load<FlowchartGlobalDefaults>(_defaultResourcesPath);
+
+                    if (_s == null)
+                    {
+                        _s = CreateRuntimeFallback();
+                    }
                 }
 
                 return _s;
@@ -89,21 +94,29 @@ namespace AtMycelia.Hyphlow.EditorExt
             set => _s = value;
         }
 
+        private static FlowchartGlobalDefaults CreateRuntimeFallback()
+        {
+            FlowchartGlobalDefaults fallback = CreateInstance<FlowchartGlobalDefaults>();
+            fallback.name = nameof(FlowchartGlobalDefaults) + " (RuntimeFallback)";
+            Debug.LogWarning($"Could not load {nameof(FlowchartGlobalDefaults)} at Resources/{_defaultResourcesPath}. Using runtime fallback defaults.");
+            return fallback;
+        }
+
         private static FlowchartGlobalDefaults _s;
 
         private void OnEnable()
         {
-            if (S == null)
+            if (_s == null || !_s || _s.name.EndsWith("(RuntimeFallback)"))
             {
-                S = this;
+                _s = this;
             }
         }
 
         private void OnDestroy()
         {
-            if (S == this)
+            if (ReferenceEquals(_s, this))
             {
-                S = null;
+                _s = null;
             }
         }
     }
