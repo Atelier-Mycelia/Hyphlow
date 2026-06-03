@@ -214,6 +214,14 @@ namespace AtMycelia.Hyphlow
         {
             if (_legacyEventHandler == null)
             {
+                RecoverLegacyEventHandlerFromComponents();
+            }
+
+            if (_legacyEventHandler == null)
+            {
+#if UNITY_EDITOR
+                LogEventHandlerLinkState("EnsureEventHandlerOwnership:legacy-null");
+#endif
                 _eventHandler = null;
                 return;
             }
@@ -222,6 +230,41 @@ namespace AtMycelia.Hyphlow
             if (!ReferenceEquals(_legacyEventHandler.ParentBlock, this))
             {
                 _legacyEventHandler.ParentBlock = this;
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                {
+                    EditorUtility.SetDirty(this);
+                    EditorUtility.SetDirty(_legacyEventHandler);
+                }
+#endif
+            }
+        }
+
+        private void RecoverLegacyEventHandlerFromComponents()
+        {
+            EventHandler[] handlersOnOwner = GetComponents<EventHandler>();
+            for (int i = 0; i < handlersOnOwner.Length; i++)
+            {
+                EventHandler candidate = handlersOnOwner[i];
+                if (candidate == null)
+                {
+                    continue;
+                }
+
+                if (ReferenceEquals(candidate.ParentBlock, this))
+                {
+                    _legacyEventHandler = candidate;
+                    _eventHandler = candidate;
+#if UNITY_EDITOR
+                    if (!Application.isPlaying)
+                    {
+                        EditorUtility.SetDirty(this);
+                        EditorUtility.SetDirty(candidate);
+                    }
+                    LogEventHandlerLinkState("RecoverLegacyEventHandlerFromComponents:recovered");
+#endif
+                    return;
+                }
             }
         }
 
@@ -777,10 +820,46 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                AssertOwnershipAndUpdateIndexes();//
+                LogEventHandlerLinkState("OnAfterDeserialize:before");
+                AssertOwnershipAndUpdateIndexes();
+                LogEventHandlerLinkState("OnAfterDeserialize:after");
             };
 #endif
         }
+
+#if UNITY_EDITOR
+        private const bool _traceEventHandlerLinking = true;
+
+        private void LogEventHandlerLinkState(string phase)
+        {
+            if (!_traceEventHandlerLinking)
+            {
+                return;
+            }
+
+            string legacyHandlerInfo = DescribeHandler(_legacyEventHandler);
+            string runtimeHandlerInfo = DescribeHandler(_eventHandler as EventHandler);
+
+            string logMessage = $"[EH-TRACE][Block:{BlockName}#{ItemId}][{phase}] " +
+                $"legacy={legacyHandlerInfo} runtime={runtimeHandlerInfo}";
+            Debug.Log(logMessage, this);
+        }
+
+        private static string DescribeHandler(EventHandler handler)
+        {
+            if (handler == null)
+            {
+                return "null";
+            }
+
+            IBlock parent = handler.ParentBlock;
+            string parentInfo = parent != null ?
+                $"{parent.BlockName}#{parent.ItemId}" :
+                "null";
+
+            return $"{handler.GetType().Name}@{handler.GetInstanceID()} parent={parentInfo}";
+        }
+#endif
 
         public override string ToString()
         {

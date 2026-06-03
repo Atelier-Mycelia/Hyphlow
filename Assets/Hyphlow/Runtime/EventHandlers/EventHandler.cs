@@ -114,34 +114,34 @@ namespace AtMycelia.Hyphlow
 			return "";
 		}
 
-        #endregion
+		#endregion
 
-        protected virtual void OnEnable()
-        {
-            if (this == null || !this.IsInTheScene)
-            {
-                return;
-            }
+		protected virtual void OnEnable()
+		{
+			if (this == null || !this.IsInTheScene)
+			{
+				return;
+			}
 
-            // Ownership should be assigned by Block refresh/deserialization.
-            if (ParentBlock == null && _parentMbBlock != null)
-            {
-                ParentBlock = _parentMbBlock;
-            }
+			// Ownership should be assigned by Block refresh/deserialization.
+			if (ParentBlock == null && _parentMbBlock != null)
+			{
+				ParentBlock = _parentMbBlock;
+			}
 
-            if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
-            {
-                ToggleSubs(true);
-            }
-            else if (!ToggleSubsOnlyInRuntime)
-            {
-                ToggleSubs(true);
-            }
-        }
+			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+			{
+				ToggleSubs(true);
+			}
+			else if (!ToggleSubsOnlyInRuntime)
+			{
+				ToggleSubs(true);
+			}
+		}
 
-        // We want subclasses to have control of when they sub. Some would prefer to only
-        // sub in runtime, so...
-        protected virtual bool ToggleSubsOnlyInRuntime => true;
+		// We want subclasses to have control of when they sub. Some would prefer to only
+		// sub in runtime, so...
+		protected virtual bool ToggleSubsOnlyInRuntime => true;
 
 		/// <summary>
 		/// Enable or disable any subscriptions to events.

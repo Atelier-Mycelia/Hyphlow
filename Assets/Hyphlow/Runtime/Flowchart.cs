@@ -478,7 +478,7 @@ protected int version = 0;
             var eventHandlers = GetComponents<EventHandler>();
             var currentBlocks = Blocks;
 
-            // Deterministic pass: block -> handler
+            // Block-authoritative pass: block -> handler
             for (int i = 0; i < currentBlocks.Count; i++)
             {
                 IBlock blockEl = currentBlocks[i];
@@ -488,13 +488,25 @@ protected int version = 0;
                 }
 
                 IEventHandler handler = blockEl.EventHandler;
-                if (handler != null && !ReferenceEquals(handler.ParentBlock, blockEl))
+                if (handler == null)
+                {
+                    continue;
+                }
+
+                if (!ReferenceEquals(handler.ParentBlock, blockEl))
                 {
                     handler.ParentBlock = blockEl;
+#if UNITY_EDITOR
+                    if (!Application.isPlaying)
+                    {
+                        EditorUtility.SetDirty(handler as UnityEngine.Object);
+                        EditorUtility.SetDirty(blockEl.Owner);
+                    }
+#endif
                 }
             }
 
-            // Recovery pass: handler -> block (only if handler already has a valid parent block)
+            // Handler-authoritative recovery: handler -> parent block
             for (int i = 0; i < eventHandlers.Length; i++)
             {
                 EventHandler eventHandler = eventHandlers[i];
@@ -509,9 +521,17 @@ protected int version = 0;
                     continue;
                 }
 
-                if (parentBlock.EventHandler == null)
+                // Overwrite mismatches too, not just null.
+                if (!ReferenceEquals(parentBlock.EventHandler, eventHandler))
                 {
                     parentBlock.EventHandler = eventHandler;
+#if UNITY_EDITOR
+                    if (!Application.isPlaying)
+                    {
+                        EditorUtility.SetDirty(eventHandler);
+                        EditorUtility.SetDirty(parentBlock.Owner);
+                    }
+#endif
                 }
             }
         }
