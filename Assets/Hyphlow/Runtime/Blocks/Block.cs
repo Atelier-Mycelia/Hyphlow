@@ -46,6 +46,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("An optional Event Handler which can execute the block when an event occurs")]
         [FormerlySerializedAs("eventHandler")]
         [FormerlySerializedAs("_eventHandler")]
+        [FormerlySerializedAs("_legacyEventHandler")]
         [SerializeField] protected EventHandler _legacyEventHandler;
 
         [FormerlySerializedAs("commandList")]
@@ -183,7 +184,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual void Refresh()
         {
-            AssertOwnershipAndUpdateIndexes();
+            AssertOwnershipAndUpdateIndexes();//
             RefreshCommandListDict();
             RefreshCommands();
             UpdateIndentLevels();
@@ -201,13 +202,26 @@ namespace AtMycelia.Hyphlow
                 {
                     continue;
                 }
+
                 command.ParentBlock = this;
                 command.CommandIndex = index++;
             }
 
-            if (EventHandler != null)
+            EnsureEventHandlerOwnership();
+        }
+
+        private void EnsureEventHandlerOwnership()
+        {
+            if (_legacyEventHandler == null)
             {
-                EventHandler.ParentBlock = this;
+                _eventHandler = null;
+                return;
+            }
+
+            _eventHandler = _legacyEventHandler;
+            if (!ReferenceEquals(_legacyEventHandler.ParentBlock, this))
+            {
+                _legacyEventHandler.ParentBlock = this;
             }
         }
 
@@ -301,9 +315,18 @@ namespace AtMycelia.Hyphlow
             }
             set
             {
+                if (ReferenceEquals(_eventHandler, value))
+                {
+                    return;
+                }
+
                 _eventHandler = value;
-                _eventHandler.ParentBlock = this;
                 _legacyEventHandler = value as EventHandler;
+
+                if (_eventHandler != null)
+                {
+                    _eventHandler.ParentBlock = this;
+                }
             }
         }
 
@@ -746,6 +769,17 @@ namespace AtMycelia.Hyphlow
 
         public virtual void OnAfterDeserialize()
         {
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+
+                AssertOwnershipAndUpdateIndexes();//
+            };
+#endif
         }
 
         public override string ToString()

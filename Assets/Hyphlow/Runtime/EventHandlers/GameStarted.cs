@@ -18,7 +18,7 @@ namespace AtMycelia.Hyphlow
     {
         [Tooltip("Wait for a number of frames after startup before executing the Block. Can help fix startup order issues.")]
         [SerializeField] [FormerlySerializedAs("waitForFrames")]
-protected int waitForFrames = 1;
+        protected int waitForFrames = 1;
 
         public virtual void Trigger()
         {

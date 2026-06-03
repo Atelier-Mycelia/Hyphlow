@@ -199,26 +199,6 @@ protected int version = 0;
 
         protected virtual void Start()
         {
-            if (Application.IsPlaying(this))
-            {
-                StartCoroutine(HandleGameStartedBlocks());
-            }
-        }
-
-        protected virtual IEnumerator HandleGameStartedBlocks()
-        {
-            IList<GameStarted> gsEventHandler = GetComponents<GameStarted>();
-
-            if (gsEventHandler.Count == 0)
-            {
-                yield break;
-            }
-
-            for (int i = 0; i < gsEventHandler.Count; i++)
-            {
-                var elem = gsEventHandler[i];
-                elem.Trigger();
-            }
         }
 
         protected virtual void OnEnable()
@@ -447,13 +427,27 @@ protected int version = 0;
 
         [HideInInspector]
         [SerializeField] [FormerlySerializedAs("nextValidVarID")]
-protected byte nextValidVarID = 1;
+        protected byte nextValidVarID = 1;
 
         protected virtual void CleanupComponents()
         {
+#if UNITY_EDITOR
+            if (EditorApplication.isCompiling || EditorApplication.isUpdating)
+            {
+                return;
+            }//
+#endif
+
             _legacyVariables.RemoveAll(item => item == null);
 
             RepairEventHandlerLinks();
+
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                return;
+            }
+#endif
 
             #region Destroy EventHandlers that aren't on any Blocks
             var eventHandlers = GetComponents<EventHandler>();
@@ -478,44 +472,46 @@ protected byte nextValidVarID = 1;
             #endregion
         }
 
+
         private void RepairEventHandlerLinks()
         {
             var eventHandlers = GetComponents<EventHandler>();
+            var currentBlocks = Blocks;
 
+            // Deterministic pass: block -> handler
+            for (int i = 0; i < currentBlocks.Count; i++)
+            {
+                IBlock blockEl = currentBlocks[i];
+                if (blockEl == null)
+                {
+                    continue;
+                }
+
+                IEventHandler handler = blockEl.EventHandler;
+                if (handler != null && !ReferenceEquals(handler.ParentBlock, blockEl))
+                {
+                    handler.ParentBlock = blockEl;
+                }
+            }
+
+            // Recovery pass: handler -> block (only if handler already has a valid parent block)
             for (int i = 0; i < eventHandlers.Length; i++)
             {
-                var eventHandler = eventHandlers[i];
+                EventHandler eventHandler = eventHandlers[i];
                 if (eventHandler == null)
                 {
                     continue;
                 }
 
                 IBlock parentBlock = eventHandler.ParentBlock;
-                if (parentBlock != null &&
-                    parentBlock.GetFlowchart() == this &&
-                    !ReferenceEquals(parentBlock.EventHandler, eventHandler))
-                {
-                    parentBlock.EventHandler = eventHandler;
-                }
-            }
-
-            var currentBlocks = Blocks; // Cached here to reduce garbo
-            for (int i = 0; i < currentBlocks.Count; i++)
-            {
-                var blockEl = currentBlocks[i];
-                if (blockEl == null || blockEl.EventHandler != null)
+                if (parentBlock == null || parentBlock.GetFlowchart() != this)
                 {
                     continue;
                 }
 
-                for (int j = 0; j < eventHandlers.Length; j++)
+                if (parentBlock.EventHandler == null)
                 {
-                    var eventHandler = eventHandlers[j];
-                    if (eventHandler != null && ReferenceEquals(eventHandler.ParentBlock, blockEl))
-                    {
-                        blockEl.EventHandler = eventHandler;
-                        break;
-                    }
+                    parentBlock.EventHandler = eventHandler;
                 }
             }
         }

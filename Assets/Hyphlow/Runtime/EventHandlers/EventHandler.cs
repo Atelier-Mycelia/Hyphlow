@@ -23,7 +23,8 @@ namespace AtMycelia.Hyphlow
 	[RequireComponent(typeof(Flowchart))]
 	[AddComponentMenu("")]
 	[ExecuteInEditMode]
-	public class EventHandler : MonoBehaviour, IEventHandler, ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
+	public class EventHandler : MonoBehaviour, IEventHandler, ISerializationCallbackReceiver,
+		IBackwardsCompatibilityApplier
 	{
 		[SerializeField, HideInInspector]
 		[FormerlySerializedAs("parentSequence")]
@@ -62,6 +63,7 @@ namespace AtMycelia.Hyphlow
 			set
 			{
 				_parentMbBlock = value as Block;
+				_parentBlockReference.Block = value;
 				_fChart = null;
 				if (_parentMbBlock != null)
 				{
@@ -82,14 +84,16 @@ namespace AtMycelia.Hyphlow
 				return false;
 			}
 
-			if (ReferenceEquals(ParentBlock.EventHandler, this))
-			{
-				return false;
-			}
-
-			//if somehow the flowchart is invalid or has been disabled we don't want to continue
+			// If somehow the flowchart is invalid or has been disabled we don't want to continue
 			if (_fChart == null || !this.gameObject.activeInHierarchy || !_fChart.isActiveAndEnabled)
 			{
+				string logMessage = $"Event Handler {GetType().Name} attempted to execute its block, " +
+					$"but the Flowchart was not valid.";
+#if UNITY_EDITOR
+				Debug.LogWarning(logMessage, this);
+#else
+				Debug.LogWarning(logMessage);
+#endif
 				return false;
 			}
 
@@ -110,33 +114,34 @@ namespace AtMycelia.Hyphlow
 			return "";
 		}
 
-		#endregion
+        #endregion
 
-		protected virtual void OnEnable()
-		{
-			if (this == null || !this.IsInTheScene)
-			{
-				return;
-			}
+        protected virtual void OnEnable()
+        {
+            if (this == null || !this.IsInTheScene)
+            {
+                return;
+            }
 
-			if (ParentBlock == null)
-			{
-				_parentBlockReference.Block = GetComponent<Block>();
-				return;
-			}
-			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
-			{
-				ToggleSubs(true);
-			}
-			else if (!ToggleSubsOnlyInRuntime)
-			{
-				ToggleSubs(true);
-			}
-		}
+            // Ownership should be assigned by Block refresh/deserialization.
+            if (ParentBlock == null && _parentMbBlock != null)
+            {
+                ParentBlock = _parentMbBlock;
+            }
 
-		// We want subclasses to have control of when they sub. Some would prefer to only
-		// sub in runtime, so...
-		protected virtual bool ToggleSubsOnlyInRuntime => true;
+            if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+            {
+                ToggleSubs(true);
+            }
+            else if (!ToggleSubsOnlyInRuntime)
+            {
+                ToggleSubs(true);
+            }
+        }
+
+        // We want subclasses to have control of when they sub. Some would prefer to only
+        // sub in runtime, so...
+        protected virtual bool ToggleSubsOnlyInRuntime => true;
 
 		/// <summary>
 		/// Enable or disable any subscriptions to events.
