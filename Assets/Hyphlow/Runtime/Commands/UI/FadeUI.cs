@@ -29,20 +29,20 @@ namespace AtMycelia.Hyphlow.Legacy
     public class FadeUI : TweenUI 
     {
         [SerializeField] [FormerlySerializedAs("fadeMode")]
-protected FadeMode fadeMode = FadeMode.Alpha;
+        protected FadeMode _fadeMode = FadeMode.Alpha;
         [SerializeField] [FormerlySerializedAs("targetColor")]
-protected ColorData targetColor = new ColorData(Color.white);
+        protected ColorData _targetColor = new ColorData(Color.white);
         [SerializeField] [FormerlySerializedAs("targetAlpha")]
-protected FloatData targetAlpha = new FloatData(1f);
+        protected FloatData _targetAlpha = new FloatData(1f);
         [SerializeField] [FormerlySerializedAs("fadeTweener")]
-protected ScriptableObject fadeTweener;
+        protected ScriptableObject _fadeTweener;
 
         protected override void ValidateTweeners()
         {
-            TweenUtils.EnsureValidTweener(ref fadeTweener, typeof(IGraphicTweenAdapter), "fading graphics");
+            TweenUtils.EnsureValidTweener(ref _fadeTweener, typeof(IGraphicTweenAdapter), "fading graphics");
         }
 
-        protected IGraphicTweenAdapter DoesFading => fadeTweener as IGraphicTweenAdapter;
+        protected IGraphicTweenAdapter DoesFading => _fadeTweener as IGraphicTweenAdapter;
         protected override void ApplyTweenToSingle(GameObject go)
         {
             // Images, legacy UI Texts and TMP Texts are below Graphic in the family tree, thus we can 
@@ -63,16 +63,16 @@ protected ScriptableObject fadeTweener;
 
                     // We assume that the tweeners know what to do when the duration is zero, and
                     // thus we won't check for that here
-                    switch (fadeMode)
+                    switch (_fadeMode)
                     {
                         case FadeMode.Alpha:
-                            DoesFading.FadeOpacity(graphicEl, targetAlpha, duration);
+                            DoesFading.FadeOpacity(graphicEl, _targetAlpha, _duration);
                             break;
                         case FadeMode.Color:
-                            DoesFading.FadeColor(graphicEl, targetColor, duration);
+                            DoesFading.FadeColor(graphicEl, _targetColor, _duration);
                             break;
                         default:
-                            Debug.LogWarning($"{this.gameObject.name}: Unsupported fade mode {fadeMode} when " +
+                            Debug.LogWarning($"{this.gameObject.name}: Unsupported fade mode {_fadeMode} when " +
                                 $"trying to fade UI element at index {i}");
                             break;
                     }
@@ -89,14 +89,14 @@ protected ScriptableObject fadeTweener;
                 for (int i = 0; i < canvasGroups.Length; i++)
                 {
                     var canvasGroupEl = canvasGroups[i];
-                    switch (fadeMode)
+                    switch (_fadeMode)
                     {
                         case FadeMode.Alpha:
-                            DoesFading.FadeOpacity(canvasGroupEl, targetAlpha, duration); break;
+                            DoesFading.FadeOpacity(canvasGroupEl, _targetAlpha, _duration); break;
                         case FadeMode.Color:
-                            DoesFading.FadeOpacity(canvasGroupEl, targetColor.Value.a, duration); break;
+                            DoesFading.FadeOpacity(canvasGroupEl, _targetColor.Value.a, _duration); break;
                         default:
-                            Debug.LogWarning($"{this.gameObject.name}: Unsupported fade mode {fadeMode} when " +
+                            Debug.LogWarning($"{this.gameObject.name}: Unsupported fade mode {_fadeMode} when " +
                                 $"trying to fade CanvasGroup at index {i}");
                             break;
                     }
@@ -107,13 +107,13 @@ protected ScriptableObject fadeTweener;
         protected override string GetSummaryValue()
         {
             string result = "";
-            if (fadeMode == FadeMode.Alpha)
+            if (_fadeMode == FadeMode.Alpha)
             {
-                result = targetAlpha.Value.ToString() + " alpha";
+                result = _targetAlpha.Value.ToString() + " alpha";
             }
-            else if (fadeMode == FadeMode.Color)
+            else if (_fadeMode == FadeMode.Color)
             {
-                result = targetColor.Value.ToString()  + " color";
+                result = _targetColor.Value.ToString()  + " color";
             }
 
             return result;
@@ -123,13 +123,13 @@ protected ScriptableObject fadeTweener;
 
         public override bool IsPropertyVisible(string propertyName)
         {
-            if (fadeMode == FadeMode.Alpha &&
+            if (_fadeMode == FadeMode.Alpha &&
                 propertyName == "targetColor")
             {
                 return false;
             }
 
-            if (fadeMode == FadeMode.Color &&
+            if (_fadeMode == FadeMode.Color &&
                 propertyName == "targetAlpha")
             {
                 return false;
@@ -140,8 +140,8 @@ protected ScriptableObject fadeTweener;
 
         public override bool HasReference(IVariable variable)
         {
-            return ReferenceEquals(targetColor.VarRef, variable) || 
-                ReferenceEquals(targetAlpha.VarRef, variable) ||
+            return ReferenceEquals(_targetColor.VarRef, variable) || 
+                ReferenceEquals(_targetAlpha.VarRef, variable) ||
                 base.HasReference(variable);
         }
 
