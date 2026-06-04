@@ -93,9 +93,6 @@ namespace AtMycelia.Hyphlow
             }
 
             _outValue.SetValue(valToSet);
-            Debug.Log($"Filling out value {valToSet} in variable {_outValue.VarKey} for GetKey command on " +
-                $"Flowchart {this.name}, Block {ParentBlock.BlockName} at index " +
-                $"{CommandIndex}. The out value is: {_outValue.Variable.BoxedValue}", this);
 
             Continue();
         }

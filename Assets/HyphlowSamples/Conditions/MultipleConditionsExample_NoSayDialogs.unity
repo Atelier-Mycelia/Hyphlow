@@ -269,16 +269,9 @@ GameObject:
   - component: {fileID: 1292574165}
   - component: {fileID: 1292574164}
   - component: {fileID: 1292574163}
-  - component: {fileID: 1292574180}
-  - component: {fileID: 1292574179}
-  - component: {fileID: 1292574178}
-  - component: {fileID: 1292574177}
-  - component: {fileID: 1292574176}
-  - component: {fileID: 1292574175}
   - component: {fileID: 1292574174}
   - component: {fileID: 1292574173}
   - component: {fileID: 1292574172}
-  - component: {fileID: 1292574171}
   - component: {fileID: 1292574186}
   - component: {fileID: 1292574185}
   - component: {fileID: 1292574184}
@@ -608,10 +601,8 @@ MonoBehaviour:
   _flowchartSettings: {fileID: 0}
   _description: 
   _uiModel:
-    _selectedLegacyBlocks:
-    - {fileID: 1292574165}
-    _selectedLegacyCommands:
-    - {fileID: 1292574191}
+    _selectedLegacyBlocks: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 1292574162}
     <ScrollPos>k__BackingField: {x: 0, y: 7.5349655}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -650,24 +641,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1292574171
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: C
-  _itemId: 14
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: 16
 --- !u!114 &1292574172
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -949,114 +922,6 @@ MonoBehaviour:
         _value: 0
         integerRef: {fileID: 0}
         integerVal: 0
---- !u!114 &1292574175
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: bar
-  _itemId: 13
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: preda2or
---- !u!114 &1292574176
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4580f28dd8581476b810b38eea2f1316, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: foo
-  _itemId: 12
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: vjs
---- !u!114 &1292574177
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: B
-  _itemId: 11
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: 5
---- !u!114 &1292574178
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afb91b566ceda411bad1e9d3c3243ecc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: A
-  _itemId: 10
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: 0
---- !u!114 &1292574179
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d02d9822eec54c98afe95bb497211b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: booly
-  _itemId: 9
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: 0
---- !u!114 &1292574180
-MonoBehaviour:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1292574162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d02d9822eec54c98afe95bb497211b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: boolx
-  _itemId: 8
-  oldItemID: 0
-  _owner: {fileID: 1292574166}
-  _value: 0
 --- !u!114 &1292574181
 MonoBehaviour:
   m_ObjectHideFlags: 2
