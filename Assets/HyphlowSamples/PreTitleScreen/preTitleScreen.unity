@@ -930,7 +930,7 @@ MonoBehaviour:
         itemID: 0
         value: {fileID: 0}
         _startValue: {fileID: 0}
-        _value: {fileID: 0}
+        _value: {fileID: 1120369429361536294, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
         startValue: {fileID: 0}
     - rid: 7589700379545960448
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
@@ -998,10 +998,8 @@ MonoBehaviour:
   _flowchartSettings: {fileID: 0}
   _description: 
   _uiModel:
-    _selectedLegacyBlocks:
-    - {fileID: 1157026480}
-    _selectedLegacyCommands:
-    - {fileID: 1157026492}
+    _selectedLegacyBlocks: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 1157026472}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}

@@ -161,7 +161,7 @@ protected byte itemID = InvalidId;
             }
             else
             {
-                result = TypeUtils.TypesCompatible(obj.GetType(), ContentType);
+                result = TypeUtils.TypesCompatible(ContentType, obj.GetType());
             }
 
             return result;
