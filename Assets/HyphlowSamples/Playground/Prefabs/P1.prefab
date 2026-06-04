@@ -15,14 +15,8 @@ GameObject:
   - component: {fileID: 114126325013622294}
   - component: {fileID: 114177047531498962}
   - component: {fileID: 114201986544531680}
-  - component: {fileID: 114024079056778752}
-  - component: {fileID: 114188004173552184}
-  - component: {fileID: 114777688141419168}
-  - component: {fileID: 114348338108346498}
   - component: {fileID: 114465925968467040}
   - component: {fileID: 114409838832793244}
-  - component: {fileID: 114573728990135962}
-  - component: {fileID: 114326212544484044}
   - component: {fileID: 114081283549603066}
   - component: {fileID: 114085027684436294}
   - component: {fileID: 114862459103620794}
@@ -201,10 +195,8 @@ MonoBehaviour:
   _flowchartSettings: {fileID: 0}
   _description: 
   _uiModel:
-    _selectedLegacyBlocks:
-    - {fileID: 114177047531498962}
-    _selectedLegacyCommands:
-    - {fileID: 169150097741699801}
+    _selectedLegacyBlocks: []
+    _selectedLegacyCommands: []
     _owner: {fileID: 1404956649453682}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -224,7 +216,7 @@ MonoBehaviour:
   _loadPriority: 0
   _alwaysKeepGuid: 1
   nextValidVarID: 7
-  _uniqueId: 
+  _uniqueId: 225b61f2-3dd1-4d91-8f54-ee05edf7e70f
   references:
     version: 2
     RefIds: []
@@ -287,78 +279,6 @@ MonoBehaviour:
     _owningSource: {fileID: 114126325013622294}
   _suppressBlockAutoSelect: 0
   _fireOn: 2
---- !u!114 &114024079056778752
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404956649453682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: x1
-  _itemId: 2
-  oldItemID: 0
-  _owner: {fileID: 114126325013622294}
-  _value: 0
---- !u!114 &114188004173552184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404956649453682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: y1
-  _itemId: 3
-  oldItemID: 0
-  _owner: {fileID: 114126325013622294}
-  _value: 0
---- !u!114 &114777688141419168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404956649453682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: vec31
-  _itemId: 4
-  oldItemID: 0
-  _owner: {fileID: 114126325013622294}
-  _value: {x: 0, y: 0, z: 0}
---- !u!114 &114348338108346498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404956649453682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebe929c2f37ad4b19ad9d33a77c5064a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: Force1
-  _itemId: 5
-  oldItemID: 0
-  _owner: {fileID: 114126325013622294}
-  _value: {x: 0, y: 0}
 --- !u!114 &114465925968467040
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -438,42 +358,6 @@ MonoBehaviour:
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
---- !u!114 &114573728990135962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404956649453682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: forceScale1
-  _itemId: 1
-  oldItemID: 0
-  _owner: {fileID: 114126325013622294}
-  _value: 60
---- !u!114 &114326212544484044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1404956649453682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: forceScaleVec31
-  _itemId: 6
-  oldItemID: 0
-  _owner: {fileID: 114126325013622294}
-  _value: {x: 0, y: 0, z: 0}
 --- !u!114 &114081283549603066
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -729,19 +613,97 @@ MonoBehaviour:
   _variableManager:
     _muscariables:
     - rid: 3688520012238422099
-    _legacyVariables:
-    - {fileID: 114573728990135962}
-    - {fileID: 114024079056778752}
-    - {fileID: 114188004173552184}
-    - {fileID: 114777688141419168}
-    - {fileID: 114348338108346498}
-    - {fileID: 114326212544484044}
+    - rid: 588464230582976592
+    - rid: 588464230582976593
+    - rid: 588464230582976594
+    - rid: 588464230582976595
+    - rid: 588464230582976596
+    - rid: 588464230582976597
+    _legacyVariables: []
     _nextValidVarID: 8
     _isInitted: 1
   _cachedFlowchart: {fileID: 114126325013622294}
   references:
     version: 2
     RefIds:
+    - rid: 588464230582976592
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: x1
+        _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 0
+        startValue: 0
+    - rid: 588464230582976593
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: y1
+        _itemId: 3
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 0
+        startValue: 0
+    - rid: 588464230582976594
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: vec31
+        _itemId: 4
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0, z: 0}
+        _startValue: {x: 0, y: 0, z: 0}
+        _value: {x: 0, y: 0, z: 0}
+        startValue: {x: 0, y: 0, z: 0}
+    - rid: 588464230582976595
+      type: {class: VectorTwoMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Force1
+        _itemId: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0}
+        _startValue: {x: 0, y: 0}
+        _value: {x: 0, y: 0}
+        startValue: {x: 0, y: 0}
+    - rid: 588464230582976596
+      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: forceScale1
+        _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 60
+        startValue: 0
+    - rid: 588464230582976597
+      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: forceScaleVec31
+        _itemId: 6
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0, z: 0}
+        _startValue: {x: 0, y: 0, z: 0}
+        _value: {x: 0, y: 0, z: 0}
+        startValue: {x: 0, y: 0, z: 0}
     - rid: 3688520012238422099
       type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -1033,9 +995,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blockManager:
-    _legacyBlocks: []
+    _legacyBlocks:
+    - {fileID: 114177047531498962}
     _nextValidBlockId: 1
-    _blockOwner: {fileID: 0}
+    _blockOwner: {fileID: 114126325013622294}
   _cachedFlowchart: {fileID: 0}
 --- !u!114 &-3992947804980859572
 MonoBehaviour:
@@ -1049,10 +1012,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _owner: {fileID: 0}
+  _owner: {fileID: 114126325013622294}
   _manager:
-    _coroutineRunner: {fileID: 0}
-  _unityObjBlockManager: {fileID: 0}
+    _coroutineRunner: {fileID: 114126325013622294}
+  _unityObjBlockManager: {fileID: -6404619623835260685}
   _nonUnityObjBlockManager:
     rid: -2
   references:
