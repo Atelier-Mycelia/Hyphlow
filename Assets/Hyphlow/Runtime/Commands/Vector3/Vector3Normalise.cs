@@ -11,11 +11,12 @@ namespace AtMycelia.Hyphlow
                  "Normalise",
                  "Normalise a Vector3")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3Normalise : Command
     {
         [SerializeField]
         [FormerlySerializedAs("vec3In")]
+[FormerlySerializedAs("vecThreeIn")]
         protected Vector3Data vecThreeIn;
 
         [SerializeField]
@@ -48,7 +49,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (ReferenceEquals(vecThreeIn.VarRef, variable) || 
                 ReferenceEquals(_oldVecThreeOut.VarRef, variable))

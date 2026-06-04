@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 
-public class DefaultAdapterTests : MonoBehaviour
+public class DefaultAdapterTests
 {
     protected DefaultTweenAdapter _adapter;
 

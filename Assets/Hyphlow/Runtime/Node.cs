@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
@@ -7,12 +8,15 @@ namespace AtMycelia.Hyphlow
     /// Base class for Flowchart nodes.
     /// </summary>
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Node : MonoBehaviour
     {
-        [SerializeField] protected Rect nodeRect = new Rect(0, 0, 120, 30);
-        [SerializeField] protected Color tint = Color.white;
-        [SerializeField] protected bool useCustomTint = false;
+        [SerializeField] [FormerlySerializedAs("nodeRect")]
+protected Rect nodeRect = new Rect(0, 0, 120, 30);
+        [SerializeField] [FormerlySerializedAs("tint")]
+protected Color tint = Color.white;
+        [SerializeField] [FormerlySerializedAs("useCustomTint")]
+protected bool useCustomTint = false;
 
         #region Public members
 

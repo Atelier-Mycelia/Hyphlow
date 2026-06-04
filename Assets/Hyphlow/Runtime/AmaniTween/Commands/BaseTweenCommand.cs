@@ -36,8 +36,9 @@ namespace AtMycelia.AmaniTween.VScripting
         public BooleanData WaitUntilFinished => _waitUntilFinished;
         public ITweenHandle CurrentTween => _ourTween;
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             ValidateTweener();
         }
 

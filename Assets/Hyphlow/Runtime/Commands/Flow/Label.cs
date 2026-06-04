@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,18 +12,19 @@ namespace AtMycelia.Hyphlow
                  "Label", 
                  "Marks a position in the command list for execution to jump to.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Label : Command
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    public class Label : Command, IHasKey
     {
         [Tooltip("Display name for the label")]
         [SerializeField] protected StringData _key = new StringData("");
 
-        #region Public members
+        public virtual string Key
+        {
+            get => _key.Value;
+            set => _key.Value = value;
+        }
 
-        /// <summary>
-        /// Display name for the label
-        /// </summary>
-        public virtual string Key { get { return _key; } }
+        public override bool SkipExecution => true;
 
         public override void OnEnter()
         {
@@ -44,8 +46,6 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Label;
         }
 
-        #endregion
-
         public override void ApplyBackwardsCompatibility()
         {
             base.ApplyBackwardsCompatibility();
@@ -57,6 +57,7 @@ namespace AtMycelia.Hyphlow
         }
 
         [HideInInspector]
-        [SerializeField] protected string key = "";
+        [SerializeField] [FormerlySerializedAs("key")]
+protected string key = "";
     }
 }

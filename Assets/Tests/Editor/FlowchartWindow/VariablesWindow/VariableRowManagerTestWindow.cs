@@ -10,9 +10,10 @@ using UnityRandom = UnityEngine.Random;
 using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AtMycelia.Hyphlow.EditorUtils;
 using AtMycelia.EditorUtils;
 using AtMycelia.Collections;
+using AtMycelia;
+using AtMycelia.Hyphlow.EditorExt;
 
 // if you keep helpers here
 
@@ -229,7 +230,7 @@ namespace VScriptingTests.VariableOperations
             _vRowManager = null;
 
             // Load UXML
-            const string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
+            string pathToUxml = HyphlowConstants.PathToVariableDisplayEditorUxml;
             if (_variableTemplate == null)
             {
                 _variableTemplate = Resources.Load<VisualTreeAsset>(pathToUxml);
@@ -438,7 +439,8 @@ namespace VScriptingTests.VariableOperations
                     var desired = $"var_{var.GetType().Name}_{Guid.NewGuid().ToString("N").Substring(0, 6)}";
                     try
                     {
-                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, (IList<IVariable>)_flowchart.Variables);
+                        var.Key = UniqueKeyGenerator.GetUniqueKeyFor(desired, 
+                            _flowchart.Variables);
                     }
                     catch
                     {

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,16 +12,18 @@ namespace AtMycelia.Hyphlow
                  "To String",
                  "Stores the result of a ToString on given variable in a string.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ToString : Command
     {
         [Tooltip("Target variable to get String of.")]
         [VariableProperty()]
-        [SerializeField] protected Variable variable;
+        [SerializeField] [FormerlySerializedAs("variable")]
+protected Variable variable;
 
         [Tooltip("Variable to store the result of ToString")]
         [VariableProperty(typeof(StringVariable))]
-        [SerializeField] protected StringVariable outValue;
+        [SerializeField] [FormerlySerializedAs("outValue")]
+protected StringVariable outValue;
 
         //[Tooltip("Optional formatting string given to ToString")]
         //[SerializeField] protected StringData format;
@@ -50,9 +53,9 @@ namespace AtMycelia.Hyphlow
             return outValue.Key + " = " + variable.Key + ".ToString";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (variable == this.variable) || outValue == variable;
+            return ReferenceEquals(variable, this.variable) || ReferenceEquals(outValue, variable);
         }
 
         public override Color GetButtonColor()

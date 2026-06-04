@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Centralized registry that keeps Flowcharts discoverable in both the editor and at runtime.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class FlowchartRegistry
     {
         private static readonly bool _readAssetFlowchartsInRuntime = false;
@@ -34,7 +34,7 @@ namespace AtMycelia.Hyphlow
         private static void OnEditorLoad()
         {
             Debug.Log("FlowchartRegistry initializing on editor load.");
-            EnsureInitialized(true);
+            EnsureInitialized(true);//
         }
 #endif
 
@@ -48,7 +48,7 @@ namespace AtMycelia.Hyphlow
 
         public static void EnsureInitialized(bool forceReinitialize = false)
         {
-            if (isInitialized && !forceReinitialize)
+            if (_isInitialized && !forceReinitialize)
             {
                 return;
             }
@@ -56,10 +56,10 @@ namespace AtMycelia.Hyphlow
             ToggleSubs(false);
             ToggleSubs(true);
             CaptureExistingFlowcharts();
-            isInitialized = true;
+            _isInitialized = true;
         }
 
-        private static bool isInitialized;
+        private static bool _isInitialized;
 
         private static void ToggleSubs(bool on)
         {
@@ -236,7 +236,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            lock (syncLock)
+            lock (_syncLock)
             {
                 lookup[flowchart.UniqueId] = flowchart;
                 _flowchartLookup[flowchart.UniqueId] = flowchart;
@@ -250,7 +250,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            lock (syncLock)
+            lock (_syncLock)
             {
                 //Debug.Log($"Unregistering Flowchart {flowchart.name} from registry");
                 _sceneFlowcharts.Remove(flowchart.UniqueId);
@@ -301,11 +301,11 @@ namespace AtMycelia.Hyphlow
 
         private static bool IsResourcePath(string assetPath)
         {
-            return assetPath.IndexOf(ResourcesFolderToken, StringComparison.OrdinalIgnoreCase) >= 0;
+            return assetPath.IndexOf(_ResourcesFolderToken, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        private static readonly string ResourcesFolderToken = "/Resources/";
-        private static readonly object syncLock = new object();
+        private static readonly string _ResourcesFolderToken = "/Resources/";
+        private static readonly object _syncLock = new object();
 
         // Keyed by unique id, which is generated on the Flowchart component and remains
         // consistent across scene loads and prefab instances.
@@ -323,7 +323,7 @@ namespace AtMycelia.Hyphlow
 
         public static IReadOnlyList<Flowchart> GetFlowcharts()
         {
-            lock (syncLock)
+            lock (_syncLock)
             {
                 return _flowchartLookup.Values.ToList();
             }
@@ -331,7 +331,7 @@ namespace AtMycelia.Hyphlow
 
         public static IReadOnlyList<Flowchart> GetSceneFlowcharts()
         {
-            lock (syncLock)
+            lock (_syncLock)
             {
                 return _sceneFlowcharts.Values.ToList();
             }
@@ -339,7 +339,7 @@ namespace AtMycelia.Hyphlow
 
         public static IReadOnlyList<Flowchart> GetAssetFlowcharts()
         {
-            lock (syncLock)
+            lock (_syncLock)
             {
                 return _assetFlowcharts.Values.ToList();
             }
@@ -347,7 +347,7 @@ namespace AtMycelia.Hyphlow
 
         public static IReadOnlyList<Flowchart> GetPrefabModeFlowcharts()
         {
-            lock (syncLock)
+            lock (_syncLock)
             {
                 return _prefabModeFlowcharts.Values.ToList();
             }
@@ -360,7 +360,7 @@ namespace AtMycelia.Hyphlow
                 return null;
             }
 
-            lock (syncLock)
+            lock (_syncLock)
             {
                 _flowchartLookup.TryGetValue(guid, out Flowchart flowchart);
                 return flowchart;
@@ -369,7 +369,7 @@ namespace AtMycelia.Hyphlow
 
         public static void Clear()
         {
-            lock (syncLock)
+            lock (_syncLock)
             {
                 _flowchartLookup.Clear();
                 _sceneFlowcharts.Clear();
@@ -381,28 +381,41 @@ namespace AtMycelia.Hyphlow
         private static void ToggleEditorSubs(bool on)
         {
 #if UNITY_EDITOR
-
-            if (on)
-            {
-                EditorSceneManager.sceneOpened += OnEditorSceneOpened;
-                EditorSceneManager.sceneClosed += OnEditorSceneClosed;
-            }
-            else
-            {
-                EditorSceneManager.sceneOpened -= OnEditorSceneOpened;
-                EditorSceneManager.sceneClosed -= OnEditorSceneClosed;
-            }
+        if (on)
+        {
+            EditorSceneManager.sceneOpened += OnEditorSceneOpened;
+            EditorSceneManager.sceneClosed += OnEditorSceneClosed;
+            AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
+        }
+        else
+        {
+            EditorSceneManager.sceneOpened -= OnEditorSceneOpened;
+            EditorSceneManager.sceneClosed -= OnEditorSceneClosed;
+            AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
+        }
 #endif
         }
 
         private static void OnEditorSceneClosed(Scene scene)
         {
-            CaptureExistingFlowcharts();
+        #if UNITY_EDITOR
+            EditorApplication.delayCall += CaptureExistingFlowcharts;
+        #endif
         }
 
         private static void OnEditorSceneOpened(Scene scene, OpenSceneMode mode)
         {
-            CaptureExistingFlowcharts();
+        #if UNITY_EDITOR
+            EditorApplication.delayCall += CaptureExistingFlowcharts;
+        #endif
         }
+
+#if UNITY_EDITOR
+        private static void OnAfterAssemblyReload()
+        {
+            // Rebind callbacks and do a full recapture after domain reload.
+            EnsureInitialized(true);
+        }
+#endif
     }
 }

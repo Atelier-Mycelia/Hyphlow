@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -7,11 +8,13 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Variable", 
         "StringToFloat",
         "Converts a string into a float")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class StringToFloat : Command
     {
-        [SerializeField] protected StringData input;
+        [SerializeField] [FormerlySerializedAs("input")]
+protected StringData input;
         [SerializeField] [VariableProperty(typeof(FloatVariable))]
+[FormerlySerializedAs("output")]
         protected FloatVariable output;
 
         protected override void RefreshVariableDataCache()

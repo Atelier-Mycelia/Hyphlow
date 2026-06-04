@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Serialization;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -13,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Waits for period of time before executing the next command in the block.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Wait : Command
     {
         [Tooltip("Duration to wait for")]
@@ -56,7 +55,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_duration.VarRef, variable) || base.HasReference(variable);
         }

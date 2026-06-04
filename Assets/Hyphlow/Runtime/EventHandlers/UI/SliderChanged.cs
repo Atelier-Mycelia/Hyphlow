@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Scripting.APIUpdating;
@@ -15,11 +16,13 @@ namespace AtMycelia.Hyphlow
     public class SliderChanged : EventHandler
     {
         [Tooltip("The UI Slider that the user can click on")]
-        [SerializeField] protected Slider targetSlider;
+        [SerializeField] [FormerlySerializedAs("targetSlider")]
+protected Slider targetSlider;
 
         [Tooltip("Optional, this float reference will have the value filled from the onValueChanged from the ")]
         [VariableProperty(typeof(FloatVariable))]
-        [SerializeField] protected FloatVariable outFloatVariable;
+        [SerializeField] [FormerlySerializedAs("outFloatVariable")]
+protected FloatVariable outFloatVariable;
 
         public virtual void Start()
         {

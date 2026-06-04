@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "Transform",
 				 "Get or Set a property of a Transform component")]
 	[AddComponentMenu("")]
-	[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class TransformProperty : BaseVariableProperty
 	{
 		//generated property
@@ -39,10 +39,12 @@ namespace AtMycelia.Hyphlow
 		}
 
 		[SerializeField]
-		protected Property property = Property.Position;
+		[FormerlySerializedAs("property")]
+		protected Property _property = Property.Position;
 
 		[SerializeField]
-		protected TransformData transformData;
+		[FormerlySerializedAs("transformData")]
+		protected TransformData _transformData;
 
 		[SerializeField]
 		[ContentTypeConstraint(typeof(Vector3), typeof(Transform), typeof(int), typeof(bool))]
@@ -51,7 +53,7 @@ namespace AtMycelia.Hyphlow
 		protected override void RefreshVariableDataCache()
 		{
 			base.RefreshVariableDataCache();
-			_variableDataCache.Add(transformData);
+			_variableDataCache.Add(_transformData);
 		}
 
 		public override void OnEnter()
@@ -61,12 +63,12 @@ namespace AtMycelia.Hyphlow
 			var ioi = _inOutVar.Variable as IVariable<int>;
 			var iob = _inOutVar.Variable as IVariable<bool>;
 
-			var target = transformData.Value;
+			var target = _transformData.Value;
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
-					switch (property)
+					switch (_property)
 					{
 						case Property.Position:
 							iov.Value = target.position;
@@ -119,7 +121,7 @@ namespace AtMycelia.Hyphlow
 					}
 					break;
 				case GetSet.Set:
-					switch (property)
+					switch (_property)
 					{
 						case Property.Position:
 							target.position = iov.Value;
@@ -168,7 +170,7 @@ namespace AtMycelia.Hyphlow
 
 		public override string GetSummary()
 		{
-			if (transformData.Value == null)
+			if (_transformData.Value == null)
 			{
 				return "Error: no transform set";
 			}
@@ -178,12 +180,12 @@ namespace AtMycelia.Hyphlow
 			}
 
 			//We could do further checks here, eg, you have selected childcount but set a vec3variable
-			string result = getOrSet.ToString() + " " + property.ToString();
+			string result = getOrSet.ToString() + " " + _property.ToString();
 			if (_inOutVar.Variable != null)
 			{
 				if (getOrSet == GetSet.Get)
 				{
-					result += $" from {transformData.Value.name} & put into ";
+					result += $" from {_transformData.Value.name} & put into ";
 				}
 				else
 				{
@@ -199,9 +201,9 @@ namespace AtMycelia.Hyphlow
 			return CommandColors.Flow;
 		}
 
-		public override bool HasReference(Variable variable)
+		public override bool HasReference(IVariable variable)
 		{
-			if (ReferenceEquals(transformData.VarRef, variable) || 
+			if (ReferenceEquals(_transformData.VarRef, variable) || 
 				ReferenceEquals(_inOutVar.Variable, variable))
 				return true;
 
@@ -212,17 +214,18 @@ namespace AtMycelia.Hyphlow
 		{
 			base.ApplyBackwardsCompatibility();
 
-			if (inOutVarOld != null)
+			if (_inOutVarOld != null)
 			{
-				_inOutVar.Variable = inOutVarOld;
-				inOutVarOld = null;
+				_inOutVar.Variable = _inOutVarOld;
+				_inOutVarOld = null;
 			}
 		}
 
 		[SerializeField]
 		[HideInInspector]
 		[FormerlySerializedAs("inOutVar")]
-		protected Variable inOutVarOld;
+		[FormerlySerializedAs("inOutVarOld")]
+		protected Variable _inOutVarOld;
 
 	}
 }

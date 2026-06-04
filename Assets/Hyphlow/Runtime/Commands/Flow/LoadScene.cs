@@ -20,14 +20,15 @@ namespace AtMycelia.Hyphlow
                  "The scene to be loaded must be added to the scene list in Build Settings.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class LoadScene : Command
     {
         [Tooltip("Name of the scene to load. The scene must also be added to the build settings.")]
         [SerializeField] protected StringData _sceneName = new StringData("");
 
         [Tooltip("Image to display while loading the scene")]
-        [SerializeField] protected Texture2D loadingImage;
+        [SerializeField] [FormerlySerializedAs("loadingImage")]
+protected Texture2D loadingImage;
 
         protected override void RefreshVariableDataCache()
         {
@@ -57,7 +58,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_sceneName.VarRef, variable) ||
                 base.HasReference(variable);

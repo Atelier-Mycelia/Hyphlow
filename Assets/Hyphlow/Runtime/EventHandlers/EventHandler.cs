@@ -3,205 +3,237 @@ using UnityEngine;
 using UnityEngine.Serialization;
 namespace AtMycelia.Hyphlow
 {
-    /// <summary>
-    /// A Block may have an associated Event Handler which starts executing commands when
-    /// a specific event occurs. 
-    /// To create a custom Event Handler, simply subclass EventHandler and call the ExecuteBlock() method
-    /// when the event occurs. 
-    /// Add an EventHandlerInfo attibute and your new EventHandler class will automatically appear in the
-    /// 'Execute On Event' dropdown menu when a block is selected.
-    /// </summary>
-    [RequireComponent(typeof(Block))]
-    [RequireComponent(typeof(Flowchart))]
-    [AddComponentMenu("")]
-    [ExecuteInEditMode]
-    public class EventHandler : MonoBehaviour, ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
-    {
-        [HideInInspector]
-        [FormerlySerializedAs("parentSequence")]
-        [FormerlySerializedAs("parentBlock")]
-        [SerializeField] protected Block _parentBlock;
+	public interface IEventHandler
+	{
+		IBlock ParentBlock { get; set; }
+		string GetSummary();
+		string DisplayNameAboveBlock { get; }
 
-        [Tooltip("If true, the flowchart window will not auto select the Block when the Event " +
-            "Handler fires. Affects Editor only.")]
-        [FormerlySerializedAs("suppressBlockAutoSelect")]
-        [SerializeField] protected bool _suppressBlockAutoSelect = false;
+	}
 
-        protected virtual void Awake()
-        {
-            _fChart = GetComponent<Flowchart>();
-        }
+	/// <summary>
+	/// A Block may have an associated Event Handler which starts executing commands when
+	/// a specific event occurs. 
+	/// To create a custom Event Handler, simply subclass EventHandler and call the ExecuteBlock() method
+	/// when the event occurs. 
+	/// Add an EventHandlerInfo attibute and your new EventHandler class will automatically appear in the
+	/// 'Execute On Event' dropdown menu when a block is selected.
+	/// </summary>
+	[RequireComponent(typeof(Block))]
+	[RequireComponent(typeof(Flowchart))]
+	[AddComponentMenu("")]
+	[ExecuteInEditMode]
+	public class EventHandler : MonoBehaviour, IEventHandler, ISerializationCallbackReceiver,
+		IBackwardsCompatibilityApplier
+	{
+		[SerializeField, HideInInspector]
+		[FormerlySerializedAs("parentSequence")]
+		[FormerlySerializedAs("parentBlock")]
+		[FormerlySerializedAs("_parentBlock")]
+		protected Block _parentMbBlock;
 
-        #region Public members
+		[SerializeField, HideInInspector] protected BlockReference _parentBlockReference = new BlockReference();
+		// ^ For when we migrate Blocks to be POCOs instead of MonoBehaviours. This will allow us more
+		// flexibility in how we store the parent block reference.
+		[Tooltip("If true, the flowchart window will not auto select the Block when the Event " +
+			"Handler fires. Affects Editor only.")]
+		[FormerlySerializedAs("suppressBlockAutoSelect")]
+		[SerializeField] protected bool _suppressBlockAutoSelect = false;
 
-        /// <summary>
-        /// The parent Block which owns this Event Handler.
-        /// </summary>
-        public virtual Block ParentBlock
-        {
-            get => _parentBlock;
-            set
-            {
-                _parentBlock = value;
-                _fChart = null;
-                if (_parentBlock != null)
-                {
-                    _fChart = _parentBlock.GetFlowchart();
-                }
-            }
-        }
+		protected virtual void Awake()
+		{
+			_fChart = GetComponent<Flowchart>();
+		}
 
-        protected Flowchart _fChart;
-        /// <summary>
-        /// The Event Handler should call this method in response to the relevant event occurring.
-        /// </summary>
-        public virtual bool ExecuteBlock()
-        {
-            if (ParentBlock == null)
-            {
-                return false;
-            }
+		#region Public members
 
-            if (ParentBlock._EventHandler != this)
-            {
-                return false;
-            }
+		/// <summary>
+		/// The parent Block which owns this Event Handler.
+		/// </summary>
+		public virtual IBlock ParentBlock
+		{
+			get
+			{
+				if (_parentBlockReference.Block == null)
+				{
+					_parentBlockReference.Block = _parentMbBlock;
+				}
+				return _parentBlockReference.Block;
+			}
+			set
+			{
+				_parentMbBlock = value as Block;
+				_parentBlockReference.Block = value;
+				_fChart = null;
+				if (_parentMbBlock != null)
+				{
+					_fChart = _parentMbBlock.ParentFlowchart;
+				}
+			}
+		}
 
-            //if somehow the flowchart is invalid or has been disabled we don't want to continue
-            if (_fChart == null || !this.gameObject.activeInHierarchy || !_fChart.isActiveAndEnabled)
-            {
-                return false;
-            }
+		protected Flowchart _fChart;
 
-            if (_suppressBlockAutoSelect)
-            {
-                ParentBlock.SuppressNextAutoSelection = true;
-            }
+		/// <summary>
+		/// The Event Handler should call this method in response to the relevant event occurring.
+		/// </summary>
+		public virtual bool ExecuteBlock()
+		{
+			if (ParentBlock == null)
+			{
+				return false;
+			}
 
-            return _fChart.ExecuteBlock(ParentBlock);
-        }
+			// If somehow the flowchart is invalid or has been disabled we don't want to continue
+			if (_fChart == null || !this.gameObject.activeInHierarchy || !_fChart.isActiveAndEnabled)
+			{
+				string logMessage = $"Event Handler {GetType().Name} attempted to execute its block, " +
+					$"but the Flowchart was not valid.";
+#if UNITY_EDITOR
+				Debug.LogWarning(logMessage, this);
+#else
+				Debug.LogWarning(logMessage);
+#endif
+				return false;
+			}
 
-        /// <summary>
-        /// Returns custom summary text for the event handler.
-        /// </summary>
-        public virtual string GetSummary()
-        {
-            return "";
-        }
+			if (_suppressBlockAutoSelect)
+			{
+				ParentBlock.SuppressNextAutoSelection = true;
+			}
 
-        #endregion
+			_fChart.ExecuteBlock(ParentBlock);
+			return true;
+		}
 
-        protected virtual void OnEnable()
-        {
-            if (this == null || !this.IsInTheScene)
-            {
-                return;
-            }
+		/// <summary>
+		/// Returns custom summary text for the event handler.
+		/// </summary>
+		public virtual string GetSummary()
+		{
+			return "";
+		}
 
-            if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
-            {
-                ToggleSubs(true);
-            }
-            else if (!ToggleSubsOnlyInRuntime)
-            {
-                ToggleSubs(true);
-            }
-        }
+		#endregion
 
-        // We want subclasses to have control of when they sub. Some would prefer to only
-        // sub in runtime, so...
-        protected virtual bool ToggleSubsOnlyInRuntime => true;
+		protected virtual void OnEnable()
+		{
+			if (this == null || !this.IsInTheScene)
+			{
+				return;
+			}
 
-        /// <summary>
-        /// Enable or disable any subscriptions to events.
-        /// </summary>
-        protected virtual void ToggleSubs(bool on)
-        {
+			// Ownership should be assigned by Block refresh/deserialization.
+			if (ParentBlock == null && _parentMbBlock != null)
+			{
+				ParentBlock = _parentMbBlock;
+			}
 
-        }
+			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+			{
+				ToggleSubs(true);
+			}
+			else if (!ToggleSubsOnlyInRuntime)
+			{
+				ToggleSubs(true);
+			}
+		}
 
-        private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
+		// We want subclasses to have control of when they sub. Some would prefer to only
+		// sub in runtime, so...
+		protected virtual bool ToggleSubsOnlyInRuntime => true;
+
+		/// <summary>
+		/// Enable or disable any subscriptions to events.
+		/// </summary>
+		protected virtual void ToggleSubs(bool on)
+		{
+
+		}
+
+		private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
 #if UNITY_EDITOR
-        public virtual string DisplayNameAboveBlock
-        {
-            get
-            {
-                var eventHandlerInfo = GetType().GetCustomAttribute<EventHandlerInfoAttribute>();
-                if (eventHandlerInfo != null)
-                {
-                    return eventHandlerInfo.EventHandlerName;
-                }
-                return GetType().Name;
-            }
-        }
+		public virtual string DisplayNameAboveBlock
+		{
+			get
+			{
+				var eventHandlerInfo = GetType().GetCustomAttribute<EventHandlerInfoAttribute>();
+				if (eventHandlerInfo != null)
+				{
+					return eventHandlerInfo.EventHandlerName;
+				}
+				return GetType().Name;
+			}
+		}
 #endif
 
-        protected virtual void OnDisable()
-        {
-            if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
-            {
-                ToggleSubs(false);
-            }
-            else if (!ToggleSubsOnlyInRuntime)
-            {
-                ToggleSubs(false);
-            }
-        }
+		protected virtual void OnDisable()
+		{
+			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+			{
+				ToggleSubs(false);
+			}
+			else if (!ToggleSubsOnlyInRuntime)
+			{
+				ToggleSubs(false);
+			}
+		}
 
-        protected virtual void OnValidate()
-        {
-            if (!this.IsInTheScene)
-            {
-                return;
-            }
-            // Seems that when this is set to execute in edit mode, OnValidate can be called
-            // before Awake does. Thus, we need to ensure fChart is assigned.
-            if (_fChart == null)
-            {
-                _fChart = GetComponent<Flowchart>();
-            }
-        }
+		protected virtual void OnValidate()
+		{
+			if (!this.IsInTheScene)
+			{
+				return;
+			}
+			hideFlags = HideFlags.HideInInspector;
+			// Seems that when this is set to execute in edit mode, OnValidate can be called
+			// before Awake does. Thus, we need to ensure fChart is assigned.
+			if (_fChart == null)
+			{
+				_fChart = GetComponent<Flowchart>();
+			}
+		}
 
-        public virtual void OnBeforeSerialize()
-        {
+		public virtual void OnBeforeSerialize()
+		{
 
-        }
+		}
 
-        public virtual void OnAfterDeserialize()
-        {
+		public virtual void OnAfterDeserialize()
+		{
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.delayCall += () =>
-            {
-                if (this == null)
-                {
-                    return;
-                }
-                OnAfterDeserializeBackwardsCompat();
-            };
+			UnityEditor.EditorApplication.delayCall += () =>
+			{
+				if (this == null)
+				{
+					return;
+				}
+				OnAfterDeserializeBackwardsCompat();
+			};
 #endif
-        }
+		}
 
-        protected virtual void OnAfterDeserializeBackwardsCompat()
-        {
+		protected virtual void OnAfterDeserializeBackwardsCompat()
+		{
 
-        }
-        protected virtual EventDispatcher EventDispatcher
-        {
-            get
-            {
-                HyphlowManager manager = HyphlowManager.S;
-                if (manager == null)
-                {
-                    return null;
-                }
-                return manager.EventDispatcher;
-            }
-        }
+		}
+		protected virtual EventDispatcher EventDispatcher
+		{
+			get
+			{
+				HyphlowManager manager = HyphlowManager.S;
+				if (manager == null)
+				{
+					return null;
+				}
+				return manager.EventDispatcher;
+			}
+		}
 
-        public virtual void ApplyBackwardsCompatibility()
-        {
+		public virtual void ApplyBackwardsCompatibility()
+		{
 
-        }
-    }
+		}
+	}
 }

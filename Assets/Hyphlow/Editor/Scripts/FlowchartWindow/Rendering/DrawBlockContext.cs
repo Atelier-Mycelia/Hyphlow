@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class DrawBlockContext : IDisposable
     {
@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
         public virtual GUIStyle BlockSearchPopupNormalStyle { get; set; }
         public virtual GUIStyle BlockSearchPopupSelectedStyle { get; set; }
         public virtual BlockGraphics Graphics { get; set; }
-        public virtual IReadOnlyCollection<Block> AllBlocks
+        public virtual IReadOnlyCollection<IBlock> AllBlocks
         {
             get { return FlowchartCtx.Document.AllBlocks; }
         }

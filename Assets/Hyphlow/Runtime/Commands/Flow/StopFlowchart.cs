@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -12,14 +13,16 @@ namespace AtMycelia.Hyphlow
                  "Stop Flowchart", 
                  "Stops execution of all Blocks in a Flowchart")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class StopFlowchart : Command
     {       
         [Tooltip("Stop all executing Blocks in the Flowchart that contains this command")]
-        [SerializeField] protected bool stopParentFlowchart;
+        [SerializeField] [FormerlySerializedAs("stopParentFlowchart")]
+protected bool stopParentFlowchart;
 
         [Tooltip("Stop all executing Blocks in a list of target Flowcharts")]
-        [SerializeField] protected List<Flowchart> targetFlowcharts = new List<Flowchart>();
+        [SerializeField] [FormerlySerializedAs("targetFlowcharts")]
+protected List<Flowchart> targetFlowcharts = new List<Flowchart>();
 
         #region Public members
 

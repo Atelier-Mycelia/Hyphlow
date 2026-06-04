@@ -13,11 +13,12 @@ namespace AtMycelia.Hyphlow
                  "Makes a sprite visible / invisible by setting the color alpha.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ShowSprite : Command
     {
         [Tooltip("Sprite object to be made visible / invisible")]
-        [SerializeField] protected SpriteRenderer spriteRenderer;
+        [SerializeField] [FormerlySerializedAs("spriteRenderer")]
+protected SpriteRenderer spriteRenderer;
 
         [Tooltip("Make the sprite visible or invisible")]
         [SerializeField] protected BooleanData _visible = new BooleanData(false);
@@ -78,7 +79,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Sprite;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_visible.VarRef, variable) || base.HasReference(variable);
         }

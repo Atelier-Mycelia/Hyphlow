@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections;
 
@@ -16,7 +17,8 @@ namespace AtMycelia.Hyphlow
     public class GameStarted : EventHandler
     {
         [Tooltip("Wait for a number of frames after startup before executing the Block. Can help fix startup order issues.")]
-        [SerializeField] protected int waitForFrames = 1;
+        [SerializeField] [FormerlySerializedAs("waitForFrames")]
+        protected int waitForFrames = 1;
 
         public virtual void Trigger()
         {

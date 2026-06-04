@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace AtMycelia.Hyphlow
     public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        protected VariableScope _scope = VariableScope.Private;
+        protected AccessScope _scope = AccessScope.Private;
         [SerializeField]
         protected string _key = string.Empty;
         [HideInInspector]
@@ -26,11 +27,14 @@ namespace AtMycelia.Hyphlow
 
         #region Legacy stuff
         [SerializeField]
-        protected VariableScope scope = VariableScope.Private;
+[FormerlySerializedAs("scope")]
+        protected AccessScope scope = AccessScope.Private;
         [SerializeField]
+[FormerlySerializedAs("key")]
         protected string key = string.Empty;
         [HideInInspector]
-        [SerializeField] protected byte itemID = InvalidId;
+        [SerializeField] [FormerlySerializedAs("itemID")]
+protected byte itemID = InvalidId;
 
         #endregion
 
@@ -65,7 +69,7 @@ namespace AtMycelia.Hyphlow
             scope = default;
         }
 
-        public virtual VariableScope Scope
+        public virtual AccessScope Scope
         {
             get => _scope;
             set => _scope = value;
@@ -126,7 +130,7 @@ namespace AtMycelia.Hyphlow
             BoxedValue = otherVar.BoxedValue;
         }
 
-        public Muscariable(string key, byte itemID, VariableScope scope)
+        public Muscariable(string key, byte itemID, AccessScope scope)
         {
             this._key = key;
             this._itemId = itemID;
@@ -157,7 +161,7 @@ namespace AtMycelia.Hyphlow
             }
             else
             {
-                result = TypeUtils.TypesCompatible(obj.GetType(), ContentType);
+                result = TypeUtils.TypesCompatible(ContentType, obj.GetType());
             }
 
             return result;
@@ -224,6 +228,23 @@ namespace AtMycelia.Hyphlow
                 _owner = value;
             }
         }
+
+        object IHasItemId.ItemId
+        {
+            get => ItemId;
+            set
+            {
+                if (value is byte byteValue)
+                {
+                    ItemId = byteValue;
+                }
+                else
+                {
+                    throw new ArgumentException($"ItemId must be of type byte, but was {value.GetType().Name}");
+                }
+            }
+        }
+
         protected IVariableSource _owner;
 
         public abstract Muscariable Clone();
@@ -241,7 +262,7 @@ namespace AtMycelia.Hyphlow
 
         public override string ToString()
         {
-            string result = $"{this.GetType().Name} w/ val: {BoxedValue})";
+            string result = $"{this.GetType().Name} named {_key} w/ val: {BoxedValue})";
             return result;
         }
 
@@ -289,6 +310,7 @@ namespace AtMycelia.Hyphlow
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         [SerializeField]
+[FormerlySerializedAs("value")]
         protected T value;
 
         [SerializeField]
@@ -298,6 +320,7 @@ namespace AtMycelia.Hyphlow
         protected T _value;
 
         [SerializeField]
+[FormerlySerializedAs("startValue")]
         protected T startValue;
 
         protected override void ApplyLegacyDataOnAfterDeserialize()
@@ -498,20 +521,13 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("NoShow",
-        "",
+    [VariableInfo("NoShow", "",
         typeof(object),
         showInMenu: false)]
     public class GenericMuscariable : Muscariable<object>
     {
         // Keep defaults: Assign supported; Equals/NotEquals from base are fine.
         // You can extend later for numeric T to support + - * / or relational ops.
-
-        public static bool operator ==(GenericMuscariable a, GenericMuscariable b)
-            => a.Value == b.Value;
-
-        public static bool operator !=(GenericMuscariable a, GenericMuscariable b)
-            => a.Value != b.Value;
 
         public override bool Equals(object obj)
         {

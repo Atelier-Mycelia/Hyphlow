@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Else", 
                  "Marks the start of a command block to be executed when the preceding If statement is False.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Else : Command
     {
         #region Public members
@@ -28,7 +28,10 @@ namespace AtMycelia.Hyphlow
             else
             {
                 // No End command found
-                StopParentBlock();
+                string errorMessage = $"No matching End Command found for Else Command at index {CommandIndex}.";
+                Debug.LogError(errorMessage, this);
+                OnExit();
+                ParentBlock.Stop();
             }
         }
 

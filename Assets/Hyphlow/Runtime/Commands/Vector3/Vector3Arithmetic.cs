@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Arithmetic",
                  "Vector3 add, sub, mul, div arithmetic")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Vector3Arithmetic : Command
     {
         [SerializeField]
@@ -98,7 +98,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (ReferenceEquals(_lhs.VarRef, variable) || 
                 ReferenceEquals(_rhs.VarRef, variable) || 
@@ -123,6 +123,7 @@ namespace AtMycelia.Hyphlow
 
         [SerializeField]
         [HideInInspector]
+[FormerlySerializedAs("output")]
         protected Vector3Data output;
     }
 }

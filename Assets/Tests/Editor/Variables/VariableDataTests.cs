@@ -98,10 +98,10 @@ namespace VScriptingTests.VariableOperations
         // (variableDataType, initialLiteral, variableValue, backLiteral, mismatchContentType)
         public static object[] VarDataCases = new object[]
         {
-            new object[] { typeof(FloatData),    3f,                     10f,                    4f,                     typeof(int) },
-            new object[] { typeof(IntegerData),  3,                      10,                     4,                      typeof(float) },
+            new object[] { typeof(FloatData),    3f,                     10f,                    4f,                     typeof(Sprite) },
+            new object[] { typeof(IntegerData),  3,                      10,                     4,                      typeof(GameObject) },
             new object[] { typeof(StringData),   "foo",                  "bar",                  "baz",                  typeof(int) },
-            new object[] { typeof(BooleanData),  true,                   false,                  true,                   typeof(int) },
+            new object[] { typeof(BooleanData),  true,                   false,                  true,                   typeof(Transform) },
             new object[] { typeof(ColorData),    Color.red,              Color.green,            Color.blue,             typeof(float) },
             new object[] { typeof(Vector3Data),  new Vector3(1,2,3),     new Vector3(4,5,6),     new Vector3(7,8,9),     typeof(int) }
         };

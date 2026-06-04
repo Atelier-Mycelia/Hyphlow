@@ -6,6 +6,7 @@ namespace AtMycelia.AmaniTween.VScripting
     [CommandInfo("BI Tween",
         "Simple/Punch Scale",
         "Applies a jolt of force to a component's scale and wobbles it back to its initial scale.")]
+    [AddComponentMenu("")]
     public class PunchScale : BaseSimpleTweenCommand
     {
         [Tooltip("The Component with the transform to punch.")]

@@ -8,11 +8,11 @@ namespace AtMycelia.Hyphlow
     /// Base for all Conditional based Commands, Ifs, Loops, and so on.
     /// </summary>
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class Condition : Command
     {
         public override bool NonStandardPaste => true;
-        protected End endCommand;
+        protected End _endCommand;
      
         public override void OnEnter()
         {
@@ -22,16 +22,16 @@ namespace AtMycelia.Hyphlow
             }
 
             //if looping we need the end command in order to work
-            if(IsLooping && !EnsureRequiredEnd())
+            if (IsLooping && !EnsureRequiredEnd())
             {
-                Debug.LogError(GetLocationIdentifier() + " is looping but has no matching End command");
+                Debug.LogError(LocationIdentifier + " is looping but has no matching End command");
                 Continue();
                 return;
             }
 
-            if ( !HasNeededProperties() )
+            if (!HasNeededProperties())
             {
-                Debug.LogError(GetLocationIdentifier() + " cannot run due to missing required properties");
+                Debug.LogError(LocationIdentifier + " cannot run due to missing required properties");
                 Continue();
                 return;
             }
@@ -66,24 +66,26 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void MoveToEnd()
         {
-            if(endCommand == null)
+            if(_endCommand == null)
             {
-                endCommand = FindOurEndCommand();
+                _endCommand = FindOurEndCommand();
             }
 
-            if (endCommand != null)
+            if (_endCommand != null)
             {
                 // Continue at next command after End
                 // and make the end non looping incase it gets run via index etc.
-                endCommand.Loop = false;
-                Continue(endCommand.CommandIndex + 1);
+                _endCommand.Loop = false;
+                Continue(_endCommand.CommandIndex + 1);
             }
             else
             {
                 //nowhere to go, so we assume the block wants to stop but is missing and end, this
                 //  is also ensures back compat
-                Debug.LogWarning("Condition wants to move to end but no End command found, stopping block. " + GetLocationIdentifier());
-                StopParentBlock();
+                string warningMessage = LocationIdentifier + " wants to move to end but no End command found, stopping block.";
+                Debug.LogWarning(warningMessage, this);
+                OnExit();
+                ParentBlock.Stop();
             }
         }
 
@@ -133,13 +135,13 @@ namespace AtMycelia.Hyphlow
         /// <returns></returns>
         protected virtual bool EnsureRequiredEnd()
         {
-            if (endCommand == null)
+            if (_endCommand == null)
             {
-                endCommand = FindOurEndCommand();
+                _endCommand = FindOurEndCommand();
 
-                if (endCommand == null)
+                if (_endCommand == null)
                 {
-                    Debug.LogError( GetLocationIdentifier() + "', could not find closing End command and thus cannot loop.");
+                    Debug.LogError(LocationIdentifier + "', could not find closing End command and thus cannot loop.");
                     //StopParentBlock();
                     return false;
                 }
@@ -148,8 +150,8 @@ namespace AtMycelia.Hyphlow
             if (IsLooping)
             {
                 // Tell the following end command to loop back
-                endCommand.Loop = true;
-                endCommand.LoopBackIndex = CommandIndex;
+                _endCommand.Loop = true;
+                _endCommand.LoopBackIndex = CommandIndex;
             }
             return true;
         }
@@ -195,7 +197,7 @@ namespace AtMycelia.Hyphlow
             // Find the next Else, ElseIf or End command at the same indent level as this If command
             for (int i = CommandIndex + 1; i < ParentBlock.CommandList.Count; ++i)
             {
-                Command nextCommand = ParentBlock.CommandList[i];
+                ICommand nextCommand = ParentBlock.CommandList[i];
 
                 if (nextCommand == null)
                 {
@@ -204,10 +206,10 @@ namespace AtMycelia.Hyphlow
 
                 // Find next command at same indent level as this If command
                 // Skip disabled commands, comments & labels
-                if (!((Command)nextCommand).enabled || 
+                if (!((Command)nextCommand).Enabled || 
                     nextCommand.GetType() == typeof(Comment) ||
                     nextCommand.GetType() == typeof(Label) ||
-                    nextCommand.IndentLevel != indentLevel)
+                    nextCommand.IndentLevel != _indentLevel)
                 {
                     continue;
                 }
@@ -219,7 +221,8 @@ namespace AtMycelia.Hyphlow
                     if (i >= ParentBlock.CommandList.Count - 1)
                     {
                         // Last command in Block, so stop
-                        StopParentBlock();
+                        OnExit();
+                        ParentBlock.Stop();
                     }
                     else
                     {
@@ -237,7 +240,8 @@ namespace AtMycelia.Hyphlow
             }
 
             // No matching End command found, so just stop the block
-            StopParentBlock();
+            OnExit();
+            ParentBlock.Stop();
         }
 
         /// <summary>

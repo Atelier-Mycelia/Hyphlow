@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [System.Serializable]
     public class DrawGridContext : IDisposable

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,11 +10,13 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Variable",
         "Text To Float",
         "Takes the value of a Text field and applies the float version of it to a Float Variable")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class TextToFloat : Command
     {
-        [SerializeField] protected GameObjectData hasTextField;
-        [SerializeField] [VariableProperty(typeof(FloatVariable))] protected FloatVariable output;
+        [SerializeField] [FormerlySerializedAs("hasTextField")]
+protected GameObjectData hasTextField;
+        [SerializeField] [VariableProperty(typeof(FloatVariable))] [FormerlySerializedAs("output")]
+protected FloatVariable output;
 
         protected override void RefreshVariableDataCache()
         {

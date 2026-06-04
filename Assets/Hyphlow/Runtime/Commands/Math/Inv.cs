@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Inverse",
                  "Multiplicative Inverse of a float (1/f)")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Inv : BaseUnaryMathCommand
     {
         public override void OnEnter()

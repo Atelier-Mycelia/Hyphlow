@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 using AtMycelia.AmaniTween.VScripting;
 using UnityObj = UnityEngine.Object;
 
-namespace AmaniTweenTests.Commands
+namespace HyphaTweenTests.Commands
 {
     public class MoveTransformPlayModeTests : CommandTestBase<MoveTransformPlayModeTests.MoveTransformTestWrapper>
     {
@@ -53,7 +53,8 @@ namespace AmaniTweenTests.Commands
 
             yield return RunBlockAndWait();
 
-            Assert.That(Vector3.Distance(_target.position, destination), Is.LessThan(_epsilon),
+            float distance = Vector3.Distance(_target.position, destination);
+            Assert.That(distance, Is.LessThan(_epsilon),
                 "Target did not reach absolute destination.");
         }
 

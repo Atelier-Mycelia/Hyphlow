@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class VariableRowManager : IDisposable
     {
@@ -77,19 +77,19 @@ namespace AtMycelia.Hyphlow.EditorUtils
             void PrepEventListeners()
             {
                 ToggleSubs(false);
-                variableSource = initArgs.VariableSource;
+                _variableSource = initArgs.VariableSource;
                 ToggleSubs(true);
             }
 
-            _varManagerComponent = variableSource as VariableManagerComponent;
+            _varManagerComponent = _variableSource as VariableManagerComponent;
             
 
             Refresh();
         }
 
         protected bool _isDisposed;
-        protected IReorderableVariableSource variableSource;
-        protected Flowchart Flowchart => variableSource as Flowchart;
+        protected IReorderableVariableSource _variableSource;
+        protected VariableManagerComponent VarManagerComp => _variableSource as VariableManagerComponent;
         protected VariableManagerComponent _varManagerComponent;
         protected IVariableListView _listView;
         protected Button _addButton;
@@ -104,16 +104,16 @@ namespace AtMycelia.Hyphlow.EditorUtils
         #region Event Wiring / Visual Init
         protected virtual void ToggleSubs(bool on)
         {
-            if (variableSource == null || _listView == null)
+            if (_variableSource == null || _listView == null)
             {
                 return;
             }
 
-            if (on && !subsActive)
+            if (on && !_subsActive)
             {
                 VariableSignals.PostValueChange += OnVariableValueChanged;
-                variableSource.VariableAdded += OnVariableAdded;
-                variableSource.VariableRemoved += OnVariableRemoved;
+                _variableSource.VariableAdded += OnVariableAdded;
+                _variableSource.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
                 HyphlowEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
@@ -124,13 +124,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 HyphlowEditorSignals.KeyFieldChanged += OnKeyFieldChanged;
                 HyphlowEditorSignals.ScopeFieldChanged += OnScopeFieldChanged;
                 HyphlowEditorSignals.ValueFieldChanged += OnValueFieldChanged;
-                subsActive = true;
+                _subsActive = true;
             }
             else if (!on)
             {
                 VariableSignals.PostValueChange -= OnVariableValueChanged;
-                variableSource.VariableAdded -= OnVariableAdded;
-                variableSource.VariableRemoved -= OnVariableRemoved;
+                _variableSource.VariableAdded -= OnVariableAdded;
+                _variableSource.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
                 HyphlowEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
@@ -138,7 +138,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 HyphlowEditorSignals.KeyFieldChanged -= OnKeyFieldChanged;
                 HyphlowEditorSignals.ScopeFieldChanged -= OnScopeFieldChanged;
                 HyphlowEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
-                subsActive = false;
+                _subsActive = false;
             }
         }
 
@@ -218,7 +218,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         protected virtual void OnOrderChanged(IList<IVariable> newlyOrderedVars)
         {
-            variableSource.ReorderVariables(newlyOrderedVars);
+            _variableSource.ReorderVariables(newlyOrderedVars);
         }
 
         protected virtual void OnAddButtonClicked()
@@ -226,26 +226,26 @@ namespace AtMycelia.Hyphlow.EditorUtils
             Rect rect = _addButton.worldBound;
             // In the future, due to how Flowchart implements IVariableSource, we might
             // want just a single DoAddVariable method that takes IVariableSource.
-            if (Flowchart != null)
+            if (VarManagerComp != null)
             {
-                VariableSelectPopupWindowContent.DoAddVariable(rect, "", Flowchart);
+                VariableSelectPopupWindowContent.DoAddVariable(rect, "", VarManagerComp);
             }
-            else if (variableSource is IReorderableMuscariableSource muscaSource)
+            else if (_variableSource is IReorderableMuscariableSource muscaSource)
             {
                 VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
             }
         }
 
-        protected bool subsActive = false;
+        protected bool _subsActive = false;
 
         protected bool HasLiveVariableSourceReference()
         {
-            if (variableSource == null)
+            if (_variableSource == null)
             {
                 return false;
             }
 
-            if (variableSource is UnityObj unityObj)
+            if (_variableSource is UnityObj unityObj)
             {
                 return unityObj != null;
             }
@@ -288,13 +288,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return false;
             }
 
-            if (ReferenceEquals(variableSource, newSource) && HasLiveVariableSourceReference())
+            if (ReferenceEquals(_variableSource, newSource) && HasLiveVariableSourceReference())
             {
                 return true;
             }
 
             ToggleSubs(false);
-            variableSource = newSource;
+            _variableSource = newSource;
             ToggleSubs(true);
             Refresh();
             return HasLiveVariableSourceReference();
@@ -327,7 +327,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return ownerObj;
             }
 
-            if (variableSource is UnityObj sourceObj && sourceObj != null)
+            if (_variableSource is UnityObj sourceObj && sourceObj != null)
             {
                 return sourceObj;
             }
@@ -410,17 +410,17 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             if (owner == null && HasLiveVariableSourceReference())
             {
-                variable.Owner = variableSource;
-                owner = variableSource;
+                variable.Owner = _variableSource;
+                owner = _variableSource;
             }
 
-            if (variableSource is Flowchart fc && _varManagerComponent == null)
+            if (_variableSource is Flowchart fc && _varManagerComponent == null)
             {
                 _varManagerComponent = fc.GetComponent<VariableManagerComponent>();
             }
 
-            bool result = owner != null && variableSource != null && 
-                (ReferenceEquals(owner, variableSource) || _varManagerComponent != null);
+            bool result = owner != null && _variableSource != null && 
+                (ReferenceEquals(owner, _variableSource) || _varManagerComponent != null);
             return result;
         }
 
@@ -473,13 +473,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
             MarkDirty(toRecord);
 
-            if (variableSource is ScriptableObject so)
+            if (_variableSource is ScriptableObject so)
             {
                 so.MarkDirtyAndSave();
             }
         }
 
-        protected virtual void OnScopeFieldChanged(VariableRow row, VariableScope scope)
+        protected virtual void OnScopeFieldChanged(VariableRow row, AccessScope scope)
         {
             if (!WeAreManaging(row))
             {
@@ -512,11 +512,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
         #region Refresh APIs
         public void Refresh()
         {
-            if (_isDisposed || variableSource == null || _listView == null)
+            if (_isDisposed || _variableSource == null || _listView == null)
                 return;
 
             
-            _listView.SetVariables(variableSource.Variables);
+            _listView.SetVariables(_variableSource.Variables);
         }
         #endregion
 
@@ -534,7 +534,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             _listView?.Dispose();
 
             _listView = null;
-            variableSource = null;
+            _variableSource = null;
             Root = null;
             _isDisposed = true;
         }

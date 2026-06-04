@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
 				 "Vector3",
 				 "Get or Set a property of a Vector3 component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class Vector3Property : BaseVariableProperty
 	{
 		//generated property
@@ -27,15 +28,18 @@ namespace AtMycelia.Hyphlow
 
 		
 		[SerializeField]
+[FormerlySerializedAs("property")]
 		protected Property property;
 		
 		[SerializeField]
 		[VariableProperty(typeof(Vector3Variable))]
+[FormerlySerializedAs("vector3Var")]
 		protected Vector3Variable vector3Var;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
 						  typeof(Vector3Variable))]
+[FormerlySerializedAs("inOutVar")]
 		protected Variable inOutVar;
 
 		public override void OnEnter()
@@ -117,9 +121,9 @@ namespace AtMycelia.Hyphlow
 			return CommandColors.Flow;
 		}
 
-		public override bool HasReference(Variable variable)
+		public override bool HasReference(IVariable variable)
 		{
-			if (vector3Var == variable || inOutVar == variable)
+         if (ReferenceEquals(vector3Var, variable) || ReferenceEquals(inOutVar, variable))
 				return true;
 
 			return false;

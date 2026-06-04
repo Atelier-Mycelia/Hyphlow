@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -11,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Log",
                  "Command to execute and store the result of a Log")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Log : BaseUnaryMathCommand
     {
         public enum Mode
@@ -22,6 +23,7 @@ namespace AtMycelia.Hyphlow
 
         [Tooltip("Which log to use, natural or base 10")]
         [SerializeField]
+[FormerlySerializedAs("mode")]
         protected Mode mode = Mode.Natural;
 
         public override void OnEnter()

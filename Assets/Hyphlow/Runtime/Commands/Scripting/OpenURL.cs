@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -10,11 +11,12 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Scripting",
                  "Open URL",
                  "Opens the specified URL in the browser.")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class OpenURL : Command
     {
         [Tooltip("URL to open in the browser")]
-        [SerializeField] protected StringData url = new StringData();
+        [SerializeField] [FormerlySerializedAs("url")]
+protected StringData url = new StringData();
 
         protected override void RefreshVariableDataCache()
         {
@@ -41,7 +43,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(url.VarRef, variable) || base.HasReference(variable);
         }

@@ -1,13 +1,20 @@
 {
   "dependencies": {
     "com.ateliermycelia.unityutils": {
-      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Packages/com.ateliermycelia.unityutils",
+      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Assets/AtMyceliaCommonLib#develop",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       },
-      "hash": "830276e35b17ac23342d40d54f4e98b445abf9fa"
+      "hash": "653c38f397c7da1572a6a8b774ea046ef5572afb"
+    },
+    "com.handzlikchris.fastscriptreload": {
+      "version": "https://github.com/handzlikchris/FastScriptReload.git?path=Assets",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "51140b71d9e5df1de231b33ec20ee089b18bebec"
     },
     "com.unity.2d.animation": {
       "version": "10.2.2",
@@ -109,13 +116,6 @@
         "com.unity.mathematics": "1.2.1",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.collab-proxy": {
-      "version": "2.11.3",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.collections": {
@@ -289,7 +289,7 @@
       }
     },
     "com.unity.timeline": {
-      "version": "1.8.10",
+      "version": "1.8.12",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -308,16 +308,6 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
-    },
-    "com.unity.visualscripting": {
-      "version": "1.9.7",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.ugui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",

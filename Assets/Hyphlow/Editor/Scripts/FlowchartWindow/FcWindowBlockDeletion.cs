@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public class FcWindowBlockDeletion
     {
@@ -23,9 +22,9 @@ namespace AtMycelia.Hyphlow.EditorUtils
             
             if (selected.Count == 1)
             {
-                Block toDelete = selected[0];
+                IBlock toDelete = selected[0];
 
-                fChart.RemoveBlock(toDelete);
+                fChart.Remove(toDelete);
 
                 ushort id = toDelete.ItemId;
 
@@ -35,7 +34,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
             {
                 fChart.RemoveMultiBlocks(selected);
 
-                IList<ushort> blockIds = selected.Select((elem) => elem.ItemId).ToList();
+                IList<byte> blockIds = new List<byte>();
+                for (int i = 0; i < selected.Count; i++)
+                {
+                    blockIds.Add(selected[i].ItemId);
+                }
 
                 for (int i = 0; i < selected.Count; i++)
                 {
@@ -48,23 +51,30 @@ namespace AtMycelia.Hyphlow.EditorUtils
             ctx.ForceRepaintCount++;
         }
 
-        private void DestroyThoroughly(Block block)
+        private void DestroyThoroughly(IBlock block)
         {
             // Destroy each command on the block
-            foreach (var cmd in block.CommandList)
-                if (cmd != null)
-                    Undo.DestroyObjectImmediate(cmd);
+            IList<ICommand> commands = block.CommandList;
+            for (int i = 0; i < commands.Count; i++)
+            {
+                ICommand cmd = commands[i];
+                if (cmd != null && cmd is UnityObjectMuscariable cmdUnityObj)
+                    Undo.DestroyObjectImmediate(cmdUnityObj);
+            }
 
             // Destroy any event handler
-            if (block._EventHandler != null)
-                Undo.DestroyObjectImmediate(block._EventHandler);
+            if (block.EventHandler != null && block.EventHandler is UnityObjectMuscariable ehUnityObj)
+                Undo.DestroyObjectImmediate(ehUnityObj);
 
             var fc = block.GetFlowchart();
 
             // Destroy the block itself
+            Block legacyBlock = block as Block;
+            if (legacyBlock != null)
+            {
+                Undo.DestroyObjectImmediate(legacyBlock);
+            }
             
-            Undo.DestroyObjectImmediate(block);
-
             Selection.activeGameObject = fc.gameObject;
 
         }

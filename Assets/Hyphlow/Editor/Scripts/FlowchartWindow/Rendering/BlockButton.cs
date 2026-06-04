@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
     /// A button representing a Block in the flowchart. Displays the Block's name and changes 
@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
     {
         public static readonly string BaseClass = "flowchartBlock";
         public static readonly string SelectedClass = "flowchartBlockSelected";
-        private static readonly string EventHandlerHiddenClass = "block-event-handler-label-hidden";
+        private static readonly string _EventHandlerHiddenClass = "block-event-handler-label-hidden";
 
         private const float MinWidth = 60f;
         private const float MaxWidth = 280f;
@@ -24,20 +24,20 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
         private const float DefaultHeight = 40f;
         private const float BaseFontSize = 16f;
 
-        private static readonly float minTextWidth = 1f;
-        private static readonly int maxBlockNameLength = 50;
+        private static readonly float _minTextWidth = 1f;
+        private static readonly int _maxBlockNameLength = 50;
 
-        private static readonly Color GradientTop = new Color(1f, 1f, 1f, 0.18f);
-        private static readonly Color GradientBottom = new Color(0f, 0f, 0f, 0.25f);
+        private static readonly Color _GradientTop = new Color(1f, 1f, 1f, 0.18f);
+        private static readonly Color _GradientBottom = new Color(0f, 0f, 0f, 0.25f);
 
-        private readonly IBlockGraphicsGenerator graphicsGenerator;
+        private readonly IBlockGraphicsGenerator _graphicsGenerator;
 
         public BlockButton(IBlockGraphicsGenerator graphicsGenerator)
         {
-            this.graphicsGenerator = graphicsGenerator ?? new BlockGraphicsGenerator();
+            this._graphicsGenerator = graphicsGenerator ?? new BlockGraphicsGenerator();
         }
 
-        public void Initialize(Block block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
+        public void Initialize(IBlock block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
             StyleSheet selectedStyleSheet)
         {
             Validate(block, blockTemplate, baseStyleSheet, selectedStyleSheet);
@@ -49,7 +49,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void Validate(Block block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
+        private void Validate(IBlock block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
             StyleSheet selectedStyleSheet)
         {
             if (block == null)
@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private void InitializeInternal(Block block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
+        private void InitializeInternal(IBlock block, VisualTreeAsset blockTemplate, StyleSheet baseStyleSheet,
             StyleSheet selectedStyleSheet, bool enableSubscriptions)
         {
             _block = block;
@@ -96,12 +96,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             }
         }
 
-        private Block _block;
+        private IBlock _block;
         private VisualElement _templateInstance;
         private Button _clickable;
         private UitkLabel _nameLabel;
         private UitkLabel _eventHandlerLabel;
-        private bool sizeRefreshQueued;
+        private bool _sizeRefreshQueued;
 
         private void Validate(Button clickable, UitkLabel nameLabel, UitkLabel eventHandlerLabel)
         {
@@ -142,7 +142,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return _nameLabel.MeasureTextSize(text, width, widthMode, height, heightMode);
         }
 
-        public void UpdateVisuals(Block block, float zoom)
+        public void UpdateVisuals(IBlock block, float zoom)
         {
             if (block == null)
             {
@@ -175,11 +175,11 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            var handler = _block._EventHandler;
+            IEventHandler handler = _block.EventHandler;
             if (handler == null)
             {
                 _eventHandlerLabel.text = string.Empty;
-                _eventHandlerLabel.EnableInClassList(EventHandlerHiddenClass, true);
+                _eventHandlerLabel.EnableInClassList(_EventHandlerHiddenClass, true);
                 return;
             }
 
@@ -187,7 +187,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             string handlerName = handler.DisplayNameAboveBlock;
 
             _eventHandlerLabel.text = string.Format(_eventHandlerLabelFormat, handlerName);
-            _eventHandlerLabel.EnableInClassList(EventHandlerHiddenClass, string.IsNullOrEmpty(handlerName));
+            _eventHandlerLabel.EnableInClassList(_EventHandlerHiddenClass, string.IsNullOrEmpty(handlerName));
         }
 
         private static readonly string _eventHandlerLabelFormat = "[{0}]";
@@ -208,7 +208,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             _clickable.AddToClassList(SelectedClass);
             _clickable.EnableInClassList(SelectedClass, false);
 
-            GradientDrawer.AttachVerticalGradient(_clickable, GradientTop, GradientBottom);
+            GradientDrawer.AttachVerticalGradient(_clickable, _GradientTop, _GradientBottom);
         }
 
         private void UpdateFont(float zoom)
@@ -250,7 +250,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
             float totalPaddingX = PaddingX * 2f;
             float unclampedWidth = Mathf.Clamp(unrestrictedSize.x + totalPaddingX, MinWidth, MaxWidth);
-            float textWidthConstraint = Mathf.Max(unclampedWidth - totalPaddingX, minTextWidth);
+            float textWidthConstraint = Mathf.Max(unclampedWidth - totalPaddingX, _minTextWidth);
 
             Vector2 wrappedSize = _nameLabel.MeasureTextSize(_nameLabel.text, textWidthConstraint, MeasureMode.AtMost,
                 float.NaN, MeasureMode.Undefined);
@@ -280,12 +280,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         private void QueueSizeRefresh()
         {
-            if (sizeRefreshQueued || _block == null)
+            if (_sizeRefreshQueued || _block == null)
             {
                 return;
             }
 
-            sizeRefreshQueued = true;
+            _sizeRefreshQueued = true;
             schedule.Execute(() =>
             {
                 if (_block == null)
@@ -293,7 +293,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                     return;
                 }
 
-                sizeRefreshQueued = false;
+                _sizeRefreshQueued = false;
                 UpdateSize();
             }).ExecuteLater(1);
         }
@@ -333,7 +333,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 return;
             }
 
-            BlockGraphics graphics = graphicsGenerator.GenerateFor(_block);
+            BlockGraphics graphics = _graphicsGenerator.GenerateFor(_block);
             Color tint = graphics.tint;
             BackgroundColor = tint;
             TextColor = ChooseTextColor(tint);
@@ -439,15 +439,15 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             _block = null;
         }
 
-        private static string SafeBlockName(Block block)
+        private static string SafeBlockName(IBlock block)
         {
             string result = "New Block";
             if (block != null)
             {
                 result = block.BlockName;
-                if (result.Length > maxBlockNameLength)
+                if (result.Length > _maxBlockNameLength)
                 {
-                    result = result[..maxBlockNameLength];
+                    result = result[.._maxBlockNameLength];
                 }
             }
 

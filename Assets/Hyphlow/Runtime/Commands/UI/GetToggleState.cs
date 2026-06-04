@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,15 +12,17 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI",
                  "Get Toggle State",
                  "Gets the state of a toggle UI object and stores it in a boolean variable.")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class GetToggleState : Command 
     {
         [Tooltip("Target toggle object to get the value from")]
-        [SerializeField] protected Toggle toggle;
+        [SerializeField] [FormerlySerializedAs("toggle")]
+protected Toggle toggle;
 
         [Tooltip("Boolean variable to store the state of the toggle value in.")]
         [VariableProperty(typeof(BooleanVariable))]
-        [SerializeField] protected BooleanVariable toggleState;
+        [SerializeField] [FormerlySerializedAs("toggleState")]
+protected BooleanVariable toggleState;
 
         #region Public members
 
@@ -54,9 +57,9 @@ namespace AtMycelia.Hyphlow
             return toggle.name;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return toggleState == variable || 
+            return ReferenceEquals(toggleState, variable) || 
                 base.HasReference(variable);
         }
 

@@ -8,7 +8,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("PrioritySignals",
                  "Get Priority Count",
                  "Copy the value of the Priority Count to a local IntegerVariable, intended primarily to assist with debugging use of Priority.")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class FungusPriorityCount : Command
     {
         [VariableProperty(typeof(IntegerVariable))]
@@ -30,9 +30,9 @@ namespace AtMycelia.Hyphlow
             return outVar.Key;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return outVar == variable;
+            return ReferenceEquals(outVar, variable);
         }
     }
 }

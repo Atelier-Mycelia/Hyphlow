@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// This is to fix the variable-disappearance issue that can happen when displaying
@@ -34,7 +34,6 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     continue;
                 }
 
-                flowchart.RefreshVariableManagerForEditorReload();
                 EditorUtility.SetDirty(flowchart);
             }
 

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -12,17 +13,20 @@ namespace AtMycelia.Hyphlow
                  "Set Collider", 
                  "Sets all collider (2d or 3d) components on the target objects to be active / inactive")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetCollider : Command
     {       
         [Tooltip("A list of gameobjects containing collider components to be set active / inactive")]
-        [SerializeField] protected List<GameObject> targetObjects = new List<GameObject>();
+        [SerializeField] [FormerlySerializedAs("targetObjects")]
+protected List<GameObject> targetObjects = new List<GameObject>();
 
         [Tooltip("All objects with this tag will have their collider set active / inactive")]
-        [SerializeField] protected string targetTag = "";
+        [SerializeField] [FormerlySerializedAs("targetTag")]
+protected string targetTag = "";
 
         [Tooltip("Set to true to enable the collider components")]
-        [SerializeField] protected BooleanData activeState;
+        [SerializeField] [FormerlySerializedAs("activeState")]
+protected BooleanData activeState;
 
         protected override void RefreshVariableDataCache()
         {
@@ -100,7 +104,7 @@ namespace AtMycelia.Hyphlow
             return propertyName == "targetObjects";
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(activeState.VarRef, variable) || base.HasReference(variable);
         }

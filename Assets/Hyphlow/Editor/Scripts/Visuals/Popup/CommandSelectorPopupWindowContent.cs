@@ -1,0 +1,198 @@
+using UnityEditor;
+using UnityEngine;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+namespace AtMycelia.Hyphlow.EditorExt
+{
+    /// <summary>
+    /// Searchable Popup Window for adding a command to a block
+    /// </summary>
+    public class CommandSelectorPopupWindowContent : BasePopupWindowContent
+    {
+        static List<Type> _commandTypes;
+        static List<Type> CommandTypes
+        {
+            get
+            {
+                if (_commandTypes == null || _commandTypes.Count == 0)
+                    CacheCommandTypes();
+
+                return _commandTypes;
+            }
+        }
+
+        static void CacheCommandTypes()
+        {
+            _commandTypes = EditorExtensions.FindDerivedTypes(typeof(Command)).Where(x => !x.IsAbstract).ToList();
+        }
+
+        [UnityEditor.Callbacks.DidReloadScripts]
+        private static void OnScriptsReloaded()
+        {
+            CacheCommandTypes();
+        }
+
+        static Block curBlock;
+        static protected List<KeyValuePair<System.Type, CommandInfoAttribute>> _filteredAttributes;
+
+        public CommandSelectorPopupWindowContent(string currentHandlerName, int width, int height)
+            : base(currentHandlerName, width, height)
+        {
+        }
+
+        protected override void SelectByOrigIndex(int index)
+        {
+            var commandType = (index >= 0 && index < CommandTypes.Count) ? CommandTypes[index] : null;
+            AddCommandCallback(commandType);
+        }
+
+        protected override void PrepareAllItems()
+        {
+            _filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
+
+            for (int i = 0; i < _filteredAttributes.Count; i++)
+            {
+                var item = _filteredAttributes[i];
+                //force lookup to orig index here to account for commmand lists being filtered by users
+                var obsAttr = item.Key.GetCustomAttribute<System.ObsoleteAttribute>();
+
+                var fliStr = (item.Value.Category.Length > 0 ? item.Value.Category + _CATEGORY_CHAR : "") 
+                    + (obsAttr != null ? HyphlowConstants.UIPrefixForDeprecated_RichText : "")
+                    + item.Value.CommandName;
+                _allItems.Add(new FilteredListItem(CommandTypes.IndexOf(item.Key), fliStr, item.Value.HelpText));
+            }
+        }
+
+        static public void ShowCommandMenu(Rect position, string currentHandlerName, Block block, int width, int height)
+        {
+            curBlock = block;
+
+
+            if (!HyphlowEditorPreferences.useLegacyMenus)
+            {
+                var win = new CommandSelectorPopupWindowContent(currentHandlerName,
+                    width, (int)(height - EditorGUIUtility.singleLineHeight * 3));
+                PopupWindow.Show(position, win);
+            }
+            else
+            {
+                //need to ensure we have filtered data 
+                _filteredAttributes = GetFilteredSupportedCommands(curBlock.GetFlowchart());
+            }
+
+            //old method
+            DoOlderMenu();
+        }
+
+        protected static List<KeyValuePair<Type, CommandInfoAttribute>> GetFilteredSupportedCommands(Flowchart flowchart)
+        {
+            List<KeyValuePair<Type, CommandInfoAttribute>> filteredAttributes = 
+                BlockEditor.GetFilteredCommandInfoAttribute(CommandTypes)
+                .ToList();
+
+            filteredAttributes.Sort(BlockEditor.CompareCommandAttributes);
+
+            FlowchartEditorQol fcQol = flowchart.EditorQol;
+            if (fcQol != null)
+            {
+                var toExclude = fcQol.CommandsToHide;
+                for (int i = 0; i < filteredAttributes.Count; i++)
+                {
+                    var keyPair = filteredAttributes[i];
+                    CommandInfoAttribute cmdInfo = keyPair.Value;
+                    bool shouldExclude = toExclude.Contains(cmdInfo.CommandName) || !cmdInfo.VisibleToUser;
+                    if (shouldExclude)
+                    {
+                        filteredAttributes.RemoveAt(i);
+                        i--;
+                    }
+
+                }
+            }
+
+            return filteredAttributes;
+        }
+        
+
+        static protected void DoOlderMenu()
+        {
+            GenericMenu commandMenu = new GenericMenu();
+
+            // Build menu list
+
+            for (int i = 0; i < _filteredAttributes.Count; i++)
+            {
+                var keyPair = _filteredAttributes[i];
+                GUIContent menuItem;
+                if (keyPair.Value.Category == "")
+                {
+                    menuItem = new GUIContent(keyPair.Value.CommandName);
+                }
+                else
+                {
+                    string text = keyPair.Value.Category + _CATEGORY_CHAR + keyPair.Value.CommandName;
+                    menuItem = new GUIContent(text);
+                }
+
+                commandMenu.AddItem(menuItem, false, AddCommandCallback, keyPair.Key);
+            }
+
+            commandMenu.ShowAsContext();
+        }
+
+        //Used by GenericMenu Delegate
+        static protected void AddCommandCallback(object obj)
+        {
+            Type command = obj as Type;
+            if (command != null)
+            {
+                AddCommandCallback(command);
+            }
+        }
+
+        static protected void AddCommandCallback(Type commandType)
+        {
+            var block = curBlock;
+            if (block == null || commandType == null)
+            {
+                return;
+            }
+
+            var flowchart = block.GetFlowchart();
+
+            // Use index of last selected command in list, or end of list if nothing selected.
+            int index = -1;
+            for (int i = 0; i < flowchart.SelectedCommands.Count; i++)
+            {
+                var command = flowchart.SelectedCommands[i];
+                if (command.CommandIndex + 1 > index)
+                {
+                    index = command.CommandIndex + 1;
+                }
+            }
+            if (index == -1)
+            {
+                index = block.CommandList.Count;
+            }
+
+            var newCommand = Undo.AddComponent(block.gameObject, commandType) as Command;
+            Undo.RecordObject(block, "Set command type");
+            byte insertIndex = (byte)Mathf.Clamp(index, 0, block.Commands.Count);
+            block.Insert(newCommand, insertIndex, true);
+            flowchart.AddSelectedCommand(newCommand);
+
+            // Because this is an async call, we need to force prefab instances to record changes
+            PrefabUtility.RecordPrefabInstancePropertyModifications(block);
+
+            //clear commands just in case there was a selection made prior, 
+            // this way, only one command is selected at the end; the new one.
+            flowchart.ClearSelectedCommands();
+
+            CommandListAdaptor.ScrollToCommandOnDraw = true;
+            flowchart.AddSelectedCommand(newCommand); //select the new command.
+        }
+    }
+}

@@ -1,3 +1,8 @@
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityObj = UnityEngine.Object;
+using LegacyBlock = AtMycelia.Hyphlow.Block;
+
 namespace AtMycelia.Hyphlow
 {
     /// <summary>
@@ -10,14 +15,70 @@ namespace AtMycelia.Hyphlow
     /// that have these also implement IBlockCaller.
     /// </summary>
     [System.Serializable]
-    public struct BlockReference
+    public class BlockReference
     {
-        public Block block;
+        [SerializeField] private byte _itemId = _InvalidId;
+        [SerializeField] private UnityObj _owningSource;
 
-        public readonly void Execute()
+        private static readonly byte _InvalidId = LegacyBlock.InvalidId;
+        public byte ItemId
         {
-            if (block != null)
-                block.StartExecution();
+            get { return _itemId; }
         }
+
+        public IBlockSource BlockOwner
+        {
+            get
+            {
+                RefreshOwner();
+                return _blockOwner;
+            }
+            set
+            {
+                _blockOwner = value;
+                _owningSource = value as UnityObj;
+            }
+        }
+
+        protected virtual void RefreshOwner()
+        {
+            _blockOwner ??= _owningSource as IBlockSource;
+        }
+
+        private IBlockSource _blockOwner;
+
+        public IBlock Block
+        {
+            get
+            {
+                RefreshOwner();
+                if (_itemId == _InvalidId || _blockOwner == null)
+                {
+                    return null;
+                }
+
+                return _blockOwner.GetBlock(_itemId);
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _itemId = _InvalidId;
+                    BlockOwner = null;
+                }
+                else
+                {
+                    _itemId = value.ItemId;
+                    BlockOwner = value.ParentFlowchart;
+                }
+            }
+        }
+
+        public void Refresh()
+        {
+            RefreshOwner();
+        }
+
     }
+
 }

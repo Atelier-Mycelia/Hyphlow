@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System;
 using UnityEngine;
 
@@ -5,11 +6,12 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ControlWithDisplay<TDisplayEnum> : Command
     {
         [Tooltip("Display type")]
-        [SerializeField] protected TDisplayEnum display;
+        [SerializeField] [FormerlySerializedAs("display")]
+protected TDisplayEnum display;
 
         protected virtual bool IsDisplayNone<TEnum>(TEnum enumValue)
         {

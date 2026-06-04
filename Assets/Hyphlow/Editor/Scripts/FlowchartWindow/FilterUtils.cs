@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class FilterUtils
     {
@@ -10,45 +10,55 @@ namespace AtMycelia.Hyphlow.EditorUtils
         /// Returns all Blocks whose name or command content contains the query.
         /// Also sets each Block’s FilterState to Full, Partial, or None.
         /// </summary>
-        public static IList<Block> FilterBlocks(IReadOnlyCollection<Block> allBlocks, string query)
+        public static IList<T> FilterBlocks<T>(IReadOnlyCollection<T> allBlocks, string query) 
+            where T: IBlock
         {
-            var results = new List<Block>();
+            var results = new List<T>();
 
-            // No query ? show everything (reset states to Full)
-            if (string.IsNullOrEmpty(query))
+            bool noQuery = string.IsNullOrEmpty(query);
+            if (noQuery)
             {
+                #region Makes all of them visible
                 foreach (var elem in allBlocks)
                 {
-                    elem.FilterState = Block.FilteredState.Full;
+                    elem.FilteredState = FilteredState.Full;
                     results.Add(elem);
                 }
+                #endregion
                 return results;
             }
 
-            query = query.ToLowerInvariant();
-
+            StringComparison caseInsensitive = StringComparison.OrdinalIgnoreCase;
             foreach (var elem in allBlocks)
             {
-                bool nameMatch = elem.BlockName
-                    .IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
-
-                bool contentMatch = elem.CommandList
-                    .Any(commandEl => commandEl.GetSearchableContent()
-                        .IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0);
-
+                bool nameMatch = elem.BlockName.IndexOf(query, caseInsensitive) >= 0;
                 if (nameMatch)
                 {
-                    elem.FilterState = Block.FilteredState.Full;
+                    elem.FilteredState = FilteredState.Full;
                     results.Add(elem);
+                    continue;
                 }
-                else if (contentMatch)
+
+                bool contentMatch = false;
+                for (int i = 0; i < elem.CommandList.Count; i++)
                 {
-                    elem.FilterState = Block.FilteredState.Partial;
+                    var commandEl = elem.CommandList[i];
+                    var searchableContent = commandEl.GetSearchableContent();
+                    if (searchableContent.IndexOf(query, caseInsensitive) >= 0)
+                    {
+                        contentMatch = true;
+                        break;
+                    }
+                }
+
+                if (contentMatch)
+                {
+                    elem.FilteredState = FilteredState.Partial;
                     results.Add(elem);
                 }
                 else
                 {
-                    elem.FilterState = Block.FilteredState.None;
+                    elem.FilteredState = FilteredState.None;
                 }
             }
 

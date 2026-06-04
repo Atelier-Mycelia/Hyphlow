@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// A registry and instantiator for legacy and muscari types alike.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class VariableTypeRegistry
     {
         private static readonly IList<Type> _legacyTypes = new List<Type>();
@@ -133,8 +133,9 @@ namespace AtMycelia.Hyphlow
 
         public static Type MuscariTypeByName(string typeName)
         {
-            foreach (var muscariType in _muscariableTypes)
+            for (int i = 0; i < _muscariableTypes.Count; i++)
             {
+                Type muscariType = _muscariableTypes[i];
                 if (muscariType.Name == typeName)
                 {
                     return muscariType;

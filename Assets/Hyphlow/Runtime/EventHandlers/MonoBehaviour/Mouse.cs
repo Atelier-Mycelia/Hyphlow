@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -31,6 +32,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the Mouse messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected MouseMessageFlags FireOn = MouseMessageFlags.OnMouseUpAsButton;
 
         private void OnMouseDown()

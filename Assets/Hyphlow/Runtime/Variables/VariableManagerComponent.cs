@@ -16,12 +16,22 @@ namespace AtMycelia.Hyphlow
     [ExecuteInEditMode]
     [MovedFrom(true, "AtMycelia.Hyphlow", 
         "AtMycelia.Amanita.Core")]
-    public class VariableManagerComponent : MonoBehaviour, IReorderableMuscariableSource
+    /// <summary>
+    /// A MonoBehaviour wrapper for the VariableManager class, which allows it to be 
+    /// used as a component on a GameObject. This is useful for things such as 
+    /// Flowcharts, which can delegate their variable-management to another module.
+    /// </summary>
+    public class VariableManagerComponent : MonoBehaviour, IVariableManager, IDisposable, IMuscariableSource
     {
         [SerializeField, HideInInspector] private UnityObj _unityObjOwner;
         [SerializeField, HideInInspector] private VariableManager _variableManager = new VariableManager();
         [SerializeField, HideInInspector] private Flowchart _cachedFlowchart;
 
+        /// <summary>
+        /// The owner of the variables in this manager. Note that this 
+        /// property's setter will update said variables' Owner fields
+        /// based on the value passed.
+        /// </summary>
         public IVariableSource Owner
         {
             get
@@ -105,6 +115,13 @@ namespace AtMycelia.Hyphlow
         private void OnEnable()
         {
             EnsureOwner();
+            #if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                QueueMigrationIfNeeded();
+            }
+            #endif
+
             _variableManager.OnEnable();
         }
 
@@ -120,17 +137,43 @@ namespace AtMycelia.Hyphlow
         }
 
 #if UNITY_EDITOR
-        private static void MigrateAllFlowchartVariables()
+        private static bool _migrationQueued;
+
+        private static bool ShouldSkipEditorWork()
         {
-            if (Application.isPlaying)
+            return EditorApplication.isCompiling ||
+                EditorApplication.isUpdating ||
+                EditorApplication.isPlayingOrWillChangePlaymode;
+        }
+
+        private void QueueMigrationIfNeeded()
+        {
+            if (_migrationQueued || ShouldSkipEditorWork())
             {
-                //Debug.LogWarning("VariableManagerComponent: Cannot migrate while in Play Mode.");
                 return;
             }
 
+            _migrationQueued = true;
+            EditorApplication.delayCall += RunQueuedMigration;
+        }
+
+        private static void RunQueuedMigration()
+        {
+            _migrationQueued = false;
+
+            if (ShouldSkipEditorWork())
+            {
+                return;
+            }
+
+            MigrateAllFlowchartVariables();
+        }
+
+        private static void MigrateAllFlowchartVariables()
+        {
             Flowchart[] flowcharts = FindObjectsByType<Flowchart>(FindObjectsSortMode.None);
             int migratedCount = 0;
-
+            string fcsMigratedFor = "";
             for (int i = 0; i < flowcharts.Length; i++)
             {
                 Flowchart flowchart = flowcharts[i];
@@ -155,12 +198,16 @@ namespace AtMycelia.Hyphlow
                 component.SetGlobalVarsToPublic();
                 if (success)
                 {
+                    fcsMigratedFor += flowchart.name + ", ";
                     migratedCount++;
                 }
             }
+
             if (migratedCount > 0)
             {
-                Debug.Log($"VariableManagerComponent: Migrated variables for {migratedCount} Flowchart(s).");
+                string logMessage = $"VariableManagerComponent: Migrated variables " +
+                    $"for {migratedCount} Flowchart(s): {fcsMigratedFor}";
+                Debug.Log(logMessage);
             }
         }
 
@@ -168,43 +215,52 @@ namespace AtMycelia.Hyphlow
         {
             success = false;
             EnsureOwner();
-            _cachedFlowchart = _unityObjOwner as Flowchart;
-            if (_cachedFlowchart == null)
-            {
-                return;
-            }
+            IList<Variable> legacyVarsToMigrate = GetComponents<Variable>();
 
-            _cachedFlowchart.GetVariableManagerMigrationData(out VariableManager legacyManager,
-                out IList<Muscariable> oldMuscariables,
-                out IList<Variable> legacyVariables);
-
-            List<Muscariable> muscariablesToMigrate = new List<Muscariable>();
-            List<Variable> legacyVarsToMigrate = new List<Variable>();
-
-            if (legacyManager != null)
-            {
-                muscariablesToMigrate.AddRange(legacyManager.Variables.OfType<Muscariable>());
-                legacyVarsToMigrate.AddRange(legacyManager.Variables.OfType<Variable>());
-            }
-
-            if (oldMuscariables != null)
-            {
-                muscariablesToMigrate.AddRange(oldMuscariables);
-            }
-
-            if (legacyVariables != null)
-            {
-                legacyVarsToMigrate.AddRange(legacyVariables);
-            }
-
-            if (muscariablesToMigrate.Count == 0 && legacyVarsToMigrate.Count == 0)
+            if (legacyVarsToMigrate.Count == 0)
             {
                 Debug.Log("VariableManagerComponent: No Flowchart variables found to migrate.");
                 return;
             }
 
-            _variableManager.MigrateLegacyVariables(muscariablesToMigrate, legacyVarsToMigrate);
-            _cachedFlowchart.ClearVariableManagerMigrationData();
+            // In case they are already migrated
+            for (int i = 0; i < legacyVarsToMigrate.Count; i++)
+            {
+                Variable legacyVar = legacyVarsToMigrate[i];
+                _variableManager.RemoveVariable(legacyVar);
+                // ^Since we expect the legacy stuff to get converted
+            }
+            _variableManager.MigrateLegacyVariables(legacyVarsToMigrate);
+
+            ClearFcLocalVarLists();
+            void ClearFcLocalVarLists()
+            {
+                // Doing it by reflection since we don't want to add more bloat to Flowchart
+                // just for this migration, and we don't want to make the fields public either.
+                var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                var flowchartType = typeof(Flowchart);
+                var legacyVariablesField = flowchartType.GetField("_legacyVariables", flags);
+                if (legacyVariablesField != null)
+                {
+                    legacyVariablesField.SetValue(_cachedFlowchart, new List<Variable>());
+                }
+
+                var muscariablesField = flowchartType.GetField("_oldMuscariables", flags);
+                if (muscariablesField != null)
+                {
+                    muscariablesField.SetValue(_cachedFlowchart, new List<Muscariable>());
+                }
+            }
+
+            // We don't want the old variables hanging around anymore at this point;
+            // otherwise, we might re-migrate them on the next editor update and end
+            // up with duplicates. So let's just delete them.
+            for (int i = 0; i < legacyVarsToMigrate.Count; i++)
+            {
+                Variable legacyVar = legacyVarsToMigrate[i];
+                DestroyImmediate(legacyVar);
+            }
+
             _variableManager.Refresh();
             Owner = _cachedFlowchart;
 
@@ -282,10 +338,10 @@ namespace AtMycelia.Hyphlow
             _variableManager.Clear();
         }
 
-        public Muscariable AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
-            VariableScope scope = VariableScope.Private)
+        public Muscariable<TContentType> AddNewVariableOfContentType<TContentType>(string key, TContentType defaultVal = default, 
+            AccessScope scope = AccessScope.Private)
         {
-            return _variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
+            return (Muscariable<TContentType>)_variableManager.AddNewVariableOfContentType(key, defaultVal, scope);
         }
 
         protected virtual void OnValidate()
@@ -295,11 +351,15 @@ namespace AtMycelia.Hyphlow
                 EnsureOwner();
             }
 
-            EditorApplication.delayCall += () =>
+#if UNITY_EDITOR
+            if (ShouldSkipEditorWork())
             {
-                MigrateAllFlowchartVariables();
-                SetGlobalVarsToPublic();
-            }; 
+                return;
+            }
+
+            QueueMigrationIfNeeded();
+            SetGlobalVarsToPublic();
+#endif
         }
 
         void SetGlobalVarsToPublic()
@@ -310,9 +370,10 @@ namespace AtMycelia.Hyphlow
             var vManager = _variableManager;
 
             var globalVars = vManager.Variables.Where(VarIsGlobal).ToList();//
-            foreach (var globalVar in globalVars)
+            for (int i = 0; i < globalVars.Count; i++)
             {
-                globalVar.Scope = VariableScope.Public;
+                var globalVar = globalVars[i];
+                globalVar.Scope = AccessScope.Public;
             }
         }
 
@@ -326,10 +387,32 @@ namespace AtMycelia.Hyphlow
                 Debug.LogError(errorMessage);
                 return false;
             }
-            bool result = var.Scope == VariableScope.Global;
+            bool result = var.Scope == AccessScope.Global;
             return result;
         }
 #endif
+
+        public void Dispose()
+        {
+            _unityObjOwner = null;
+            _cachedFlowchart = null;
+            _variableManager.Dispose();
+        }
+
+        protected void OnDestroy()
+        {
+            Dispose();
+        }
+
+        public void ResetAllVars()
+        {
+            _variableManager.ResetAllVars();
+        }
+
+        Muscariable IMuscariableSource.AddNewVariableOfContentType<TContentType>(string k, TContentType defaultVal, AccessScope scope)
+        {
+            return ((IMuscariableSource)_variableManager).AddNewVariableOfContentType(k, defaultVal, scope);
+        }
     }
 
 }

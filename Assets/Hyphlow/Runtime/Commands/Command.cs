@@ -16,18 +16,46 @@ namespace AtMycelia.Hyphlow
     /// Base class for Commands. Commands can be added to Blocks to create an execution sequence.
     /// </summary>
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class Command : MonoBehaviour, IVariableReference, IRefreshable, IOnPreCutHandler,
-        ISerializationCallbackReceiver, IBackwardsCompatibilityApplier
+        ISerializationCallbackReceiver, IBackwardsCompatibilityApplier, ICommand
     {
         [FormerlySerializedAs("commandId")]
+        [FormerlySerializedAs("itemId")]
         [HideInInspector]
-        [SerializeField] protected ushort itemId = 0;
+        [SerializeField] protected byte _itemId = 0;
 
         [HideInInspector]
-        [SerializeField] protected int indentLevel;
+        [FormerlySerializedAs("indentLevel")]
+        [SerializeField] protected int _indentLevel;
 
-        protected string errorMessage = "";
+        protected string _errorMessage = "";
+
+        public virtual bool SkipExecution => Enabled == false;
+
+        public virtual bool Enabled
+        {
+            get { return enabled; }
+            set { enabled = value; }
+        }
+        public virtual string Name
+        {
+            get
+            {
+                string typeName = GetType().Name;
+                if (typeName.EndsWith("Command"))
+                {
+                    typeName = typeName.Substring(0, typeName.Length - "Command".Length);
+                }
+                return typeName;
+            }
+            set
+            {
+                string errorMessage = $"Command name is derived from the class name and " +
+                    $"cannot be set directly. Attempted to set name to '{value}'.";
+                Debug.LogError(errorMessage, this);
+            }
+        }
 
         /// <summary>
         /// This is for Commands that have too much polymorphic state for Unity's serializedProperty system to 
@@ -44,6 +72,11 @@ namespace AtMycelia.Hyphlow
         /// by a save system.
         /// </summary>
         public virtual bool ReexecutableOnLoad => true;
+
+        protected virtual void Awake()
+        {
+             // No-op for now
+        }
 
         protected virtual void OnEnable()
         {
@@ -86,14 +119,14 @@ namespace AtMycelia.Hyphlow
             }
 #if UNITY_EDITOR
             // We only want to do this in the editor, since at runtime, we expect the
-            // VariableDatas to already be populated and don't want to risk overwriting any data.
-            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            FieldInfo[] fields = GetType().GetFields(flags);
+            // VariableDatas to already be populated and don't want to risk overwriting anything.
+            FieldInfo[] fields = GetType().GetFields(_editorBindingFlags);
             for (int i = 0; i < fields.Length; i++)
             {
                 FieldInfo field = fields[i];
-                System.Type fieldType = field.FieldType;
-                if (!typeof(IVariableData).IsAssignableFrom(fieldType))
+                Type fieldType = field.FieldType;
+                bool isVarDataField = _iVariableDataType.IsAssignableFrom(fieldType);
+                if (!isVarDataField)
                 {
                     continue;
                 }
@@ -103,19 +136,26 @@ namespace AtMycelia.Hyphlow
                     continue;
                 }
 
-                if (field.GetValue(this) != null)
+                bool fieldAlreadyValid = field.GetValue(this) != null;
+                if (fieldAlreadyValid)
                 {
                     continue;
                 }
 
-                object created = Activator.CreateInstance(fieldType);
-                if (created != null)
+                object newVarData = Activator.CreateInstance(fieldType);
+                if (newVarData != null)
                 {
-                    field.SetValue(this, created);
+                    field.SetValue(this, newVarData);
                 }
             }
 #endif
         }
+
+#if UNITY_EDITOR
+        private static readonly BindingFlags _editorBindingFlags = BindingFlags.Instance | BindingFlags.Public 
+            | BindingFlags.NonPublic;
+        private static readonly Type _iVariableDataType = typeof(IVariableData);
+#endif
 
         /// <summary>
         /// Helps keep VariableDatas stable during the editor and runtime.
@@ -164,25 +204,20 @@ namespace AtMycelia.Hyphlow
 
         #region Editor caches
 #if UNITY_EDITOR
-        //
-        protected IList<IVariable> referencedVariables = new List<IVariable>();
-
-        //used by var list adapter to highlight variables 
-        public bool IsVariableReferenced(IVariable variable)
-        {
-            return referencedVariables.Contains(variable) || HasReference(variable);
-        }
+        
+        protected IList<IVariable> _referencedVariables = new List<IVariable>();
 
         /// <summary>
-        /// Called by OnValidate
+        /// Called by OnValidate.
         /// 
-        /// Child classes to specialise to add variable references to referencedVariables, either directly or
-        /// via the use of Flowchart.DetermineSubstituteVariables
+        /// Child classes to specialise to add variable references to referencedVariables, 
+        /// either directly or via the use of an IStringVarSubstitutor to parse strings
+        /// for variable references.
         /// </summary>
         protected virtual void RefreshVariableCache()
         {
             // Not sure why, but sometimes, this gets set to null
-            referencedVariables?.Clear();
+            _referencedVariables?.Clear();
         }
 
 #endif
@@ -193,46 +228,68 @@ namespace AtMycelia.Hyphlow
         /// Unique identifier for this command.
         /// Unique for this Flowchart.
         /// </summary>
-        public virtual ushort ItemId { get { return itemId; } set { itemId = value; } }
+        public virtual byte ItemId { get { return _itemId; } set { _itemId = value; } }
 
         /// <summary>
-        /// Error message to display in the command inspector.
+        /// Error message to display in the Command inspector.
         /// </summary>
-        public virtual string ErrorMessage { get { return errorMessage; } }
+        public virtual string ErrorMessage { get { return _errorMessage; } }
 
         /// <summary>
-        /// Indent depth of the current commands.
+        /// Indent depth of the current Commands.
         /// Commands are indented inside If, While, etc. sections.
         /// </summary>
-        public virtual int IndentLevel { get { return indentLevel; } set { indentLevel = value; } }
+        public virtual int IndentLevel { get { return _indentLevel; } set { _indentLevel = value; } }
 
         /// <summary>
-        /// Index of the command in the parent block's command list.
+        /// Index of the command in the parent Block's Command list.
         /// </summary>
         public virtual byte CommandIndex { get; set; }
 
         /// <summary>
-        /// Set to true by the parent block while the command is executing.
+        /// Set to true by the parent Block while the Command is executing.
         /// </summary>
-        public virtual bool IsExecuting { get; set; }
+        public virtual bool IsExecuting
+        {
+            get { return _isExecuting; }
+            set
+            {
+                if (_isExecuting == value)
+                {
+                    return;
+                }
+                _isExecuting = value;
+                if (!_isExecuting)
+                {
+                    OnStopExecuting();
+                }
+            }
+        }
+
+        private bool _isExecuting;
 
         /// <summary>
-        /// Timer used to control appearance of executing icon in inspector.
+        /// Timer used to control appearance of execution icon in inspector.
         /// </summary>
-        public virtual float ExecutingIconTimer { get; set; }
+        public virtual float ExecutionIconTimer { get; set; }
 
         /// <summary>
-        /// Reference to the Block object that this command belongs to.
-        /// This reference is only populated at runtime and in the editor when the 
-        /// block is selected.
+        /// Reference to the Block object that this Command belongs to.
+        /// This reference is only populated at runtime and in the 
+        /// editor when the block is selected.
         /// </summary>
-        public virtual Block ParentBlock { get; set; }
+        public virtual IBlock ParentBlock { get; set; }
 
         /// <summary>
         /// Returns the Flowchart that this command belongs to.
         /// </summary>
         public virtual Flowchart GetFlowchart()
         {
+            if (ParentBlock != null)
+            {
+                return ParentBlock.ParentFlowchart;
+            }
+
             var flowchart = GetComponent<Flowchart>();
             if (flowchart == null &&
                 transform.parent != null)
@@ -255,39 +312,26 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void Continue()
         {
-            // This is a noop if the Block has already been stopped
+            // This is a no-op if the Block has already been stopped
             if (IsExecuting)
             {
                 Continue(CommandIndex + 1);
             }
         }
 
-        public Action<Command> StartedContinue = delegate { };
+        public event Action<ICommand> StartedContinue = delegate { };
 
         /// <summary>
         /// End execution of this command and continue execution at a specific command index.
         /// </summary>
-        /// <param name="nextCommandIndex">Next command index.</param>
         public virtual void Continue(int nextCommandIndex)
         {
             OnExit();
             if (ParentBlock != null)
             {
-                ParentBlock.JumpToCommandIndex = nextCommandIndex;
+                ParentBlock.NextExecCmdIndex = nextCommandIndex;
             }
             StartedContinue(this);
-        }
-
-        /// <summary>
-        /// Stops the parent Block executing.
-        /// </summary>
-        public virtual void StopParentBlock()
-        {
-            OnExit();
-            if (ParentBlock != null)
-            {
-                ParentBlock.Stop();
-            }
         }
 
         /// <summary>
@@ -302,13 +346,13 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Called when the new command is added to a block in the editor.
         /// </summary>
-        public virtual void OnCommandAdded(Block parentBlock)
+        public virtual void OnCommandAdded(IBlock parentBlock)
         {}
 
         /// <summary>
         /// Called when the command is deleted from a block in the editor.
         /// </summary>
-        public virtual void OnCommandRemoved(Block parentBlock)
+        public virtual void OnCommandRemoved(IBlock parentBlock)
         {}
 
         /// <summary>
@@ -316,20 +360,22 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual void OnEnter()
         {
-            Entered(this);
+            ExecStarted(this);
+            CommandSignals.ExecStarted(this);
         }
 
-        public Action<Command> Entered = delegate { };
+        public event Action<ICommand> ExecStarted = delegate { };
 
         /// <summary>
         /// Called when this command ends execution.
         /// </summary>
         public virtual void OnExit()
         {
-            Exited(this);
+            ExecEnded(this);
+            CommandSignals.ExecEnded(this);
         }
 
-        public Action<Command> Exited = delegate { };
+        public event Action<ICommand> ExecEnded = delegate { };
 
         /// <summary>
         /// Called when this command is reset. This happens when the Reset command is used.
@@ -340,29 +386,23 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Populates a list with the Blocks that this command references.
         /// </summary>
-        public virtual void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public virtual void GetConnectedBlocks(ref IList<IBlock> toPopulate)
         {}
 
-        /// <summary>
-        /// Returns true if this command references the variable.
-        /// Used to highlight variables in the variable list when a command is selected.
-        /// </summary>
-        public virtual bool HasReference(Variable variable)
+        public virtual string LocationIdentifier
         {
-            return false;
-        }
-
-        public virtual string GetLocationIdentifier()
-        {
-            if (ParentBlock == null)
+            get
             {
-                return "";
-            }
-            string fcName = ParentBlock.GetFlowchart().name;
-            string thisTypeName = this.GetType().Name;
-            string indexStr = CommandIndex.ToString();
+                if (ParentBlock == null)
+                {
+                    return "";
+                }
+                string fcName = ParentBlock.GetFlowchart().name;
+                string thisTypeName = this.GetType().Name;
+                string indexStr = CommandIndex.ToString();
 
-            return fcName + ":" + ParentBlock.BlockName + "." + thisTypeName + "#" + indexStr; 
+                return fcName + ":" + ParentBlock.BlockName + "." + thisTypeName + "#" + indexStr;
+            }
         }
 
         /// <summary>
@@ -372,6 +412,7 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         protected virtual void OnValidate()
         {
+            hideFlags = HideFlags.HideInInspector;
             RefreshForVarDataStability();
             RefreshVariableCache();
 #if UNITY_EDITOR
@@ -449,7 +490,11 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public bool HasReference(IVariable variable)
+        /// <summary>
+        /// Returns true if this command references the variable.
+        /// Used to highlight variables in the variable list when a command is selected.
+        /// </summary>
+        public virtual bool HasReference(IVariable variable)
         {
             return false;
         }
@@ -501,8 +546,42 @@ namespace AtMycelia.Hyphlow
             
         }
 
+        // Subclasses might need this to do tweens, so we provide a default one here.
+        // Subclasses can override this if they want to use a different tween adapter.
         protected virtual DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
 
+        object IHasItemId.ItemId
+        {
+            get => ItemId;
+            set
+            {
+                if (value is byte byteVal)
+                {
+                    ItemId = byteVal;
+                }
+                else
+                {
+                    string errorMessage = $"ItemId must be of type ushort, but was {value?.GetType().Name}.";
+                    throw new InvalidCastException(errorMessage);
+                }
+            }
+        }
 
+        protected static IStringVarSubstitutor StringVarSubstituter => HyphlowConstants.DefaultStringVarSubstitutor;
+
+        public override string ToString()
+        {
+            string result = $"{GetType().Name} Command (ItemId: {ItemId})";
+            if (ParentBlock != null)
+            {
+                result += $" on Block {ParentBlock.BlockName}";
+            }
+
+            if (ParentBlock.ParentFlowchart != null)
+            {
+                result += $", Flowchart: {ParentBlock.ParentFlowchart.name}";
+            }
+            return result;
+        }
     }
 }

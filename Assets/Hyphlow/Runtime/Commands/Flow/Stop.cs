@@ -11,14 +11,15 @@ namespace AtMycelia.Hyphlow
                  "Stop", 
                  "Stop executing the Block that contains this command.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Stop : Command
     {
         #region Public members
 
         public override void OnEnter()
         {
-            StopParentBlock();
+            OnExit();
+            ParentBlock.Stop();
         }
 
         public override Color GetButtonColor()

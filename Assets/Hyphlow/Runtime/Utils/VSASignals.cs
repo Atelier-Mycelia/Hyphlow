@@ -4,7 +4,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class VsaSignals
     {
         /// <summary>
@@ -23,5 +23,11 @@ namespace AtMycelia.Hyphlow
 
         public static Action<VariableSourceAsset> VsaEnabled = delegate { };
         public static Action<VariableSourceAsset> VsaDisabled = delegate { };
+
+        /// <summary>
+        /// Should trigger when a VSA is destroyed. The first string param is the name
+        /// of the VSA, and the second is its Uid.
+        /// </summary>
+        public static Action <string, string> VsaDestroyed = delegate { };
     }
 }

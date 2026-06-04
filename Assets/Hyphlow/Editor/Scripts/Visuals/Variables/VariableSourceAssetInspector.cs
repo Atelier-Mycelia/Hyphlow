@@ -1,11 +1,12 @@
 using AtMycelia.EditorUtils;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomEditor(typeof(VariableSourceAsset))]
     public class VariableSourceAssetInspector : Editor
@@ -23,25 +24,26 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             _manager = new VariableRowManager();
             var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
-            handlerPool ??= new RowVisualHandlerPool(_resolver, visualHandlerLookup);
-            rowPool ??= new VariableRowPool();
-            uxml = Resources.Load<VisualTreeAsset>(pathToUxml);
+            _handlerPool ??= new RowVisualHandlerPool(_resolver, visualHandlerLookup);
+            _rowPool ??= new VariableRowPool();
+            _uxml = Resources.Load<VisualTreeAsset>(_pathToUxml);
 
-            rootElement = new VisualElement();
+            _rootElement = new VisualElement();
 
-            inspectorRoot = uxml.CloneTree();
-            rootElement.Add(inspectorRoot);
-            BuildManager(inspectorRoot);
-            AddGlobalSourceButtons(inspectorRoot);
+            _inspectorRoot = _uxml.CloneTree();
+            _rootElement.Add(_inspectorRoot);
+            BuildManager(_inspectorRoot);
+            AddGlobalSourceButtons(_inspectorRoot);
+            ShowUidLabel(_inspectorRoot);
         }
 
         protected VariableRowManager _manager;
-        protected RowVisualHandlerPool handlerPool;
-        protected VariableRowPool rowPool;
-        protected VisualTreeAsset uxml;
-        protected readonly string pathToUxml = "Editor/UIToolkitTemplates/VariableDisplayEditor";
-        protected VisualElement rootElement;
-        protected TemplateContainer inspectorRoot;
+        protected RowVisualHandlerPool _handlerPool;
+        protected VariableRowPool _rowPool;
+        protected VisualTreeAsset _uxml;
+        protected static readonly string _pathToUxml = "Editor/UIToolkitTemplates/VariableDisplayEditor";
+        protected VisualElement _rootElement;
+        protected TemplateContainer _inspectorRoot;
         protected Button _registerGlobalButton;
         protected Button _unregisterGlobalButton;
         protected DropdownField _registryConfigDropdown;
@@ -61,8 +63,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
             void PrepFactory()
             {
                 _factoryInitArgs.Holder = holder;
-                _factoryInitArgs.HandlerPool = handlerPool;
-                _factoryInitArgs.RowPool = rowPool;
+                _factoryInitArgs.HandlerPool = _handlerPool;
+                _factoryInitArgs.RowPool = _rowPool;
                 _rowFactory.Init(_factoryInitArgs);
             }
 
@@ -156,15 +158,15 @@ namespace AtMycelia.Hyphlow.EditorUtils
         // other asset
         public override VisualElement CreateInspectorGUI()
         {
-            return rootElement;
+            return _rootElement;
         }
 
         protected virtual void OnDisable()
         {
             _manager?.Dispose();
             _manager = null;
-            inspectorRoot = null;
-            rootElement = null;
+            _inspectorRoot = null;
+            _rootElement = null;
             ToggleSubs(false);
         }
 
@@ -340,7 +342,17 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
         private static string GetRegistryConfigLabel(VariableRegistryConfig config, int index)
         {
-            return config != null ? config.name : $"Missing Config {index + 1}";
+            return config != null ? 
+                config.name : 
+                $"Missing Config {index + 1}";
+        }
+
+        private void ShowUidLabel(VisualElement inspectorRoot)
+        {
+            UitkLabel uidLabel = new UitkLabel();
+            VariableSourceAsset variableSource = (VariableSourceAsset)target;
+            uidLabel.text = $"Unique ID: {variableSource.UniqueId}";
+            inspectorRoot.Add(uidLabel);
         }
     }
 }

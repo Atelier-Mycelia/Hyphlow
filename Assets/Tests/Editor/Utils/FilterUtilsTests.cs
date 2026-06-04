@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
-using AtMycelia.Hyphlow.EditorUtils;
 using AtMycelia.Hyphlow;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.FCWindowOperations
 {
@@ -25,7 +25,6 @@ namespace VScriptingTests.FCWindowOperations
     class DummyBlock : Block
     {
         public override string BlockName { get; set; }
-        public override List<Command> CommandList { get; } = new List<Command>();
 
     }
 
@@ -63,8 +62,8 @@ namespace VScriptingTests.FCWindowOperations
             var result = FilterUtils.FilterBlocks(blocks, "");
 
             Assert.AreEqual(2, result.Count);
-            Assert.AreEqual(Block.FilteredState.Full, blocks[0].FilterState);
-            Assert.AreEqual(Block.FilteredState.Full, blocks[1].FilterState);
+            Assert.AreEqual(FilteredState.Full, blocks[0].FilterState);
+            Assert.AreEqual(FilteredState.Full, blocks[1].FilterState);
         }
 
         [Test]
@@ -83,8 +82,8 @@ namespace VScriptingTests.FCWindowOperations
             Assert.AreEqual(1, result.Count);
             bool containsIt = result.Contains(firstBlock);
             Assert.IsTrue(containsIt);
-            Assert.AreEqual(Block.FilteredState.Full, firstBlock.FilterState);
-            Assert.AreEqual(Block.FilteredState.None, secondBlock.FilterState);
+            Assert.AreEqual(FilteredState.Full, firstBlock.FilterState);
+            Assert.AreEqual(FilteredState.None, secondBlock.FilterState);
         }
 
         [Test]
@@ -98,15 +97,15 @@ namespace VScriptingTests.FCWindowOperations
             var dummyCommand = holder.AddComponent<DummyCommand>();
             dummyCommand.Init("containsFOOinside");
 
-            firstBlock.CommandList.Add(dummyCommand);
+            firstBlock.Add(dummyCommand, triggerSignals: false);
             var bothBlocks = new Block[] { firstBlock, secondBlock };
             var result = FilterUtils.FilterBlocks(bothBlocks, "foo");
 
             Assert.AreEqual(1, result.Count);
             bool containsIt = result.Contains(firstBlock);
             Assert.IsTrue(containsIt);
-            Assert.AreEqual(Block.FilteredState.Partial, firstBlock.FilterState);
-            Assert.AreEqual(Block.FilteredState.None, secondBlock.FilterState);
+            Assert.AreEqual(FilteredState.Partial, firstBlock.FilterState);
+            Assert.AreEqual(FilteredState.None, secondBlock.FilterState);
         }
 
         [Test]
@@ -117,30 +116,31 @@ namespace VScriptingTests.FCWindowOperations
             var partial = holder.AddComponent<DummyBlock>();
             partial.BlockName = "NoName";
             var none = holder.AddComponent<DummyBlock>();
-            none.BlockName ="NothingHere";
+            none.BlockName = "NothingHere";
 
             var blocks = new Block[] { full, partial, none };
 
             var commandForFull = holder.AddComponent<DummyCommand>();
             commandForFull.Init("ignore");
 
-            full.CommandList.Add(commandForFull);
+            full.Add(commandForFull, triggerSignals: false);
 
             var commandForPartial = holder.AddComponent<DummyCommand>();
             commandForPartial.Init("lookForTHIS");
-            partial.CommandList.Add(commandForPartial);
+            partial.Add(commandForPartial, triggerSignals: false);
 
             var result = FilterUtils.FilterBlocks(blocks, "this");
 
-            Assert.AreEqual(1, result.Count);
+            string errorMessage = $"Expected 1 match for 'this', but got {result.Count}.";
+            Assert.AreEqual(1, result.Count, errorMessage);
             bool containsIt = result.Contains(partial);
             Assert.IsTrue(containsIt, "The result does not contain the partial block alone.");
             // full name match because "this" in "MatchName"? No → full only if name contains.
-            Assert.AreEqual(Block.FilteredState.None, full.CommandList.Count > 0
+            Assert.AreEqual(FilteredState.None, full.CommandList.Count > 0
                 ? full.FilterState // stays none because no content match
                 : full.FilterState);
-            Assert.AreEqual(Block.FilteredState.Partial, partial.FilterState);
-            Assert.AreEqual(Block.FilteredState.None, none.FilterState);
+            Assert.AreEqual(FilteredState.Partial, partial.FilterState);
+            Assert.AreEqual(FilteredState.None, none.FilterState);
         }
 
         [Test]
@@ -158,8 +158,8 @@ namespace VScriptingTests.FCWindowOperations
             var result = FilterUtils.FilterBlocks(blocks, "Z");
 
             Assert.IsEmpty(result);
-            Assert.AreEqual(Block.FilteredState.None, blocks[0].FilterState);
-            Assert.AreEqual(Block.FilteredState.None, blocks[1].FilterState);
+            Assert.AreEqual(FilteredState.None, blocks[0].FilterState);
+            Assert.AreEqual(FilteredState.None, blocks[1].FilterState);
         }
     }
 }

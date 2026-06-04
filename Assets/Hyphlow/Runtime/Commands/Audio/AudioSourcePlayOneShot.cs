@@ -68,7 +68,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Audio;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             bool result = ReferenceEquals(_audioSource.VarRef, variable) ||
                 ReferenceEquals(_audioClip.VarRef, variable) ||

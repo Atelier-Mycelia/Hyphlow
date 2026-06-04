@@ -2,8 +2,11 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using System.Collections.Generic;
 using System;
-
 using UnityEngine.Scripting.APIUpdating;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace AtMycelia.Hyphlow
 {
@@ -30,21 +33,25 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Execute another block in the same Flowchart as the command, or in a different Flowchart.
     /// </summary>
-    [CommandInfo("Flow", 
-                 "Call", 
+    [CommandInfo("Flow",
+                 "Call",
                  "Execute another block in the same Flowchart as the command, or in a different Flowchart.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
-    public class Call : Command, IBlockCaller
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    public class Call : Command, IBlockCaller, ISerializationCallbackReceiver
     {
+        [Tooltip("Block to start executing.")]
+        [SerializeField] protected BlockReference _targetBlockReference = new BlockReference();
+
+        // Legacy serialized fields retained for backwards compatibility migration.
         [Tooltip("Flowchart which contains the block to execute. If none is specified then the current Flowchart is used.")]
         [FormerlySerializedAs("targetFlowchart")]
-        [SerializeField] protected Flowchart _targetFlowchart;
+        [SerializeField] [HideInInspector] protected Flowchart _targetFlowchart;
 
         [FormerlySerializedAs("targetSequence")]
         [Tooltip("Block to start executing")]
         [FormerlySerializedAs("targetBlock")]
-        [SerializeField] protected Block _targetBlock;
+        [SerializeField] [HideInInspector] protected Block _targetBlock;
 
         [Tooltip("Label to start execution at. Takes priority over startIndex.")]
         [FormerlySerializedAs("startLabel")]
@@ -59,10 +66,10 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("callMode")]
         [SerializeField] protected CallMode _callMode = CallMode.WaitUntilFinished;
 
-        [SerializeField] [HideInInspector] [FormerlySerializedAs("targetBlockId")] 
-        private ushort _targetBlockId;
-        public ushort TargetBlockId => _targetBlockId;
-
+        protected override void Awake()
+        {
+            base.Awake();
+        }
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
@@ -70,26 +77,88 @@ namespace AtMycelia.Hyphlow
             _variableDataCache.Add(_startIndex);
         }
 
-        public override void OnPreCut()
+        private void EnsureTargetBlockReference()
         {
-            base.OnPreCut();
-            RegisterTargetBlockId();
+            _targetBlockReference ??= new BlockReference();
         }
 
-        private void RegisterTargetBlockId()
+        /// <summary>
+        /// Migrates legacy _targetFlowchart + _targetBlock into _targetBlockReference.
+        /// If _targetFlowchart is null and _targetBlock is not null, the owning Flowchart
+        /// is assumed to be this command's Flowchart as the intended target owner.
+        /// </summary>
+        private bool MigrateLegacyFieldsToBlockRef()
         {
-            _targetBlockId = _targetBlock != null ? 
-                _targetBlock.ItemId : 
-                (ushort)0;
+            EnsureTargetBlockReference();
+
+            bool hasLegacyData = _targetBlock != null || _targetFlowchart != null;
+            if (!hasLegacyData)
+            {
+                return false; // Important: do not overwrite existing block reference data.
+            }
+
+            bool migrated = false;
+
+            if (_targetBlock != null)
+            {
+                _targetBlockReference.Block = _targetBlock;
+
+                Flowchart resolvedOwner = _targetFlowchart ??
+                    _targetBlock.ParentFlowchart ??
+                    _targetBlock.GetFlowchart();
+
+                if (resolvedOwner != null)
+                {
+                    _targetBlockReference.BlockOwner = resolvedOwner;
+                }
+
+                migrated = _targetBlockReference.ItemId != Block.InvalidId &&
+                    _targetBlockReference.BlockOwner != null;
+            }
+            else if (_targetFlowchart != null)
+            {
+                _targetBlockReference.Block = null;
+                _targetBlockReference.BlockOwner = _targetFlowchart;
+                migrated = true;
+            }
+
+            if (!migrated)
+            {
+                return false; // Keep legacy fields so we can retry later.
+            }
+
+            _targetBlock = null;
+            _targetFlowchart = null;
+
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this != null)
+                {
+                    EditorUtility.SetDirty(this);
+                }
+            };
+#endif
+
+            return true;
         }
-        #region Public members
 
         public override void OnEnter()
         {
-            if (_targetBlock != null)
+            if (_callMode == CallMode.Null)
+            {
+                string errorMessage = "CallMode is set to Null. This is not a valid mode for production. " +
+                    "Skipping Call Command execution.";
+                Debug.LogWarning(errorMessage, this);
+                Continue();
+                return;
+            }
+
+            IBlock targetBlock = _targetBlockReference.Block;
+            if (targetBlock != null)
             {
                 // Check if calling your own parent block
-                bool callingOwnParent = ParentBlock != null && _targetBlock.Equals(ParentBlock);
+                bool callingOwnParent = ParentBlock != null && targetBlock.Equals(ParentBlock);
                 if (callingOwnParent)
                 {
                     // Just ignore the callmode in this case, and jump to first command in list
@@ -97,18 +166,26 @@ namespace AtMycelia.Hyphlow
                     return;
                 }
 
-                if (_targetBlock.IsExecuting())
+                if (targetBlock.IsExecuting)
                 {
-                    Debug.LogWarning(_targetBlock.BlockName + " cannot be called/executed, it is already running.");
-                    Continue();
-                    return;
+                    if (_callMode == CallMode.StopThenCall)
+                    {
+                        targetBlock.Stop();
+                    }
+                    else
+                    {
+                        string logMessage = $"{targetBlock.BlockName} is already running.";
+                        Debug.LogWarning(logMessage, this);
+                        Continue();
+                        return;
+                    }
                 }
 
-                // Callback action for Wait Until Finished mode
                 Action onComplete = null;
                 if (_callMode == CallMode.WaitUntilFinished)
                 {
-                    onComplete = delegate {
+                    onComplete = delegate
+                    {
                         Continue();
                     };
                 }
@@ -117,36 +194,30 @@ namespace AtMycelia.Hyphlow
                 int index = _startIndex;
                 if (_startLabel.Value != "")
                 {
-                    int labelIndex = _targetBlock.GetLabelIndex(_startLabel.Value);
+                    int labelIndex = targetBlock.GetLabelIndex(_startLabel.Value);
                     if (labelIndex != -1)
                     {
                         index = labelIndex;
                     }
                 }
 
-                if (_targetFlowchart == null ||
-                    _targetFlowchart.Equals(GetFlowchart()))
+                Flowchart targetFlowchart = _targetBlockReference.BlockOwner as Flowchart;
+                if (targetFlowchart != null)
                 {
                     if (_callMode == CallMode.StopThenCall)
                     {
-                        StopParentBlock();
+                        OnExit();
+                        ParentBlock.Stop();
                     }
-                    StartCoroutine(_targetBlock.Execute(index, onComplete));
-                }
-                else
-                {
-                    if (_callMode == CallMode.StopThenCall)
-                    {
-                        StopParentBlock();
-                    }
-                    // Execute block in another Flowchart
-                    _targetFlowchart.ExecuteBlock(_targetBlock, index, onComplete);
+
+                    targetFlowchart.ExecuteBlock(targetBlock, index, onComplete);
                 }
             }
 
-            if (_callMode == CallMode.Stop || _callMode == CallMode.Null)
+            if (_callMode == CallMode.Stop)
             {
-                StopParentBlock();
+                OnExit();
+                ParentBlock.Stop();
             }
             else if (_callMode == CallMode.Continue)
             {
@@ -154,30 +225,57 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        public override void GetConnectedBlocks(ref List<Block> connectedBlocks)
+        public override void GetConnectedBlocks(ref IList<IBlock> connectedBlocks)
         {
-            if (_targetBlock != null)
+            IBlock targetBlock = _targetBlockReference.Block;
+            if (targetBlock != null)
             {
-                connectedBlocks.Add(_targetBlock);
+                connectedBlocks.Add(targetBlock);
             }       
         }
         
         public override string GetSummary()
         {
-            string summary = "";
-
-            if (_targetBlock == null)
-            {
-                summary = "<None>";
-            }
-            else
-            {
-                summary = _targetBlock.BlockName;
-            }
+            IBlock targetBlock = _targetBlockReference.Block;
+            string summary = GetSummaryFor(targetBlock);
 
             summary += " : " + _callMode.ToString();
 
             return summary;
+        }
+
+        private string GetSummaryFor(IBlock block)
+        {
+            string result;
+            if (block == null)
+            {
+                result = "<None>";
+            }
+            else
+            {
+                string blockName = block.BlockName;
+                if (blockName.Length > 18)
+                {
+                    blockName = blockName.Substring(0, 15) + "...";
+                }
+                string flowchartName = block.ParentFlowchart != null ? 
+                    block.ParentFlowchart.name : 
+                    "No Flowchart";
+                bool belongsToAnotherFlowchart = block.ParentFlowchart != null &&
+                    block.ParentFlowchart != this.ParentBlock.ParentFlowchart;
+                if (!belongsToAnotherFlowchart)
+                {
+                    flowchartName = "this";
+                }
+                
+                if (flowchartName.Length > 18)
+                {
+                    flowchartName = flowchartName.Substring(0, 15) + "...";
+                }
+
+                result = $"{flowchartName}.{blockName}";
+            }
+            return result;
         }
 
         public override Color GetButtonColor()
@@ -185,22 +283,22 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return ReferenceEquals(_startLabel.VarRef, variable) || base.HasReference(variable);
+            return ReferenceEquals(_startLabel.VarRef, variable) ||
+                ReferenceEquals(_startIndex.VarRef, variable) ||
+                base.HasReference(variable);
         }
 
-        public bool MayCallBlock(Block block)
+        public bool MayCallBlock(IBlock block)
         {
-            return block == _targetBlock;
+            return ReferenceEquals(block, _targetBlockReference.Block);
         }
-
-        #endregion
 
         protected override void OnValidate()
         {
             base.OnValidate();
-            RegisterTargetBlockId();
+            //MigrateLegacyFieldsToBlockRef();
         }
 
         public override void ApplyBackwardsCompatibility()
@@ -211,6 +309,8 @@ namespace AtMycelia.Hyphlow
                 _startIndex.LiteralValue = _oldStartIndex;
                 _oldStartIndex = -1;
             }
+
+            MigrateLegacyFieldsToBlockRef();
         }
 
         [FormerlySerializedAs("startIndex")]
@@ -219,10 +319,38 @@ namespace AtMycelia.Hyphlow
         protected override void DelayedOnValidate()
         {
             base.DelayedOnValidate();
+
             if (_callMode == CallMode.Null)
             {
                 _callMode = CallMode.Stop;
             }
+
+            MigrateLegacyFieldsToBlockRef();
+        }
+
+        public override void OnBeforeSerialize()
+        {
+            base.OnBeforeSerialize();
+        }
+
+        public override void OnAfterDeserialize()
+        {
+            base.OnAfterDeserialize();
+            EnsureTargetBlockReference();
+
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null)
+                {
+                    return;
+                }
+
+                MigrateLegacyFieldsToBlockRef();
+            };
+#else
+            MigrateLegacyFieldsToBlockRef();
+#endif
         }
     }
 }

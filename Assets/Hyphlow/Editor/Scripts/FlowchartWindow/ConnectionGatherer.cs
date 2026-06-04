@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
+namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     public interface IBlockRectProvider
     {
-        bool TryGetBlockRect(Block block, out Rect rect);
+        bool TryGetBlockRect(IBlock block, out Rect rect);
     }
 
     /// <summary>
@@ -16,12 +16,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
     {
         private const bool DiagnosticsEnabled = true;
 
-        private List<Block> connectedBlocks = new List<Block>();
-        private readonly IBlockRectProvider rectProvider;
+        private IList<IBlock> _connectedBlocks = new List<IBlock>();
+        private readonly IBlockRectProvider _rectProvider;
 
         public ConnectionGatherer(IBlockRectProvider rectProvider)
         {
-            this.rectProvider = rectProvider;
+            this._rectProvider = rectProvider;
         }
 
         public IList<ConnectionInfo> GatherConnections(DrawBlockContext drawCtx)
@@ -32,7 +32,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             var result = new List<ConnectionInfo>();
             var document = fcContext.Document;
 
-            foreach (Block blockEl in document.AllBlocks)
+            foreach (IBlock blockEl in document.AllBlocks)
             {
                 if (blockEl == null)
                 {
@@ -45,7 +45,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                 var commands = blockEl.CommandList;
                 for (int i = 0; i < commands.Count; i++)
                 {
-                    Command commandEl = commands[i];
+                    ICommand commandEl = commands[i];
                     if (commandEl == null)
                     {
                         continue;
@@ -54,12 +54,12 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
                     bool cmdIsSelected = fc.SelectedCommands.Contains(commandEl);
                     bool shouldHighlight = commandEl.IsExecuting || (blockIsSelected && cmdIsSelected);
 
-                    connectedBlocks.Clear();
-                    commandEl.GetConnectedBlocks(ref connectedBlocks);
+                    _connectedBlocks.Clear();
+                    commandEl.GetConnectedBlocks(ref _connectedBlocks);
 
-                    for (int j = 0; j < connectedBlocks.Count; j++)
+                    for (int j = 0; j < _connectedBlocks.Count; j++)
                     {
-                        Block dest = connectedBlocks[j];
+                        IBlock dest = _connectedBlocks[j];
                         if (dest == null || dest == blockEl || dest.GetFlowchart() != fc)
                         {
                             continue;
@@ -81,9 +81,9 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
             return result;
         }
 
-        private Rect CalculateWindowRect(Block block, Flowchart fc)
+        private Rect CalculateWindowRect(IBlock block, Flowchart fc)
         {
-            if (rectProvider != null && rectProvider.TryGetBlockRect(block, out Rect rect))
+            if (_rectProvider != null && _rectProvider.TryGetBlockRect(block, out Rect rect))
             {
                 return rect;
             }
@@ -122,7 +122,7 @@ namespace AtMycelia.Hyphlow.EditorUtils.FcWindow
 
         public void Dispose()
         {
-            connectedBlocks.Clear();
+            _connectedBlocks.Clear();
         }
     }
 }

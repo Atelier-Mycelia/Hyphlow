@@ -1,6 +1,7 @@
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -11,15 +12,19 @@ namespace AtMycelia.Hyphlow
                  "Comment", 
                  "Use comments to record design notes and reminders about your game.")]
     [AddComponentMenu("")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Comment : Command
     {   
         [Tooltip("Name of Commenter")]
-        [SerializeField] protected string commenterName = "";
+        [FormerlySerializedAs("commenterName")]
+        [SerializeField] protected string _commenterName = "";
 
         [Tooltip("Text to display for this comment")]
+        [FormerlySerializedAs("commentText")]
         [TextArea(2,4)]
-        [SerializeField] protected string commentText = "";
+        [SerializeField] protected string _commentText = "";
+
+        public override bool SkipExecution => true;
 
         #region Public members
 
@@ -30,11 +35,11 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            if (commenterName != "")
+            if (_commenterName != "")
             {
-                return commenterName + ": " + commentText;
+                return _commenterName + ": " + _commentText;
             }
-            return commentText;
+            return _commentText;
         }
 
         public override Color GetButtonColor()

@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                  "Set Text", 
                  "Sets the text property on a UI Text object and/or an Input Field object.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetText : Command
     {
         [Tooltip("Text object to set text on. Can be a UI Text, Text Field or Text Mesh object.")]
@@ -40,7 +40,7 @@ namespace AtMycelia.Hyphlow
         public override void OnEnter()
         {
             var flowchart = GetFlowchart();
-            string newText = flowchart.SubstituteVariables(_text.Value);
+            string newText = StringVarSubstituter.SubstituteVariables(_text.Value, flowchart);
             
             if (_targetTextObject == null)
             {
@@ -93,7 +93,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_text.VarRef, variable) || base.HasReference(variable);
         }
@@ -108,7 +108,7 @@ namespace AtMycelia.Hyphlow
             base.RefreshVariableCache();
 
             var f = GetFlowchart();
-            f.DetermineSubstituteVariables(_text, referencedVariables);
+            StringVarSubstituter.DetermineSubstitutionVariables(_text.Value, f, _referencedVariables);
         }
 #endif
         #endregion Editor caches
@@ -133,7 +133,7 @@ namespace AtMycelia.Hyphlow
         public virtual string GetStringId()
         {
             // String id for Set Text commands is SETTEXT.<Localization Id>.<Command id>
-            return "SETTEXT." + "." + itemId;
+            return "SETTEXT." + "." + _itemId;
         }
 
         #endregion

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Abstract base class for variables.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     [RequireComponent(typeof(Flowchart))]
     [Serializable]
     [ExecuteInEditMode]
@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow
     {
         [SerializeField]
         [FormerlySerializedAs("scope")]
-        protected VariableScope _scope;
+        protected AccessScope _scope;
 
         [SerializeField]
         [FormerlySerializedAs("key")]
@@ -32,7 +32,8 @@ namespace AtMycelia.Hyphlow
 
         [HideInInspector]
         [FormerlySerializedAs("itemID")]
-        [SerializeField] private int oldItemID = 0;
+        [SerializeField] [FormerlySerializedAs("oldItemID")]
+private int oldItemID = 0;
 
         public static readonly byte InvalidID = 0;
 
@@ -59,7 +60,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Visibility scope for the variable.
         /// </summary>
-        public virtual VariableScope Scope { get { return _scope; } set { _scope = value; } }
+        public virtual AccessScope Scope { get { return _scope; } set { _scope = value; } }
 
         /// <summary>
         /// String identifier for the variable.
@@ -166,6 +167,23 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool IsRelationalSupported => false;
 
+        object IHasItemId.ItemId
+        {
+            get => ItemId;
+            set
+            {
+                if (value is byte b)
+                {
+                    ItemId = b;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Cannot assign value of type " +
+                        $"{value?.GetType().Name ?? "null"} to ItemId of type byte.");
+                }
+            }
+        }
+
         protected virtual void OnValidate()
         {
             _owner ??= GetComponent<Flowchart>();
@@ -189,12 +207,13 @@ namespace AtMycelia.Hyphlow
             _owner ??= GetComponent<Flowchart>();
         }
 
+        
     }
 
     /// <summary>
     /// Generic concrete base class for variables.
     /// </summary>
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class VariableBase<T> : Variable, IVariable<T>
     {
         public override Type ContentType => typeof(T);
@@ -328,10 +347,18 @@ namespace AtMycelia.Hyphlow
         
         public override string ToString()
         {
-            if (Value != null)
-                return Value.ToString();
+            string result;
+            if (Value == null)
+            {
+                result = "Null";
+            }
             else
-                return "Null";
+            {
+                result = $"Variable (Key: {_key}, Scope: {_scope}, Value: {Value}";
+                return result;
+            }
+
+            return result;
         }
         
         public override void Init(object startValue)

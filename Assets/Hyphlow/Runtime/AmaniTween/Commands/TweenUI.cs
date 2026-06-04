@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -11,27 +12,28 @@ namespace AtMycelia.Hyphlow
     public abstract class TweenUI : Command 
     {
         [Tooltip("List of objects to be affected by the tween")]
-        [SerializeField] protected List<GameObject> targetObjects = new List<GameObject>();
-
-        //[Tooltip("Type of tween easing to apply")]
-        //[SerializeField] protected LeanTweenType tweenType = LeanTweenType.easeOutQuad;
+        [SerializeField]
+        protected List<GameObjectData> _targetObjects = new List<GameObjectData>();
 
         [Tooltip("Whether to wait until this Command completes before continuing execution")]
-        [SerializeField] protected BooleanData waitUntilFinished = new BooleanData(true);
+        [SerializeField] [FormerlySerializedAs("waitUntilFinished")]
+        protected BooleanData _waitUntilFinished = new BooleanData(true);
         
         [Tooltip("Time for the tween to complete")]
-        [SerializeField] protected FloatData duration = new FloatData(1f);
+        [SerializeField] [FormerlySerializedAs("duration")]
+        protected FloatData _duration = new FloatData(1f);
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             ValidateTweeners();
         }
 
         protected override void RefreshVariableCache()
         {
             base.RefreshVariableCache();
-            _variableDataCache.Add(waitUntilFinished);
-            _variableDataCache.Add(duration);
+            _variableDataCache.Add(_waitUntilFinished);
+            _variableDataCache.Add(_duration);
         }
 
         protected abstract void ValidateTweeners();
@@ -41,9 +43,9 @@ namespace AtMycelia.Hyphlow
             ApplyToEachValidTarget();
             void ApplyToEachValidTarget()
             {
-                for (int i = 0; i < targetObjects.Count; i++)
+                for (int i = 0; i < _targetObjects.Count; i++)
                 {
-                    var targetObject = targetObjects[i];
+                    GameObject targetObject = _targetObjects[i].Value;
                     if (targetObject == null)
                     {
                         continue;
@@ -52,10 +54,9 @@ namespace AtMycelia.Hyphlow
                 }
             }
 
-            if (waitUntilFinished)
+            if (_waitUntilFinished)
             {
-                //LeanTween.value(gameObject, 0f, 1f, duration).setOnComplete(OnComplete);
-                Invoke(nameof(OnComplete), duration);
+                Invoke(nameof(OnComplete), _duration);
             }
         }
 
@@ -75,7 +76,7 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            if (targetObjects.Count == 0)
+            if (_targetObjects.Count == 0)
             {
                 Continue();
                 return;
@@ -83,40 +84,44 @@ namespace AtMycelia.Hyphlow
             
             ApplyTween();
 
-            if (!waitUntilFinished)
+            if (!_waitUntilFinished)
             {
                 Continue();
             }
         }
 
-        public override void OnCommandAdded(Block parentBlock)
+        [SerializeField][FormerlySerializedAs("targetObjects")]
+        [FormerlySerializedAs("_targetObjects")]
+        protected List<GameObject> _targetObjectsOld = new List<GameObject>();
+
+        public override void OnCommandAdded(IBlock parentBlock)
         {
             // Add an empty slot by default. Saves an unnecessary user click.
-            if (targetObjects.Count == 0)
+            if (_targetObjectsOld.Count == 0)
             {
-                targetObjects.Add(null);
+                _targetObjectsOld.Add(null);
             }
         }
 
         public override string GetSummary()
         {
-            if (targetObjects.Count == 0)
+            if (_targetObjectsOld.Count == 0)
             {
                 return "Error: No targetObjects selected";
             }
-            else if (targetObjects.Count == 1)
+            else if (_targetObjectsOld.Count == 1)
             {
-                if (targetObjects[0] == null)
+                if (_targetObjectsOld[0] == null)
                 {
                     return "Error: No targetObjects selected";
                 }
-                return targetObjects[0].name + " = " + GetSummaryValue();
+                return _targetObjectsOld[0].name + " = " + GetSummaryValue();
             }
             
             string namesOfGameObjects = "";
-            for (int i = 0; i < targetObjects.Count; i++)
+            for (int i = 0; i < _targetObjectsOld.Count; i++)
             {
-                var go = targetObjects[i];
+                var go = _targetObjectsOld[i];
                 if (go == null)
                 {
                     continue;
@@ -149,10 +154,35 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public override bool HasReference(Variable variable)
+        protected override void DelayedOnValidate()
         {
-            return ReferenceEquals(waitUntilFinished.VarRef, variable) || 
-                ReferenceEquals(duration.VarRef, variable) || base.HasReference(variable);
+            base.DelayedOnValidate();
+            if (this == null)
+            {
+                return;
+            }
+
+            if (_targetObjectsOld != null && _targetObjectsOld.Count > 0)
+            {
+                for (int i = 0; i < _targetObjectsOld.Count; i++)
+                {
+                    GameObject oldObj = _targetObjectsOld[i];
+                    GameObjectData newObjData = new GameObjectData(oldObj);
+                    _targetObjects.Add(newObjData);
+                }
+            }
+
+            _targetObjectsOld = null;
+
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
+        }
+
+        public override bool HasReference(IVariable variable)
+        {
+            return ReferenceEquals(_waitUntilFinished.VarRef, variable) || 
+                ReferenceEquals(_duration.VarRef, variable) || base.HasReference(variable);
         }
 
         #endregion

@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -10,14 +11,21 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("Flow", 
                  "Stop Block", 
                  "Stops executing the named Block")]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class StopBlock : Command, IBlockCaller
     {
         [Tooltip("Flowchart containing the Block. If none is specified, the parent Flowchart is used.")]
-        [SerializeField] protected Flowchart flowchart;
+        [SerializeField] [FormerlySerializedAs("flowchart")]
+protected Flowchart flowchart;
 
         [Tooltip("Name of the Block to stop")]
-        [SerializeField] protected StringData blockName = new StringData("");
+        [SerializeField] [FormerlySerializedAs("blockName")]
+protected StringData blockName = new StringData("");
+
+        public string GetLocationIdentifier()
+        {
+            return LocationIdentifier;
+        }
 
         #region Public members
 
@@ -33,9 +41,9 @@ namespace AtMycelia.Hyphlow
                 flowchart = (Flowchart)GetFlowchart();
             }
 
-            var block = flowchart.FindBlock(blockName.Value);
+            var block = flowchart.GetBlock(blockName.Value);
             if (block == null ||
-                !block.IsExecuting())
+                !block.IsExecuting)
             {
                 Continue();
             }
@@ -55,15 +63,15 @@ namespace AtMycelia.Hyphlow
             return new Color32(253, 253, 150, 255);
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(blockName.VarRef, variable) || base.HasReference(variable);
         }
 
-        public bool MayCallBlock(Block block)
+        public bool MayCallBlock(IBlock block)
         {
             if(flowchart != null)
-                return block == flowchart.FindBlock(blockName.Value);
+                return block == flowchart.GetBlock(blockName.Value);
             return false;
         }
 

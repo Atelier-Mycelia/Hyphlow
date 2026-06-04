@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow.EditorUtils;
+using AtMycelia.Hyphlow.EditorExt;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,8 +14,6 @@ namespace VScriptingTests.FCWindowOperations
 {
     public class BlockInspectorEditorTests
     {
-        
-        
         protected BlockInspectorTestHostWindow _hostWindow;
 
         // Dummy command to exercise command editor caching
@@ -39,7 +37,7 @@ namespace VScriptingTests.FCWindowOperations
             _secondBlock.BlockName = "Block_B";
 
             _blockInspectorAsset = ScriptableObject.CreateInstance<BlockInspector>();
-            _blockInspectorAsset._block = _firstBlock;
+            _blockInspectorAsset._block = _firstBlock as Block;
 
             _editor = Editor.CreateEditor(_blockInspectorAsset, typeof(BlockInspectorEditor)) as BlockInspectorEditor;
 
@@ -49,8 +47,8 @@ namespace VScriptingTests.FCWindowOperations
 
         protected GameObject _flowchartHolder;
         protected Flowchart _flowchart;
-        protected Block _firstBlock;
-        protected Block _secondBlock;
+        protected IBlock _firstBlock;
+        protected IBlock _secondBlock;
 
         protected BlockInspector _blockInspectorAsset;
         protected BlockInspectorEditor _editor;
@@ -79,15 +77,15 @@ namespace VScriptingTests.FCWindowOperations
         }
 
         protected static FieldInfo FI_ActiveBlockEditor =>
-            typeof(BlockInspectorEditor).GetField("activeBlockEditor",
+            typeof(BlockInspectorEditor).GetField("_activeBlockEditor",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
         protected static FieldInfo FI_ActiveCommandEditor =>
-            typeof(BlockInspectorEditor).GetField("activeCommandEditor",
+            typeof(BlockInspectorEditor).GetField("_activeCommandEditor",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
         protected static FieldInfo FI_CachedCommandEditors =>
-            typeof(BlockInspectorEditor).GetField("cachedCommandEditors",
+            typeof(BlockInspectorEditor).GetField("_cachedCommandEditors",
                 BindingFlags.Static | BindingFlags.NonPublic);
 
         protected BlockEditor GetActiveBlockEditor() =>
@@ -155,9 +153,9 @@ namespace VScriptingTests.FCWindowOperations
 
             var dummyCmd = _flowchartHolder.AddComponent<DummyCommand>();
             // Ensure it belongs logically to the block
-            if (!_firstBlock.CommandList.Contains(dummyCmd))
+            if (!_firstBlock.Contains(dummyCmd))
             {
-                _firstBlock.CommandList.Add(dummyCmd);
+                _firstBlock.Add(dummyCmd, triggerSignals: false);
             }
 
             // Selection

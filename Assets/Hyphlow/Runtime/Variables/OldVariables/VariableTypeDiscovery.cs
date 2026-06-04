@@ -9,7 +9,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public static class VariableTypeDiscovery
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
@@ -87,7 +87,7 @@ namespace AtMycelia.Hyphlow
                 bool weAreInTestScene = sceneName.Contains("Test");
                 if (attr.IsTest && (!weAreInTestScene || Application.isEditor))
                 {
-                    Debug.Log($"Excluding test type {typeToCheck.Name} from variable type registry" +
+                    Debug.Log($"Excluding test type {typeToCheck.Name} from variable type registry " +
                         $"because the active scene is not a test scene.");
                     return true;
                 }
@@ -110,7 +110,7 @@ namespace AtMycelia.Hyphlow
         {
             IEnumerable<Type> varDataSubtypes = AppDomain.CurrentDomain.GetAssemblies()
                          .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, iVariableDataType));
+                         .Where((elem) => IsInstantiatableType(elem, _iVariableDataType));
 
             VariableDataTypeRegistry.Clear();
 
@@ -124,7 +124,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
-        private static readonly Type iVariableDataType = typeof(IVariableData);
+        private static readonly Type _iVariableDataType = typeof(IVariableData);
 
     }
 }

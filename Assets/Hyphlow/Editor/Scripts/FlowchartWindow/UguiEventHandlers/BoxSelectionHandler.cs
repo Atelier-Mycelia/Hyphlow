@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Handles drawing and finalizing a click-and-drag selection box.
@@ -136,7 +136,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
         }
 
-        protected virtual IEnumerable<Block> EnumerateBlocks(FlowchartContext ctx)
+        protected virtual IEnumerable<IBlock> EnumerateBlocks(FlowchartContext ctx)
         {
             var blocks = ctx.Document.AllBlocks;
             if (blocks != null && blocks.Count > 0)

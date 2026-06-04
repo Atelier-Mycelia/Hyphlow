@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Sets a boolean parameter on an Animator component to control a Unity animation")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetAnimBool : Command
     {
         [Tooltip("Reference to an Animator component in a game object")]
@@ -23,7 +23,8 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected StringData _parameterName;
 
         [Tooltip("The boolean value to set the parameter to")]
-        [SerializeField] protected BooleanData value;
+        [SerializeField] [FormerlySerializedAs("value")]
+protected BooleanData value;
 
         #region Public members
 
@@ -52,7 +53,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Animation;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_animator.VarRef, variable) || 
                 ReferenceEquals(_parameterName.VarRef, variable) || 

@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
     /// you will need to subclass this.
     /// </summary>
     [System.Serializable]
-[MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class VariableReference
     {
         // What we do is store the id of the var, and then return the var itself based on
@@ -25,10 +25,12 @@ namespace AtMycelia.Hyphlow
         private UnityObj _owningSource;
 
         [FormerlySerializedAs("owningFc")]
-        [SerializeField] [HideInInspector] private Flowchart legacyOwningFc;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningFc")]
+private Flowchart legacyOwningFc;
 
         [FormerlySerializedAs("owningVsa")]
-        [SerializeField] [HideInInspector] private VariableSourceAsset legacyOwningVsa;
+        [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningVsa")]
+private VariableSourceAsset legacyOwningVsa;
 
         /// <summary>
         /// The key of the variable this is referencing. This is just for display purposes,

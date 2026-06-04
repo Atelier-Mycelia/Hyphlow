@@ -7,7 +7,7 @@ using UnityEngine.Serialization;
 namespace AtMycelia.Hyphlow
 {
     // To reduce the boilerplate in IVariableData implementors such as AnimatorData and FloatData
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class VariableData : IVariableData, IRefreshable, ISerializationCallbackReceiver
     {
         [SerializeField]

@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Destroys a specified game object in the scene.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class Destroy : Command, ISerializationCallbackReceiver
     {
         [Tooltip("Reference to game object to destroy")]
@@ -76,7 +76,7 @@ namespace AtMycelia.Hyphlow
             return CommandColors.Flow;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             if (ReferenceEquals(_targetGameObject.VarRef, variable) || ReferenceEquals(_destroyInXSeconds.VarRef, variable))
                 return true;

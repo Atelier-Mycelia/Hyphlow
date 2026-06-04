@@ -1,18 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     [CustomPropertyDrawer(typeof(StringData), true)]
     public class StringDataDrawer : VariableDataDrawerBase
     {
         private const bool LogDrawer = true;
-        private static readonly Dictionary<string, Vector2> ScrollPositions = new Dictionary<string, Vector2>();
+        private static readonly Dictionary<string, Vector2> _ScrollPositions = new Dictionary<string, Vector2>();
 
         protected override bool UseMultilineLabel(SerializedProperty varDataProp, VariableData varData, bool shouldDrawLiteral)
         {
@@ -122,7 +122,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     float fieldX = position.x + labelWidth + 2;
                     float fieldWidth = position.width - labelWidth;
                     fieldRect = new Rect(fieldX, position.y, fieldWidth, position.height);
-                    if (fieldRect.width < MinimumValueWidth + SpaceForPopup)
+                    if (fieldRect.width < _MinimumValueWidth + SpaceForPopup)
                     {
                         fieldRect = new Rect(position.x, position.y, position.width, position.height);
                         labelRect.width = 0f;
@@ -131,8 +131,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 valueRect = fieldRect;
                 valueRect.width = Mathf.Max(0, fieldRect.width - SpaceForPopup);
-                float popupX = position.x + (position.width - popupWidth);
-                popupRect = new Rect(popupX, fieldRect.y, popupWidth, fieldRect.height);
+                float popupX = position.x + (position.width - _popupWidth);
+                popupRect = new Rect(popupX, fieldRect.y, _popupWidth, fieldRect.height);
 
                 prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
@@ -441,7 +441,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             else
             {
                 fieldWidth = viewWidth - labelWidth;
-                if (fieldWidth < MinimumValueWidth + SpaceForPopup)
+                if (fieldWidth < _MinimumValueWidth + SpaceForPopup)
                 {
                     fieldWidth = viewWidth - labelOffset;
                 }
@@ -469,10 +469,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return Vector2.zero;
             }
 
-            if (!ScrollPositions.TryGetValue(propertyPath, out Vector2 scrollPosition))
+            if (!_ScrollPositions.TryGetValue(propertyPath, out Vector2 scrollPosition))
             {
                 scrollPosition = Vector2.zero;
-                ScrollPositions[propertyPath] = scrollPosition;
+                _ScrollPositions[propertyPath] = scrollPosition;
             }
 
             return scrollPosition;
@@ -485,7 +485,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 return;
             }
 
-            ScrollPositions[propertyPath] = scrollPosition;
+            _ScrollPositions[propertyPath] = scrollPosition;
         }
     }
 }

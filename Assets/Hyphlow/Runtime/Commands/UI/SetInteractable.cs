@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
     [CommandInfo("UI", 
                  "Set Interactable", 
                  "Set the interactable state of selectable objects.")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class SetInteractable : Command 
     {
         [Tooltip("List of objects to be affected by the command")]
@@ -107,7 +107,7 @@ namespace AtMycelia.Hyphlow
             return new Color32(180, 250, 250, 255);
         }
 
-        public override void OnCommandAdded(Block parentBlock)
+        public override void OnCommandAdded(IBlock parentBlock)
         {
             _targetObjects.Add(null);
         }
@@ -122,7 +122,7 @@ namespace AtMycelia.Hyphlow
             return false;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
             return ReferenceEquals(_interactableState.VarRef, variable) || base.HasReference(variable);
         }

@@ -12,34 +12,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9cb465272796ed479da619d12345ac8, type: 3}
   m_Name: HyphlowEditorSysAssets
   m_EditorClassIdentifier: 
-  add:
+  _add:
     free: {fileID: 2800000, guid: 89f59e80b30404e41838084e1fd15d1b, type: 3}
     pro: {fileID: 2800000, guid: 4b432f1cad6e442438585f95df7639a7, type: 3}
-  add_small:
+  _add_small:
     free: {fileID: 2800000, guid: 7dc32a2e5874ae140b76485223d720d3, type: 3}
     pro: {fileID: 2800000, guid: 01c22db9fa60ee740a0edfd545a2315e, type: 3}
-  delete:
+  _delete:
     free: {fileID: 2800000, guid: 951d789e921cf0b46ae94c9f3aaf2937, type: 3}
     pro: {fileID: 2800000, guid: daef818c588db954c87b5796438a69b6, type: 3}
-  down:
+  _down:
     free: {fileID: 2800000, guid: 9922bf1dd9a6ed04ba356dec2bafca98, type: 3}
     pro: {fileID: 2800000, guid: 840b0775b6e8c0b4dbd5a893f898e0a7, type: 3}
-  duplicate:
+  _duplicate:
     free: {fileID: 2800000, guid: f20b67a04f0b875489e3aee79b434135, type: 3}
     pro: {fileID: 2800000, guid: 219d91bf7500ee244a5b0eada5f47ccf, type: 3}
-  fungus_mushroom:
+  _mushroomIcon:
     free: {fileID: 2800000, guid: e2214a5eec201ec4db941159b08ec4bf, type: 3}
     pro: {fileID: 2800000, guid: fa18890de2be71749a638fe6c0556ef7, type: 3}
-  up:
+  _up:
     free: {fileID: 2800000, guid: d86d71581f669b444b72ed6895a3bc58, type: 3}
     pro: {fileID: 2800000, guid: 890975ea9791c314a97ed76c30cdfad4, type: 3}
-  command_background:
+  _command_background:
     free: {fileID: 2800000, guid: 26cb9a137e7381c409d9747e1d2994c7, type: 3}
     pro: {fileID: 0}
-  play_big:
+  _play_big:
     free: {fileID: 2800000, guid: 7a14bea129a08e64583db42695d20fef, type: 3}
     pro: {fileID: 0}
-  play_small:
+  _play_small:
     free: {fileID: 2800000, guid: ee9ea97a3b515cb41b72b2708aac004d, type: 3}
+    pro: {fileID: 0}
+  _hyphlow_logo:
+    free: {fileID: 2800000, guid: 8dff0f4cbc2aee840b60ebe225952197, type: 3}
     pro: {fileID: 0}
   _fcwConfig: {fileID: 11400000, guid: 07d73872ac6ccb8419431653582305f7, type: 2}

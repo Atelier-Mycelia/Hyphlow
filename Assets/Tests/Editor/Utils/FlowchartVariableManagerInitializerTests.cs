@@ -4,9 +4,9 @@ using System.Reflection;
 using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using AtMycelia.Hyphlow.EditorUtils;
 using AtMycelia.Hyphlow;
 using UnityObject = UnityEngine.Object;
+using AtMycelia.Hyphlow.EditorExt;
 
 namespace VScriptingTests.Utils
 {

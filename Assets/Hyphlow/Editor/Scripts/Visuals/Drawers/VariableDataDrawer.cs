@@ -1,4 +1,3 @@
-using AtMycelia.Hyphlow.EditorUtils.FcWindow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +6,9 @@ using UnityEditor;
 using UnityEngine;
 using Type = System.Type;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Hyphlow.EditorExt.FcWindow;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     public abstract class VariableDataDrawerBase : PropertyDrawer
     {
@@ -76,11 +76,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 if (useMultilineLabel)
                 {
                     float lineHeight = EditorGUIUtility.singleLineHeight;
-                    labelRect = new Rect(position.x + labelOffset, position.y, position.width - labelOffset, lineHeight);
+                    float labelRectWidth = position.width - labelOffset;
+                    labelRect = new Rect(position.x + labelOffset, position.y, labelRectWidth, lineHeight);
 
                     float fieldY = position.y + lineHeight + EditorGUIUtility.standardVerticalSpacing;
                     float fieldHeight = position.height - lineHeight - EditorGUIUtility.standardVerticalSpacing;
-                    fieldRect = new Rect(position.x + labelOffset, fieldY, position.width - labelOffset, fieldHeight);
+                    float fieldX = position.x + labelOffset;
+                    fieldRect = new Rect(fieldX, fieldY, labelRectWidth, fieldHeight);
                 }
                 else
                 {
@@ -90,7 +92,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
                     float fieldX = position.x + labelWidth + 2;
                     float fieldWidth = position.width - labelWidth;
                     fieldRect = new Rect(fieldX, position.y, fieldWidth, position.height);
-                    if (fieldRect.width < MinimumValueWidth + SpaceForPopup)
+                    if (fieldRect.width < _MinimumValueWidth + SpaceForPopup)
                     {
                         fieldRect = new Rect(position.x, position.y, position.width, position.height);
                         labelRect.width = 0f;
@@ -99,8 +101,8 @@ namespace AtMycelia.Hyphlow.EditorUtils
 
                 valueRect = fieldRect;
                 valueRect.width = Mathf.Max(0, fieldRect.width - SpaceForPopup);
-                float popupX = position.x + (position.width - popupWidth);
-                popupRect = new Rect(popupX, fieldRect.y, popupWidth, fieldRect.height);
+                float popupX = position.x + (position.width - _popupWidth);
+                popupRect = new Rect(popupX, fieldRect.y, _popupWidth, fieldRect.height);
 
                 prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
@@ -422,10 +424,10 @@ namespace AtMycelia.Hyphlow.EditorUtils
             return itemIdProp == null || itemIdProp.intValue == Variable.InvalidID;
         }
 
-        protected static readonly int popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
-        protected static readonly int popupGap = 5;
-        protected static int SpaceForPopup => popupWidth + popupGap;
-        protected static readonly float MinimumValueWidth = 80f;
+        protected static readonly int _popupWidth = Mathf.RoundToInt(EditorGUIUtility.singleLineHeight);
+        protected static readonly int _popupGap = 5;
+        protected static int SpaceForPopup => _popupWidth + _popupGap;
+        protected static readonly float _MinimumValueWidth = 80f;
         protected static VariableRegistry VarRegistry => VariableRegistryService.Registry;
 
         private static IReadOnlyDictionary<string, IVariable> GetValidVariables(SerializedProperty varDataProp, 

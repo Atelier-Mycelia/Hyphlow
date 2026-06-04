@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace AtMycelia.Hyphlow.EditorUtils
+namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Handles custom drawing for ConditionExperssions within the VariableCondition and inherited commands.
@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             None,
         };
 
-        private static readonly GUIContent[] compareListAll = new GUIContent[]
+        private static readonly GUIContent[] _compareListAll = new GUIContent[]
         {
             new GUIContent(VariableUtil.GetCompareOperatorDescription(CompareOperator.Equals)),
             new GUIContent(VariableUtil.GetCompareOperatorDescription(CompareOperator.NotEquals)),
@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow.EditorUtils
             new GUIContent(VariableUtil.GetCompareOperatorDescription(CompareOperator.GreaterThanOrEquals)),
         };
 
-        private static readonly GUIContent[] compareListEqualOnly = new GUIContent[]
+        private static readonly GUIContent[] _compareListEqualOnly = new GUIContent[]
         {
             new GUIContent(VariableUtil.GetCompareOperatorDescription(CompareOperator.Equals)),
             new GUIContent(VariableUtil.GetCompareOperatorDescription(CompareOperator.NotEquals)),
@@ -39,24 +39,24 @@ namespace AtMycelia.Hyphlow.EditorUtils
         {
             base.OnEnable();
 
-            conditions = serializedObject.FindProperty("_conditions");
-            anyOrAllConditions = serializedObject.FindProperty("_anyOrAllConditions");
+            _conditions = serializedObject.FindProperty("_conditions");
+            _anyOrAllConditions = serializedObject.FindProperty("_anyOrAllConditions");
         }
 
-        protected SerializedProperty conditions;
-        protected SerializedProperty anyOrAllConditions;
+        protected SerializedProperty _conditions;
+        protected SerializedProperty _anyOrAllConditions;
 
         public override void DrawCommandGUI()
         {
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(anyOrAllConditions);
+            EditorGUILayout.PropertyField(_anyOrAllConditions);
 
-            int newSize = EditorGUILayout.IntField("Size", conditions.arraySize);
-            bool sizeChanged = newSize != conditions.arraySize;
+            int newSize = EditorGUILayout.IntField("Size", _conditions.arraySize);
+            bool sizeChanged = newSize != _conditions.arraySize;
             if (sizeChanged)
             {
-                conditions.arraySize = Mathf.Max(0, newSize);
+                _conditions.arraySize = Mathf.Max(0, newSize);
                 serializedObject.ApplyModifiedProperties();
                 serializedObject.Update();
             }
@@ -73,13 +73,13 @@ namespace AtMycelia.Hyphlow.EditorUtils
             }
 
             EditorGUI.indentLevel++;
-            for (int i = 0; i < conditions.arraySize; i++)
+            for (int i = 0; i < _conditions.arraySize; i++)
             {
-                var conditionAnyVar = conditions.GetArrayElementAtIndex(i)
+                var conditionAnyVar = _conditions.GetArrayElementAtIndex(i)
                     .FindPropertyRelative("_anyVar");
                 var varRefProp = conditionAnyVar.FindPropertyRelative("_varRef");
                 var varDataProp = conditionAnyVar.FindPropertyRelative("_data._data");
-                var conditionCompare = conditions.GetArrayElementAtIndex(i)
+                var conditionCompare = _conditions.GetArrayElementAtIndex(i)
                     .FindPropertyRelative("_compareOperator");
 
                 EditorGUILayout.PropertyField(varRefProp, new GUIContent("Lhs"), true);
@@ -98,11 +98,11 @@ namespace AtMycelia.Hyphlow.EditorUtils
                 GUIContent[] operatorsList;
                 if (selectedVariable.IsComparisonSupported())
                 {
-                    operatorsList = compareListAll;
+                    operatorsList = _compareListAll;
                 }
                 else
                 {
-                    operatorsList = compareListEqualOnly;
+                    operatorsList = _compareListEqualOnly;
                 }
 
                 // Get previously selected operator

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "Random Float", 
                  "Sets an float or double variable to a random value in the defined range.")]
     [AddComponentMenu("")]
-    [MovedFrom(true, "AtMycelia.Hyphlow", "AtMycelia.Amanita.Core")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class RandomFloat : Command 
     {
         [Tooltip("The variable that will get its value set. Can be a float or a double.")]
@@ -57,9 +57,9 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public override bool HasReference(Variable variable)
+        public override bool HasReference(IVariable variable)
         {
-            return (variable == this._oldVariable) || 
+            return ReferenceEquals(variable, this._oldVariable) || 
                 ReferenceEquals(_minValue.VarRef, variable) || 
                 ReferenceEquals(_maxValue.VarRef, variable);
         }

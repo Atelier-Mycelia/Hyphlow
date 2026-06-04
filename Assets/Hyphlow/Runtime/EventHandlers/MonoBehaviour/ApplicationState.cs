@@ -1,3 +1,4 @@
+using UnityEngine.Serialization;
 using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
@@ -29,6 +30,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("Which of the Application messages to trigger on.")]
         [SerializeField]
         [EnumFlag]
+[FormerlySerializedAs("FireOn")]
         protected ApplicationMessageFlags FireOn = ApplicationMessageFlags.OnApplicationQuit;
 
         private void OnApplicationFocus(bool focus)
