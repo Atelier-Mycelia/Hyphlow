@@ -104,11 +104,11 @@ namespace AtMycelia.Hyphlow.Sys
             if (S != null && S != this)
             {
                 string errorMessage = $"Multiple instances of HyphlowRuntimeSysAssets detected! This is not intended. " +
-                                      $"Destroying the new instance. Existing instance: {S.name} at " +
-                                      $"{AssetDatabase.GetAssetPath(S)}. New instance: {name} at " +
+                                      $"Destroying the new instance.\nExisting instance: {S.name} at " +
+                                      $"{AssetDatabase.GetAssetPath(S)}. \nNew instance: {name} at " +
                                       $"{AssetDatabase.GetAssetPath(this)}.";
                 Debug.LogError(errorMessage);
-                DestroyImmediate(this);
+                DestroyImmediate(this, true);
                 return;
             }
 

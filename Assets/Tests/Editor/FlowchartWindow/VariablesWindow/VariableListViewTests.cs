@@ -10,7 +10,7 @@ using UnityEngine.TestTools;
 using UnityObj = UnityEngine.Object;
 using Type = System.Type;
 using StringComparison = System.StringComparison;
-using AtMycelia.EditorUtils;
+using AtMycelia.EditorExt;
 using AtMycelia;
 using AtMycelia.Hyphlow.EditorExt;
 

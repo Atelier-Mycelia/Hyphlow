@@ -6,6 +6,8 @@ using AtMycelia.Hyphlow.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using AtMycelia.Hyphlow.EditorExt;
+using System.Runtime.InteropServices.WindowsRuntime;
+
 
 
 #if UNITY_EDITOR
@@ -140,7 +142,13 @@ protected int version = 0;
         }
         #endregion
 
-        protected StringSubstituter _stringSubstituter;
+        protected StringSubstituter _stringSubstituter = new StringSubstituter();
+
+        public virtual string SubstituteVariables(string input)
+        {
+            string result = _stringSubstituter.SubstituteStrings(input);
+            return result;
+        }
 
         public IReadOnlyList<IBlock> Blocks
         {
@@ -816,6 +824,12 @@ protected int version = 0;
             {
                 VariableManager.ResetAllVars();
             }
+        }
+
+        public virtual IReadOnlyList<IBlock> GetExecutingBlocks()
+        {
+            EnsureSubmanagerComponents();
+            return _execManager.ExecutingBlocks;
         }
 
         /// <summary>
