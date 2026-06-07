@@ -818,6 +818,12 @@ protected int version = 0;
             }
         }
 
+        public virtual IReadOnlyList<IBlock> GetExecutingBlocks()
+        {
+            EnsureSubmanagerComponents();
+            return _execManager.ExecutingBlocks;
+        }
+
         /// <summary>
         /// Returns true if there are any executing blocks in this Flowchart.
         /// </summary>
