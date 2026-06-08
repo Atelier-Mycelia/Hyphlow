@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using AtMycelia.Amanita.VScripting;
 using AtMycelia.AmaniTween;
@@ -66,7 +67,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
                 Undo.RecordObject(block as Block, "Replace Fade Sprite Commands");
 
-                IList<ICommand> commands = block.CommandList;
+                var commands = block.CommandList;
                 for (int i = 0; i < commands.Count; i++)
                 {
                     FadeSprite fadeSprite = commands[i] as FadeSprite;
@@ -83,7 +84,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     fadeColor.IndentLevel = fadeSprite.IndentLevel;
                     fadeColor.ParentBlock = block;
 
-                    commands[i] = fadeColor;
+                    block.ReplaceCommandAtIndex((byte)i, fadeColor);
 
                     ReplaceInFlowchartCache(flowchart, fadeSprite, fadeColor);
 

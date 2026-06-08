@@ -12,6 +12,8 @@ namespace AtMycelia.Hyphlow
     public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable,
         ICommandResetter
     {
+        ICommand GetCommandAtIndex(byte index);
+        void ReplaceCommandAtIndex(byte index, ICommand newCommand);
         Flowchart ParentFlowchart { get; }
         bool SuppressAllAutoSelections { get; set; }
         ExecutionState ExecutionState { get; set; }
@@ -43,7 +45,7 @@ namespace AtMycelia.Hyphlow
         /// Current systems still use this concrete list in several places.
         /// Keep for now; can be narrowed later.
         /// </summary>
-        IList<ICommand> CommandList { get; }
+        IReadOnlyList<ICommand> CommandList { get; }
 
         /// <summary>
         /// The index of the command to jump to on the next execution step.

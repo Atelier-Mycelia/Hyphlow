@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.ateliermycelia.unityutils": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Assets/AtMyceliaCommonLib#develop",
+    "com.ateliermycelia.unityutils": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
     "com.handzlikchris.fastscriptreload": "https://github.com/handzlikchris/FastScriptReload.git?path=Assets",
     "com.unity.feature.2d": "2.0.1",
     "com.unity.ide.rider": "3.0.39",

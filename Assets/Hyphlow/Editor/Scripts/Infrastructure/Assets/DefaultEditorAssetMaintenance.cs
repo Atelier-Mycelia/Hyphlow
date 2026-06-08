@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,22 +25,51 @@ namespace AtMycelia.Hyphlow.EditorExt
         private static HyphlowEditorSysAssets EnsureHyphlowEditorResourcesAsset()
         {
             HyphlowEditorSysAssets assets = HyphlowEditorSysAssets.S;
-            if (assets == null)
+            
+            if (assets != null)
             {
-                var all = Resources.LoadAll<HyphlowEditorSysAssets>("");
-                if (all.Length > 0)
+                return assets;
+            }
+
+            assets = TryGetHyphlowEditorResourcesAssetFromPackages();
+
+            if (assets != null)
+            {
+                return assets;
+            }
+
+            HyphlowEditorSysAssets[] all = Resources.LoadAll<HyphlowEditorSysAssets>("");
+            if (all.Length > 0)
+            {
+                return all[0];
+            }
+
+            assets = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_pathToEditorResourceFolder,
+                "HyphlowEditorSysAssets");
+            return assets;
+        }
+
+        private static HyphlowEditorSysAssets TryGetHyphlowEditorResourcesAssetFromPackages()
+        {
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(HyphlowEditorSysAssets)}");
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                bool isInPackages = path.StartsWith("Packages/", StringComparison.OrdinalIgnoreCase);
+                bool isHyphlowPackagePath = path.IndexOf("hyphlow", StringComparison.OrdinalIgnoreCase) >= 0;
+                if (!isInPackages || !isHyphlowPackagePath)
                 {
-                    assets = all[0];
+                    continue;
+                }
+
+                HyphlowEditorSysAssets assets = AssetDatabase.LoadAssetAtPath<HyphlowEditorSysAssets>(path);
+                if (assets != null)
+                {
+                    return assets;
                 }
             }
 
-            if (assets == null)
-            {
-                assets = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_pathToEditorResourceFolder,
-                    "HyphlowEditorSysAssets");
-            }
-
-            return assets;
+            return null;
         }
 
         private static readonly string _pathToEditorResourceFolder = "Editor"; // Relative to Resources

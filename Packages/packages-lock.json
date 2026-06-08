@@ -1,13 +1,12 @@
 {
   "dependencies": {
     "com.ateliermycelia.unityutils": {
-      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Assets/AtMyceliaCommonLib#develop",
+      "version": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
-      },
-      "hash": "653c38f397c7da1572a6a8b774ea046ef5572afb"
+      }
     },
     "com.handzlikchris.fastscriptreload": {
       "version": "https://github.com/handzlikchris/FastScriptReload.git?path=Assets",

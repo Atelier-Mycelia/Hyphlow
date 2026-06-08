@@ -31,7 +31,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 SerializedPropertyType.Generic,
                 SerializedPropertyType.ArraySize);
 
-            IList<ICommand> sourceCommands = block.CommandList;
+            IReadOnlyList<ICommand> sourceCommands = block.CommandList;
             for (int i = 0; i < sourceCommands.Count; i++)
             {
                 ICommand commandEl = sourceCommands[i];

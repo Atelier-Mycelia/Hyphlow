@@ -443,7 +443,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             IList<ICommand> selectedCommands = flowchart.SelectedCommands;
-            IList<ICommand> commandList = flowchart.SelectedBlock.CommandList;
+            IReadOnlyList<ICommand> commandList = flowchart.SelectedBlock.CommandList;
 
             int firstSelectedIndex = -1;
             int lastSelectedIndex = -1;
