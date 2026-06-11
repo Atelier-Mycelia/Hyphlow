@@ -1,8 +1,9 @@
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.AmaniTween;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
+using AtMycelia.Hyphlow.HyphaTweenInt;
+using AtMycelia.HyphaTween;
 
 public class DefaultAdapterTests
 {

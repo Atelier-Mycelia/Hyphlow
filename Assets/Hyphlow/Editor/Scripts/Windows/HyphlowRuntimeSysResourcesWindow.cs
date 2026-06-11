@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using AtMycelia.AmaniTween;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
 using AtMycelia.Hyphlow.Sys;
+using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {

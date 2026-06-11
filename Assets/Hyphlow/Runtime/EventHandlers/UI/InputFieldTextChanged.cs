@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     [EventHandlerInfo("UI",
         "InputFieldTextChanged",
         "Executes this block when an input field's text changes.")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class InputFieldTextChanged : EventHandler
     {
         [SerializeField] [VariableProperty(typeof(GameObjectVariable))]

@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.ateliermycelia.hyphatween": {
+      "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "d16d4df8192a31d386df61ee6291977fa167caf2"
+    },
     "com.ateliermycelia.unityutils": {
       "version": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
       "depth": 0,

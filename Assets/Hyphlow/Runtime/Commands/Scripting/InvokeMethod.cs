@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow
                  "Invoke Method", 
                  "Invokes a method of a component via reflection. Supports passing multiple " +
                  "parameters and storing returned values in an Amanita variable.")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Commands")]
     public class InvokeMethod : Command
     {
         [Tooltip("A description of what this command does. Appears in the command summary.")]

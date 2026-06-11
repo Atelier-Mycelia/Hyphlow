@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "End Edit",
                       "The block will execute when the user finishes editing the text in the input field.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class EndEdit : EventHandler
     {   
         [Tooltip("The UI Input Field that the user can enter text into")]

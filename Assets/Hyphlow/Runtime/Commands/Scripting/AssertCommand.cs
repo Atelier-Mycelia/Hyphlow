@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Assert",
                  "Assert based on compared values.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Commands")]
     public class AssertCommand : Command
     {
         [SerializeField]

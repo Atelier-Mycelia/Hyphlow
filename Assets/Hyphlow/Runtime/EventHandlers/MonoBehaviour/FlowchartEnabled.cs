@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                       "Flowchart Enabled",
                       "The block will execute when the Flowchart game object is enabled.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class FlowchartEnabled : EventHandler
     {   
         protected override void OnEnable()

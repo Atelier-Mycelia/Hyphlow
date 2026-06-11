@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 					  "Trigger",
 					  "The block will execute when a 2d or 3d physics trigger matching some basic conditions is met.")]
 	[AddComponentMenu("")]
-	[MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	[MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
 	public class Trigger : BasePhysicsEventHandler
 	{
 		[Tooltip("Optional variable to store the collider that caused the trigger to occur.")]

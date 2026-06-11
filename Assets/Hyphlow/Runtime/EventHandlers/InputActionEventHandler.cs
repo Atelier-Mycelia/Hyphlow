@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
                       "Execute a block when a targeted InputAction is performed. " +
                       "Optionally reads the value from the action.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class InputActionEventHandler : EventHandler
     {
         [SerializeField] protected InputActionReference inputAction;
