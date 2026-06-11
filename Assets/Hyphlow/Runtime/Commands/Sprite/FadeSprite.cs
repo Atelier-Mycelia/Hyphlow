@@ -1,15 +1,16 @@
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using UnityEngine;
 using UnityEngine.Serialization;
-using AtMycelia.Hyphlow;
+using AtMycelia.Amanita;
+using AtMycelia.Hyphlow.HyphaTweenInt;
 
-namespace AtMycelia.Amanita.VScripting
-{
+namespace AtMycelia.Hyphlow
+{ 
     /// <summary>
     /// Fades a sprite to a target color over a period of time.
     /// </summary>
     [CommandInfo("Sprite", 
-                 "Fade Sprite", 
+                 "Fade Sprite (DEP)", 
                  "Fades a sprite to a target color over a period of time.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
@@ -43,8 +44,9 @@ namespace AtMycelia.Amanita.VScripting
             _variableDataCache.Add(_waitUntilFinished);
         }
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             ValidateTweeners(false);
         }
 

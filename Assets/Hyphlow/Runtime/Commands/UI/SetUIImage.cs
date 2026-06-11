@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                  "Set UI Image", 
                  "Changes the Image property of a list of UI Images.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Commands")]
     public class SetUIImage : Command 
     {
         [Tooltip("List of UI Images to set the source image property on")]

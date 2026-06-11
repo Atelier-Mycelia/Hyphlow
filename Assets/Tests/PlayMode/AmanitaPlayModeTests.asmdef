@@ -1,19 +1,13 @@
 {
-    "name": "AmanitaPlayModeTests",
+    "name": "HyphlowPlayModeTests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "AmanitaEditorTests",
-        "Lorekeeper",
-        "AtMycelia.Amanita.Core",
-        "Amanita.Core.Editor",
         "Unity.InputSystem",
         "AtMycelia.Hyphlow.Core",
-        "AtMycelia.Hyphlowceliaudio.Core",
-        "AtMycelia.Myceliaudio.Core",
-        "AtMycelia.Myceliasmius.Core",
-        "AtMycelia.Common.Core"
+        "AtMycelia.Common.Core",
+        "AtMycelia.HyphaTween.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

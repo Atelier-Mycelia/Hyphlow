@@ -1,6 +1,6 @@
-using AtMycelia.AmaniTween;
 using System;
 using UnityEngine;
+using AtMycelia.HyphaTween;
 
 public class TweenCase<TComponent, TValue> where TComponent : Component
 {

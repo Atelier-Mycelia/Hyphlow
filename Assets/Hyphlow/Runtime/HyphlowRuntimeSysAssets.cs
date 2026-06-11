@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using UnityEngine;
 
 #if UNITY_EDITOR

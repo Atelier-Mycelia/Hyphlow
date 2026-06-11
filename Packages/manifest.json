@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.ateliermycelia.hyphatween": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
     "com.ateliermycelia.unityutils": "file:E:/Github/_AtelierMycelia/UnityUtils/Assets/AtMyceliaCommonLib",
     "com.handzlikchris.fastscriptreload": "https://github.com/handzlikchris/FastScriptReload.git?path=Assets",
     "com.unity.feature.2d": "2.0.1",

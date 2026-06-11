@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow
                       "The block will execute when the desired OnTransform " +
                       "related message for the Nonobehaviour is received.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class TransformChanged : EventHandler
     {
 

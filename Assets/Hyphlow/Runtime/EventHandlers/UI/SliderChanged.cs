@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "Slider Changed",
                       "The block will execute when the user changes the value of target UI slider.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class SliderChanged : EventHandler
     {
         [Tooltip("The UI Slider that the user can click on")]

@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 	/// Base class for all of our physics event handlers
 	/// </summary>
 	[AddComponentMenu("")]
-	[MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+	[MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
 	public abstract class BasePhysicsEventHandler : EventHandler
 	{
 		[SerializeField] protected VarDataTagFilter _tagFilter = new VarDataTagFilter();

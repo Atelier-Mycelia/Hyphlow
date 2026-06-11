@@ -30,8 +30,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             {
                 return assets;
             }
-
-            assets = TryGetHyphlowEditorResourcesAssetFromPackages();
+            Debug.DebugBreak();
+            assets = TryGetHyphlowEditorResourcesAssetFromPackages();//
 
             if (assets != null)
             {
@@ -52,6 +52,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         private static HyphlowEditorSysAssets TryGetHyphlowEditorResourcesAssetFromPackages()
         {
             string[] guids = AssetDatabase.FindAssets($"t:{nameof(HyphlowEditorSysAssets)}");
+            string logMessage = $"Guid count: {guids.Length}. Guids: \n{string.Join(", ", guids)}";
             for (int i = 0; i < guids.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[i]);

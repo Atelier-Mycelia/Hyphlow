@@ -1,8 +1,8 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
-using AtMycelia.AmaniTween;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
+using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {

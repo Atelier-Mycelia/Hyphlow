@@ -25,7 +25,7 @@ namespace AtMycelia.Hyphlow
                       "Key Pressed",
                       "The block will execute when a key press event occurs.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class KeyPressed : EventHandler
     {
         [Tooltip("The type of keypress to activate on")]

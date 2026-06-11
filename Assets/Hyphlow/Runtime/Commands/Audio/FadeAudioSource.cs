@@ -1,7 +1,7 @@
 using UnityEngine;
 using AtMycelia.Hyphlow;
 
-namespace AtMycelia.AmaniTween.VScripting
+namespace AtMycelia.HyphaTween.VScripting
 {
     [CommandInfo("Audio",
                  "Fade Source",
