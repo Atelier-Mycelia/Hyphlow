@@ -66,7 +66,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 Undo.RecordObject(block as Block, "Replace Fade Sprite Commands");
 
                 var commands = block.CommandList;
-                for (int i = 0; i < commands.Count; i++)
+                for (sbyte i = 0; i < commands.Count; i++)
                 {
                     FadeSprite fadeSprite = commands[i] as FadeSprite;
                     if (fadeSprite == null)
@@ -82,7 +82,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     fadeColor.IndentLevel = fadeSprite.IndentLevel;
                     fadeColor.ParentBlock = block;
 
-                    block.ReplaceCommandAtIndex((byte)i, fadeColor);
+                    block.ReplaceCommandAtIndex(i, fadeColor);
 
                     ReplaceInFlowchartCache(flowchart, fadeSprite, fadeColor);
 

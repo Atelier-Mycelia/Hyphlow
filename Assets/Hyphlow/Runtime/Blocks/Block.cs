@@ -193,8 +193,8 @@ namespace AtMycelia.Hyphlow
         {
             // Give each child command a reference back to its parent block
             // and tell each command its index in the list.
-            byte index = 0;
-            for (byte i = 0; i < _legacyCommandList.Count; i++)
+            sbyte index = 0;
+            for (sbyte i = 0; i < _legacyCommandList.Count; i++)
             {
                 var command = _legacyCommandList[i];
                 if (command == null)
@@ -296,8 +296,8 @@ namespace AtMycelia.Hyphlow
         // do this in player builds, so we compile this bit out for those.
         protected virtual void Update()
         {
-            byte index = 0;
-            for (byte i = 0; i < _legacyCommandList.Count; i++)
+            sbyte index = 0;
+            for (sbyte i = 0; i < _legacyCommandList.Count; i++)
             {
                 var command = _legacyCommandList[i];
                 if (command == null) // Null entry will be deleted automatically later
@@ -661,10 +661,10 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool Add(ICommand cmd, bool triggerSignals = true)
         {
-            return Insert(cmd, (byte)_legacyCommandList.Count, triggerSignals);
+            return Insert(cmd, (sbyte)_legacyCommandList.Count, triggerSignals);
         }
 
-        public virtual bool Insert(ICommand cmd, byte index, bool triggerSignals)
+        public virtual bool Insert(ICommand cmd, sbyte index, bool triggerSignals)
         {
             bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd)
                 && existingCmd == cmd;
@@ -689,7 +689,7 @@ namespace AtMycelia.Hyphlow
                 _legacyCommandList.Insert(index, legCommand);
             }
 
-            legCommand.CommandIndex = (byte)index;
+            legCommand.CommandIndex = index;
 
             if (triggerSignals)
             {
@@ -831,7 +831,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        public virtual void ReplaceCommandAtIndex(byte index, ICommand newCommand)
+        public virtual void ReplaceCommandAtIndex(sbyte index, ICommand newCommand)
         {
             if (index >= _legacyCommandList.Count)
             {
@@ -847,7 +847,7 @@ namespace AtMycelia.Hyphlow
             Insert(newCommand, index, true);
         }
 
-        public virtual ICommand GetCommandAtIndex(byte index)
+        public virtual ICommand GetCommandAtIndex(sbyte index)
         {
             if (index >= _legacyCommandList.Count)
             {

@@ -12,8 +12,8 @@ namespace AtMycelia.Hyphlow
     public interface IBlock : IHasKey, IHasItemId<byte>, ICommandSource, IRefreshable,
         ICommandResetter
     {
-        ICommand GetCommandAtIndex(byte index);
-        void ReplaceCommandAtIndex(byte index, ICommand newCommand);
+        ICommand GetCommandAtIndex(sbyte index);
+        void ReplaceCommandAtIndex(sbyte index, ICommand newCommand);
         Flowchart ParentFlowchart { get; }
         bool SuppressAllAutoSelections { get; set; }
         ExecutionState ExecutionState { get; set; }
@@ -24,7 +24,7 @@ namespace AtMycelia.Hyphlow
         bool IsSelected { get; set; }
         bool IsControlSelected { get; set; }
 
-        bool Insert(ICommand cmd, byte index, bool triggerSignals);
+        bool Insert(ICommand cmd, sbyte index, bool triggerSignals);
 
         FilteredState FilteredState { get; set; }
         Rect _NodeRect { get; set; }
