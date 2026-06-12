@@ -23,19 +23,21 @@ We’re currently in open beta, and we welcome feedback, issues, and contributio
 
 # 📦 Installation
 
-## Unity 2022.3 (UPM from disk)
+## Git URL
+Add these packages (in order) via Package Manager, going with Add Package From Git Url instead of Add Package From Disk:
+1. https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib
+2. https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween
+3. https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow
+
+## UPM from Disk
+If the Git URL method didn't work, try this:
 1. Download a release from the Releases page
 2. Extract it into a folder you use for on‑disk UPM packages
 3. Open your Unity project
 4. Go to Package Manager
 5. Click + → Add package from disk
-6. Select package.json inside AtMyceliaCommonLib
-7. Repeat for the package.json inside Hyphlow
-
-## Unity 6+ (Git URL)
-Add these two packages via Package Manager, going with Add Package From Git Url instead of Add Package From Disk:
-1. https://github.com/Atelier-Mycelia/UnityUtils.git?path=Assets/AtMyceliaCommonLib
-2. https://github.com/Atelier-Mycelia/Hyphlow.git?path=Assets/Hyphlow
+6. Select package.json inside Assets/AtMyceliaCommonLib
+7. Repeat for the package.jsons inside HyphaTween and then Hyphlow
 
 # 🤖 AI Use Disclosure
 We use AI for:
