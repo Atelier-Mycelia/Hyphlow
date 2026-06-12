@@ -26,7 +26,7 @@ namespace AtMycelia.Hyphlow
 
         event Action<ICommand> ExecStarted;
         event Action<ICommand> ExecEnded;
-        byte CommandIndex { get; set; }
+        sbyte CommandIndex { get; set; }
 
         bool IsExecuting { get; set; }
         float ExecutionIconTimer { get; set; }
@@ -59,7 +59,7 @@ namespace AtMycelia.Hyphlow
     public interface ICommandFlowControl
     {
         void Continue();
-        void Continue(int nextCommandIndex);
+        void Continue(sbyte nextCommandIndex);
         void StopParentBlock();
         void OnStopExecuting();
     }

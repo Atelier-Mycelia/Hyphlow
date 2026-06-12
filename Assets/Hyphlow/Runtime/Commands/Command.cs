@@ -244,7 +244,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Index of the command in the parent Block's Command list.
         /// </summary>
-        public virtual byte CommandIndex { get; set; }
+        public virtual sbyte CommandIndex { get; set; }
 
         /// <summary>
         /// Set to true by the parent Block while the Command is executing.

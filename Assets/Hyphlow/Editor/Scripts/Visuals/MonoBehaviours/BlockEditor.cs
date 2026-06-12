@@ -763,7 +763,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 							null;
 						if (pastedCommand != null)
 						{
-						   flowchart.SelectedBlock.Insert(pastedCommand, (byte)pasteIndex++, true);
+						   flowchart.SelectedBlock.Insert(pastedCommand, (sbyte)pasteIndex++, true);
 						}
 					}
 
@@ -789,7 +789,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 			// ^So we can select the next (or previous) command after deletion for better UX.
 			int lastSelectedIndex = 0;
 			var selectedBlock = flowchart.SelectedBlock;
-            var commandList = selectedBlock.CommandList;
+			var commandList = selectedBlock.CommandList;
 			for (int i = commandList.Count - 1; i >= 0; --i)
 			{
 				ICommand command = commandList[i];
@@ -808,7 +808,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 						indexOfCmdAfter = i;
 						selectedBlock.Remove(command, false);
 
-                        lastSelectedIndex = i;
+						lastSelectedIndex = i;
 
 						break;
 					}
