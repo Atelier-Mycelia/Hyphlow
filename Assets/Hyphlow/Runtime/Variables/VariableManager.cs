@@ -921,7 +921,7 @@ namespace AtMycelia.Hyphlow
                 whatWeGot.Add(variable);
             }
 
-            if (!orderedSnapshot.SameContentsAs(whatWeGot))
+            if (!orderedSnapshot.SameContentsAs(whatWeGot as IList<IVariable>))
             {
                 Debug.LogWarning("Attempted to reorder variables with a list " +
                     "that doesn't have the same contents as the current variables. " +

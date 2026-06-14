@@ -36,7 +36,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             _entries.Clear();
             IEnumerable<BlockClipboardEntry> newEntries = blocks.Select(toCopy => new BlockClipboardEntry(toCopy, isCut));
             _entries.AddRange(newEntries);
-            _origBlocks.AddRange(blocks.ToList());
+            var castedBlocks = blocks.ToList() as IList<IBlock>;
+            _origBlocks.AddRange(castedBlocks);
         }
 
         public int EntryCount => _entries.Count;

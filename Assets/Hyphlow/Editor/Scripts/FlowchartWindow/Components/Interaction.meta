@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Hyphlow/Editor/Scripts/FlowchartWindow/Components/Interaction.meta
 guid: 8cd3084f0a18d1b49b6710771ee4c29f
+========
+guid: 6603f6da732b4e7498f4aa85f481551c
+>>>>>>>> develop:Assets/Hyphlow/Editor/Scripts/Extensions.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

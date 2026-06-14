@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
@@ -31,7 +30,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected AccessScope _scope = AccessScope.Public;
 
         [FormerlySerializedAs("itemId")]
-        [SerializeField] protected byte _itemId = 0; 
+        [SerializeField] protected byte _itemId = 0;
 
         [FormerlySerializedAs("sequenceName")]
         [Tooltip("The name of the block node as displayed in the Flowchart window")]
@@ -62,7 +61,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField] protected int _loadPriority;
         [SerializeField, HideInInspector] protected UnityObj _owner;
 
-        [SerializeField, HideInInspector] protected byte _nextValidCommandId = 1; 
+        [SerializeField, HideInInspector] protected byte _nextValidCommandId = 1;
         // ^Start at 1, since 0 is reserved for InvalidId
 
         public static readonly byte InvalidId = 0;
@@ -126,7 +125,7 @@ namespace AtMycelia.Hyphlow
 
         public virtual int PreviousActiveCommandIndex
         {
-            get { return _previousActiveCommandIndex; } 
+            get { return _previousActiveCommandIndex; }
             set { _previousActiveCommandIndex = value; }
         }
 
@@ -170,7 +169,7 @@ namespace AtMycelia.Hyphlow
         public virtual bool SuppressNextAutoSelection { get; set; } = true;
 
         [SerializeField] bool suppressAllAutoSelections = true;
-        
+
         protected virtual void Awake()
         {
             _owner = GetComponent<Flowchart>();
@@ -194,8 +193,8 @@ namespace AtMycelia.Hyphlow
         {
             // Give each child command a reference back to its parent block
             // and tell each command its index in the list.
-            byte index = 0;
-            for (byte i = 0; i < _legacyCommandList.Count; i++)
+            sbyte index = 0;
+            for (sbyte i = 0; i < _legacyCommandList.Count; i++)
             {
                 var command = _legacyCommandList[i];
                 if (command == null)
@@ -287,7 +286,7 @@ namespace AtMycelia.Hyphlow
             for (int i = 0; i < _legacyCommandList.Count; i++)
             {
                 var command = _legacyCommandList[i];
-                    command.Refresh();
+                command.Refresh();
             }
         }
 
@@ -297,8 +296,8 @@ namespace AtMycelia.Hyphlow
         // do this in player builds, so we compile this bit out for those.
         protected virtual void Update()
         {
-            byte index = 0;
-            for (byte i = 0; i < _legacyCommandList.Count; i++)
+            sbyte index = 0;
+            for (sbyte i = 0; i < _legacyCommandList.Count; i++)
             {
                 var command = _legacyCommandList[i];
                 if (command == null) // Null entry will be deleted automatically later
@@ -311,7 +310,7 @@ namespace AtMycelia.Hyphlow
 #endif
         //editor only state for speeding up flowchart window drawing
         public virtual bool IsSelected { get; set; }    //local cache of selectedness
-        
+
         public virtual FilteredState FilterState { get; set; } //local cache of filteredness
         public virtual bool IsControlSelected { get; set; } //local cache of being part of the control exclusion group
 
@@ -388,7 +387,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// The list of commands in the sequence.
         /// </summary>
-        public virtual IList<ICommand> CommandList => _legacyCommandList.OfType<ICommand>().ToList();
+        public virtual IReadOnlyList<ICommand> CommandList => _legacyCommandList;
 
         /// <summary>
         /// Controls the next command to execute in the block execution coroutine.
@@ -638,8 +637,8 @@ namespace AtMycelia.Hyphlow
             get => FilterState;
             set => FilterState = value;
         }
-        object IHasItemId.ItemId 
-        { 
+        object IHasItemId.ItemId
+        {
             get => ItemId;
             set
             {
@@ -662,10 +661,10 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public virtual bool Add(ICommand cmd, bool triggerSignals = true)
         {
-            return Insert(cmd, (byte)_legacyCommandList.Count, triggerSignals);
+            return Insert(cmd, (sbyte)_legacyCommandList.Count, triggerSignals);
         }
 
-        public virtual bool Insert(ICommand cmd, byte index, bool triggerSignals)
+        public virtual bool Insert(ICommand cmd, sbyte index, bool triggerSignals)
         {
             bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd)
                 && existingCmd == cmd;
@@ -690,7 +689,7 @@ namespace AtMycelia.Hyphlow
                 _legacyCommandList.Insert(index, legCommand);
             }
 
-            legCommand.CommandIndex = (byte)index;
+            legCommand.CommandIndex = index;
 
             if (triggerSignals)
             {
@@ -719,7 +718,7 @@ namespace AtMycelia.Hyphlow
 
             byte nextId = _nextValidCommandId;
             _nextValidCommandId++;
-            
+
             return nextId;
         }
 
@@ -756,7 +755,7 @@ namespace AtMycelia.Hyphlow
                     cmd.OnCommandRemoved(this);
                     CommandSignals.CommandRemoved(cmd, this);
                 }
-                
+
             }
             return successfulRemoval;
         }
@@ -829,6 +828,34 @@ namespace AtMycelia.Hyphlow
             {
                 result += $" in Flowchart: {this.ParentFlowchart.name}";
             }
+            return result;
+        }
+
+        public virtual void ReplaceCommandAtIndex(sbyte index, ICommand newCommand)
+        {
+            if (index >= _legacyCommandList.Count)
+            {
+                string errorMessage = $"Cannot replace command at index {index} because " +
+                    $"it is out of range for block {BlockName}.";
+                throw new IndexOutOfRangeException(errorMessage);
+            }
+            Command oldCommand = _legacyCommandList[index];
+            if (oldCommand != null)
+            {
+                Remove(oldCommand);
+            }
+            Insert(newCommand, index, true);
+        }
+
+        public virtual ICommand GetCommandAtIndex(sbyte index)
+        {
+            if (index >= _legacyCommandList.Count)
+            {
+                string errorMessage = $"Cannot get command at index {index} because " +
+                    $"it is out of range for block {BlockName}.";
+                throw new IndexOutOfRangeException(errorMessage);
+            }
+            ICommand result = _legacyCommandList[index];
             return result;
         }
     }

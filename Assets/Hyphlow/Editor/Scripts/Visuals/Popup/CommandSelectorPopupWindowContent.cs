@@ -164,23 +164,23 @@ namespace AtMycelia.Hyphlow.EditorExt
             var flowchart = block.GetFlowchart();
 
             // Use index of last selected command in list, or end of list if nothing selected.
-            int index = -1;
-            for (int i = 0; i < flowchart.SelectedCommands.Count; i++)
+            sbyte index = -1;
+            for (sbyte i = 0; i < flowchart.SelectedCommands.Count; i++)
             {
                 var command = flowchart.SelectedCommands[i];
                 if (command.CommandIndex + 1 > index)
                 {
-                    index = command.CommandIndex + 1;
+                    index = (sbyte)(command.CommandIndex + 1);
                 }
             }
             if (index == -1)
             {
-                index = block.CommandList.Count;
+                index = (sbyte)block.CommandList.Count;
             }
 
             var newCommand = Undo.AddComponent(block.gameObject, commandType) as Command;
             Undo.RecordObject(block, "Set command type");
-            byte insertIndex = (byte)Mathf.Clamp(index, 0, block.Commands.Count);
+            sbyte insertIndex = (sbyte)Mathf.Clamp(index, 0, block.Commands.Count);
             block.Insert(newCommand, insertIndex, true);
             flowchart.AddSelectedCommand(newCommand);
 

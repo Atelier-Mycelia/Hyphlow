@@ -1,13 +1,29 @@
 {
   "dependencies": {
-    "com.ateliermycelia.unityutils": {
-      "version": "https://github.com/Atelier-Mycelia/UnityUtils.git?path=Assets/AtMyceliaCommonLib#develop",
+    "com.ateliermycelia.commonlib": {
+      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       },
-      "hash": "653c38f397c7da1572a6a8b774ea046ef5572afb"
+      "hash": "b83654d6c07e7d7c2413358c24d5eaa1d09428f5"
+    },
+    "com.ateliermycelia.hyphatween": {
+      "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.ateliermycelia.commonlib": "1.3.1"
+      },
+      "hash": "e5fea3829e317eba31633dc4930182c25d0c46ee"
+    },
+    "com.handzlikchris.fastscriptreload": {
+      "version": "https://github.com/handzlikchris/FastScriptReload.git?path=Assets",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "51140b71d9e5df1de231b33ec20ee089b18bebec"
     },
     "com.handzlikchris.fastscriptreload": {
       "version": "https://github.com/handzlikchris/FastScriptReload.git?path=Assets",

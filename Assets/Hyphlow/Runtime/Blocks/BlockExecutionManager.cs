@@ -97,7 +97,7 @@ namespace AtMycelia.Hyphlow
                     _executingBlocks[block.ItemId] = block;
                 }
 
-                IList<ICommand> commands = block.CommandList;
+                IReadOnlyList<ICommand> commands = block.CommandList;
                 for (int j = 0; j < commands.Count; j++)
                 {
                     ICommand command = commands[j];
@@ -312,7 +312,7 @@ namespace AtMycelia.Hyphlow
             // is violated, then it's likely that something has gone very wrong in
             // the execution environment, and we allow exceptions to be thrown in
             // that case rather than trying to handle them gracefully.
-            IList<ICommand> commandsAtStart = blockToExec.CommandList;
+            IReadOnlyList<ICommand> commandsAtStart = blockToExec.CommandList;
 
             onComplete ??= delegate { };
 
@@ -354,7 +354,7 @@ namespace AtMycelia.Hyphlow
                     blockToExec.NextExecCmdIndex = -1;
                 }
 
-                IList<ICommand> commands = blockToExec.CommandList;
+                IReadOnlyList<ICommand> commands = blockToExec.CommandList;
                 if (commands == null || commandCursor >= commands.Count)
                 {
                     break;
@@ -639,7 +639,7 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            IList<ICommand> commands = block.CommandList;
+            IReadOnlyList<ICommand> commands = block.CommandList;
             for (int i = 0; i < commands.Count; i++)
             {
                 SubscribeCommand(commands[i]);
@@ -709,8 +709,8 @@ namespace AtMycelia.Hyphlow
 #endif
         }
 
-        private static void TrySelectExecutingCommand(Flowchart flowchart, IBlock block, IList<ICommand> commands,
-            int commandIndex, bool suppressSelectionChanges)
+        private static void TrySelectExecutingCommand(Flowchart flowchart, IBlock block, 
+            IReadOnlyList<ICommand> commands, int commandIndex, bool suppressSelectionChanges)
         {
 #if UNITY_EDITOR
             if (flowchart == null || suppressSelectionChanges)

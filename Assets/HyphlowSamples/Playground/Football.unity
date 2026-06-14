@@ -1847,7 +1847,7 @@ MonoBehaviour:
     _value: 0.65
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2843,7 +2843,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2901,7 +2901,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -4903,7 +4903,7 @@ Transform:
   m_GameObject: {fileID: 1541256040}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

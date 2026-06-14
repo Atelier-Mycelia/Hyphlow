@@ -27,11 +27,6 @@ protected StringData blockName = new StringData("");
             return LocationIdentifier;
         }
 
-        public string GetLocationIdentifier()
-        {
-            return LocationIdentifier;
-        }
-
         #region Public members
 
         public override void OnEnter()

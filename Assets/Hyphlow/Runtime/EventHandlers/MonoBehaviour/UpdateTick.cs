@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "Update",
                       "The block will execute every chosen Update, or FixedUpdate or LateUpdate.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class UpdateTick : EventHandler
     {
         [System.Flags]

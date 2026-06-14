@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                       "Collision",
                       "The block will execute when a 2d or 3d physics collision matching some basic conditions is met.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class Collision : BasePhysicsEventHandler
     {
         [Tooltip("Optional variable to store the collision that caused the collision to occur.")]

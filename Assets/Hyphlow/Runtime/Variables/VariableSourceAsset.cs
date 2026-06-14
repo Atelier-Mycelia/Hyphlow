@@ -184,16 +184,23 @@ namespace AtMycelia.Hyphlow
         /// use GetVarsByContentType instead.
         /// 
         /// </summary>
-        public virtual IList<Muscariable> GetVarsByType<TVar>(bool strict = false) where TVar : Muscariable
+        public virtual IList<TVar> GetVarsByType<TVar>(bool strict = false) where TVar : Muscariable
         {
-            return GetVarsByType(typeof(TVar));
+            return (IList<TVar>)GetVarsByType(typeof(TVar));
         }
 
         public virtual IList<Muscariable> GetVarsByType(Type varType)
         {
-            IList<Muscariable> result = _varManager.GetMultiVariablesOfType(varType)
-                .OfType<Muscariable>()
-                .ToList();
+            IList<Muscariable> result = new List<Muscariable>();
+            var multiVarsOfType = _varManager.GetMultiVariablesOfType(varType);
+            for (int i = 0; i < multiVarsOfType.Count; i++)
+            {
+                var currentVar = multiVarsOfType[i];
+                if (currentVar is Muscariable muscari)
+                {
+                    result.Add(muscari);
+                }
+            }
             return result;
         }
 
@@ -202,7 +209,13 @@ namespace AtMycelia.Hyphlow
             if (newOrder == null || newOrder.Count == 0) return;
 
             IList<IVariable> whatWeGot = Variables.ToList();
-            bool sameContents = whatWeGot.SameContentsAs(newOrder);
+            var newOrderToPass = newOrder;
+
+            if (newOrder is not IReadOnlyList<IVariable>) // To avoid a crash from the casting below
+            {
+                newOrderToPass = newOrder.ToList();
+            }
+            bool sameContents = whatWeGot.SameContentsAs((IReadOnlyList<IVariable>)newOrderToPass);
             if (!sameContents)
             {
                 Debug.LogWarning($"VariableSource: ReorderVariables called with a list that " +
@@ -483,7 +496,7 @@ namespace AtMycelia.Hyphlow
 
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
-            return ((IMuscariableSource)_varManager).AddNewVariableOfContentType(contentType, key);
+            return (_varManager).AddNewVariableOfContentType(contentType, key);
         }
 
 #endif

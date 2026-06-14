@@ -1,8 +1,8 @@
 using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
-using AtMycelia.AmaniTween;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
+using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
@@ -30,7 +30,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             Debug.Log($"Doing default asset maintenance...");
             EnsureFlowchartGlobalDefaults();
             EnsureHyphlowRuntimeSysAssets();//
-            EnsureDefaultTweenAdapter();
             EnsureVariableRegistryConfigs();
         }
 
@@ -85,36 +84,6 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             DefaultFlowchartConfigMaintenance.EnsureFcGlobalDefaults();
             return FlowchartGlobalDefaults.S;
-        }
-
-        public static DefaultTweenAdapter EnsureDefaultTweenAdapter()
-        {
-            DefaultTweenAdapter adaptor = HyphlowRuntimeSysAssets.S.TweenAdapter;
-            if (adaptor == null)
-            {
-                string[] guidsRaw = AssetDatabase.FindAssets($"t:{nameof(DefaultTweenAdapter)}");
-                List<string> guids = new List<string>(guidsRaw);
-                guids.Sort();
-                if (guids.Count > 0)
-                {
-                    if (guids.Count > 1)
-                    {
-                        Debug.LogWarning($"Multiple {nameof(DefaultTweenAdapter)} assets found. Using the last.");
-                    }
-
-                    string path = AssetDatabase.GUIDToAssetPath(guids[guids.Count - 1]);
-                    adaptor = AssetDatabase.LoadAssetAtPath<DefaultTweenAdapter>(path);
-                }
-
-                if (adaptor == null)
-                {
-                    adaptor = SOUtils.EnsureSOExists<DefaultTweenAdapter>(_pathToRuntimeResourceFolder,
-                        "DefaultTweenAdapter");
-                }
-            }
-
-            HyphlowRuntimeSysAssets.S.TweenAdapter = adaptor;
-            return adaptor;
         }
 
         public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()

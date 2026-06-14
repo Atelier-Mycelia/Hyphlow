@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Hyphlow/Editor/Scripts/FlowchartWindow/Contracts.meta
 guid: 84cc8998443e45e418483cd4cfba94a7
+========
+guid: 1ce4015aabc2ff443aaa1f74fcb2c42e
+>>>>>>>> develop:Assets/Hyphlow/Editor/Scripts/FlowchartWindow/Clipboard.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
