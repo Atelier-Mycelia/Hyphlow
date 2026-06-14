@@ -548,7 +548,7 @@ namespace AtMycelia.Hyphlow
 
         // Subclasses might need this to do tweens, so we provide a default one here.
         // Subclasses can override this if they want to use a different tween adapter.
-        protected virtual DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+        protected virtual DefaultTweenAdapter DefaultTweener => DefaultTweenAdapter.S;
 
         object IHasItemId.ItemId
         {

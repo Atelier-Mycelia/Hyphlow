@@ -1,8 +1,6 @@
-using AtMycelia.Hyphlow.Sys;
 using NUnit.Framework;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
-using AtMycelia.Hyphlow.HyphaTweenInt;
 using AtMycelia.HyphaTween;
 
 public class DefaultAdapterTests
@@ -19,7 +17,7 @@ public class DefaultAdapterTests
         _adapter = DefaultTweener; 
     }
 
-    private static DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+    private static DefaultTweenAdapter DefaultTweener => DefaultTweenAdapter.S;
     protected GameObject _testGo;
 
     [TearDown]

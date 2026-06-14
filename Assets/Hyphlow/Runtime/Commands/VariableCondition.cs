@@ -20,6 +20,7 @@ namespace AtMycelia.Hyphlow
         [SerializeField]
         [FormerlySerializedAs("anyOrAllConditions")]
         protected AnyOrAll _anyOrAllConditions;
+
         [SerializeField]
         [FormerlySerializedAs("conditions")]
         protected List<ConditionExpression> _conditions = new List<ConditionExpression>();

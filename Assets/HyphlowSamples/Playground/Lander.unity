@@ -400,7 +400,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &109228315
@@ -1038,7 +1038,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &510833760
@@ -1281,8 +1281,10 @@ MonoBehaviour:
   _flowchartSettings: {fileID: 0}
   _description: 
   _uiModel:
-    _selectedLegacyBlocks: []
-    _selectedLegacyCommands: []
+    _selectedLegacyBlocks:
+    - {fileID: 510833795}
+    _selectedLegacyCommands:
+    - {fileID: 510833791}
     _owner: {fileID: 510833760}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
@@ -2199,7 +2201,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2282,7 +2284,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2365,7 +2367,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2496,8 +2498,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeRect:
     serializedVersion: 2
-    x: 383
-    y: 80
+    x: 500
+    y: 163
     width: 60
     height: 40
   tint: {r: 1, g: 1, b: 1, a: 1}
@@ -2732,7 +2734,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &566141931
@@ -3348,7 +3350,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1048978832
@@ -3612,7 +3614,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1179951648
@@ -3892,7 +3894,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1179951652
@@ -5733,7 +5735,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -5874,7 +5876,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -6069,7 +6071,7 @@ MonoBehaviour:
     _value: 0.75
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -6532,7 +6534,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -6860,7 +6862,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1542295273
@@ -7049,7 +7051,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1686887673
@@ -7321,7 +7323,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1754461815
@@ -7510,7 +7512,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1866514146
@@ -7699,7 +7701,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2041045148
@@ -7873,7 +7875,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &2041045151
@@ -8077,7 +8079,7 @@ SpriteRenderer:
   m_Size: {x: 3, y: 3}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1660057539 &9223372036854775807

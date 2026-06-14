@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0d9ea5d89c01e4a802268533d8d236, type: 3}
   m_Name: HyphlowRuntimeSysAssets
   m_EditorClassIdentifier: 
-  _tweenAdapter: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenAdapter: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _variableRegistryConfigs:
   - {fileID: 11400000, guid: 6c2b6e9c96680d941a553729c3e45e1b, type: 2}
   - {fileID: 11400000, guid: 9be06ea628dc76f48be705330aba6a06, type: 2}

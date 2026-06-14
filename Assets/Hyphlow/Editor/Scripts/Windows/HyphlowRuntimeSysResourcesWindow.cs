@@ -86,7 +86,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 objectType = typeof(DefaultTweenAdapter),
                 allowSceneObjects = false
             };
-            _tweenAdapterField.RegisterValueChangedCallback(OnTweenAdapterChanged);
 
             _addVariableRegistryConfigButton = new Button(OnAddVariableRegistryConfig)
             {
@@ -122,11 +121,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (_assets == null)
             {
                 return;
-            }
-
-            if (_tweenAdapterField != null)
-            {
-                _tweenAdapterField.SetValueWithoutNotify(_assets.TweenAdapter);
             }
 
             RefreshVariableRegistryConfigList();
@@ -264,17 +258,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             List<VariableRegistryConfig> configs = new List<VariableRegistryConfig>(_variableRegistryConfigBuffer);
             _assets.VariableRegistryConfigs = configs;
-        }
-
-        private void OnTweenAdapterChanged(ChangeEvent<Object> evt)
-        {
-            if (_assets == null)
-            {
-                return;
-            }
-
-            _assets.TweenAdapter = evt.newValue as DefaultTweenAdapter;
-            _tweenAdapterField.SetValueWithoutNotify(_assets.TweenAdapter);
         }
 
         private sealed class VariableRegistryConfigRow
