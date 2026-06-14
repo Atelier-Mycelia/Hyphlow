@@ -16,29 +16,7 @@ namespace AtMycelia.Hyphlow.Sys
     /// </summary>
     public sealed class HyphlowRuntimeSysAssets : ScriptableObject
     {
-        [SerializeField] private DefaultTweenAdapter _tweenAdapter;
         [SerializeField] private List<VariableRegistryConfig> _variableRegistryConfigs = new List<VariableRegistryConfig>();
-
-        public DefaultTweenAdapter TweenAdapter
-        {
-            get => _tweenAdapter;
-            set
-            {
-                if (Application.isPlaying)
-                {
-                    ShowWarningAboutPlayModeMutations();
-                    return;
-                }
-
-                if (_tweenAdapter == value)
-                {
-                    return;
-                }
-
-                _tweenAdapter = value;
-                this.MarkDirtyAndSave();
-            }
-        }
 
         public IReadOnlyList<VariableRegistryConfig> VariableRegistryConfigs
         {

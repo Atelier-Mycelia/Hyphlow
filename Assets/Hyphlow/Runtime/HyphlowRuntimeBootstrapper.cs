@@ -4,7 +4,7 @@ using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow
 {
-    public static class HyphlowBootstrapper
+    public static class HyphlowRuntimeBootstrapper
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void BootstrapOnRuntimeLoad()
@@ -16,19 +16,25 @@ namespace AtMycelia.Hyphlow
 
         private static void EnsureHyphlowReady()
         {
-            if (_essentialsHolder != null)
+            if (hyphlowRoot != null)
             {
                 return;
             }
 
             var managerPrefab = Resources.Load<GameObject>(_pathToHyphlowManagerPrefab);
-            _essentialsHolder = UnityObj.Instantiate(managerPrefab);
-            _essentialsHolder.name = managerPrefab.name;
+            hyphlowRoot = UnityObj.Instantiate(managerPrefab);
+            UnityObj.DontDestroyOnLoad(hyphlowRoot);
+            hyphlowRoot.name = managerPrefab.name;
+
+            RootBootstrapper.EnsureRoot();
+            var atMyceliaRoot = RootBootstrapper.Root.gameObject;
+            hyphlowRoot.transform.SetParent(atMyceliaRoot.transform, true);
         }
 
-        private static readonly string _pathToHyphlowManagerPrefab = "Runtime/Prefabs/HyphlowManager";
+        private static GameObject hyphlowRoot;
 
-        private static GameObject _essentialsHolder;
+        private static readonly string _pathToHyphlowManagerPrefab = 
+            "Runtime/Prefabs/Hyphlow";
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {

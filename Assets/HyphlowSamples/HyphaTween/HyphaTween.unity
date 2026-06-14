@@ -313,8 +313,7 @@ MonoBehaviour:
   _flowchartSettings: {fileID: 0}
   _description: 
   _uiModel:
-    _selectedLegacyBlocks:
-    - {fileID: 470391100}
+    _selectedLegacyBlocks: []
     _selectedLegacyCommands: []
     _owner: {fileID: 470391086}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
@@ -335,7 +334,7 @@ MonoBehaviour:
   _loadPriority: 0
   _alwaysKeepGuid: 1
   nextValidVarID: 5
-  _uniqueId: 
+  _uniqueId: b964ed52-73fc-4080-8d52-43a7f88c5286
   references:
     version: 2
     RefIds: []
@@ -383,7 +382,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ea8f56c43254d41728f5ac4e8299b6c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d99e5954653daba4e9d7bd5b70b6b81f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -510,7 +509,7 @@ MonoBehaviour:
     _value: 2
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 2
   _repeats:
@@ -619,7 +618,7 @@ MonoBehaviour:
     _value: 2
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 2
   _repeats:
@@ -767,7 +766,7 @@ MonoBehaviour:
     _value: 0.01
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 2
   _repeats:
@@ -1200,6 +1199,7 @@ GameObject:
   - component: {fileID: 868139087}
   - component: {fileID: 868139089}
   - component: {fileID: 868139088}
+  - component: {fileID: 868139090}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -1233,6 +1233,7 @@ MonoBehaviour:
   _description: 
   _legacyEventHandler: {fileID: 868139016}
   _legacyCommandList:
+  - {fileID: 868139090}
   - {fileID: 868139032}
   - {fileID: 868139017}
   - {fileID: 868139087}
@@ -1252,7 +1253,7 @@ MonoBehaviour:
   _includeInSaves: 1
   _loadPriority: 0
   _owner: {fileID: 868138993}
-  _nextValidCommandId: 1
+  _nextValidCommandId: 2
   suppressAllAutoSelections: 0
 --- !u!114 &868138993
 MonoBehaviour:
@@ -1284,14 +1285,16 @@ MonoBehaviour:
     to apply simple
     animation effects to objects'
   _uiModel:
-    _selectedLegacyBlocks: []
-    _selectedLegacyCommands: []
+    _selectedLegacyBlocks:
+    - {fileID: 868138992}
+    _selectedLegacyCommands:
+    - {fileID: 868139043}
     _owner: {fileID: 868138990}
     <ScrollPos>k__BackingField: {x: 246.72437, y: -49.961945}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
     <Zoom>k__BackingField: 0.8000001
-    <BlockViewHeight>k__BackingField: 231
+    <BlockViewHeight>k__BackingField: 225
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
       x: 0
@@ -1305,7 +1308,7 @@ MonoBehaviour:
   _loadPriority: 0
   _alwaysKeepGuid: 1
   nextValidVarID: 12
-  _uniqueId: 
+  _uniqueId: 560f7c6b-5a1e-46ed-a185-a5a668662cd2
   references:
     version: 2
     RefIds: []
@@ -1597,7 +1600,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 1
   _repeats:
@@ -1698,8 +1701,8 @@ MonoBehaviour:
   _itemId: 40
   _indentLevel: 0
   getOrSet: 0
-  property: 11
-  transformData:
+  _property: 11
+  _transformData:
     _backingVarRef:
       _itemId: 6
       _owningSource: {fileID: 868138993}
@@ -1713,7 +1716,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139032
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1776,7 +1779,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 1
   _repeats:
@@ -1877,8 +1880,8 @@ MonoBehaviour:
   _itemId: 33
   _indentLevel: 0
   getOrSet: 0
-  property: 11
-  transformData:
+  _property: 11
+  _transformData:
     _backingVarRef:
       _itemId: 5
       _owningSource: {fileID: 868138993}
@@ -1892,7 +1895,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139035
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1951,7 +1954,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2032,7 +2035,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2090,7 +2093,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2157,7 +2160,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 2
   _repeats:
@@ -2259,7 +2262,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2317,7 +2320,7 @@ MonoBehaviour:
     _value: 0.5
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2423,7 +2426,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _startMode: 1
   _relativity: 1
   _repeats:
@@ -2517,8 +2520,8 @@ MonoBehaviour:
   _itemId: 49
   _indentLevel: 0
   getOrSet: 0
-  property: 1
-  transformData:
+  _property: 1
+  _transformData:
     _backingVarRef:
       _itemId: 5
       _owningSource: {fileID: 868138993}
@@ -2532,7 +2535,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139048
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2628,7 +2631,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2688,8 +2691,8 @@ MonoBehaviour:
   _itemId: 60
   _indentLevel: 0
   getOrSet: 0
-  property: 8
-  transformData:
+  _property: 8
+  _transformData:
     _backingVarRef:
       _itemId: 5
       _owningSource: {fileID: 868138993}
@@ -2703,7 +2706,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139052
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -2727,7 +2730,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2907,7 +2910,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -2991,8 +2994,8 @@ MonoBehaviour:
   _itemId: 67
   _indentLevel: 0
   getOrSet: 0
-  property: 1
-  transformData:
+  _property: 1
+  _transformData:
     _backingVarRef:
       _itemId: 6
       _owningSource: {fileID: 868138993}
@@ -3006,7 +3009,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139058
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3063,7 +3066,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3138,8 +3141,8 @@ MonoBehaviour:
   _itemId: 68
   _indentLevel: 0
   getOrSet: 0
-  property: 11
-  transformData:
+  _property: 11
+  _transformData:
     _backingVarRef:
       _itemId: 5
       _owningSource: {fileID: 868138993}
@@ -3153,7 +3156,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139061
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3241,8 +3244,8 @@ MonoBehaviour:
   _itemId: 77
   _indentLevel: 0
   getOrSet: 0
-  property: 8
-  transformData:
+  _property: 8
+  _transformData:
     _backingVarRef:
       _itemId: 7
       _owningSource: {fileID: 868138993}
@@ -3256,7 +3259,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139065
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3313,7 +3316,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3420,7 +3423,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3694,7 +3697,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3875,7 +3878,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -3959,8 +3962,8 @@ MonoBehaviour:
   _itemId: 94
   _indentLevel: 0
   getOrSet: 0
-  property: 1
-  transformData:
+  _property: 1
+  _transformData:
     _backingVarRef:
       _itemId: 7
       _owningSource: {fileID: 868138993}
@@ -3974,7 +3977,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139082
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -3998,7 +4001,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -4082,8 +4085,8 @@ MonoBehaviour:
   _itemId: 96
   _indentLevel: 0
   getOrSet: 0
-  property: 1
-  transformData:
+  _property: 1
+  _transformData:
     _backingVarRef:
       _itemId: 6
       _owningSource: {fileID: 868138993}
@@ -4097,7 +4100,7 @@ MonoBehaviour:
     _owningSource: {fileID: 868138993}
     legacyOwningFc: {fileID: 0}
     legacyOwningVsa: {fileID: 0}
-  inOutVarOld: {fileID: 0}
+  _inOutVarOld: {fileID: 0}
 --- !u!114 &868139084
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -4121,7 +4124,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -4250,7 +4253,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -4379,7 +4382,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -4575,6 +4578,30 @@ MonoBehaviour:
     _nextValidBlockId: 1
     _blockOwner: {fileID: 868138993}
   _cachedFlowchart: {fileID: 868138993}
+--- !u!114 &868139090
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 868138990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fab8abf0343545abbfebd9a7b7b34bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemId: 1
+  _indentLevel: 0
+  _logType: 0
+  _logMessage:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 0}
+      legacyOwningFc: {fileID: 0}
+      legacyOwningVsa: {fileID: 0}
+    _value: HyphaTween demo scene started!
+    stringRef: {fileID: 0}
+    stringVal: 
 --- !u!1 &1090256565
 GameObject:
   m_ObjectHideFlags: 0
@@ -4636,7 +4663,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ea8f56c43254d41728f5ac4e8299b6c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d99e5954653daba4e9d7bd5b70b6b81f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4758,7 +4785,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ea8f56c43254d41728f5ac4e8299b6c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d99e5954653daba4e9d7bd5b70b6b81f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4954,7 +4981,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ea8f56c43254d41728f5ac4e8299b6c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d99e5954653daba4e9d7bd5b70b6b81f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

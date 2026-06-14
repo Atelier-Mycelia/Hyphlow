@@ -52,7 +52,7 @@ namespace AtMycelia.HyphaTween.VScripting
 
         protected virtual void GoWithDefaultTweener()
         {
-            _tweenerSO = HyphlowRuntimeSysAssets.S.TweenAdapter;
+            _tweenerSO = DefaultTweener;
         }
 
         protected override void RefreshVariableDataCache()
