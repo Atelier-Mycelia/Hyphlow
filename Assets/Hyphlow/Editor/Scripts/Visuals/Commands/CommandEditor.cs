@@ -231,10 +231,22 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             List<GUIContent> objectNames = new List<GUIContent>();
 
-            T selectedObject = property.objectReferenceValue as T;
-
             int selectedIndex = -1; // Invalid index
+            T selectedObject = default;
 
+            bool invalidRefValue = property.objectReferenceValue == null;
+            //if (invalidRefValue)
+            //{
+            //    // Let's use an EditorGUIField to let the user know about the invalid value.
+            //    EditorGUILayout.BeginHorizontal();
+            //    EditorGUILayout.PrefixLabel(label);
+            //    EditorGUILayout.LabelField(new GUIContent($"<Invalid Reference: expected type {typeof(T).Name}>"), EditorStyles.helpBox);
+            //    EditorGUILayout.EndHorizontal();
+            //    return;
+            //}
+
+            selectedObject = (T)property.objectReferenceValue;
+            
             // First option in list is <None>
             objectNames.Add(nullLabel);
             if (selectedObject == null)
