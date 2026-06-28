@@ -1,7 +1,5 @@
 using System;
-using System.Diagnostics;
 using UnityEditor;
-using UnityEngine;
 using UnityEditor.SceneManagement;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;

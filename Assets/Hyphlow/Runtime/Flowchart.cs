@@ -6,8 +6,6 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using AtMycelia.Hyphlow.EditorExt;
 
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -140,11 +138,10 @@ protected int version = 0;
         }
         #endregion
 
-        protected StringSubstituter _stringSubstituter = new StringSubstituter();
-
         public virtual string SubstituteVariables(string input)
         {
-            string result = _stringSubstituter.SubstituteStrings(input);
+            var sub = StringVarSubstitutionService.Shared;
+            string result = sub.SubstituteVariables(input, this);
             return result;
         }
 
