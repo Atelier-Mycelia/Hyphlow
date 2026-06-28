@@ -117,7 +117,7 @@ namespace AtMycelia.Hyphlow
 				{
 					string logMessage = $"Fixing the size of Block {currentBlock.BlockName}. " +
 						$"There may be an underlying problem.";
-                   Debug.LogWarning(logMessage);
+				   Debug.LogWarning(logMessage);
 					Rect fixedRect = new Rect(nodeRect.position, DefaultConfig.BlockSize);
 					currentBlock._NodeRect = fixedRect;
 				}
@@ -355,10 +355,10 @@ namespace AtMycelia.Hyphlow
 				return;
 			}
 
-            EnsureValidIdFor(toAdd);
+			EnsureValidIdFor(toAdd);
 			if (toAdd == null || DefaultConfig == null)
 			{
-              Debug.LogError("Failed to ensure valid ID for Block being added to caches, or default config is missing.");
+			  Debug.LogError("Failed to ensure valid ID for Block being added to caches, or default config is missing.");
 				Debug.Break();
 				return;
 			}
@@ -384,7 +384,7 @@ namespace AtMycelia.Hyphlow
 			}
 		}
 
-      private static FlowchartGlobalDefaults DefaultConfig
+	  private static FlowchartGlobalDefaults DefaultConfig
 		{
 			get
 			{

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityObj = UnityEngine.Object;
 using LegacyBlock = AtMycelia.Hyphlow.Block;
 

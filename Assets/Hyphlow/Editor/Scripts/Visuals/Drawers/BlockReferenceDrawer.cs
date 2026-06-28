@@ -31,8 +31,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            FlowchartRegistry.EnsureInitialized();
-
             Flowchart localFlowchart = GetLocalFlowchart(targetObject);
             IReadOnlyList<Flowchart> flowcharts = FlowchartRegistry.GetFlowcharts();
 
@@ -41,6 +39,14 @@ namespace AtMycelia.Hyphlow.EditorExt
             RegisterBlocksIn(localFlowchart);
             void RegisterBlocksIn(Flowchart blockSource)
             {
+                if (blockSource == null)
+                {
+                    // In this case, the BlockReference is probably on an Mb script
+                    // that isn't attached to a GameObject with a Flowchart. 
+                    // That's perfectly valid; it just means we won't have a "this"
+                    // option in the dropdown menu.
+                    return;
+                }
                 IReadOnlyList<IBlock> blocks = blockSource.Blocks;
                 for (int j = 0; j < blocks.Count; j++)
                 {
@@ -69,15 +75,20 @@ namespace AtMycelia.Hyphlow.EditorExt
                     options.Add(optionLabel);
                 }
             }
-            for (int i = 0; i < flowcharts.Count; i++)
-            {
-                Flowchart flowchart = flowcharts[i];
-                if (flowchart == null || flowchart == localFlowchart)
-                {
-                    continue;
-                }
 
-                RegisterBlocksIn(flowchart);
+            RegisterBlocksInNonLocalFlowcharts();
+            void RegisterBlocksInNonLocalFlowcharts()
+            {
+                for (int i = 0; i < flowcharts.Count; i++)
+                {
+                    Flowchart flowchart = flowcharts[i];
+                    if (flowchart == null || flowchart == localFlowchart)
+                    {
+                        continue;
+                    }
+
+                    RegisterBlocksIn(flowchart);
+                }
             }
 
             int currentItemId = itemIdProp.intValue;
@@ -218,6 +229,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             return EditorGUIUtility.singleLineHeight;
         }
 
-        
+
     }
 }

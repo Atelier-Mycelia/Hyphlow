@@ -1,16 +1,17 @@
 using UnityEngine.Serialization;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Scripting.APIUpdating;
+using AtMycelia.Hyphlow.HyphaTweenInt;
 
 namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// Select which type of fade will be applied.
     /// </summary>
-    [MovedFrom("AtMycelia.Amanita.VScripting.Legacy")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Legacy")]
     public enum FadeMode
     {
         /// <summary> Fade the alpha color component only. </summary>
@@ -25,7 +26,7 @@ namespace AtMycelia.Hyphlow.Legacy
     [CommandInfo("UI",
                  "Fade UI",
                  "Fades a UI object")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.Legacy")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Legacy")]
     public class FadeUI : TweenUI 
     {
         [SerializeField] [FormerlySerializedAs("fadeMode")]

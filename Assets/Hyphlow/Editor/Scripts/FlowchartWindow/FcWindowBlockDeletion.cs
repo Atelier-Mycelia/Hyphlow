@@ -54,7 +54,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         private void DestroyThoroughly(IBlock block)
         {
             // Destroy each command on the block
-            IList<ICommand> commands = block.CommandList;
+            var commands = block.CommandList;
             for (int i = 0; i < commands.Count; i++)
             {
                 ICommand cmd = commands[i];

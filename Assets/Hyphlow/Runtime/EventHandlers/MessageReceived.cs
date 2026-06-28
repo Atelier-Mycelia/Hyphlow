@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                       "Message Received",
                       "The block will execute when the specified message is received from a Send Message command.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class MessageReceived : EventHandler 
     {
         [Tooltip("Fungus message to listen for")]

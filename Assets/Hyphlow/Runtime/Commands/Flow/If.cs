@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                  "If", 
                  "If the test expression is true, execute the following command block.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Commands")]
     public class If : VariableCondition
     {
     }

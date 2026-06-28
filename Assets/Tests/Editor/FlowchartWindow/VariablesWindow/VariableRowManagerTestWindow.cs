@@ -10,7 +10,7 @@ using UnityRandom = UnityEngine.Random;
 using AtMycelia.Hyphlow;
 
 // Optional: avoid pulling conflicting types into the global scope
-using AtMycelia.EditorUtils;
+using AtMycelia.EditorExt;
 using AtMycelia.Collections;
 using AtMycelia;
 using AtMycelia.Hyphlow.EditorExt;
@@ -681,13 +681,13 @@ namespace VScriptingTests.VariableOperations
             {
                 if (_colliderThreeDObjects.Count < _cacheCapacity)
                 {
-                    var colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
+                    IList<Collider> colliderThreeDsFound = go.GetComponentsInChildren<Collider>();
                     _colliderThreeDObjects.AddRange(colliderThreeDsFound, _cacheCapacity);
                 }
 
                 if (_colliderTwoDObjects.Count < _cacheCapacity)
                 {
-                    var colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
+                    IList<Collider2D> colliderTwoDsFound = go.GetComponentsInChildren<Collider2D>();
                     _colliderTwoDObjects.AddRange(colliderTwoDsFound, _cacheCapacity);
                 }
 

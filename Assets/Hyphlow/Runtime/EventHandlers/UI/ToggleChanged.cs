@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
                       "toggle object changes. The state of the toggle is stored in the " +
                       "Toggle State boolean variable.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class ToggleChanged : EventHandler
     {   
         [Tooltip("The block will execute when the state of the target UI toggle object changes.")]

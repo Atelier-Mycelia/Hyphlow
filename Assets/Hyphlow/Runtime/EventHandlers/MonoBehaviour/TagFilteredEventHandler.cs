@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     /// Base class for all of our physics event handlers
     /// </summary>
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
 	public abstract class TagFilteredEventHandler : EventHandler
     {
         protected StringData[] _tagFilter = new StringData[0];

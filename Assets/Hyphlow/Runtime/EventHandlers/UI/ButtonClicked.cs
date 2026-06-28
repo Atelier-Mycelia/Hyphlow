@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "Button Clicked",
                       "The block will execute when the user clicks on the target UI button object.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class ButtonClicked : EventHandler
     {
         [Tooltip("The UI Button that the user can click on")]

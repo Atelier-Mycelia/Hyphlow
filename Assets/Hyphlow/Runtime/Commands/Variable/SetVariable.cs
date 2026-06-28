@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
                 "variable of the same type.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    [MovedFrom("AtMycelia.Amanita.VScripting.Commands")]
+    [MovedFrom("AtMycelia.Mycorrhiza.Commands")]
     public class SetVariable : Command
     {
         [Tooltip("The type of math operation to be performed")]

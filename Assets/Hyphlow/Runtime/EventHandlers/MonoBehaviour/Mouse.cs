@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                       "The block will execute when the desired OnMouse* " +
                       "message for the Monobehaviour is received.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class Mouse : EventHandler
     {
 

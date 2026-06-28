@@ -748,12 +748,12 @@ namespace AtMycelia.Hyphlow.EditorExt
 			}
 
 			var bufferCommands = commandCopyBuffer.GetCommands();
-            for (int i = 0; i < bufferCommands.Length; i++)
-            {
+			for (int i = 0; i < bufferCommands.Length; i++)
+			{
 				var command = bufferCommands[i];
-                // Using the Editor copy / paste functionality instead instead of reflection
-                // because this does a deep copy of the command properties.
-                if (ComponentUtility.CopyComponent(command))
+				// Using the Editor copy / paste functionality instead instead of reflection
+				// because this does a deep copy of the command properties.
+				if (ComponentUtility.CopyComponent(command))
 				{
 					if (ComponentUtility.PasteComponentAsNew(flowchart.gameObject))
 					{
@@ -763,7 +763,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 							null;
 						if (pastedCommand != null)
 						{
-						   flowchart.SelectedBlock.Insert(pastedCommand, (byte)pasteIndex++, true);
+						   flowchart.SelectedBlock.Insert(pastedCommand, (sbyte)pasteIndex++, true);
 						}
 					}
 
@@ -788,7 +788,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 			int indexOfCmdBefore = -1, indexOfCmdAfter = -1;
 			// ^So we can select the next (or previous) command after deletion for better UX.
 			int lastSelectedIndex = 0;
-			var commandList = flowchart.SelectedBlock.CommandList;
+			var selectedBlock = flowchart.SelectedBlock;
+			var commandList = selectedBlock.CommandList;
 			for (int i = commandList.Count - 1; i >= 0; --i)
 			{
 				ICommand command = commandList[i];
@@ -805,7 +806,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 						Undo.RecordObject(flowchart.SelectedBlock as UnityObj, "Delete");
 						indexOfCmdBefore = i - 1;
 						indexOfCmdAfter = i;
-						commandList.RemoveAt(i);
+						selectedBlock.Remove(command, false);
 
 						lastSelectedIndex = i;
 

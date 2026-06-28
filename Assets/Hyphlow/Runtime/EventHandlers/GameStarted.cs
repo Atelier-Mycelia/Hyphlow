@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                       "Game Started",
                       "The block will execute when the game starts playing.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Amanita.VScripting.EventHandlers")]
+    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
     public class GameStarted : EventHandler
     {
         [Tooltip("Wait for a number of frames after startup before executing the Block. Can help fix startup order issues.")]

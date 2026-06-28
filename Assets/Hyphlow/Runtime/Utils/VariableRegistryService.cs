@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using AtMycelia.Hyphlow.Sys;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace AtMycelia.Hyphlow
@@ -74,6 +76,7 @@ namespace AtMycelia.Hyphlow
 
 #if UNITY_EDITOR
                 Selection.selectionChanged += OnSelectionChanged;
+                EditorSceneManager.sceneOpened += OnSceneOpened;
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 #endif
 
@@ -103,6 +106,7 @@ namespace AtMycelia.Hyphlow
 
 #if UNITY_EDITOR
                 Selection.selectionChanged -= OnSelectionChanged;
+                EditorSceneManager.sceneOpened -= OnSceneOpened;
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
 #endif
 
@@ -115,6 +119,11 @@ namespace AtMycelia.Hyphlow
                     }
                 }
             }
+        }
+
+        private void OnSceneOpened(Scene scene, OpenSceneMode mode)
+        {
+            RebuildAll();
         }
 
         private void OnFcRegFullRefreshed()

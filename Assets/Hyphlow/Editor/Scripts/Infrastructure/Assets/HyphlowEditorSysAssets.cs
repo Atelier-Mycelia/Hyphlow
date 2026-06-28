@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
+using PackageUtils = AtMycelia.EditorExt.PackageUtils;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
@@ -80,13 +81,29 @@ private Texture2D pro;
                     }
                     else
                     {
+                        bool weAreInPackages = PackageUtils.HasPackageWithName("Hyphlow");
+                        // ^When this is true, best get the one under Packages
+                        string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+                        for (int i = 1; i < guids.Length; i++)
+                        {
+                            string pathToCheck = AssetDatabase.GUIDToAssetPath(guids[i]);
+                            bool foundIt = !pathToCheck.Contains("Assets") &&
+                                pathToCheck.Contains("Packages") &&
+                                pathToCheck.Contains("Hyphlow");
+                            if (foundIt)
+                            {
+                                path = pathToCheck;
+                                break;
+                            }
+                        }
+
                         if (guids.Length > 1)
                         {
                             Debug.LogError("Multiple HyphlowEditorSysAssets assets found!");
                         }
 
-                        string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-                        _instance = AssetDatabase.LoadAssetAtPath(path, typeof(HyphlowEditorSysAssets)) as HyphlowEditorSysAssets;
+                        _instance = AssetDatabase.LoadAssetAtPath(path, 
+                            typeof(HyphlowEditorSysAssets)) as HyphlowEditorSysAssets;
                     }
                 }
 

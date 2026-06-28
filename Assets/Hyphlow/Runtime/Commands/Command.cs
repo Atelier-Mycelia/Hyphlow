@@ -1,6 +1,6 @@
 using AtMycelia.Amanita;
 using AtMycelia.Hyphlow.Sys;
-using AtMycelia.AmaniTween;
+using AtMycelia.HyphaTween;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -244,7 +244,7 @@ namespace AtMycelia.Hyphlow
         /// <summary>
         /// Index of the command in the parent Block's Command list.
         /// </summary>
-        public virtual byte CommandIndex { get; set; }
+        public virtual sbyte CommandIndex { get; set; }
 
         /// <summary>
         /// Set to true by the parent Block while the Command is executing.
@@ -548,7 +548,7 @@ namespace AtMycelia.Hyphlow
 
         // Subclasses might need this to do tweens, so we provide a default one here.
         // Subclasses can override this if they want to use a different tween adapter.
-        protected virtual DefaultTweenAdapter DefaultTweener => HyphlowRuntimeSysAssets.S.TweenAdapter;
+        protected virtual DefaultTweenAdapter DefaultTweener => DefaultTweenAdapter.S;
 
         object IHasItemId.ItemId
         {
