@@ -97,8 +97,9 @@ protected CallMode callMode;
             _variableDataCache.Add(_targetObject);
         }
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             try
             {
                 PrepareTargets();
