@@ -5,14 +5,21 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
-    /// For ensuring that certain editor-only assets are created and maintained, such as the HyphlowEditorSysAssets asset.
+    /// For ensuring that certain editor-only assets are created and maintained,
+    /// such as the HyphlowEditorSysAssets asset.
     /// </summary>
     public static class DefaultEditorAssetMaintenance 
     {
         public static void InitializeAfterAssembliesLoaded()
         {
-            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuring;
-            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
+            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
+            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
+        }
+
+        private static void DoTheEnsuringDelayed()
+        {
+            EditorApplication.delayCall -= DoTheEnsuringDelayed;
+            DoTheEnsuring();
         }
 
         private static void DoTheEnsuring()

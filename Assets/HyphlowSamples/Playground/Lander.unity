@@ -2875,8 +2875,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 973132909}
-  - component: {fileID: 973132908}
   - component: {fileID: 973132907}
+  - component: {fileID: 973132908}
   - component: {fileID: 973132911}
   - component: {fileID: 973132910}
   m_Layer: 0
@@ -2934,7 +2934,7 @@ MonoBehaviour:
   _loadPriority: 0
   _alwaysKeepGuid: 1
   nextValidVarID: 4
-  _uniqueId: 
+  _uniqueId: 9624477f-6b45-40b6-a5fe-887ca7ff6c24
   references:
     version: 2
     RefIds: []

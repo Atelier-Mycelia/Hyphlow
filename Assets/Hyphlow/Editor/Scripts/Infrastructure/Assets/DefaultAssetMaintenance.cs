@@ -9,20 +9,23 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// <summary>
     /// For ensuring that certain default assets are present in the project.
     /// </summary>
-    public static class DefaultAssetMaintenance 
+    public static class DefaultAssetMaintenance
     {
         public static void InitializeAfterAssembliesLoaded()
         {
-            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuring;
-            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
+            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
+            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
         }
 
         public static void InitializeBeforeSceneLoad()
         {
             // This is to help make sure that the Singletons aren't lost for too long.
-#if UNITY_EDITOR
             DoTheEnsuring();
-#endif
+        }
+
+        private static void DoTheEnsuringDelayed()
+        {
+            EditorApplication.delayCall += DoTheEnsuring;
         }
 
         private static void DoTheEnsuring()
@@ -31,6 +34,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             EnsureFlowchartGlobalDefaults();
             EnsureHyphlowRuntimeSysAssets();//
             EnsureVariableRegistryConfigs();
+
         }
 
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
@@ -60,7 +64,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 else
                 {
                     logMessage = $"Couldn't find any instances of {nameof(HyphlowRuntimeSysAssets)} " +
-                        $"in the Assets folder. Will create one. If you see this message outside of a " + 
+                        $"in the Assets folder. Will create one. If you see this message outside of a " +
                         $"Dev build of Hyphlow, please file a bug report.";
                     Debug.LogWarning(logMessage);
                 }
