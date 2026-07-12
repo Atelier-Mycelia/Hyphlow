@@ -77,6 +77,9 @@ namespace AtMycelia.Hyphlow.EditorExt
                 }
             }
 
+            logMessage = $"Could not find {nameof(HyphlowEditorSysAssets)} in packages. If you see " +
+                $"this message outside of a dev build, please file a bug report.";
+            Debug.LogError(logMessage);
             return null;
         }
 
