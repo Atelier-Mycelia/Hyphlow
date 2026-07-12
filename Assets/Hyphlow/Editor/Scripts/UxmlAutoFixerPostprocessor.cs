@@ -2,11 +2,10 @@ using System.IO;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using UnityEditorInternal;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    public class UxmlAutoFixerPostprocessor : AssetPostprocessor
+    public class HyphlowUxmlAutoFixerPostprocessor : AssetPostprocessor
     {
         private static bool hasRun = false;
 
@@ -19,7 +18,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets,
             string[] movedAssets, string[] movedFromPaths)
         {
-            if (hasRun)//
+            if (hasRun)
                 return;
 
             // Trigger only when Hyphlow package assets are imported
@@ -34,67 +33,46 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-         // Needed for LogEntries
-
-    private static void RunFixer()
-    {
-        Debug.Log("[Hyphlow] Running automatic UXML path fixer...");
-
-        // --- Suppress warnings during fix ---
-        bool oldValidation = EditorPrefs.GetBool("UIBuilder.disableUxmlSchemaValidation", false);
-        EditorPrefs.SetBool("UIBuilder.disableUxmlSchemaValidation", true);
-
-        LogEntries.Clear(); // Clear existing warnings
-
-        // Find all UXMLs inside the Hyphlow package
-        string[] guids = AssetDatabase.FindAssets("t:VisualTreeAsset",
-            new[] { "Packages/com.ateliermycelia.hyphlow" });
-
-        int fixedCount = 0;
-
-        foreach (string guid in guids)
+        private static void RunFixer()
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            if (!path.EndsWith(".uxml"))
-                continue;
+            Debug.Log("[Hyphlow] Running automatic UXML path fixer...");
 
-            string text = File.ReadAllText(path);
-            string newText = RewriteUxml(text);
+            // Find all UXMLs inside the Hyphlow package
+            string[] guids = AssetDatabase.FindAssets("t:VisualTreeAsset",
+                new[] { "Packages/com.ateliermycelia.hyphlow" });
 
-            if (newText != text)
+            int fixedCount = 0;
+
+            foreach (string guid in guids)
             {
-                File.WriteAllText(path, newText);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!path.EndsWith(".uxml"))
+                    continue;
 
-                // Suppress warnings generated during import
-                LogEntries.Clear();
+                string text = File.ReadAllText(path);
+                string newText = RewriteUxml(text);
 
-                AssetDatabase.ImportAsset(path);
-
-                // Clear warnings again after import
-                LogEntries.Clear();
-
-                fixedCount++;
-                Debug.Log($"[Hyphlow] Updated UXML: {path}");
+                if (newText != text)
+                {
+                    File.WriteAllText(path, newText);
+                    AssetDatabase.ImportAsset(path);
+                    fixedCount++;
+                    Debug.Log($"[Hyphlow] Updated UXML: {path}");
+                }
             }
+
+            Debug.Log($"[Hyphlow] UXML auto-fix complete. Updated {fixedCount} files.");
         }
 
-        // --- Restore validation ---
-        EditorPrefs.SetBool("UIBuilder.disableUxmlSchemaValidation", oldValidation);
-
-        Debug.Log($"[Hyphlow] UXML auto-fix complete. Updated {fixedCount} files.");
-
-        // Final cleanup
-        LogEntries.Clear();
-    }
-
-    private static string RewriteUxml(string text)
+        private static string RewriteUxml(string text)
         {
             return StyleSrcRegex.Replace(text, match =>
             {
                 string url = match.Groups["url"].Value;
 
                 // Extract guid
-                var guidMatch = Regex.Match(url, @"guid=(?<guid>[a-fA-F0-9]{32})", RegexOptions.IgnoreCase);
+                var guidMatch = Regex.Match(url, @"guid=(?<guid>[a-fA-F0-9]{32})", 
+                    RegexOptions.IgnoreCase);
                 if (!guidMatch.Success)
                     return match.Value;
 
@@ -140,5 +118,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             });
         }
     }
+
 
 }
