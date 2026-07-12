@@ -2,27 +2,29 @@ using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
-using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// For ensuring that certain default assets are present in the project.
     /// </summary>
-    public static class DefaultAssetMaintenance 
+    public static class DefaultAssetMaintenance
     {
         public static void InitializeAfterAssembliesLoaded()
         {
-            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuring;
-            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
+            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
+            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
         }
 
         public static void InitializeBeforeSceneLoad()
         {
             // This is to help make sure that the Singletons aren't lost for too long.
-#if UNITY_EDITOR
             DoTheEnsuring();
-#endif
+        }
+
+        private static void DoTheEnsuringDelayed()
+        {
+            EditorApplication.delayCall += DoTheEnsuring;
         }
 
         private static void DoTheEnsuring()
@@ -33,10 +35,16 @@ namespace AtMycelia.Hyphlow.EditorExt
             EnsureVariableRegistryConfigs();
         }
 
+        public static FlowchartGlobalDefaults EnsureFlowchartGlobalDefaults()
+        {
+            DefaultFlowchartConfigMaintenance.EnsureFcGlobalDefaults();
+            return FlowchartGlobalDefaults.S;
+        }
+
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
         {
             HyphlowRuntimeSysAssets assets = HyphlowRuntimeSysAssets.S;
-
+            string logMessage;
             if (assets == null)
             {
                 string[] guidsRaw = AssetDatabase.FindAssets($"t:{nameof(HyphlowRuntimeSysAssets)}");
@@ -44,7 +52,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 // Sort the guids by alphabetical order so we can be sure to check the ones in
                 // the Packages folder first.
                 guids.Sort();
-                string logMessage;
+                
                 if (guids.Count > 0)
                 {
                     if (guids.Count > 1)
@@ -57,18 +65,17 @@ namespace AtMycelia.Hyphlow.EditorExt
                     string path = AssetDatabase.GUIDToAssetPath(guids[guids.Count - 1]);
                     assets = AssetDatabase.LoadAssetAtPath<HyphlowRuntimeSysAssets>(path);
                 }
-                else
-                {
-                    logMessage = $"Couldn't find any instances of {nameof(HyphlowRuntimeSysAssets)} " +
-                        $"in the Assets folder. Will create one. If you see this message outside of a " + 
-                        $"Dev build of Hyphlow, please file a bug report.";
-                    Debug.LogWarning(logMessage);
-                }
             }
 
+            // Be it in a dev build or on users' actual projects, we expect to have the runtime sys
+            // assets in the Resouurces folder. Hence why if we don't find it there,
+            // we create a new one in the expected location.
             if (assets == null)
             {
-                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToAtMyceliaResourceFolder,
+                logMessage = $"Creating a new instance of {nameof(HyphlowRuntimeSysAssets)} in the " +
+                    $"{_pathToRuntimeResourceFolder} folder.";
+                Debug.Log(logMessage);
+                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToRuntimeResourceFolder,
                     "HyphlowRuntimeSysAssets");
             }
 
@@ -76,15 +83,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             return assets;
         }
 
-        private static readonly string _pathToRuntimeResourceFolder = "Runtime"; // Relative to Resources
-        private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia";
+        private static readonly string _pathToRuntimeResourceFolder = "AtMycelia/Runtime"; // Relative to Resources
         // Relative to Resources under Assets/
-
-        public static FlowchartGlobalDefaults EnsureFlowchartGlobalDefaults()
-        {
-            DefaultFlowchartConfigMaintenance.EnsureFcGlobalDefaults();
-            return FlowchartGlobalDefaults.S;
-        }
 
         public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
         {
@@ -112,7 +112,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             {
                 Debug.LogWarning($"Couldn't find any instances of {nameof(VariableRegistryConfig)} " +
                     $"in the Assets folder. Will create a default one.");
-                var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToAtMyceliaResourceFolder,
+                var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToRuntimeResourceFolder,
                     "VariableRegistryConfig");
                 sysAssets.AddVrc(defaultConfig);
             }

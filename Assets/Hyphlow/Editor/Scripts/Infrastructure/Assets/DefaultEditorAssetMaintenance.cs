@@ -5,14 +5,21 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
-    /// For ensuring that certain editor-only assets are created and maintained, such as the HyphlowEditorSysAssets asset.
+    /// For ensuring that certain editor-only assets are created and maintained,
+    /// such as the HyphlowEditorSysAssets asset.
     /// </summary>
     public static class DefaultEditorAssetMaintenance 
     {
         public static void InitializeAfterAssembliesLoaded()
         {
-            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuring;
-            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuring;
+            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
+            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
+        }
+
+        private static void DoTheEnsuringDelayed()
+        {
+            EditorApplication.delayCall -= DoTheEnsuringDelayed;
+            DoTheEnsuring();
         }
 
         private static void DoTheEnsuring()
@@ -44,6 +51,11 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return all[0];
             }
 
+            string logMessage = $"Could not find {nameof(HyphlowEditorSysAssets)} in Packages " +
+                $"or Resources. Creating a new one at path: " +
+                $"{_pathToEditorResourceFolder}/{nameof(HyphlowEditorSysAssets)}.asset\n" + 
+                "If you see this message outside of a dev build, please file a bug report.";
+            Debug.Log(logMessage);
             assets = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_pathToEditorResourceFolder,
                 "HyphlowEditorSysAssets");
             return assets;
@@ -66,10 +78,14 @@ namespace AtMycelia.Hyphlow.EditorExt
                 HyphlowEditorSysAssets assets = AssetDatabase.LoadAssetAtPath<HyphlowEditorSysAssets>(path);
                 if (assets != null)
                 {
+                    Debug.Log($"Found {nameof(HyphlowEditorSysAssets)} in packages at path: {path}");
                     return assets;
                 }
             }
 
+            logMessage = $"Could not find {nameof(HyphlowEditorSysAssets)} in packages. If you see " +
+                $"this message outside of a dev build, please file a bug report.";
+            Debug.LogError(logMessage);
             return null;
         }
 
