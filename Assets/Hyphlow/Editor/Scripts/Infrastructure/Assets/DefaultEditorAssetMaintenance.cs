@@ -18,8 +18,19 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void DoTheEnsuringDelayed()
         {
-            EditorApplication.delayCall -= DoTheEnsuringDelayed;
-            DoTheEnsuring();
+            int framesToWait = 10;
+            EditorApplication.delayCall += () =>
+            {
+                framesToWait--;
+                if (framesToWait <= 0)
+                {
+                    DoTheEnsuring();
+                }
+                else
+                {
+                    EditorApplication.delayCall += DoTheEnsuringDelayed;
+                }
+            };
         }
 
         private static void DoTheEnsuring()

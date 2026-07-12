@@ -64,8 +64,8 @@ private Texture2D pro;
 
         private static HyphlowEditorSysAssets _instance;
         private static readonly string _subfolderLocation = "Editor"; // Relative to Resources folder
-        private static readonly string _searchFilter = "t:HyphlowEditorSysAssets";
-        private static readonly string _assetName = "HyphlowEditorSysAssets";
+        private static readonly string _searchFilter = $"t:{nameof(HyphlowEditorSysAssets)}";
+        private static readonly string _assetName = nameof(HyphlowEditorSysAssets);
 
         public static HyphlowEditorSysAssets S
         {
@@ -77,7 +77,10 @@ private Texture2D pro;
 
                     if (guids.Length == 0)
                     {
-                        _instance = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_subfolderLocation, _assetName);
+                        Debug.Log($"No {nameof(HyphlowEditorSysAssets)} asset found. " +
+                            $"Creating a new one at {_subfolderLocation}/{_assetName}.asset");
+                        _instance = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_subfolderLocation,
+                            _assetName);
                     }
                     else
                     {
@@ -104,6 +107,7 @@ private Texture2D pro;
 
                         _instance = AssetDatabase.LoadAssetAtPath(path, 
                             typeof(HyphlowEditorSysAssets)) as HyphlowEditorSysAssets;
+                        Debug.Log($"Found {nameof(HyphlowEditorSysAssets)} at path: {path}");
                     }
                 }
 
