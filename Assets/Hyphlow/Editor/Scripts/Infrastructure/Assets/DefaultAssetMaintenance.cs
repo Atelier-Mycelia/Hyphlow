@@ -2,7 +2,6 @@ using AtMycelia.Hyphlow.Sys;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 using System.Collections.Generic;
-using AtMycelia.HyphaTween;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
@@ -34,7 +33,12 @@ namespace AtMycelia.Hyphlow.EditorExt
             EnsureFlowchartGlobalDefaults();
             EnsureHyphlowRuntimeSysAssets();//
             EnsureVariableRegistryConfigs();
+        }
 
+        public static FlowchartGlobalDefaults EnsureFlowchartGlobalDefaults()
+        {
+            DefaultFlowchartConfigMaintenance.EnsureFcGlobalDefaults();
+            return FlowchartGlobalDefaults.S;
         }
 
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
@@ -72,7 +76,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (assets == null)
             {
-                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToAtMyceliaResourceFolder,
+                assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToRuntimeResourceFolder,
                     "HyphlowRuntimeSysAssets");
             }
 
@@ -80,15 +84,11 @@ namespace AtMycelia.Hyphlow.EditorExt
             return assets;
         }
 
-        private static readonly string _pathToRuntimeResourceFolder = "Runtime"; // Relative to Resources
+        private static readonly string _pathToRuntimeResourceFolder = "AtMycelia/Runtime"; // Relative to Resources
         private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia";
         // Relative to Resources under Assets/
 
-        public static FlowchartGlobalDefaults EnsureFlowchartGlobalDefaults()
-        {
-            DefaultFlowchartConfigMaintenance.EnsureFcGlobalDefaults();
-            return FlowchartGlobalDefaults.S;
-        }
+        
 
         public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
         {
@@ -116,7 +116,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             {
                 Debug.LogWarning($"Couldn't find any instances of {nameof(VariableRegistryConfig)} " +
                     $"in the Assets folder. Will create a default one.");
-                var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToAtMyceliaResourceFolder,
+                var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToRuntimeResourceFolder,
                     "VariableRegistryConfig");
                 sysAssets.AddVrc(defaultConfig);
             }

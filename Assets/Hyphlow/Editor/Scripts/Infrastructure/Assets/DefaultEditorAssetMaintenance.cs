@@ -51,6 +51,11 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return all[0];
             }
 
+            string logMessage = $"Could not find {nameof(HyphlowEditorSysAssets)} in Packages " +
+                $"or Resources. Creating a new one at path: " +
+                $"{_pathToEditorResourceFolder}/{nameof(HyphlowEditorSysAssets)}.asset\n" + 
+                "If you see this message outside of a dev build, please file a bug report.";
+            Debug.Log(logMessage);
             assets = SOUtils.EnsureSOExists<HyphlowEditorSysAssets>(_pathToEditorResourceFolder,
                 "HyphlowEditorSysAssets");
             return assets;
@@ -73,6 +78,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 HyphlowEditorSysAssets assets = AssetDatabase.LoadAssetAtPath<HyphlowEditorSysAssets>(path);
                 if (assets != null)
                 {
+                    Debug.Log($"Found {nameof(HyphlowEditorSysAssets)} in packages at path: {path}");
                     return assets;
                 }
             }
