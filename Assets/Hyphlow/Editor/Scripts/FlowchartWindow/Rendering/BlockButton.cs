@@ -219,7 +219,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             style.transformOrigin = new TransformOrigin(0f, 0f, 0f); // To make sure the connections render right
+
+#if UNITY_6000_0_OR_NEWER
+            style.scale = new Scale(new Vector3(zoom, zoom, 1f));
+#else
             transform.scale = new Vector3(zoom, zoom, 1f);
+#endif
         }
 
         private void UpdateSize()
