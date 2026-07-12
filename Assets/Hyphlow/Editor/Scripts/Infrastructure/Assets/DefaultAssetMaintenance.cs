@@ -44,7 +44,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         public static HyphlowRuntimeSysAssets EnsureHyphlowRuntimeSysAssets()
         {
             HyphlowRuntimeSysAssets assets = HyphlowRuntimeSysAssets.S;
-
+            string logMessage;
             if (assets == null)
             {
                 string[] guidsRaw = AssetDatabase.FindAssets($"t:{nameof(HyphlowRuntimeSysAssets)}");
@@ -52,7 +52,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 // Sort the guids by alphabetical order so we can be sure to check the ones in
                 // the Packages folder first.
                 guids.Sort();
-                string logMessage;
+                
                 if (guids.Count > 0)
                 {
                     if (guids.Count > 1)
@@ -65,17 +65,16 @@ namespace AtMycelia.Hyphlow.EditorExt
                     string path = AssetDatabase.GUIDToAssetPath(guids[guids.Count - 1]);
                     assets = AssetDatabase.LoadAssetAtPath<HyphlowRuntimeSysAssets>(path);
                 }
-                else
-                {
-                    logMessage = $"Couldn't find any instances of {nameof(HyphlowRuntimeSysAssets)} " +
-                        $"in the Assets folder. Will create one. If you see this message outside of a " +
-                        $"Dev build of Hyphlow, please file a bug report.";
-                    Debug.LogWarning(logMessage);
-                }
             }
 
+            // Be it in a dev build or on users' actual projects, we expect to have the runtime sys
+            // assets in the Resouurces folder. Hence why if we don't find it there,
+            // we create a new one in the expected location.
             if (assets == null)
             {
+                logMessage = $"Creating a new instance of {nameof(HyphlowRuntimeSysAssets)} in the " +
+                    $"{_pathToRuntimeResourceFolder} folder.";
+                Debug.Log(logMessage);
                 assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(_pathToRuntimeResourceFolder,
                     "HyphlowRuntimeSysAssets");
             }
@@ -85,10 +84,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
 
         private static readonly string _pathToRuntimeResourceFolder = "AtMycelia/Runtime"; // Relative to Resources
-        private static readonly string _pathToAtMyceliaResourceFolder = "AtMycelia";
         // Relative to Resources under Assets/
-
-        
 
         public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
         {
