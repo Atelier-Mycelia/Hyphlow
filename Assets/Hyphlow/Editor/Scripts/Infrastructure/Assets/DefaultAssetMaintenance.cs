@@ -63,6 +63,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     }
 
                     string path = AssetDatabase.GUIDToAssetPath(guids[guids.Count - 1]);
+                    Debug.Log($"Found {nameof(HyphlowRuntimeSysAssets)} at path: {path}");
                     assets = AssetDatabase.LoadAssetAtPath<HyphlowRuntimeSysAssets>(path);
                 }
             }
@@ -89,7 +90,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
         {
             var sysAssets = HyphlowRuntimeSysAssets.S;
-
+            string logMessage;
             // VarRegistryConfigs should be under the Assets folder isntead of the Packages folder, so
             // we don't need to make sure we're working with one under Packag4es.
             string[] guids = AssetDatabase.FindAssets($"t:{nameof(VariableRegistryConfig)}");
@@ -110,8 +111,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
             else
             {
-                Debug.LogWarning($"Couldn't find any instances of {nameof(VariableRegistryConfig)} " +
-                    $"in the Assets folder. Will create a default one.");
+                logMessage = $"(If you just installed Hyphlow, please ignore this warning.)\n" +
+                    $"No instances of {nameof(VariableRegistryConfig)} found in the " +
+                    $"Assets folder. Creating a default one at {_pathToRuntimeResourceFolder}.";
+                Debug.LogWarning(logMessage);
                 var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToRuntimeResourceFolder,
                     "VariableRegistryConfig");
                 sysAssets.AddVrc(defaultConfig);
