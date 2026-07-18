@@ -22,6 +22,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void ListenForEvents()
         {
+            BlockSignals.BlockLeftClicked += OnBlockLeftClicked;
             BlockSignals.BlockSelected += OnBlockSelected;
             BlockSignals.BlockDeselected += OnBlockDEselected;
             BlockSignals.MultiBlocksSelected += OnMultiBlocksSelected;
@@ -34,6 +35,11 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             AssemblyReloadEvents.beforeAssemblyReload += DisposeInspector;
             EditorApplication.quitting += DisposeInspector;
+        }
+
+        private static void OnBlockLeftClicked(IBlock block, Event _)
+        {
+            Show(block);
         }
 
         private static void OnBlockSelected(IBlock block)

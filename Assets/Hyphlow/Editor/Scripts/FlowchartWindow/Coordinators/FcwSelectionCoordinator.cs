@@ -4,8 +4,8 @@ using UitkLabel = UnityEngine.UIElements.Label;
 namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
     /// <summary>
-    /// Coordinates selection changes in the flowchart window, ensuring that the correct flowchart is selected
-    /// and displayed when the selection changes.
+    /// Coordinates selection changes in the flowchart window, ensuring that the
+    /// correct flowchart is selected and displayed when the selection changes.
     /// </summary>
     internal sealed class FcwSelectionCoordinator
     {

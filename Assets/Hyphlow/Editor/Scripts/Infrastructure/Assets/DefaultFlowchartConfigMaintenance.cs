@@ -122,6 +122,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 string next = $"{current}/{parts[i]}";
                 if (!AssetDatabase.IsValidFolder(next))
                 {
+                    string logMessage = $"Creating folder: {next} in DefaultFlowchartConfigMaintenance";
+                    Debug.Log(logMessage);
                     AssetDatabase.CreateFolder(current, parts[i]);
                 }
 

@@ -47,7 +47,18 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Refresh()
         {
+            RefreshLabels();
             _graphicsRenderer?.RefreshNow();
+        }
+
+        private void RefreshLabels()
+        {
+            _fcNameLabel.text = Flowchart != null ? 
+                $"FC: {Flowchart.name}" : 
+                string.Empty;
+            _zoomAmountLabel.text = Flowchart != null ?
+                $"Zoom: {Mathf.Round(Flowchart.Zoom * 100)}%" :
+                string.Empty;
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

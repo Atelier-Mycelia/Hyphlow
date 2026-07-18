@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
@@ -57,6 +58,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public override VisualElement CreateInspectorGUI()
         {
+            
             LogLifecycle(nameof(CreateInspectorGUI), "Entered");
 
             var rootElement = new VisualElement();
@@ -95,6 +97,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             rootElement.Add(inspectorRoot);
             LogLifecycle(nameof(CreateInspectorGUI), "Returning inspector root");
+
+            rootElement.schedule.Execute(() => rootElement.MarkDirtyRepaint());
+            // ^ Might compensate for a 6.3 glitch where the Flowchart and Variable
+            // Manager Inspectors freak out until your restart the project. This is
+            // a temporary workaround until Unity fixes the issue.
+
             return rootElement;
         }
 

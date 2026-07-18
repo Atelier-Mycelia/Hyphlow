@@ -2,29 +2,34 @@
 {
     /* -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
     -unity-font-definition: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
+    --amaranth-font: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK');
+    --exo2-font: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
+    --noto-sans-jp-font: resource('Runtime/Fonts/NotoSansJP/NotoSansJP-Regular SDF-UITK');
+    --noto-serif-jp-font: resource('Runtime/Fonts/NotoSerifJP/NotoSerifJP-VariableFont_wght SDF');
     --fc-name-label-color: var(--unity-text-default-color);
 }
 
 .fcNameLabel 
 {
-    -unity-font-definition: var(--main-font);
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 10px;
-    margin-left: 10px;
-    --unity-text-align: middle-center;
+    -unity-font-definition: var(--exo2-font);
+    font-size: 24px;
+    -unity-font-style: bold;
+    margin-top: 15px;
+    margin-left: 15px;
+    --unity-text-align: upper-left;
     color: var(--fc-name-label-color);
     position: absolute;
 }
 
 .zoom-label 
 {
+    -unity-font-definition: var(--exo2-font);
     width: 160px;
     height: 50px;
-    margin: 10px 10px 0 0;
+    margin: 15px 15px 0 0;
     padding: 0;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 24px;
+    -unity-font-style: bold;
     align-self: flex-end;
     -unity-text-align: upper-right;
 }
