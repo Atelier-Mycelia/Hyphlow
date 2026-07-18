@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
@@ -52,6 +53,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 VariableSignals.VariableAdded += OnVarAddedOrRemoved;
                 VariableSignals.VariableRemoved += OnVarAddedOrRemoved;
 
+                Undo.postprocessModifications += OnPostprocessModifications;
                 EditorApplication.playModeStateChanged += _onPlayModeStateChanged;
                 CommandSignals.CommandSelected += _moduleHost.ModuleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged += _onZoomChanged;
@@ -69,10 +71,33 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 VariableSignals.VariableAdded -= OnVarAddedOrRemoved;
                 VariableSignals.VariableRemoved -= OnVarAddedOrRemoved;
 
+                Undo.postprocessModifications -= OnPostprocessModifications;
                 EditorApplication.playModeStateChanged -= _onPlayModeStateChanged;
                 CommandSignals.CommandSelected -= _moduleHost.ModuleDispatcher.NotifyCommandSelected;
                 FlowchartWindowSignals.ZoomChanged -= _onZoomChanged;
             }
+        }
+
+        private UndoPropertyModification[] OnPostprocessModifications(
+            UndoPropertyModification[] modifications)
+        {
+            for (int i = 0; i < modifications.Length; i++)
+            {
+                PropertyModification currentValue = modifications[i].currentValue;
+                bool validGoTargeter = currentValue != null && currentValue.target is GameObject;
+                bool targetsGoNAme = validGoTargeter && currentValue.propertyPath == "m_Name";
+                if (targetsGoNAme)
+                {
+                    if (FlowchartWindow.S != null)
+                    {
+                        FlowchartWindow.S.Refresh();
+                    }
+
+                    break;
+                }
+            }
+
+            return modifications;
         }
 
         private void OnVarAddedOrRemoved(IVariable variable)

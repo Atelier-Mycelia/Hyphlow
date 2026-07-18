@@ -3,24 +3,27 @@
     /* -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
     -unity-font-definition: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
     --amaranth-font: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK');
+    --exo2-font: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
+    --noto-sans-jp-font: resource('Runtime/Fonts/NotoSansJP/NotoSansJP-Regular SDF-UITK');
+    --noto-serif-jp-font: resource('Runtime/Fonts/NotoSerifJP/NotoSerifJP-VariableFont_wght SDF');
     --fc-name-label-color: var(--unity-text-default-color);
 }
 
 .fcNameLabel 
 {
-    -unity-font-definition: var(--amaranth-font);
+    -unity-font-definition: var(--exo2-font);
     font-size: 24px;
     -unity-font-style: bold;
     margin-top: 15px;
     margin-left: 15px;
-    --unity-text-align: middle-center;
+    --unity-text-align: upper-left;
     color: var(--fc-name-label-color);
     position: absolute;
 }
 
 .zoom-label 
 {
-    -unity-font-definition: var(--amaranth-font);
+    -unity-font-definition: var(--exo2-font);
     width: 160px;
     height: 50px;
     margin: 15px 15px 0 0;
