@@ -53,6 +53,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         private void RefreshLabels()
         {
+            if (_fcNameLabel == null || _zoomAmountLabel == null)
+            {
+                // Not yet sure why this sometimes happens. Will need to
+                // look into this at some point.
+                return;
+            }
             _fcNameLabel.text = Flowchart != null ? 
                 $"FC: {Flowchart.name}" : 
                 string.Empty;
