@@ -98,7 +98,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             rootElement.Add(inspectorRoot);
             LogLifecycle(nameof(CreateInspectorGUI), "Returning inspector root");
 
-            rootElement.schedule.Execute(() => rootElement.MarkDirtyRepaint());
+            rootElement.schedule.Execute(() => rootElement.MarkDirtyRepaint()).ExecuteLater(100);
             // ^ Might compensate for a 6.3 glitch where the Flowchart and Variable
             // Manager Inspectors freak out until your restart the project. This is
             // a temporary workaround until Unity fixes the issue.

@@ -245,6 +245,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             FlowchartWindowSignals.ChangedFlowchart(null, _fcContext.Flowchart);
+
+            // To help deal with a quirk in Unity 6.3 where most of the text is rendered 
+            // invisible until some kind of refresh is triggered
+            RootVisualElement.schedule.Execute(() =>
+            {
+                RefreshLabels();
+                _graphicsRenderer?.RefreshNow();
+            }).ExecuteLater(50);
         }
 
         bool IFlowchartHostCore.HasClipboard => _clipboardCoordinator.HasClipboard(Clipboard);
