@@ -1,47 +1,48 @@
 using UnityEngine.Serialization;
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
 {
     /// <summary>
-    /// Sets an integer variable to a random value in the defined range.
+    /// Sets a numeric variable to a random value in the defined range.
     /// </summary>
-    [CommandInfo("Variable", 
-                 "Random Integer", 
-                 "Sets an integer variable to a random value in the defined range.")]
+    [CommandInfo("Variable",
+                 "Random Integer",
+                 "Sets a numeric variable to a random integer value" +
+                 "in the defined range.")]
     [AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
-    public class RandomInteger : Command 
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    public class RandomInteger : Command
     {
-        [Tooltip("The variable whos value will be set")]
-        [VariableProperty(typeof(IntegerVariable))]
-        [SerializeField] [FormerlySerializedAs("variable")]
-protected IntegerVariable variable;
+        [Tooltip("The variable that will get its value set. Can be a float or a double.")]
+        [ContentTypeConstraint(typeof(float), typeof(double), typeof(int))]
+        [SerializeField]
+        protected VariableReference _variable;
 
         [Tooltip("Minimum value for random range")]
-        [SerializeField] [FormerlySerializedAs("minValue")]
-protected IntegerData minValue;
+        [SerializeField]
+        [FormerlySerializedAs("minValue")]
+        protected IntegerData _minValue;
 
         [Tooltip("Maximum value for random range")]
-        [SerializeField] [FormerlySerializedAs("maxValue")]
-protected IntegerData maxValue;
+        [SerializeField]
+        [FormerlySerializedAs("maxValue")]
+        protected IntegerData _maxValue;
 
         protected override void RefreshVariableDataCache()
         {
             base.RefreshVariableDataCache();
-            _variableDataCache.Add(minValue);
-            _variableDataCache.Add(maxValue);
+            _variableDataCache.Add(_minValue);
+            _variableDataCache.Add(_maxValue);
         }
-
-        #region Public members
 
         public override void OnEnter()
         {
-            if (variable != null)
+            if (_variable != null)
             {
-                variable.Value = Random.Range(minValue.Value, maxValue.Value);
+                var valChosen = Random.Range(_minValue.Value, _maxValue.Value);
+                _variable.SetValue(valChosen);
             }
 
             Continue();
@@ -49,17 +50,18 @@ protected IntegerData maxValue;
 
         public override string GetSummary()
         {
-            if (variable == null)
-            {
-                return "Error: Variable not selected";
-            }
+            string result = _variable == null ?
+                "Error: Variable not selected" :
+                $"Set {_variable.Variable.Key} between {_minValue.Value} and {_maxValue.Value}";
 
-            return variable.Key;
+            return result;
         }
 
         public override bool HasReference(IVariable variable)
         {
-            return ReferenceEquals(variable, this.variable) || ReferenceEquals(minValue.integerRef, variable) || ReferenceEquals(maxValue.integerRef, variable);
+            return ReferenceEquals(variable, this._variable) ||
+                ReferenceEquals(_minValue.integerRef, variable) ||
+                ReferenceEquals(_maxValue.integerRef, variable);
         }
 
         public override Color GetButtonColor()
@@ -67,6 +69,20 @@ protected IntegerData maxValue;
             return new Color32(253, 253, 150, 255);
         }
 
-        #endregion
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldVariable != null)
+            {
+                _variable.Variable = _oldVariable;
+                _oldVariable = null;
+            }
+        }
+
+        [VariableProperty(typeof(IntegerVariable))]
+        [FormerlySerializedAs("variable")]
+        [HideInInspector]
+        [SerializeField] protected IntegerVariable _oldVariable;
+
     }
 }
