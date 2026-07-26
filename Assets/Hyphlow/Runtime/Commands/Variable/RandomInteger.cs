@@ -50,7 +50,7 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            string result = _variable == null ?
+            string result = _variable == null || _variable.Variable == null ?
                 "Error: Variable not selected" :
                 $"Set {_variable.Variable.Key} between {_minValue.Value} and {_maxValue.Value}";
 

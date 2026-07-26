@@ -414,7 +414,6 @@ namespace AtMycelia.Hyphlow
         {
             hideFlags = HideFlags.HideInInspector;
             RefreshForVarDataStability();
-            RefreshVariableCache();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.delayCall += () =>
             {
