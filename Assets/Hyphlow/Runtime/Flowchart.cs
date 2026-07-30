@@ -936,7 +936,7 @@ protected int version = 0;
 
         private void EnsureVariableManagerComponent()
         {
-            if (_varManager != null)
+            if (_varManager != null || gameObject == null)
             {
                 return;
             }

@@ -39,7 +39,7 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            if (_variable != null)
+            if (_variable != null && _variable.Variable != null)
             {
                 var valChosen = Random.Range(_minValue.Value, _maxValue.Value);
                 _variable.SetValue(valChosen);
@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow
             string result = _variable == null || _variable.Variable == null ?
                 "Error: Variable not selected" :
                 $"Set {_variable.Variable.Key} between {_minValue.Value} and {_maxValue.Value}";
-
+            
             return result;
         }
 
@@ -79,6 +79,7 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        [Tooltip("The variable whos value will be set")]
         [VariableProperty(typeof(IntegerVariable))]
         [FormerlySerializedAs("variable")]
         [HideInInspector]
