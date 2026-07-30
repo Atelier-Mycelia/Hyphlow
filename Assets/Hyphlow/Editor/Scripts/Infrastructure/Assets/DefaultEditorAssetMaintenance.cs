@@ -12,17 +12,19 @@ namespace AtMycelia.Hyphlow.EditorExt
     {
         public static void InitializeAfterAssembliesLoaded()
         {
+            _framesToWait = 10;
             AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
             AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
         }
 
+        private static int _framesToWait = 10;
+
         private static void DoTheEnsuringDelayed()
         {
-            int framesToWait = 10;
             EditorApplication.delayCall += () =>
             {
-                framesToWait--;
-                if (framesToWait <= 0)
+                _framesToWait--;
+                if (_framesToWait <= 0)
                 {
                     DoTheEnsuring();
                 }
@@ -35,7 +37,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void DoTheEnsuring()
         {
-            Debug.Log($"Doing default editor asset maintenance...");
+            Debug.Log($"Doing default editor asset maintenance.");
             EnsureHyphlowEditorResourcesAsset();
             EnsureFcWindowConfig();
         }

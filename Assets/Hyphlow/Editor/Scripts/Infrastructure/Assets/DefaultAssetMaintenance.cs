@@ -12,9 +12,12 @@ namespace AtMycelia.Hyphlow.EditorExt
     {
         public static void InitializeAfterAssembliesLoaded()
         {
+            _framesToWait = 15;
             AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
             AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
         }
+
+        private static float _framesToWait = 15;
 
         public static void InitializeBeforeSceneLoad()
         {
@@ -24,14 +27,25 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void DoTheEnsuringDelayed()
         {
-            EditorApplication.delayCall += DoTheEnsuring;
+            EditorApplication.delayCall += () =>
+            {
+                _framesToWait--;
+                if (_framesToWait <= 0)
+                {
+                    DoTheEnsuring();
+                }
+                else
+                {
+                    EditorApplication.delayCall += DoTheEnsuringDelayed;
+                }
+            };
         }
 
         private static void DoTheEnsuring()
         {
-            Debug.Log($"Doing default asset maintenance...");
+            Debug.Log($"Doing default asset maintenance.");
             EnsureFlowchartGlobalDefaults();
-            EnsureHyphlowRuntimeSysAssets();//
+            EnsureHyphlowRuntimeSysAssets();
             EnsureVariableRegistryConfigs();
         }
 
