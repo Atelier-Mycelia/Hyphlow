@@ -35,7 +35,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void DoTheEnsuring()
         {
-            Debug.Log($"Doing default editor asset maintenance...");
+            Debug.Log($"Doing default editor asset maintenance.");
             EnsureHyphlowEditorResourcesAsset();
             EnsureFcWindowConfig();
         }

@@ -24,14 +24,26 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void DoTheEnsuringDelayed()
         {
-            EditorApplication.delayCall += DoTheEnsuring;
+            int framesToWait = 15;
+            EditorApplication.delayCall += () =>
+            {
+                framesToWait--;
+                if (framesToWait <= 0)
+                {
+                    DoTheEnsuring();
+                }
+                else
+                {
+                    EditorApplication.delayCall += DoTheEnsuringDelayed;
+                }
+            };
         }
 
         private static void DoTheEnsuring()
         {
-            Debug.Log($"Doing default asset maintenance...");
+            Debug.Log($"Doing default asset maintenance.");
             EnsureFlowchartGlobalDefaults();
-            EnsureHyphlowRuntimeSysAssets();//
+            EnsureHyphlowRuntimeSysAssets();
             EnsureVariableRegistryConfigs();
         }
 
