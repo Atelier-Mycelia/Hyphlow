@@ -12,9 +12,12 @@ namespace AtMycelia.Hyphlow.EditorExt
     {
         public static void InitializeAfterAssembliesLoaded()
         {
+            _framesToWait = 15;
             AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
             AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
         }
+
+        private static float _framesToWait = 15;
 
         public static void InitializeBeforeSceneLoad()
         {
@@ -24,11 +27,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static void DoTheEnsuringDelayed()
         {
-            int framesToWait = 15;
             EditorApplication.delayCall += () =>
             {
-                framesToWait--;
-                if (framesToWait <= 0)
+                _framesToWait--;
+                if (_framesToWait <= 0)
                 {
                     DoTheEnsuring();
                 }
