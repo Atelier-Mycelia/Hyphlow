@@ -1,0 +1,19 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Packages/com.ateliermycelia.hyphlow/Resources/Editor/Stylesheets/FlowchartEditorQolItemStyle.uss?fileID=7433441132597879392&amp;guid=f88a674b840fe4540bf90d12026399b0&amp;type=3#FlowchartEditorQolItemStyle" />
+    <engine:Foldout name="QolItemFoldout" class="qol-item-foldout">
+        <engine:VisualElement name="ContentContainer" class="qol-content-container">
+            <engine:VisualElement name="PropertiesContainer" class="qol-properties-container">
+                <engine:TextField label="Name" placeholder-text="filler text" name="NameField" is-delayed="true" />
+                <engine:Slider label="StepPause" value="0" high-value="5" binding-path="_stepPause" name="StepPauseField" />
+                <engine:Toggle label="Save Selection" binding-path="_saveSelection" name="SaveSelectionField" />
+                <engine:Toggle label="Toggle" binding-path="_showLineNumbers" name="ShowLineNumbersField" />
+                <engine:Toggle label="Hide Components" binding-path="_hideComponents" name="HideComponentsField" />
+                <editor:PropertyField name="CommandsToHideField" binding-path="_commandsToHide" />
+            </engine:VisualElement>
+            <engine:VisualElement name="ButtonRow" class="qol-button-row">
+                <engine:Button name="SelectButton" text="Select in Inspector" class="qol-select-button" />
+                <engine:Button name="DeleteButton" text="Delete" class="qol-delete-button" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:Foldout>
+</UXML>

@@ -31,11 +31,11 @@ namespace AtMycelia.Hyphlow
 
         [FormerlySerializedAs("variableManager")]
         [SerializeField, HideInInspector] [FormerlySerializedAs("legacyVariableManager")]
-private VariableManager legacyVariableManager = new VariableManager();
+        private VariableManager _legacyVariableManager = new VariableManager();
 
         [HideInInspector]
         [SerializeField] [FormerlySerializedAs("version")]
-protected int version = 0; 
+        protected int _version = 0; 
         // ^Default to 0 to always trigger an update for older versions of Hyphlow.
 
         [HideInInspector]
@@ -51,11 +51,22 @@ protected int version = 0;
             "For example, how this Flowchart should handle Lua compatibility.")]
         [SerializeField] protected ScriptableObject[] _otherSettings = new ScriptableObject[0];
 
-        [SerializeField] protected FlowchartEditorQol _flowchartSettings;
+        [SerializeField] protected FlowchartEditorQol _editorQol;
 
         public IReadOnlyList<ScriptableObject> OtherSettings => _otherSettings;
 
-        public FlowchartEditorQol EditorQol => _flowchartSettings;
+        public FlowchartEditorQol EditorQol
+        {
+            get => _editorQol;
+            set
+            {
+                if (_editorQol == value)
+                {
+                    return;
+                }
+                _editorQol = value;
+            }
+        }
 
 
         /// <summary>
@@ -288,12 +299,12 @@ protected int version = 0;
         public virtual void Refresh()
         {
             EnsureSubmanagerComponents();
-
             AssertUniqueID();
             AssertOwnership();
             RefreshEditorCaches();
             CleanupComponents();
             UpdateVersion();
+            UpdateHideFlags();
         }
 
 
@@ -320,7 +331,7 @@ protected int version = 0;
                 }
                 else
                 {
-                    return legacyVariableManager;
+                    return _legacyVariableManager;
                 }
             }
         }
@@ -408,7 +419,7 @@ protected int version = 0;
 
         protected virtual void UpdateVersion()
         {
-            if (version == HyphlowConstants.CurrentVersion)
+            if (_version == HyphlowConstants.CurrentVersion)
             {
                 // No need to update
                 return;
@@ -422,10 +433,10 @@ protected int version = 0;
             {
                 var component = components[i];
                 IUpdateable toUpdate = component as IUpdateable;
-                toUpdate?.UpdateToVersion(version, HyphlowConstants.CurrentVersion);
+                toUpdate?.UpdateToVersion(_version, HyphlowConstants.CurrentVersion);
             }
 
-            version = HyphlowConstants.CurrentVersion;
+            _version = HyphlowConstants.CurrentVersion;
         }
 
         [HideInInspector]
@@ -704,7 +715,7 @@ protected int version = 0;
         /// <summary>
         /// Variable to track flowchart's version so components can update to new versions.
         /// </summary>
-        public int Version { set { version = value; } }
+        public int Version { set { _version = value; } }
 
         /// <summary>
         /// Returns true if the Flowchart gameobject is active.
@@ -888,6 +899,7 @@ protected int version = 0;
                 }
 
                 Refresh();
+                
 
             };
 
@@ -1199,6 +1211,31 @@ protected int version = 0;
             return result;
         }
 
+        /// <summary>
+        /// Set the Block, Command, and EventHandler components' hideFlags based on
+        /// the EditorQol.HideComponents setting.
+        /// </summary>
+        public virtual void UpdateHideFlags()
+        {
+            var whatToHide = new List<Component>();
+            var blocks = GetComponents<Block>();
+            var commands = GetComponents<Command>();
+            var eventHandlers = GetComponents<EventHandler>();
+            whatToHide.AddRange(blocks);
+            whatToHide.AddRange(commands);
+            whatToHide.AddRange(eventHandlers);
+
+            HideFlags targFlags = EditorQol == null || EditorQol.HideComponents ? 
+                HideFlags.HideInInspector : 
+                HideFlags.None;
+
+            for (int i = 0; i < whatToHide.Count; i++)
+            {
+                Component targ = whatToHide[i];
+                targ.hideFlags = targFlags;
+            }
+        }
+
     }
-    
+
 }

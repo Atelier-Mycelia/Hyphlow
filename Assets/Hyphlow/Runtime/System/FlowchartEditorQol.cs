@@ -36,6 +36,10 @@ namespace AtMycelia.Hyphlow.EditorExt
         [FormerlySerializedAs("hideCommands")]
         [SerializeField] protected List<string> _commandsToHide = new List<string>();
 
+        [Tooltip("Hides the Flowchart block and command components in the inspector. " +
+            "Deselect to inspect the block and command components that make up the Flowchart.")]
+        [SerializeField] protected bool _hideComponents = true;
+
         public virtual float StepPause
         {
             get => _stepPause;
@@ -54,6 +58,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual IReadOnlyList<string> CommandsToHide
         {
             get => _commandsToHide;
+        }
+
+        public virtual bool HideComponents
+        {
+            get => _hideComponents;
         }
     }
 }

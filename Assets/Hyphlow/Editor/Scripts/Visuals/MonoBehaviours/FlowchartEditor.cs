@@ -1,7 +1,8 @@
+using System.Linq;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
@@ -23,12 +24,59 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             _addTexture = HyphlowEditorSysAssets.AddSmall;
-            LogLifecycle(nameof(OnEnable), $"AddSmall texture assigned? {_addTexture != null}");
+            ToggleSubs(true);
+            _fcTarg = target as Flowchart;
+            _fcTarg.UpdateHideFlags();
         }
+
+        private Flowchart _fcTarg;
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                FlowchartEditorQolRegistry.RegistryRefreshed += 
+                    OnFlowchartEditorQolRegistryRefreshed;
+            }
+            else
+            {
+                FlowchartEditorQolRegistry.RegistryRefreshed -= 
+                    OnFlowchartEditorQolRegistryRefreshed;
+            }
+        }
+
+        private void OnFlowchartEditorQolRegistryRefreshed()
+        {
+            if (_popup == null || _popup.choices == null)
+            {
+                return;
+            }
+            FlowchartEditorQol usedByFc = _fcTarg.EditorQol;
+            var updated = FlowchartEditorQolRegistry.GetAll().ToList();
+            _popup.choices.Clear();
+            _popup.choices.AddRange(updated);
+            // Keep selection consistent if possible
+            FlowchartEditorQol newSelection = usedByFc != null && updated.Contains(usedByFc) ? 
+                usedByFc : 
+                null;
+            if (newSelection == null && updated.Count > 0)
+            {
+                // Since when possible, we want each Flowchart to have a valid EditorQol
+                newSelection = updated[0];
+            }
+            _popup.SetValueWithoutNotify(newSelection);
+            RebindEditorQolFields();
+            _fcTarg.UpdateHideFlags();
+        }
+
+
+        private PopupField<FlowchartEditorQol> _popup;
 
         protected virtual void OnDisable()
         {
+            ToggleSubs(false);
             LogLifecycle(nameof(OnDisable), "Entered");
+            _popup = null;
         }
 
         /// <summary>
@@ -58,9 +106,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public override VisualElement CreateInspectorGUI()
         {
-            
+            _fcTarg = target as Flowchart;
             LogLifecycle(nameof(CreateInspectorGUI), "Entered");
 
+            #region Get Root online
             var rootElement = new VisualElement();
             var uxml = Resources.Load<VisualTreeAsset>(_pathToUxml);
 
@@ -77,16 +126,20 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             if (inspectorRoot == null)
             {
                 LogLifecycle(nameof(CreateInspectorGUI), "CloneTree returned null");
-                rootElement.Add(new HelpBox("Failed to build Flowchart inspector UI.", HelpBoxMessageType.Error));
+                rootElement.Add(new HelpBox("Failed to build Flowchart inspector UI.", 
+                    HelpBoxMessageType.Error));
                 return rootElement;
             }
+            #endregion
 
+            #region Wire up the Open Flowchart Window button
             Button flowchartWindowButton = inspectorRoot.Q<Button>(_openFlowchartWindowButtonName);
             if (flowchartWindowButton == null)
             {
-                LogLifecycle(nameof(CreateInspectorGUI), $"Button '{_openFlowchartWindowButtonName}' not found");
-                inspectorRoot.Add(new HelpBox(
-                    $"Missing button '{_openFlowchartWindowButtonName}' in FlowchartInspector.uxml.",
+                string buttonName = _openFlowchartWindowButtonName;
+                LogLifecycle(nameof(CreateInspectorGUI), $"Button '{buttonName}' not found");
+                inspectorRoot.Add(new HelpBox($"Missing button '{buttonName}' in " +
+                    $"FlowchartInspector.uxml.",
                     HelpBoxMessageType.Warning));
             }
             else
@@ -94,11 +147,64 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 flowchartWindowButton.RegisterCallback<ClickEvent>(OpenFlowchartWindow);
                 LogLifecycle(nameof(CreateInspectorGUI), "OpenFlowchartWindow button wired");
             }
+            #endregion
+
+            #region Wire up the dropdown for FlowchartEditorQol assets
+            var dropdownRoot = inspectorRoot.Q<VisualElement>("EditorOnly");
+            if (dropdownRoot == null)
+            {
+                LogLifecycle(nameof(CreateInspectorGUI), "DropdownField 'EditorOnly' not found");
+                inspectorRoot.Add(new HelpBox("Missing DropdownField 'EditorOnly' in " +
+                    $"FlowchartInspector.uxml.",
+                    HelpBoxMessageType.Warning));
+            }
+            else
+            {
+                var allInRegistry = FlowchartEditorQolRegistry.GetAll().ToList();
+                bool weHaveValidQol = _fcTarg.EditorQol != null;
+                _popup = new PopupField<FlowchartEditorQol>(allInRegistry, 0, 
+                    PopupFieldFormatCallback, PopupFieldFormatCallback);
+
+                if (weHaveValidQol)
+                {
+                    _popup.SetValueWithoutNotify(_fcTarg.EditorQol);
+                }
+
+                _popup.RegisterValueChangedCallback(evt =>
+                {
+                    LogLifecycle(nameof(CreateInspectorGUI), 
+                        $"Dropdown changed to {evt.newValue?.name ?? "None"}");
+                    var selected = evt.newValue;
+                    Undo.RecordObject(_fcTarg, "Change Flowchart Editor QOL");
+                    _fcTarg.EditorQol = selected;
+                    _fcTarg.UpdateHideFlags();
+                    EditorUtility.SetDirty(_fcTarg);
+                });
+
+                _popup.parent?.Remove(_popup);
+                dropdownRoot.Insert(0, _popup);
+            }
+            
+            #endregion
+
+            _saveSelection = inspectorRoot.Q<Toggle>("SaveSelection");
+            _showLineNumbers = inspectorRoot.Q<Toggle>("ShowLineNumbers");
+            _hideComponents = inspectorRoot.Q<Toggle>("HideComponents");
+            _stepPause = inspectorRoot.Q<Slider>("StepPause");
+            _commandsToHide = inspectorRoot.Q<PropertyField>("CommandsToHide");
+
+            _hideComponents.RegisterValueChangedCallback(evt =>
+            {
+                _fcTarg.UpdateHideFlags();
+                EditorUtility.SetDirty(_fcTarg);
+            });
+
+            RebindEditorQolFields();
 
             rootElement.Add(inspectorRoot);
             LogLifecycle(nameof(CreateInspectorGUI), "Returning inspector root");
 
-            rootElement.schedule.Execute(() => rootElement.MarkDirtyRepaint()).ExecuteLater(100);
+            rootElement.schedule.Execute(() => rootElement.MarkDirtyRepaint()).ExecuteLater(500);
             // ^ Might compensate for a 6.3 glitch where the Flowchart and Variable
             // Manager Inspectors freak out until your restart the project. This is
             // a temporary workaround until Unity fixes the issue.
@@ -106,6 +212,16 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             return rootElement;
         }
 
+        private string PopupFieldFormatCallback(FlowchartEditorQol selected)
+        {
+            // It's possible that we were passed a qol that's in the process
+            // of being deleted, so...
+            if (selected == null) 
+            {
+                return "None";
+            }
+            return selected.name;
+        }
         private static readonly string _pathToUxml = "Editor/UIToolkitTemplates/FlowchartInspector";
         private static readonly string _openFlowchartWindowButtonName = "OpenFlowchartWindow";
 
@@ -113,6 +229,32 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             LogLifecycle(nameof(OpenFlowchartWindow), "Button clicked");
             FlowchartWindow.BringUp();
+        }
+
+        private Toggle _saveSelection, _showLineNumbers, _hideComponents;
+        private Slider _stepPause;
+        private PropertyField _commandsToHide;
+        private SerializedObject _qolSerialized;
+        private void RebindEditorQolFields()
+        {
+            _saveSelection.Unbind();
+            _showLineNumbers.Unbind();
+            _hideComponents.Unbind();
+            _stepPause.Unbind();
+            _commandsToHide.Unbind();
+
+            // We want those bound to the editor qol asset, not the flowchart itself.
+            // The flowchart just holds a reference to the asset.
+
+            if (_fcTarg.EditorQol != null)//
+            {
+                _qolSerialized = new SerializedObject(_fcTarg.EditorQol);
+                _saveSelection.BindProperty(_qolSerialized.FindProperty("_saveSelection"));
+                _showLineNumbers.BindProperty(_qolSerialized.FindProperty("_showLineNumbers"));
+                _hideComponents.BindProperty(_qolSerialized.FindProperty("_hideComponents"));
+                _stepPause.BindProperty(_qolSerialized.FindProperty("_stepPause"));
+                _commandsToHide.BindProperty(_qolSerialized.FindProperty("_commandsToHide"));
+            }
         }
 
         private void LogLifecycle(string source, string message)
@@ -133,5 +275,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             Debug.Log($"[FlowchartEditor::{source}] {message} | target={targetInfo} | activeObject={activeObject}");
         }
+
     }
+
 }
