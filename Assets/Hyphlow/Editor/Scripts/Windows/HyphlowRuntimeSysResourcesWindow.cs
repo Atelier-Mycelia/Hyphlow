@@ -44,8 +44,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             {
                 return;
             }
-
-            _assets = SOUtils.EnsureSOExists<HyphlowRuntimeSysAssets>(ResourcesSubfolderPath, AssetName);
+            
+            _assets = HyphlowRuntimeSysAssets.S;
         }
 
         private HyphlowRuntimeSysAssets _assets;
@@ -71,7 +71,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (_assets == null)
             {
-                rootVisualElement.Add(new HelpBox("HyphlowRuntimeSysAssets asset not found.", HelpBoxMessageType.Error));
+                rootVisualElement.Add(new HelpBox("HyphlowRuntimeSysAssets asset not found.", 
+                    HelpBoxMessageType.Error));
                 return;
             }
 
@@ -114,7 +115,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         private ObjectField _tweenAdapterField;
         private ListView _variableRegistryConfigListView;
         private Button _addVariableRegistryConfigButton;
-        private readonly List<VariableRegistryConfig> _variableRegistryConfigBuffer = new List<VariableRegistryConfig>();
+        private readonly List<VariableRegistryConfig> _variableRegistryConfigBuffer = 
+            new List<VariableRegistryConfig>();
 
         private void RefreshFields()
         {
@@ -165,7 +167,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             row.Add(editButton);
             row.Add(removeButton);
 
-            VariableRegistryConfigRow rowData = new VariableRegistryConfigRow(field, editButton, removeButton);
+            VariableRegistryConfigRow rowData = new VariableRegistryConfigRow(field, editButton, 
+                removeButton);
             row.userData = rowData;
 
             field.RegisterValueChangedCallback(evt => OnVariableRegistryConfigItemChanged(rowData, evt));
@@ -202,7 +205,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             _variableRegistryConfigListView.Rebuild();
         }
 
-        private void OnVariableRegistryConfigItemChanged(VariableRegistryConfigRow rowData, ChangeEvent<Object> evt)
+        private void OnVariableRegistryConfigItemChanged(VariableRegistryConfigRow rowData, 
+            ChangeEvent<Object> evt)
         {
             if (!TryGetVariableRegistryConfigIndex(rowData, out int index))
             {

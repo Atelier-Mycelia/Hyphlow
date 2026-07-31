@@ -161,16 +161,16 @@ MonoBehaviour:
   _varManager: {fileID: 477484471444191873}
   _execManager: {fileID: -553675615056175659}
   _blockManager: {fileID: -9043460714950269611}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 1
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks:
@@ -1761,16 +1761,16 @@ MonoBehaviour:
   _varManager: {fileID: 19211763157215728}
   _execManager: {fileID: -8112847810500512710}
   _blockManager: {fileID: 2557746366402845881}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
