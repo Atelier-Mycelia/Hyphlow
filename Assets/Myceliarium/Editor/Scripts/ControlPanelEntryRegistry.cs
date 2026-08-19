@@ -100,6 +100,12 @@ namespace AtMycelia.Myceliarium
 
         private static readonly IList<IControlPanelEntry> _cachedEntries = 
             new List<IControlPanelEntry>();
+
+        /// <summary>
+        /// For every single entry in the registry. If you want entries that derive
+        /// from a particular implementor of IControlPanelEntry, better to use 
+        /// GetEntriesOfType instead.
+        /// </summary>
         public static IReadOnlyList<IControlPanelEntry> Entries
         {
             get
@@ -108,6 +114,46 @@ namespace AtMycelia.Myceliarium
                 {
                     return (IReadOnlyList<IControlPanelEntry>)_cachedEntries;
                 }
+            }
+        }
+
+        public static IList<T> GetEntriesOfType<T>() where T : IControlPanelEntry
+        {
+            List<T> result = new List<T>();
+            lock (_registryLock)
+            {
+                Type tType = typeof(T);
+                var found = GetEntriesOfType(tType);
+
+                #region Add found elements to result, casted as appropriate
+                for (int i = 0; i < found.Count; i++)
+                {
+                    var elem = found[i];
+                    result.Add((T)found);
+                }
+                #endregion
+
+                return result;
+            }
+        }
+
+        public static IList<IControlPanelEntry> GetEntriesOfType(Type entryType)
+        {
+            List<IControlPanelEntry> result = new List<IControlPanelEntry>();
+            lock (_registryLock)
+            {
+                // Going with a regular for-loop for the sake of performance in 
+                // Unity 2022.3.
+                for (int i = 0; i < _cachedEntries.Count; i++)
+                {
+                    var entry = _cachedEntries[i];
+                    bool correctType = entryType.IsAssignableFrom(entry.GetType());
+                    if (correctType)
+                    {
+                        result.Add(entry);
+                    }
+                }
+                return result;
             }
         }
     }

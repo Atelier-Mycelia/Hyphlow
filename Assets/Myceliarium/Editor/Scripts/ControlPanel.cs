@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -8,58 +9,94 @@ namespace AtMycelia.Myceliarium
     /// <summary>
     /// Serves as a hub for the Database-esque UI that other plugins may want to set up.
     /// </summary>
-    public class ControlPanel : EditorWindow
+    public abstract class ControlPanel : EditorWindow
     {
-        [MenuItem("Window/Atelier Mycelia/ControlPanel")]
-        public static void BringUp()
-        {
-            if (S != null)
-            {
-                S.Focus();
-                return;
-            }
-            ControlPanel wnd = GetWindow<ControlPanel>();
-            wnd.titleContent = new GUIContent("ControlPanel");
-            wnd.minSize = wnd.maxSize = _windowSize;
-        }
-
-        public static ControlPanel S { get; private set; }
-
-        private static readonly Vector2 _windowSize = new Vector2(1280, 800);
-
-        public void CreateGUI()
-        {
-            if (S != null && S != this)
-            {
-                this.Close();
-            }
-            if (S == this)
-            {
-                return; // To deal with cases where CreateGUI is called multiple times
-                        // for the same instance.
-            }
-            S = this;
-
-            VisualElement root = rootVisualElement;
-
-            VisualElement baseWindow = m_VisualTreeAsset.Instantiate();
-            root.Add(baseWindow);
-
-            InitializeEntryAttacher();
-        }
+        /// <summary>
+        /// The path to the uxml for the control panel's root window. This is relative
+        /// to Resources.
+        /// </summary>
+        protected abstract string PathToUxml { get; }
 
         [SerializeField]
         private VisualTreeAsset m_VisualTreeAsset = default;
 
-        private void InitializeEntryAttacher()
+        protected virtual void SetTitleContent()
+        {
+            titleContent = new GUIContent("ControlPanel");
+        }
+
+        protected virtual void SetWindowSizeBounds()
+        {
+            minSize = maxSize = DefaultWindowSize;
+        }
+
+        protected virtual Vector2 DefaultWindowSize => new Vector2(1280, 800);
+
+        public void CreateGUI()
+        {
+            PreRootPrep(out bool success);
+            if (!success)
+            {
+                Debug.LogError("ControlPanel failed to initialize. Aborting GUI creation.");
+                this.Close();
+                return;
+            }
+
+            PrepRoot();
+            
+        }
+
+        /// <summary>
+        /// By default, this func has success set to true. When overriding this, you
+        /// might want it to be false if some critical initialization fails, so that
+        /// the window doesn't open in a broken state.
+        /// </summary>
+        protected virtual void PreRootPrep(out bool success)
+        {
+            SetTitleContent();
+            SetWindowSizeBounds();
+            success = true;
+        }
+
+        protected virtual void PrepRoot()
+        {
+            VisualElement root = rootVisualElement;
+            var vTreeAsset = Resources.Load<VisualTreeAsset>(PathToUxml);
+            bool loaded = vTreeAsset != null;
+            if (!loaded)
+            {
+                Debug.LogError($"Failed to load uxml at path {PathToUxml}. " +
+                    $"Please ensure the path is correct and the file exists.");
+                return;
+            }
+            VisualElement baseWindow = vTreeAsset.Instantiate();
+            root.Add(baseWindow);
+            GetEntriesAttached();
+        }
+
+        private void GetEntriesAttached()
         {
             _attacher?.Dispose();
             _attacher.Init(rootVisualElement);
-            var toAttach = ControlPanelEntryRegistry.Entries.ToList();
+
+            var toAttach = GetEntriesToAttach().ToList();
+            Sort(toAttach);
             _attacher.Attach(toAttach);
         }
 
         private ControlPanelEntryAttacher _attacher = new ControlPanelEntryAttacher();
+
+        protected abstract IEnumerable<IControlPanelEntry> GetEntriesToAttach();
+
+        /// <summary>
+        /// Default implementation does nothing. Subclasses can override to
+        /// provide sorting logic for the entries before they are
+        /// attached to the control panel.
+        /// </summary>
+        /// <param name="entries"></param>
+        protected virtual void Sort(IEnumerable<IControlPanelEntry> entries)
+        {
+        }
 
         protected void OnDestroy()
         {

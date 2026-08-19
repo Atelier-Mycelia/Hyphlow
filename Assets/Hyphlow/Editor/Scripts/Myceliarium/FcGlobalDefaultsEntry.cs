@@ -10,7 +10,7 @@ namespace AtMycelia.Myceliarium
     /// Manages the tab button and submenu for configuring global Flowchart settings.
     /// Later on, this will become a sub-entry for the Hyphlow Entry.
     /// </summary>
-    public sealed class FcGlobalDefaultsEntry : ControlPanelEntry
+    public sealed class FcGlobalDefaultsEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
         #region Display Configuration
         public override string MainDisplayName => "Flowchart Defaults";
