@@ -1,12 +1,17 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UIElements;
 using Type = System.Type;
 
 namespace AtMycelia.Myceliarium
 {
     public class AtMyceliaControlPanel : ControlPanel
     {
+        #region Configurable Properties
         protected override string PathToUxml => "Editor/UIToolkitTemplates/ControlPanel";
+        protected override string WindowTitle => "Atelier Mycelia Control Panel";
+        #endregion
 
         [MenuItem("Window/Atelier Mycelia/Control Panel")]
         public static void BringUp()
@@ -30,5 +35,21 @@ namespace AtMycelia.Myceliarium
 
         private static readonly Type _forOurEcosys = typeof(IAtMyceliaControlPanelEntry);
 
+        protected override void HandleLanguageDropdown()
+        {
+            string barName = "LanguageDropdown";
+            var barRoot = Root.Q<VisualElement>(barName);
+            if (barRoot == null)
+            {
+                Debug.LogError($"Failed to find {barName} in the Control Panel root.");
+                return;
+            }
+
+            var barDropdown = barRoot.Q<DropdownField>();
+            barDropdown.choices.Add("English");
+            // Have that choice be selected
+            barDropdown.value = "English";
+            /*barRoot.style.display = DisplayStyle.None;*/
+        }
     }
 }

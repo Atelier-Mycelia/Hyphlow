@@ -19,7 +19,7 @@ namespace AtMycelia.Myceliarium
             {
                 _rootElement = rootElement ?? throw new ArgumentNullException(nameof(rootElement));
                 _mainTabSet = _rootElement.Q<VisualElement>("MainTabSet");
-                _subwindowDisplay = _rootElement.Q<VisualElement>("CategorySubwindowDisplay");
+                _subwindowDisplay = _rootElement.Q<ScrollView>("CategorySubwindowDisplay");
             }
 
             ReportErrorsAsNeeded();
@@ -51,7 +51,7 @@ namespace AtMycelia.Myceliarium
         private bool _isDisposed = false;
         private VisualElement _rootElement;
         private VisualElement _mainTabSet;
-        private VisualElement _subwindowDisplay;
+        private ScrollView _subwindowDisplay;
 
         private void ToggleSubs(bool on)
         {

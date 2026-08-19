@@ -9,41 +9,35 @@ namespace AtMycelia.Myceliarium
     /// <summary>
     /// Serves as a hub for the Database-esque UI that other plugins may want to set up.
     /// </summary>
-    public abstract class ControlPanel : EditorWindow
+    public abstract class ControlPanel : EditorWindow, IControlPanel
     {
+        #region Configurable Properties
+        protected virtual string WindowTitle => "Control Panel";
+
         /// <summary>
         /// The path to the uxml for the control panel's root window. This is relative
         /// to Resources.
         /// </summary>
         protected abstract string PathToUxml { get; }
 
-        [SerializeField]
-        private VisualTreeAsset m_VisualTreeAsset = default;
-
-        protected virtual void SetTitleContent()
-        {
-            titleContent = new GUIContent("ControlPanel");
-        }
-
-        protected virtual void SetWindowSizeBounds()
-        {
-            minSize = maxSize = DefaultWindowSize;
-        }
-
+        public virtual Vector2 MinWindowSize => DefaultWindowSize;
         protected virtual Vector2 DefaultWindowSize => new Vector2(1280, 800);
+        public virtual Vector2 MaxWindowSize => DefaultWindowSize;
+        #endregion
 
-        public void CreateGUI()
+        public virtual void CreateGUI()
         {
             PreRootPrep(out bool success);
             if (!success)
             {
-                Debug.LogError("ControlPanel failed to initialize. Aborting GUI creation.");
+                string logMessage = $"{WindowTitle} failed to initialize. " +
+                    $"Aborting GUI creation.";
+                Debug.LogError(logMessage);
                 this.Close();
                 return;
             }
 
-            PrepRoot();
-            
+            RootPrep();
         }
 
         /// <summary>
@@ -58,21 +52,35 @@ namespace AtMycelia.Myceliarium
             success = true;
         }
 
-        protected virtual void PrepRoot()
+        private void SetTitleContent()
         {
-            VisualElement root = rootVisualElement;
+            titleContent = new GUIContent(WindowTitle);
+        }
+
+        private void SetWindowSizeBounds()
+        {
+            minSize = MinWindowSize;
+            maxSize = MaxWindowSize;
+        }
+
+        protected virtual void RootPrep()
+        {
             var vTreeAsset = Resources.Load<VisualTreeAsset>(PathToUxml);
             bool loaded = vTreeAsset != null;
             if (!loaded)
             {
                 Debug.LogError($"Failed to load uxml at path {PathToUxml}. " +
                     $"Please ensure the path is correct and the file exists.");
+                this.Close();
                 return;
             }
             VisualElement baseWindow = vTreeAsset.Instantiate();
-            root.Add(baseWindow);
+            Root.Add(baseWindow);
             GetEntriesAttached();
+            HandleLanguageDropdown();
         }
+
+        public virtual VisualElement Root => rootVisualElement;
 
         private void GetEntriesAttached()
         {
@@ -93,15 +101,26 @@ namespace AtMycelia.Myceliarium
         /// provide sorting logic for the entries before they are
         /// attached to the control panel.
         /// </summary>
-        /// <param name="entries"></param>
         protected virtual void Sort(IEnumerable<IControlPanelEntry> entries)
         {
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _attacher?.Dispose();
             _attacher = null;
         }
+
+        protected virtual void HandleLanguageDropdown()
+        {
+            // Default implementation does nothing. Subclasses can override to provide
+            // logic for handling a language bar if needed.
+        }
     }
+
+    public interface IControlPanel
+    {
+        VisualElement Root { get; }
+    }
+
 }
