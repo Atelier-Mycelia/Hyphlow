@@ -179,4 +179,10 @@ namespace AtMycelia.Myceliarium
 
     }
 
+    public interface IAtMyceliaControlPanelEntry : IControlPanelEntry
+    {
+        // This interface can be used to mark entries that are specific
+        // to the Atelycelia ecosys. This is to avoid needing to use magic
+        // strings when filtering entries to attach and whatnot.
+    }
 }
