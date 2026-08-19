@@ -87,10 +87,24 @@ namespace AtMycelia.Myceliarium
                 _entryBeingDisplayed = entryForClicked;
                 var subwindow = entryForClicked.Subwindow;
                 subwindow.style.display = DisplayStyle.Flex;
+                DeselectAllTabsExceptFor(entryForClicked.Tab);
             }
         }
 
         private IControlPanelEntry _entryBeingDisplayed;
+
+        private void DeselectAllTabsExceptFor(IControlPanelTab toLeaveAlone)
+        {
+            for (int i = 0; i < _entries.Count; i++)
+            {
+                var elem = _entries[i];
+                var tab = elem.Tab;
+                if (tab != toLeaveAlone)
+                {
+                    tab.IsSelected = false;
+                }
+            }
+        }
 
         public void Attach(IList<IControlPanelEntry> toAttach)
         {
@@ -109,7 +123,7 @@ namespace AtMycelia.Myceliarium
             {
                 entry.Init(forceReinit: false); // To save on clock cycles
 
-                _mainTabSet.Add(entry.TabButton);
+                _mainTabSet.Add(entry.Tab.Root);
 
                 // We want the subwindows parented to the holder, but until
                 // the user clicks on the tab, we don't want them to be visible.

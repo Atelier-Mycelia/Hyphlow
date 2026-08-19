@@ -1,8 +1,3 @@
-using AtMycelia.Myceliarium;
-using System.Collections.Generic;
-using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
-
 namespace AtMycelia.Hyphlow.ControlPanel
 {
     //[MainTab("Editor/UIToolkitTemplates/HyphlowTab")]

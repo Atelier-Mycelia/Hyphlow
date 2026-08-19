@@ -31,6 +31,12 @@ namespace AtMycelia.Myceliarium
             base.Init(forceReinit);
         }
 
+        protected override void PrepareLeftSidebarTab()
+        {
+            _tab = new FcGlobalDefaultsTab();
+            _tab.Init();
+        }
+
         protected override void PrepareSubwindow()
         {
             base.PrepareSubwindow();
@@ -136,5 +142,12 @@ namespace AtMycelia.Myceliarium
 
         public override string StringifiedState =>
             JsonUtility.ToJson(_workingState, prettyPrint: false);
+    }
+
+    public class FcGlobalDefaultsTab : ControlPanelTab
+    {
+        public override string DisplayName => "FC Global Defaults";
+        public override string PathToUxml => "Editor/UIToolkitTemplates/Myceliarium/" +
+            "FlowchartDefaultsTab";
     }
 }

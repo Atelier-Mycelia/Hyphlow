@@ -18,29 +18,14 @@ namespace AtMycelia.Myceliarium
 
         public virtual void Init(bool forceReinit = false)
         {
-            PrepareTabButton();
+            PrepareLeftSidebarTab();
             PrepareSubwindow();
             ToggleSubs(true);
         }
 
-        protected virtual void PrepareTabButton()
-        {
-            if (_tabButton == null)
-            {
-                var visualTree = Resources.Load<VisualTreeAsset>(PathToTabButtonUXML);
-                bool loadFailed = visualTree == null;
-                if (loadFailed)
-                {
-                    string logMessage = $"Failed to load VisualTreeAsset at " +
-                        $"{PathToTabButtonUXML} for {GetType().Name}.";
-                    throw new InvalidOperationException(logMessage);
-                }
+        protected abstract void PrepareLeftSidebarTab();
 
-                _tabButton = visualTree.CloneTree();
-            }
-        }
-
-        protected VisualElement _tabButton;
+        protected IControlPanelTab _tab;
 
         protected abstract string PathToTabButtonUXML { get; }
 
@@ -65,42 +50,24 @@ namespace AtMycelia.Myceliarium
 
         protected virtual void ToggleSubs(bool on)
         {
-            TabClickToggleSubs(on);
-        }
-
-        protected virtual void TabClickToggleSubs(bool on)
-        {
-            // We assume that the implementation uses just one button in the uxml
-            // that we can just find and add a click event to. If the
-            // implementation uses multiple buttons or something, this will
-            // need to be overridden.
-            Button button = _tabButton.Q<Button>();
-            if (button == null)
-            {
-                string logMessage = $"Could not find a Button in the TabButton " +
-                    $"for {GetType().Name}. This should not happen if the UXML is " +
-                    $"set up correctly.";
-                throw new InvalidOperationException(logMessage);
-            }
-
             if (on)
             {
-                button.clicked += OnTabButtonClicked;
+                _tab.Clicked += OnTabButtonClicked;
             }
             else
             {
-                button.clicked -= OnTabButtonClicked;
+                _tab.Clicked -= OnTabButtonClicked;
             }
         }
 
-        private void OnTabButtonClicked()
+        private void OnTabButtonClicked(IControlPanelTab tabClicked)
         {
             ControlPanelSignals.OnEntryTabClicked(this);
         }
 
         /// <summary>
         /// Meant to be overridden by subclasses that have state that needs
-        /// to be stringified for saving/loading purposes.
+        /// to be stringified for whatever purposes.
         /// </summary>
         public abstract string StringifiedState { get; }
 
@@ -111,20 +78,20 @@ namespace AtMycelia.Myceliarium
 
         // Clients shouldn't even try to access the Subwindow or tab before
         // the Init call, hence why the getters here throw exceptions if the
-        // subwindow or tab button is null. This is to help catch bugs in the code.
-        public virtual VisualElement TabButton
+        // subwindow or tab button is null. This is to help catch bugs.
+        public virtual IControlPanelTab Tab
         {
             get
             {
-                if (_tabButton == null)
+                if (_tab == null)
                 {
                     string logMessage = $"TabButton for {GetType().Name} was null. " +
                         $"This should not happen if Init() has been called.";
                     throw new InvalidOperationException(logMessage);
                 }
-                return _tabButton;
+                return _tab;
             }
-            protected set => _tabButton = value;
+            protected set => _tab = value;
         }
 
         public virtual VisualElement Subwindow
@@ -145,7 +112,7 @@ namespace AtMycelia.Myceliarium
         public virtual void Dispose()
         {
             ToggleSubs(false);
-            _tabButton = null;
+            _tab = null;
             _subwindow = null;
         }
     }
@@ -165,7 +132,7 @@ namespace AtMycelia.Myceliarium
         /// </summary>
         string MainDisplayName { get; }
 
-        VisualElement TabButton { get; }
+        IControlPanelTab Tab { get; }
         VisualElement Subwindow { get; }
 
         /// <summary>

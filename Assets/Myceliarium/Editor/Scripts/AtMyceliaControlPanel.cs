@@ -52,4 +52,5 @@ namespace AtMycelia.Myceliarium
             /*barRoot.style.display = DisplayStyle.None;*/
         }
     }
+
 }
