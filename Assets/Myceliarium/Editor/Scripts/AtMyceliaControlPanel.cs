@@ -30,6 +30,17 @@ namespace AtMycelia.Myceliarium
         protected override IEnumerable<IControlPanelEntry> GetEntriesToAttach()
         {
             var filteredEntries = ControlPanelEntryRegistry.GetEntriesOfType(_forOurEcosys);
+            // We only want the top-level entries, not the subs
+            for (int i = 0; i < filteredEntries.Count; i++)
+            {
+                var elem = filteredEntries[i];
+                if (!elem.TopLevelEntry)
+                {
+                    filteredEntries.RemoveAt(i);
+                    i--; // To avoid going out of bounds after removing an item
+                }
+            }
+
             return filteredEntries;
         }
 
@@ -52,4 +63,5 @@ namespace AtMycelia.Myceliarium
             /*barRoot.style.display = DisplayStyle.None;*/
         }
     }
+
 }

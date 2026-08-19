@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,39 +15,93 @@ namespace AtMycelia.Myceliarium
     /// </summary>
     public abstract class ControlPanelEntry : IControlPanelEntry, IDisposable
     {
+        public virtual bool TopLevelEntry => false;
+        // ^Why false as the default? We expect that most entries will be
+        // nested under others.
         public abstract string MainDisplayName { get; }
 
         public virtual void Init(bool forceReinit = false)
         {
-            PrepareTabButton();
-            PrepareSubwindow();
-            ToggleSubs(true);
-        }
-
-        protected virtual void PrepareTabButton()
-        {
-            if (_tabButton == null)
+            if (forceReinit)
             {
-                var visualTree = Resources.Load<VisualTreeAsset>(PathToTabButtonUXML);
-                bool loadFailed = visualTree == null;
-                if (loadFailed)
-                {
-                    string logMessage = $"Failed to load VisualTreeAsset at " +
-                        $"{PathToTabButtonUXML} for {GetType().Name}.";
-                    throw new InvalidOperationException(logMessage);
-                }
+                ResetState();
+            }
 
-                _tabButton = visualTree.CloneTree();
+            if (forceReinit || !_isInitted)
+            {
+                _isDisposed = false;
+                PrepareLeftSidebarTab();
+                PrepareSubentries();
+                PrepareSubwindow();
+                ToggleSubs(true);
+                _isInitted = true;
             }
         }
 
-        protected VisualElement _tabButton;
+        private bool _isInitted, _isDisposed;
+
+        private void ResetState()
+        {
+            if (_tab != null)
+            {
+                ToggleSubs(false);
+                _tab = null;
+            }
+
+            _subentries.Clear();
+            _subwindow?.RemoveFromHierarchy();
+            _subwindow = null;
+            _isInitted = _isDisposed = false;
+        }
+
+        protected abstract void PrepareLeftSidebarTab();
+
+        protected IControlPanelTab _tab;
 
         protected abstract string PathToTabButtonUXML { get; }
 
+        // Expected for subclasses to override this method if they have subentries.
+        // The default implementation does nothing.
+        protected virtual void PrepareSubentries() { }
+        public virtual IReadOnlyList<IControlPanelEntry> GetSubentries(bool recursive = false)
+        {
+            List<IControlPanelEntry> result;
+
+            if (recursive)
+            {
+                result = new List<IControlPanelEntry>(_subentries);
+                for (int i = 0; i < _subentries.Count; i++)
+                {
+                    var directChild = _subentries[i];
+                    if (directChild == null)
+                    {
+                        string logMessage = $"Subentry at index {i} of {GetType().Name} was null. " +
+                            $"This should not happen if PrepareSubentries() has been called.";
+                        throw new InvalidOperationException(logMessage);
+                    }
+
+                    // This is a depth-first traversal of the subentry tree.
+                    // Note that this will include the direct child itself in the result, so
+                    // we don't need to add it separately.
+                    // This is because GetSubentries(true) will return a list that includes
+                    // the entry itself as well as its subentries.
+                    var childSubs = directChild.GetSubentries(true);
+                    result.AddRange(childSubs);
+                }
+            }
+            else
+            {
+                result = _subentries; // So we won't need as many allocations
+            }
+
+            return result;
+        }
+        protected readonly List<IControlPanelEntry> _subentries = new List<IControlPanelEntry>();
+
         protected virtual void PrepareSubwindow()
         {
-            if (_subwindow == null)
+            bool shouldCreateNewSubwindow = MeantToHaveSubwindow && _subwindow == null;
+            if (shouldCreateNewSubwindow)
             {
                 var visualTree = Resources.Load<VisualTreeAsset>(PathToSubwindowUXML);
                 bool loadFailed = visualTree == null;
@@ -60,47 +115,30 @@ namespace AtMycelia.Myceliarium
             }
         }
 
+        public bool MeantToHaveSubwindow => !string.IsNullOrEmpty(PathToSubwindowUXML);
         protected VisualElement _subwindow;
         protected abstract string PathToSubwindowUXML { get; }
 
         protected virtual void ToggleSubs(bool on)
         {
-            TabClickToggleSubs(on);
-        }
-
-        protected virtual void TabClickToggleSubs(bool on)
-        {
-            // We assume that the implementation uses just one button in the uxml
-            // that we can just find and add a click event to. If the
-            // implementation uses multiple buttons or something, this will
-            // need to be overridden.
-            Button button = _tabButton.Q<Button>();
-            if (button == null)
-            {
-                string logMessage = $"Could not find a Button in the TabButton " +
-                    $"for {GetType().Name}. This should not happen if the UXML is " +
-                    $"set up correctly.";
-                throw new InvalidOperationException(logMessage);
-            }
-
             if (on)
             {
-                button.clicked += OnTabButtonClicked;
+                _tab.Clicked += OnTabButtonClicked;
             }
             else
             {
-                button.clicked -= OnTabButtonClicked;
+                _tab.Clicked -= OnTabButtonClicked;
             }
         }
 
-        private void OnTabButtonClicked()
+        private void OnTabButtonClicked(IControlPanelTab tabClicked)
         {
             ControlPanelSignals.OnEntryTabClicked(this);
         }
 
         /// <summary>
         /// Meant to be overridden by subclasses that have state that needs
-        /// to be stringified for saving/loading purposes.
+        /// to be stringified for whatever purposes.
         /// </summary>
         public abstract string StringifiedState { get; }
 
@@ -111,27 +149,21 @@ namespace AtMycelia.Myceliarium
 
         // Clients shouldn't even try to access the Subwindow or tab before
         // the Init call, hence why the getters here throw exceptions if the
-        // subwindow or tab button is null. This is to help catch bugs in the code.
-        public virtual VisualElement TabButton
+        // subwindow or tab button is null. This is to help catch bugs.
+        public virtual IControlPanelTab Tab
         {
             get
             {
-                if (_tabButton == null)
-                {
-                    string logMessage = $"TabButton for {GetType().Name} was null. " +
-                        $"This should not happen if Init() has been called.";
-                    throw new InvalidOperationException(logMessage);
-                }
-                return _tabButton;
+                return _tab;
             }
-            protected set => _tabButton = value;
+            protected set => _tab = value;
         }
 
         public virtual VisualElement Subwindow
         {
             get
             {
-                if (_subwindow == null)
+                if (MeantToHaveSubwindow && _subwindow == null)
                 {
                     string logMessage = $"Subwindow for {GetType().Name} was null. " +
                         $"This should not happen if Init() has been called.";
@@ -139,15 +171,31 @@ namespace AtMycelia.Myceliarium
                 }
                 return _subwindow;
             }
-            protected set => _subwindow = value;
+            protected set
+            {
+                if (!MeantToHaveSubwindow)
+                {
+                    string logMessage = $"Attempted to set Subwindow for {GetType().Name}, " +
+                        $"but this entry is not meant to have one.";
+                    throw new InvalidOperationException(logMessage);
+                }
+                _subwindow = value;
+            }
         }
 
         public virtual void Dispose()
         {
+            if (_isDisposed)
+            {
+                return;
+            }
             ToggleSubs(false);
-            _tabButton = null;
+            _tab = null;
+            _subwindow?.RemoveFromHierarchy();
             _subwindow = null;
+            _isDisposed = true;
         }
+
     }
 
     public interface IControlPanelEntry
@@ -165,7 +213,7 @@ namespace AtMycelia.Myceliarium
         /// </summary>
         string MainDisplayName { get; }
 
-        VisualElement TabButton { get; }
+        IControlPanelTab Tab { get; }
         VisualElement Subwindow { get; }
 
         /// <summary>
@@ -176,6 +224,11 @@ namespace AtMycelia.Myceliarium
         string StringifiedState { get; }
 
         void Apply(string stringifiedState, out bool success);
+
+        bool TopLevelEntry { get; }
+
+        IReadOnlyList<IControlPanelEntry> GetSubentries(bool recursive = false);
+        bool MeantToHaveSubwindow { get; }
 
     }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -67,7 +68,9 @@ namespace AtMycelia.Myceliarium
 
         private void OnEntryTabClicked(IControlPanelEntry entryForClicked)
         {
-            bool ignoreIt = _entries == null || !_entries.Contains(entryForClicked);
+            bool ignoreIt = _entries == null || 
+                !WeHave(entryForClicked) ||
+                !entryForClicked.MeantToHaveSubwindow;
             if (ignoreIt)
             {
                 return;
@@ -87,16 +90,67 @@ namespace AtMycelia.Myceliarium
                 _entryBeingDisplayed = entryForClicked;
                 var subwindow = entryForClicked.Subwindow;
                 subwindow.style.display = DisplayStyle.Flex;
+                DeselectAllTabsExceptFor(entryForClicked.Tab);
             }
         }
 
+        private bool WeHave(IControlPanelEntry entry)
+        {
+            // Need to do a recursive search because some entries are subentries of other entries.
+            if (_entries == null || _entries.Count == 0)
+            {
+                return false;
+            }
+
+            bool foundIt = false;
+            for (int i = 0; i < _entries.Count; i++)
+            {
+                var elem = _entries[i];
+                if (elem == entry)
+                {
+                    foundIt = true;
+                    break;
+                }
+                var subentries = elem.GetSubentries(recursive: true);
+                if (subentries.Contains(entry))
+                {
+                    foundIt = true;
+                    break;
+                }
+            }
+
+            return foundIt;
+        }
         private IControlPanelEntry _entryBeingDisplayed;
+
+        private void DeselectAllTabsExceptFor(IControlPanelTab toLeaveAlone)
+        {
+            for (int i = 0; i < _entries.Count; i++)
+            {
+                var elem = _entries[i];
+                var tab = elem.Tab;
+                tab.IsSelected = tab == toLeaveAlone;
+                
+                var subentries = elem.GetSubentries(recursive: true);
+                for (int j = 0; j < subentries.Count; j++)
+                {
+                    var subentry = subentries[j];
+                    var subtab = subentry.Tab;
+                    subtab.IsSelected = subtab == toLeaveAlone;
+                }
+            }
+        }
 
         public void Attach(IList<IControlPanelEntry> toAttach)
         {
             _entries = toAttach ?? throw new ArgumentNullException(nameof(toAttach));
             foreach (var elem in _entries)
             {
+                if (!elem.TopLevelEntry)
+                {
+                    // We expect the top level entries to handle their subentries
+                    continue;
+                }
                 Attach(elem);
             }
         }
@@ -105,21 +159,50 @@ namespace AtMycelia.Myceliarium
 
         private void Attach(IControlPanelEntry entry)
         {
+            bool alreadyInitted = entry.Tab != null && entry.Subwindow != null; //
+            if (alreadyInitted)
+            {
+                // Can happen when opening and closing the ControlPanel
+                // window multiple times in a session without an 
+                // assembly reload in between.
+                return;
+            }
             try
             {
-                entry.Init(forceReinit: false); // To save on clock cycles
-
-                _mainTabSet.Add(entry.TabButton);
-
-                // We want the subwindows parented to the holder, but until
-                // the user clicks on the tab, we don't want them to be visible.
-                entry.Subwindow.style.display = DisplayStyle.None;
-                _subwindowDisplay.Add(entry.Subwindow);
+                entry.Init(forceReinit: true);
+                _mainTabSet.Add(entry.Tab.Root);
+                RegisterSubwindowsOf(entry);
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to attach {entry.GetType().Name} " +
-                    $"to ControlPanel: {ex.Message}");
+                string logMessage = $"Failed to attach {entry.GetType().Name} " +
+                    $"to ControlPanel: {ex.Message}";
+                Debug.LogError(logMessage);
+            }
+        }
+
+        private void RegisterSubwindowsOf(IControlPanelEntry entry)
+        {
+            // We want the subwindows parented to the holder, but until
+            // the user clicks on the tab, we don't want them to be visible.
+            var subwindow = entry.Subwindow;
+            if (subwindow != null) // But as not all tabs are meant to have
+                                   // subwindows tied to them...
+            {
+                subwindow.style.display = DisplayStyle.None;
+                _subwindowDisplay.Add(subwindow);
+            }
+
+            var subentries = entry.GetSubentries(recursive: true);
+            for (int i = 0; i < subentries.Count; i++)
+            {
+                var subentry = subentries[i];
+                subwindow = subentry.Subwindow;
+                if (subwindow != null)
+                {
+                    subwindow.style.display = DisplayStyle.None;
+                    _subwindowDisplay.Add(subwindow);
+                }
             }
         }
 
