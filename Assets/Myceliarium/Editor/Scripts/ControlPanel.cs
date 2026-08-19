@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,17 +11,35 @@ namespace AtMycelia.Myceliarium
     public class ControlPanel : EditorWindow
     {
         [MenuItem("Window/Atelier Mycelia/ControlPanel")]
-        public static void ShowExample()
+        public static void BringUp()
         {
+            if (S != null)
+            {
+                S.Focus();
+                return;
+            }
             ControlPanel wnd = GetWindow<ControlPanel>();
             wnd.titleContent = new GUIContent("ControlPanel");
             wnd.minSize = wnd.maxSize = _windowSize;
         }
 
+        public static ControlPanel S { get; private set; }
+
         private static readonly Vector2 _windowSize = new Vector2(1280, 800);
 
         public void CreateGUI()
         {
+            if (S != null && S != this)
+            {
+                this.Close();
+            }
+            if (S == this)
+            {
+                return; // To deal with cases where CreateGUI is called multiple times
+                        // for the same instance.
+            }
+            S = this;
+
             VisualElement root = rootVisualElement;
 
             VisualElement baseWindow = m_VisualTreeAsset.Instantiate();
@@ -34,18 +53,18 @@ namespace AtMycelia.Myceliarium
 
         private void InitializeEntryAttacher()
         {
-            _entryAttacher?.Dispose();
-
-            _entryAttacher = new ControlPanelEntryAttacher(rootVisualElement);
-            _entryAttacher.AttachAllEntries();
+            _attacher?.Dispose();
+            _attacher.Init(rootVisualElement);
+            var toAttach = ControlPanelEntryRegistry.Entries.ToList();
+            _attacher.Attach(toAttach);
         }
 
-        private ControlPanelEntryAttacher _entryAttacher;
+        private ControlPanelEntryAttacher _attacher = new ControlPanelEntryAttacher();
 
         protected void OnDestroy()
         {
-            _entryAttacher?.Dispose();
-            _entryAttacher = null;
+            _attacher?.Dispose();
+            _attacher = null;
         }
     }
 }

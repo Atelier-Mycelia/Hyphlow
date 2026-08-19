@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,8 +11,9 @@ namespace AtMycelia.Myceliarium
     /// </summary>
     public sealed class ControlPanelEntryAttacher : IDisposable
     {
-        public ControlPanelEntryAttacher(VisualElement rootElement)
+        public void Init(VisualElement rootElement)
         {
+            _isDisposed = false;
             GetVisualElements();
             void GetVisualElements()
             {
@@ -44,16 +44,57 @@ namespace AtMycelia.Myceliarium
                     throw new InvalidOperationException(errorMessage);
                 }
             }
+
+            ToggleSubs(true);
         }
 
+        private bool _isDisposed = false;
         private VisualElement _rootElement;
         private VisualElement _mainTabSet;
         private VisualElement _subwindowDisplay;
 
-        public void AttachAllEntries()
+        private void ToggleSubs(bool on)
         {
-            _entries = ControlPanelEntryRegistry.Entries.ToList();
+            if (on)
+            {
+                ControlPanelSignals.OnEntryTabClicked += OnEntryTabClicked;
+            }
+            else
+            {
+                ControlPanelSignals.OnEntryTabClicked -= OnEntryTabClicked;
+            }
+        }
 
+        private void OnEntryTabClicked(IControlPanelEntry entryForClicked)
+        {
+            bool ignoreIt = _entries == null || !_entries.Contains(entryForClicked);
+            if (ignoreIt)
+            {
+                return;
+            }
+
+            bool currentlyShowingEntry = _entryBeingDisplayed != null;
+            bool switchToOtherOne = entryForClicked != _entryBeingDisplayed;
+            bool shouldHideCurrentOneFirst = currentlyShowingEntry && switchToOtherOne;
+            if (shouldHideCurrentOneFirst)
+            {
+                var subwindowShowing = _entryBeingDisplayed.Subwindow;
+                subwindowShowing.style.display = DisplayStyle.None;
+            }
+
+            if (switchToOtherOne)
+            {
+                _entryBeingDisplayed = entryForClicked;
+                var subwindow = entryForClicked.Subwindow;
+                subwindow.style.display = DisplayStyle.Flex;
+            }
+        }
+
+        private IControlPanelEntry _entryBeingDisplayed;
+
+        public void Attach(IList<IControlPanelEntry> toAttach)
+        {
+            _entries = toAttach ?? throw new ArgumentNullException(nameof(toAttach));
             foreach (var elem in _entries)
             {
                 Attach(elem);
@@ -69,6 +110,10 @@ namespace AtMycelia.Myceliarium
                 entry.Init(forceReinit: false); // To save on clock cycles
 
                 _mainTabSet.Add(entry.TabButton);
+
+                // We want the subwindows parented to the holder, but until
+                // the user clicks on the tab, we don't want them to be visible.
+                entry.Subwindow.style.display = DisplayStyle.None;
                 _subwindowDisplay.Add(entry.Subwindow);
             }
             catch (Exception ex)
@@ -80,39 +125,19 @@ namespace AtMycelia.Myceliarium
 
         public void Dispose()
         {
-            DisposeExistingEntries();
-        }
-
-        private void DisposeExistingEntries()
-        {
-            if (_entries == null)
+            if (_isDisposed)
             {
                 return;
             }
 
-            foreach (var elem in _entries)
-            {
-                if (elem is IDisposable disposable)
-                {
-                    try
-                    {
-                        disposable.Dispose();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogError($"Error disposing {elem.GetType().Name}: {ex.Message}");
-                    }
-                }
-            }
-
-            _entries.Clear();
+            ToggleSubs(false);
+            _entryBeingDisplayed = null;
             _entries = null;
+            _mainTabSet = null;
+            _subwindowDisplay = null;
+            _rootElement = null;
+            _isDisposed = true;
         }
 
-        
-        
-
-        
-        
     }
 }

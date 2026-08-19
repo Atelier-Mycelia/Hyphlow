@@ -1,7 +1,6 @@
 using AtMycelia.Hyphlow.EditorExt;
 using System;
 using UnityEngine;
-using UnityEngine.UIElements;
 using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Myceliarium
@@ -9,6 +8,7 @@ namespace AtMycelia.Myceliarium
     /// <summary>
     /// Handles the UI logic for the Flowchart Global Defaults control panel entry.
     /// Manages the tab button and submenu for configuring global Flowchart settings.
+    /// Later on, this will become a sub-entry for the Hyphlow Entry.
     /// </summary>
     public sealed class FcGlobalDefaultsEntry : ControlPanelEntry
     {
@@ -16,10 +16,10 @@ namespace AtMycelia.Myceliarium
         public override string MainDisplayName => "Flowchart Defaults";
 
         protected override string PathToTabButtonUXML => 
-            "Editor/UIToolkitTemplates/ControlPanel/FlowchartDefaultsTab";
+            "Editor/UIToolkitTemplates/Myceliarium/FlowchartDefaultsTab";
 
-        protected override string PathToSubwindowUXML => 
-            "Editor/UIToolkitTemplates/ControlPanel/FlowchartDefaultsSubmenu";
+        protected override string PathToSubwindowUXML =>
+            "Editor/UIToolkitTemplates/Myceliarium/FlowchartDefaultsSubmenu";
         #endregion
 
         public override void Init(bool forceReinit = false)
@@ -49,9 +49,7 @@ namespace AtMycelia.Myceliarium
                 return;
             }
 
-            _subwindow.style.display = on ?
-                DisplayStyle.Flex :
-                DisplayStyle.None;
+            base.ToggleSubs(on);
         }
 
         public override void Apply(string stringifiedState, out bool success)

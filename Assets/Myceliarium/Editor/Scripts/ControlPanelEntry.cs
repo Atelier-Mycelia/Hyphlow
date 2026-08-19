@@ -35,6 +35,7 @@ namespace AtMycelia.Myceliarium
                         $"{PathToTabButtonUXML} for {GetType().Name}.";
                     throw new InvalidOperationException(logMessage);
                 }
+
                 _tabButton = visualTree.CloneTree();
             }
         }
@@ -62,7 +63,40 @@ namespace AtMycelia.Myceliarium
         protected VisualElement _subwindow;
         protected abstract string PathToSubwindowUXML { get; }
 
-        protected abstract void ToggleSubs(bool on);
+        protected virtual void ToggleSubs(bool on)
+        {
+            TabClickToggleSubs(on);
+        }
+
+        protected virtual void TabClickToggleSubs(bool on)
+        {
+            // We assume that the implementation uses just one button in the uxml
+            // that we can just find and add a click event to. If the
+            // implementation uses multiple buttons or something, this will
+            // need to be overridden.
+            Button button = _tabButton.Q<Button>();
+            if (button == null)
+            {
+                string logMessage = $"Could not find a Button in the TabButton " +
+                    $"for {GetType().Name}. This should not happen if the UXML is " +
+                    $"set up correctly.";
+                throw new InvalidOperationException(logMessage);
+            }
+
+            if (on)
+            {
+                button.clicked += OnTabButtonClicked;
+            }
+            else
+            {
+                button.clicked -= OnTabButtonClicked;
+            }
+        }
+
+        private void OnTabButtonClicked()
+        {
+            ControlPanelSignals.OnEntryTabClicked(this);
+        }
 
         /// <summary>
         /// Meant to be overridden by subclasses that have state that needs
@@ -110,8 +144,9 @@ namespace AtMycelia.Myceliarium
 
         public virtual void Dispose()
         {
-            // No-op by default. Subclasses can override this to clean up
-            // any resources they may have allocated.
+            ToggleSubs(false);
+            _tabButton = null;
+            _subwindow = null;
         }
     }
 
@@ -141,7 +176,7 @@ namespace AtMycelia.Myceliarium
         string StringifiedState { get; }
 
         void Apply(string stringifiedState, out bool success);
-    }
 
+    }
 
 }
