@@ -3,30 +3,32 @@
     <ui:VisualElement name="Root" style="flex-grow: 1;">
         <ui:Label text="Flowchart Global Defaults" name="Header" class="submenu-title" />
         <ui:VisualElement name="ContentContainer" class="content-container">
-            <ui:VisualElement name="BlockSettingsSection" class="section">
-                <ui:Label text="Block Settings" name="Header" class="section-header" />
-                <ui:VisualElement name="NewBlockScopeHolder" class="field-row">
-                    <ui:Label text="New Block Scope" class="field-label" />
-                    <uie:EnumField name="NewBlockScope" data-source-type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" class="field-input" />
+            <ui:VisualElement name="TopSectionsRow" class="sections-row">
+                <ui:VisualElement name="BlockSettingsSection" class="section">
+                    <ui:Label text="Block Settings" name="Header" class="section-header" />
+                    <ui:VisualElement name="NewBlockScopeHolder" class="field-row">
+                        <ui:Label text="New Block Scope" class="field-label" />
+                        <uie:EnumField name="NewBlockScope" data-source-type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" class="field-input" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="FirstBlockNameHolder" class="field-row">
+                        <ui:Label text="First Block Name" class="field-label" />
+                        <ui:TextField name="FirstBlockName" class="field-input" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="NewBlockNameHolder" class="field-row">
+                        <ui:Label text="New Block Name" class="field-label" />
+                        <ui:TextField name="NewBlockName" class="field-input" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="BlockSizeHolder" class="field-row">
+                        <ui:Label text="Block Size" class="field-label" />
+                        <ui:Vector2Field name="BlockSize" class="field-input" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="FirstBlockNameHolder" class="field-row">
-                    <ui:Label text="First Block Name" class="field-label" />
-                    <ui:TextField name="FirstBlockName" class="field-input" />
-                </ui:VisualElement>
-                <ui:VisualElement name="NewBlockNameHolder" class="field-row">
-                    <ui:Label text="New Block Name" class="field-label" />
-                    <ui:TextField name="NewBlockName" class="field-input" />
-                </ui:VisualElement>
-                <ui:VisualElement name="BlockSizeHolder" class="field-row">
-                    <ui:Label text="Block Size" class="field-label" />
-                    <ui:Vector2Field name="BlockSize" class="field-input" />
-                </ui:VisualElement>
-            </ui:VisualElement>
-            <ui:VisualElement name="ExecutionSettingsSection" class="section">
-                <ui:Label text="Execution Settings" class="section-header" />
-                <ui:VisualElement name="StepPauseHolder" class="field-row">
-                    <ui:Label text="Step Pause (seconds)" class="field-label" />
-                    <ui:Slider name="StepPause" low-value="0" high-value="5" show-input-field="true" class="field-input" />
+                <ui:VisualElement name="ExecutionSettingsSection" class="section section-last">
+                    <ui:Label text="Execution Settings" class="section-header" />
+                    <ui:VisualElement name="StepPauseHolder" class="field-row">
+                        <ui:Label text="Step Pause (seconds)" class="field-label" />
+                        <ui:Slider name="StepPause" low-value="0" high-value="5" show-input-field="true" class="field-input" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="EventHandlerSection" class="section">

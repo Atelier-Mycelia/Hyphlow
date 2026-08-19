@@ -1,4 +1,4 @@
-.submenu-root {
+.root {
     flex-grow: 1;
     padding: 20px;
     background-color: rgb(56, 56, 56);
@@ -17,6 +17,23 @@
 .content-container {
     flex-grow: 1;
     flex-direction: column;
+}
+
+.sections-row {
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 25px;
+}
+
+.sections-row > .section {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 15px;
+    margin-bottom: 0;
+}
+
+.section-last {
+    margin-right: 0;
 }
 
 .section {
