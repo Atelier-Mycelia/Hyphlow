@@ -159,7 +159,7 @@ namespace AtMycelia.Myceliarium
 
         private void Attach(IControlPanelEntry entry)
         {
-            bool alreadyInitted = entry.Tab != null; //
+            bool alreadyInitted = entry.Tab != null && entry.Subwindow != null; //
             if (alreadyInitted)
             {
                 // Can happen when opening and closing the ControlPanel
