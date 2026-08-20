@@ -146,7 +146,7 @@ namespace AtMycelia.Myceliarium
             _entries = toAttach ?? throw new ArgumentNullException(nameof(toAttach));
             foreach (var elem in _entries)
             {
-                if (!elem.TopLevelEntry)
+                if (!elem.IsTopLevel)
                 {
                     // We expect the top level entries to handle their subentries
                     continue;
@@ -159,26 +159,27 @@ namespace AtMycelia.Myceliarium
 
         private void Attach(IControlPanelEntry entry)
         {
-            bool alreadyInitted = entry.Tab != null && entry.Subwindow != null; //
-            if (alreadyInitted)
+            // Remember, each entry fetched from the registry is expected to be unique.
+            // They're also not supposed to have their state wiped until either
+            // assemblies reload or Unity closes. Thus, it's possible that the entry
+            // passed here already has its VisualElements prepped.
+            if (!entry.IsInitted)
             {
-                // Can happen when opening and closing the ControlPanel
-                // window multiple times in a session without an 
-                // assembly reload in between.
-                return;
+                try
+                {
+                    entry.Init();
+                }
+                catch (Exception ex)
+                {
+                    string logMessage = $"Failed to attach {entry.GetType().Name} " +
+                        $"to ControlPanel: {ex.Message}";
+                    Debug.LogError(logMessage);
+                }
             }
-            try
-            {
-                entry.Init(forceReinit: true);
-                _mainTabSet.Add(entry.Tab.Root);
-                RegisterSubwindowsOf(entry);
-            }
-            catch (Exception ex)
-            {
-                string logMessage = $"Failed to attach {entry.GetType().Name} " +
-                    $"to ControlPanel: {ex.Message}";
-                Debug.LogError(logMessage);
-            }
+
+            _mainTabSet.Add(entry.Tab.Root);
+            RegisterSubwindowsOf(entry);
+
         }
 
         private void RegisterSubwindowsOf(IControlPanelEntry entry)

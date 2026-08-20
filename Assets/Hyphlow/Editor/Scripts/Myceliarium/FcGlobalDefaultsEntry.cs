@@ -18,9 +18,6 @@ namespace AtMycelia.Myceliarium
         #region Display Configuration
         public override string MainDisplayName => "Flowchart Defaults";
 
-        protected override string PathToTabButtonUXML => 
-            "Editor/UIToolkitTemplates/Myceliarium/FlowchartDefaultsTab";
-
         protected override string PathToSubwindowUXML =>
             "Editor/UIToolkitTemplates/Myceliarium/FlowchartDefaultsSubmenu";
         #endregion
@@ -141,7 +138,7 @@ namespace AtMycelia.Myceliarium
         }
 
         public override string StringifiedState =>
-            JsonUtility.ToJson(_workingState, prettyPrint: false);
+            JsonUtility.ToJson(_workingState, prettyPrint: true);
     }
 
     public class FcGlobalDefaultsTab : ControlPanelTab

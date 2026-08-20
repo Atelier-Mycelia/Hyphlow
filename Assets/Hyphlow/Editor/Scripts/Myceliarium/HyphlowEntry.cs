@@ -8,14 +8,11 @@ namespace AtMycelia.Hyphlow.ControlPanel
     public class HyphlowEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
         public override string MainDisplayName => "Hyphlow";
-        public override bool TopLevelEntry => true;
+        public override bool IsTopLevel => true;
 
         // TODO: Implement a working state that basically gathers up 
         // those of the sub-entries.
         public override string StringifiedState => throw new System.NotImplementedException();
-
-        protected override string PathToTabButtonUXML => 
-            "Editor/UIToolkitTemplates/Myceliarium/HyphlowTab";
 
         // The Hyphlow entry is really just a grouping for the other entries
         // such as the one for the FC Global Defaults. Thus, we don't need
@@ -43,7 +40,7 @@ namespace AtMycelia.Hyphlow.ControlPanel
             }
             #endregion
 
-            // At this time, the left sidebar tab has been prepped.
+            // At this time, the left sidebar tab should have been prepped.
         }
 
         protected override void PrepareLeftSidebarTab()

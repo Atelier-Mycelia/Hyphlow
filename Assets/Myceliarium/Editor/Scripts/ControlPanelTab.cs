@@ -150,12 +150,18 @@ namespace AtMycelia.Myceliarium
         {
             if (Root != null)
             {
+                // No nulling the VisualElements here. Remember, the entries these tabs 
+                // are meant to be attached to are expected to persist even when the
+                // Control Panel window is closed.
                 ToggleSubs(false);
                 Clicked = delegate { };
-                Root.RemoveFromHierarchy();
-                Root = null;
-                _button = null;
+                RemoveFromHierarchy();
             }
+        }
+
+        public virtual void RemoveFromHierarchy()
+        {
+            Root?.RemoveFromHierarchy();
         }
 
         public virtual bool IsSelected
@@ -203,6 +209,7 @@ namespace AtMycelia.Myceliarium
         bool IsSelected { get; set; }
         IReadOnlyList<IControlPanelTab> Subtabs { get; }
         void Register(IControlPanelTab subtab);
+        void RemoveFromHierarchy();
     }
 }
 

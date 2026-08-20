@@ -15,7 +15,7 @@ namespace AtMycelia.Myceliarium
     /// </summary>
     public abstract class ControlPanelEntry : IControlPanelEntry, IDisposable
     {
-        public virtual bool TopLevelEntry => false;
+        public virtual bool IsTopLevel => false;
         // ^Why false as the default? We expect that most entries will be
         // nested under others.
         public abstract string MainDisplayName { get; }
@@ -38,6 +38,11 @@ namespace AtMycelia.Myceliarium
             }
         }
 
+        public virtual bool IsInitted
+        {
+            get => _isInitted;
+            protected set => _isInitted = value;
+        }
         private bool _isInitted, _isDisposed;
 
         private void ResetState()
@@ -58,7 +63,6 @@ namespace AtMycelia.Myceliarium
 
         protected IControlPanelTab _tab;
 
-        protected abstract string PathToTabButtonUXML { get; }
 
         // Expected for subclasses to override this method if they have subentries.
         // The default implementation does nothing.
@@ -190,10 +194,19 @@ namespace AtMycelia.Myceliarium
                 return;
             }
             ToggleSubs(false);
-            _tab = null;
-            _subwindow?.RemoveFromHierarchy();
-            _subwindow = null;
+
+            // We don't want to null out the VisualElements here, given how each
+            // entry is expected to persist even when the Control Panel window is
+            // closed. We'll merely unattach the tabs and subwindows from the
+            // hierarchy, and let the Control Panel window handle the rest.
+            RemoveFromHierarchy();
             _isDisposed = true;
+        }
+        
+        public virtual void RemoveFromHierarchy()
+        {
+            _tab?.RemoveFromHierarchy();
+            _subwindow?.RemoveFromHierarchy();
         }
 
     }
@@ -225,10 +238,12 @@ namespace AtMycelia.Myceliarium
 
         void Apply(string stringifiedState, out bool success);
 
-        bool TopLevelEntry { get; }
+        bool IsTopLevel { get; }
 
         IReadOnlyList<IControlPanelEntry> GetSubentries(bool recursive = false);
         bool MeantToHaveSubwindow { get; }
+        bool IsInitted { get; }
+        void RemoveFromHierarchy();
 
     }
 
