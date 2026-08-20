@@ -46,7 +46,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             Debug.Log($"Doing default asset maintenance.");
             EnsureFlowchartGlobalDefaults();
             EnsureHyphlowRuntimeSysAssets();
-            EnsureVariableRegistryConfigs();
         }
 
         public static FlowchartGlobalDefaults EnsureFlowchartGlobalDefaults()
@@ -101,40 +100,5 @@ namespace AtMycelia.Hyphlow.EditorExt
         private static readonly string _pathToRuntimeResourceFolder = "AtMycelia/Runtime"; // Relative to Resources
         // Relative to Resources under Assets/
 
-        public static IReadOnlyList<VariableRegistryConfig> EnsureVariableRegistryConfigs()
-        {
-            var sysAssets = HyphlowRuntimeSysAssets.S;
-            string logMessage;
-            // VarRegistryConfigs should be under the Assets folder isntead of the Packages folder, so
-            // we don't need to make sure we're working with one under Packag4es.
-            string[] guids = AssetDatabase.FindAssets($"t:{nameof(VariableRegistryConfig)}");
-            if (guids.Length > 0)
-            {
-                List<VariableRegistryConfig> configsFound = new List<VariableRegistryConfig>(guids.Length);
-                for (int i = 0; i < guids.Length; i++)
-                {
-                    string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-                    VariableRegistryConfig config = AssetDatabase.LoadAssetAtPath<VariableRegistryConfig>(path);
-                    if (config != null)
-                    {
-                        configsFound.Add(config);
-                    }
-                }
-
-                sysAssets.AddMultiVrcs(configsFound);
-            }
-            else
-            {
-                logMessage = $"(If you just installed Hyphlow, please ignore this warning.)\n" +
-                    $"No instances of {nameof(VariableRegistryConfig)} found in the " +
-                    $"Assets folder. Creating a default one at {_pathToRuntimeResourceFolder}.";
-                Debug.LogWarning(logMessage);
-                var defaultConfig = SOUtils.EnsureSOExists<VariableRegistryConfig>(_pathToRuntimeResourceFolder,
-                    "VariableRegistryConfig");
-                sysAssets.AddVrc(defaultConfig);
-            }
-
-            return sysAssets.VariableRegistryConfigs;
-        }
     }
 }

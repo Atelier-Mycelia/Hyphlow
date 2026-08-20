@@ -56,22 +56,18 @@ namespace AtMycelia.Myceliarium
 
         protected virtual void RegisterVisualElements()
         {
-            RegisterButton();
+            RegisterMainClickable();
         }
 
         /// <summary>
-        /// By default, registers the button as the first UitkButton found in the Root. 
-        /// Subclasses can override this if they want to use a different VisualElement
-        /// serving the purpose of a button.
+        /// By default, this registers the clickable as a Button. If your tab is using
+        /// a different type of VisualElement as the main clickable (say, a Foldout),
+        /// override this method to register it appropriately.
         /// </summary>
-        protected virtual void RegisterButton()
+        protected virtual void RegisterMainClickable()
         {
-            // It's possible to have buttons not implemented as proper
-            // UitkButtons (say, you could go for a Foldout for the sake
-            // of nesting). That's why we have this func so that subclasses
-            // can override it if they want to use a different type of button.
-            _button = Root.Q<UitkButton>();
-            if (_button == null)
+            _mainClickable = Root.Q<UitkButton>();
+            if (_mainClickable == null)
             {
                 string logMessage = $"Failed to find a Button in the tab UXML " +
                     $"at {PathToUxml} for {GetType().Name}.";
@@ -79,13 +75,13 @@ namespace AtMycelia.Myceliarium
             }
         }
 
-        protected VisualElement _button;
+        protected VisualElement _mainClickable;
 
         public virtual string Text
         {
             get
             {
-                if (_button is UitkButton uitkBtn)
+                if (_mainClickable is UitkButton uitkBtn)
                 {
                     return uitkBtn.text;
                 }
@@ -98,7 +94,7 @@ namespace AtMycelia.Myceliarium
             }
             set
             {
-                if (_button is UitkButton uitkBtn)
+                if (_mainClickable is UitkButton uitkBtn)
                 {
                     uitkBtn.text = value;
                 }
@@ -125,11 +121,11 @@ namespace AtMycelia.Myceliarium
         {
             if (on)
             {
-                _button.RegisterCallback<ClickEvent>(OnClicked);
+                _mainClickable.RegisterCallback<ClickEvent>(OnClicked);
             }
             else
             {
-                _button.UnregisterCallback<ClickEvent>(OnClicked);
+                _mainClickable.UnregisterCallback<ClickEvent>(OnClicked);
             }
         }
 
@@ -150,31 +146,37 @@ namespace AtMycelia.Myceliarium
         {
             if (Root != null)
             {
+                // No nulling the VisualElements here. Remember, the entries these tabs 
+                // are meant to be attached to are expected to persist even when the
+                // Control Panel window is closed.
                 ToggleSubs(false);
                 Clicked = delegate { };
-                Root.RemoveFromHierarchy();
-                Root = null;
-                _button = null;
+                RemoveFromHierarchy();
             }
+        }
+
+        public virtual void RemoveFromHierarchy()
+        {
+            Root?.RemoveFromHierarchy();
         }
 
         public virtual bool IsSelected
         {
-            get => _button?.ClassListContains("tab-selected") ?? false;
+            get => _mainClickable?.ClassListContains("tab-selected") ?? false;
             set
             {
-                if (_button == null)
+                if (_mainClickable == null)
                 {
                     throw new InvalidOperationException(
                         $"Cannot set IsSelected for {GetType().Name} because the button is null.");
                 }
                 if (value)
                 {
-                    _button.AddToClassList("selected");
+                    _mainClickable.AddToClassList("selected");
                 }
                 else
                 {
-                    _button.RemoveFromClassList("selected");
+                    _mainClickable.RemoveFromClassList("selected");
                 }
             }
         }
@@ -203,6 +205,7 @@ namespace AtMycelia.Myceliarium
         bool IsSelected { get; set; }
         IReadOnlyList<IControlPanelTab> Subtabs { get; }
         void Register(IControlPanelTab subtab);
+        void RemoveFromHierarchy();
     }
 }
 

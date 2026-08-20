@@ -57,7 +57,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             Flowchart fc = targetCommand.GetFlowchart();
             if (fc != null)
             {
-                VariableRegistryService.RebuildAll(fc);
+                VariableRegistry.Rebuild(fc);
             }
         }
 

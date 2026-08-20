@@ -275,7 +275,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             RegisterValidVars();
             void RegisterValidVars()
             {
-                var validVars = VarRegistry.GetVarsOfType(contentType);
+                var validVars = VariableRegistry.GetVarsOfType(contentType);
                 _labelsSeen.Clear();
                 orderedLabels.Clear();
                 orderedVars.Clear();

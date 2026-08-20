@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HyphlowSamplesMessages
   m_EditorClassIdentifier: 
   _includeInSaves: 1
+  _includeInRegistry: 1
   _uniqueId: dbd67569-78c3-4ae3-8f3c-27c7719e89c8
   _alwaysKeepGuid: 1
   _varManager:
@@ -70,7 +71,7 @@ MonoBehaviour:
     - rid: 588464199262798079
       type: {class: StringMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
-        _scope: 0
+        _scope: 2
         _key: bulletFired
         _itemId: 5
         scope: 0

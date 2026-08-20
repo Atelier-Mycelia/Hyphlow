@@ -34,7 +34,7 @@ namespace AtMycelia.Myceliarium
             for (int i = 0; i < filteredEntries.Count; i++)
             {
                 var elem = filteredEntries[i];
-                if (!elem.TopLevelEntry)
+                if (!elem.IsTopLevel)
                 {
                     filteredEntries.RemoveAt(i);
                     i--; // To avoid going out of bounds after removing an item
