@@ -1,1 +1,47 @@
+.hyphlow-tab {
+    color: rgb(222, 222, 222);
+    background-color: rgb(60, 60, 60);
+    border-color: rgb(30, 30, 30);
+    border-width: 1px;
+    transition-property: background-color;
+    transition-duration: 0.2s;
+    width: 100%;
+    padding: 0;
+}
 
+.hyphlow-tab > Toggle {
+    height: 100%;
+}
+
+.hyphlow-tab > Toggle > VisualElement {
+    height: 100%;
+}
+
+/* To hide the checkmark */
+.unity-toggle__checkmark
+{
+    visibility: hidden;
+    opacity: 0;
+    display: none;
+}
+
+.hyphlow-tab > Toggle > VisualElement > Label {
+    font-size: 24px;
+    flex-grow: 1;
+    height: 100%;
+    -unity-text-align: middle-center;
+}
+
+.hyphlow-tab:hover {
+    background-color: rgb(70, 70, 70);
+    width: 100%;
+}
+
+.hyphlow-tab:active {
+    background-color: rgb(50, 50, 50);
+}
+
+.hyphlow-tab.selected {
+    background-color: rgb(80, 120, 180);
+    border-color: rgb(100, 140, 200);
+}

@@ -5,6 +5,7 @@
     border-width: 1px;
     transition-property: background-color;
     transition-duration: 0.2s;
+    height: 50px;
 }
 
 .flowchart-defaults-tab:hover {
