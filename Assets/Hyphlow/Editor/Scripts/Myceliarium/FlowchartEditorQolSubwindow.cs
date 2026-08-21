@@ -30,10 +30,16 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _createButton = Root.Q<Button>("CreateButton");
             _qolAssetsListView = Root.Q<ListView>("QolAssetsListView");
 
-            if (_newAssetNameField == null || _createButton == null || _qolAssetsListView == null)
+            bool allFound = _newAssetNameField != null && _createButton != null 
+                && _qolAssetsListView != null;
+            if (!allFound)
             {
-                throw new InvalidOperationException(
-                    "Failed to find required UI elements in FlowchartEditorQolSubmenu.uxml");
+                string logMessage = "Failed to find required UI elements in" +
+                    "FlowchartEditorQolSubmenu.uxml.\n" +
+                    $"NewAssetNameField: {_newAssetNameField != null},\n" +
+                    $"CreateButton: {_createButton != null},\n" +
+                    $"QolAssetsListView: {_qolAssetsListView != null}";
+                throw new InvalidOperationException(logMessage);
             }
 
             LoadItemTemplate();

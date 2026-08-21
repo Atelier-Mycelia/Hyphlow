@@ -34,6 +34,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private void FixTemplateContainerSizingBugFor(IControlPanelTab subtab)
         {
+            TemplateContainerFixer.FixForFoldout(subtab);
+            return;
             // When parenting a TemplateContainer (or other programmatically-created VisualElement)
             // to a Foldout, the TemplateContainer's height may not be calculated correctly.
             // Thus to prevent that, we have to do a little finagling with the flex-sizing
