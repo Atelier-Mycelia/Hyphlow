@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace AtMycelia.Myceliarium
@@ -102,40 +101,26 @@ namespace AtMycelia.Myceliarium
         }
         protected readonly List<IControlPanelEntry> _subentries = new List<IControlPanelEntry>();
 
-        protected virtual void PrepareSubwindow()
-        {
-            bool shouldCreateNewSubwindow = MeantToHaveSubwindow && _subwindow == null;
-            if (shouldCreateNewSubwindow)
-            {
-                var visualTree = Resources.Load<VisualTreeAsset>(PathToSubwindowUXML);
-                bool loadFailed = visualTree == null;
-                if (loadFailed)
-                {
-                    string logMessage = $"Failed to load VisualTreeAsset at " +
-                        $"{PathToSubwindowUXML} for {GetType().Name}.";
-                    throw new InvalidOperationException(logMessage);
-                }
-                _subwindow = visualTree.CloneTree();
-            }
-        }
+        protected virtual void PrepareSubwindow() { }
 
-        public bool MeantToHaveSubwindow => !string.IsNullOrEmpty(PathToSubwindowUXML);
-        protected VisualElement _subwindow;
-        protected abstract string PathToSubwindowUXML { get; }
+        public virtual bool IsMeantToHaveSubwindow => true; 
+        // ^Most tabs are expected to have subwindows, so...
+
+        protected IControlPanelSubwindow _subwindow;
 
         protected virtual void ToggleSubs(bool on)
         {
             if (on)
             {
-                _tab.Clicked += OnTabButtonClicked;
+                _tab.Clicked += OnTabClicked;
             }
             else
             {
-                _tab.Clicked -= OnTabButtonClicked;
+                _tab.Clicked -= OnTabClicked;
             }
         }
 
-        private void OnTabButtonClicked(IControlPanelTab tabClicked)
+        private void OnTabClicked(IControlPanelTab tabClicked)
         {
             ControlPanelSignals.OnEntryTabClicked(this);
         }
@@ -163,11 +148,11 @@ namespace AtMycelia.Myceliarium
             protected set => _tab = value;
         }
 
-        public virtual VisualElement Subwindow
+        public virtual IControlPanelSubwindow Subwindow
         {
             get
             {
-                if (MeantToHaveSubwindow && _subwindow == null)
+                if (IsMeantToHaveSubwindow && _subwindow == null)
                 {
                     string logMessage = $"Subwindow for {GetType().Name} was null. " +
                         $"This should not happen if Init() has been called.";
@@ -177,7 +162,7 @@ namespace AtMycelia.Myceliarium
             }
             protected set
             {
-                if (!MeantToHaveSubwindow)
+                if (!IsMeantToHaveSubwindow)
                 {
                     string logMessage = $"Attempted to set Subwindow for {GetType().Name}, " +
                         $"but this entry is not meant to have one.";
@@ -209,6 +194,18 @@ namespace AtMycelia.Myceliarium
             _subwindow?.RemoveFromHierarchy();
         }
 
+        public virtual void OnSelected()
+        {
+            // Default = no-op
+        }
+
+        public virtual void OnDeselected()
+        {
+            // Default = no-op
+        }
+
+        public virtual bool HasSubentries => _subentries.Count > 0;
+
     }
 
     public interface IControlPanelEntry
@@ -227,7 +224,7 @@ namespace AtMycelia.Myceliarium
         string MainDisplayName { get; }
 
         IControlPanelTab Tab { get; }
-        VisualElement Subwindow { get; }
+        IControlPanelSubwindow Subwindow { get; }
 
         /// <summary>
         /// Some entries may have state that needs to be stringified for saving/loading purposes.
@@ -241,9 +238,13 @@ namespace AtMycelia.Myceliarium
         bool IsTopLevel { get; }
 
         IReadOnlyList<IControlPanelEntry> GetSubentries(bool recursive = false);
-        bool MeantToHaveSubwindow { get; }
+        bool IsMeantToHaveSubwindow { get; }
         bool IsInitted { get; }
         void RemoveFromHierarchy();
+
+        void OnSelected();
+        void OnDeselected();
+        bool HasSubentries { get; }
 
     }
 

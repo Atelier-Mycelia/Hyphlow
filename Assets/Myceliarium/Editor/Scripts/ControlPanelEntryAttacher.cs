@@ -70,7 +70,7 @@ namespace AtMycelia.Myceliarium
         {
             bool ignoreIt = _entries == null || 
                 !WeHave(entryForClicked) ||
-                !entryForClicked.MeantToHaveSubwindow;
+                !entryForClicked.IsMeantToHaveSubwindow;
             if (ignoreIt)
             {
                 return;
@@ -82,14 +82,14 @@ namespace AtMycelia.Myceliarium
             if (shouldHideCurrentOneFirst)
             {
                 var subwindowShowing = _entryBeingDisplayed.Subwindow;
-                subwindowShowing.style.display = DisplayStyle.None;
+                subwindowShowing.Hide();
             }
 
             if (switchToOtherOne)
             {
                 _entryBeingDisplayed = entryForClicked;
                 var subwindow = entryForClicked.Subwindow;
-                subwindow.style.display = DisplayStyle.Flex;
+                subwindow.Show();
                 DeselectAllTabsExceptFor(entryForClicked.Tab);
             }
         }
@@ -151,7 +151,7 @@ namespace AtMycelia.Myceliarium
                     // We expect the top level entries to handle their subentries
                     continue;
                 }
-                Attach(elem);
+                Attach(elem);//
             }
         }
 
@@ -190,8 +190,8 @@ namespace AtMycelia.Myceliarium
             if (subwindow != null) // But as not all tabs are meant to have
                                    // subwindows tied to them...
             {
-                subwindow.style.display = DisplayStyle.None;
-                _subwindowDisplay.Add(subwindow);
+                subwindow.Hide();
+                _subwindowDisplay.Add(subwindow.Root);
             }
 
             var subentries = entry.GetSubentries(recursive: true);
@@ -201,8 +201,8 @@ namespace AtMycelia.Myceliarium
                 subwindow = subentry.Subwindow;
                 if (subwindow != null)
                 {
-                    subwindow.style.display = DisplayStyle.None;
-                    _subwindowDisplay.Add(subwindow);
+                    subwindow.Hide();
+                    _subwindowDisplay.Add(subwindow.Root);
                 }
             }
         }
