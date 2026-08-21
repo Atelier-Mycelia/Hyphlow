@@ -1,8 +1,10 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityObj = UnityEngine.Object;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
 #endif
@@ -12,38 +14,161 @@ namespace AtMycelia.Hyphlow
     /// <summary>
     /// Maintains a registry of all available variables from various sources accessible in the scene.
     /// </summary>
-    public sealed class VariableRegistry
+    public static class VariableRegistry
     {
-        private readonly Func<IReadOnlyList<VariableSourceAsset>> _globalSourcesProvider;
-
-        // Master dictionary of all variables
-        private readonly Dictionary<string, IVariable> _vars = new Dictionary<string, IVariable>();
-
-        // Secondary index: contentType -> dict of vars
-        private readonly Dictionary<Type, Dictionary<string, IVariable>> _varsByType =
-            new Dictionary<Type, Dictionary<string, IVariable>>();
-
-        public IReadOnlyDictionary<string, IVariable> Variables => _vars;
-        public event Action RegistryChanged;
-
-        public VariableRegistry(Func<IReadOnlyList<VariableSourceAsset>> globalSourcesProvider)
+        [InitializeOnLoadMethod]
+        private static void InitializeRegistry()
         {
-            _globalSourcesProvider = globalSourcesProvider ?? (() => _emptySources);
-            Rebuild();
+            ToggleSubs(false);
+            ToggleSubs(true);
+
+            InitializeDelayed();
+        }
+
+        private static void ToggleSubs(bool on)
+        {
+            ToggleEditorSubs(on);
+            ToggleRuntimeSubs(on);
+        }
+
+        private static void ToggleEditorSubs(bool on)
+        {
 #if UNITY_EDITOR
-            ToggleEditorSubs(false);
-            ToggleEditorSubs(true);
+            if (on)
+            {
+                Selection.selectionChanged += OnSelectionChanged;
+                AssemblyReloadEvents.afterAssemblyReload += InitializeDelayed;
+                EditorSceneManager.sceneOpened += OnSceneOpened;
+                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+            }
+            else
+            {
+                Selection.selectionChanged -= OnSelectionChanged;
+                AssemblyReloadEvents.afterAssemblyReload -= InitializeDelayed;
+            }
 #endif
         }
 
-        private void ToggleEditorSubs(bool on)
+        private static void OnPlayModeStateChanged(PlayModeStateChange change)
         {
-            // No-op for now.
+            if (change == PlayModeStateChange.ExitingPlayMode)
+            {
+                Rebuild();
+            }
         }
 
-        public void Rebuild(IVariableSource localSource = null)
+        private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
         {
-            _vars.Clear();
+            Rebuild();
+        }
+
+        private static void OnSelectionChanged()
+        {
+#if UNITY_EDITOR
+            var selected = Selection.activeGameObject;
+
+            if (selected != null && selected.TryGetComponent<Flowchart>(out var fc))
+            {
+                Rebuild(fc);
+            }
+#endif
+        }
+
+        private static void InitializeDelayed()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                Rebuild();
+            };
+        }
+
+        private static void ToggleRuntimeSubs(bool on)
+        {
+            if (on)
+            {
+                FlowchartSignals.VariableAdded += OnVarAddedOrRemoved;
+                FlowchartSignals.VariableRemoved += OnVarAddedOrRemoved;
+                FlowchartRegistry.FullRefreshed += OnFcRegFullRefreshed;
+                FlowchartSignals.FlowchartDestroyed += OnFlowchartDestroyed;
+                VariableSignals.PostValueChange += OnVariableValueChanged;
+
+                VsaSignals.VsaEnabled -= OnVsaChanged;
+                VsaSignals.VsaDisabled -= OnVsaChanged;
+                VsaSignals.VariableAdded -= OnAnyVariableChanged;
+                VsaSignals.VariableRemoved -= OnAnyVariableChanged;
+            }
+            else
+            {
+                FlowchartSignals.VariableAdded -= OnVarAddedOrRemoved;
+                FlowchartSignals.VariableRemoved -= OnVarAddedOrRemoved;
+                FlowchartRegistry.FullRefreshed -= OnFcRegFullRefreshed;
+                FlowchartSignals.FlowchartDestroyed -= OnFlowchartDestroyed;
+                VariableSignals.PostValueChange -= OnVariableValueChanged;
+
+                VsaSignals.VsaEnabled -= OnVsaChanged;
+                VsaSignals.VsaDisabled -= OnVsaChanged;
+                VsaSignals.VariableAdded -= OnAnyVariableChanged;
+                VsaSignals.VariableRemoved -= OnAnyVariableChanged;
+            }
+        }
+
+        private static void OnVsaChanged(VariableSourceAsset asset)
+        {
+            Rebuild();
+        }
+
+        private static void OnAnyVariableChanged(VariableSourceAsset _, IVariable _2)
+        {
+            Rebuild();
+        }
+
+        private static void OnVariableValueChanged(IVariable variable, object arg2)
+        {
+            if (!Application.isPlaying)
+            {
+#if UNITY_EDITOR
+                EditorApplication.delayCall += () =>
+                {
+                    if (variable == null)
+                    {
+                        return;
+                    }
+                    if (Application.isPlaying)
+                    {
+                        return; // We only want to respond to var value changes in the editor,
+                                // since that's the only time we care about keeping the registry's
+                                // values up to date with the actual variable values in the scene.
+                    }
+                    OnSelectionChanged();
+                };
+#endif
+            }
+            else
+            {
+                Rebuild();
+            }
+        }
+
+
+        private static void OnFlowchartDestroyed(Flowchart flowchart)
+        {
+            Rebuild();
+        }
+
+        private static void OnFcRegFullRefreshed()
+        {
+            Rebuild();
+        }
+
+        private static void OnVarAddedOrRemoved(Flowchart flowchart, IVariable _)
+        {
+            Rebuild(flowchart);
+        }
+
+        public static void Rebuild(IVariableSource localSource = null)
+        {
+            RefreshSources();
+            _registeredVars.Clear();
             _varsByType.Clear();
 
             RegisterLocalVars();
@@ -55,12 +180,9 @@ namespace AtMycelia.Hyphlow
                     for (int i = 0; i < localVars.Count; i++)
                     {
                         IVariable toRegister = localVars[i];
-                        Register(toRegister.Key, toRegister);
-                        bool isLegacyVariable = toRegister is Variable;
-                        if (!isLegacyVariable)
-                        {
-                            toRegister.Owner = localSource;
-                        }
+                        string key = string.Format(_localFlowchartKeyFormat,
+                            localSource.Name, toRegister.Key);
+                        Register(key, toRegister);
                     }
                 }
             }
@@ -68,36 +190,45 @@ namespace AtMycelia.Hyphlow
             RegisterOtherFcVars();
             void RegisterOtherFcVars()
             {
-                IReadOnlyList<Flowchart> cachedFcs = FindFlowchartsToGoThrough();
+                IReadOnlyList<Flowchart> otherFcs = FindFlowchartsToGoThrough();
                 IReadOnlyList<Flowchart> FindFlowchartsToGoThrough()
                 {
-                    IReadOnlyList<Flowchart> cachedFcs = FlowchartRegistry.GetFlowcharts()
-                        .Where(fc => fc != null && !ReferenceEquals(fc, localSource)).ToArray();
-                    return cachedFcs;
+                    IReadOnlyList<Flowchart> cachedFcs = FlowchartRegistry.GetFlowcharts();
+                    List<Flowchart> toGoThrough = new List<Flowchart>(cachedFcs.Count);
+
+                    for (int i = 0; i < cachedFcs.Count; i++)
+                    {
+                        var fc = cachedFcs[i];
+                        bool shouldConsider = fc != null && !ReferenceEquals(fc, localSource);
+                        if (shouldConsider)
+                        {
+                            toGoThrough.Add(fc);
+                        }
+                    }
+
+                    return toGoThrough;
                 }
 
-                for (int i = 0; i < cachedFcs.Count; i++)
+                for (int i = 0; i < otherFcs.Count; i++)
                 {
-                    Flowchart otherFc = cachedFcs[i];
-                    IReadOnlyList<IVariable> otherVariables = otherFc.Variables;
-                    for (int j = 0; j < otherVariables.Count; j++)
+                    Flowchart otherElem = otherFcs[i];
+                    IReadOnlyList<IVariable> otherVars = otherElem.Variables;
+                    for (int j = 0; j < otherVars.Count; j++)
                     {
-                        IVariable toRegister = otherVariables[j];
-                        bool isVisible = (toRegister.Scope & AccessScopeDefaults.VisibleToOutsiders) != 0;
+                        IVariable toRegister = otherVars[j];
+                        bool isVisible = (toRegister.Scope & AccessScopeDefaults.VisibleToOutsiders)
+                            != 0;
                         if (!isVisible)
                         {
                             continue;
                         }
 
-                        // To make it clear to users these variables are _not_ local to the source they're editing from,
-                        // we prefix said vars with their owners' names based on a specific format.
-                        string key = string.Format(_nonLocalFlowchartKeyFormat, otherFc.gameObject.name, toRegister.Key);
+                        // To make it clear to users these variables are _not_ local to the
+                        // source they're editing from, we prefix said vars with their owners'
+                        // names based on a specific format.
+                        string key = string.Format(_nonLocalFlowchartKeyFormat,
+                            otherElem.gameObject.name, toRegister.Key);
                         Register(key, toRegister);
-                        bool isLegacyVariable = toRegister is Variable;
-                        if (!isLegacyVariable)
-                        {
-                            toRegister.Owner = otherFc;
-                        }
                     }
                 }
             }
@@ -105,13 +236,9 @@ namespace AtMycelia.Hyphlow
             RegisterGlobals();
             void RegisterGlobals()
             {
-                IReadOnlyList<VariableSourceAsset> globalSources = _globalSourcesProvider()
-                    .Where(source => source != null && source != localSource as UnityObj).ToArray();
-                globalSources ??= _emptySources;
-
-                for (int i = 0; i < globalSources.Count; i++)
+                for (int i = 0; i < _registeredSources.Count; i++)
                 {
-                    VariableSourceAsset source = globalSources[i];
+                    VariableSourceAsset source = _registeredSources[i];
                     IReadOnlyList<IVariable> sourceVariables = source.Variables;
                     for (int j = 0; j < sourceVariables.Count; j++)
                     {
@@ -130,21 +257,60 @@ namespace AtMycelia.Hyphlow
             RegistryChanged?.Invoke();
         }
 
+
+        private static void RefreshSources()
+        {
+            _registeredSources.Clear();
+            IList<string> assetGuids = AssetDatabase.FindAssets("t:VariableSourceAsset");
+            IList<string> assetPaths = new List<string>(assetGuids.Count);
+
+            for (int i = 0; i < assetGuids.Count; i++)
+            {
+                string guid = assetGuids[i];
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                assetPaths.Add(path);
+
+                var asset = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(path);
+                if (asset.IncludeInRegistry)
+                {
+                    _registeredSources.Add(asset);
+                }
+            }
+        }
+
+        // This should exclude the VSAs that have their IncludeInRegistry property set to false,
+        // since those are meant to be ignored by this class.
+        private static readonly List<VariableSourceAsset> _registeredSources 
+            = new List<VariableSourceAsset>();
+
+        public static IReadOnlyList<VariableSourceAsset> RegisteredSources => _registeredSources;
+
+        // Master dictionary of all variables
+        private static readonly Dictionary<string, IVariable> _registeredVars = 
+            new Dictionary<string, IVariable>();
+
+        // Secondary index: contentType -> dict of vars
+        private static readonly Dictionary<Type, Dictionary<string, IVariable>> _varsByType =
+            new Dictionary<Type, Dictionary<string, IVariable>>();
+
+        public static IReadOnlyDictionary<string, IVariable> Variables => _registeredVars;
+        public static event Action RegistryChanged = delegate { };
+
         /// <summary>
         /// Registers the given variable under the given key, and also adds it to the secondary index for its content type.
         /// </summary>
-        private void Register(string key, IVariable toRegister)
+        private static void Register(string key, IVariable toRegister)
         {
             // The key we want to register the var under won't necessarily be the same as the
             // var's own key, since we might want to prefix or postfix it with something.
-            _vars[key] = toRegister;
-
+            _registeredVars[key] = toRegister;
+            
             var type = toRegister.ContentType;
             var dictForContentType = EnsureDictForContentType(type);
             dictForContentType[key] = toRegister;
         }
 
-        private Dictionary<string, IVariable> EnsureDictForContentType(Type contentType)
+        private static Dictionary<string, IVariable> EnsureDictForContentType(Type contentType)
         {
             _varsByType.TryGetValue(contentType, out var dictForContentType);
             bool weHaveDictForContentType = dictForContentType != null;
@@ -156,8 +322,11 @@ namespace AtMycelia.Hyphlow
             return dictForContentType;
         }
 
+        private static readonly string _localFlowchartKeyFormat = "!{0}!/{1}";
+        // ^This should usually make the local Fc's name show up at the top of the
+        // var-selection popup
         private static readonly string _nonLocalFlowchartKeyFormat = "[{0}]/{1}";
-        private static readonly string _globalSourceKeyFormat = "~{0}~/{1}";
+        private static readonly string _globalSourceKeyFormat = "|Globals|/~{0}~/{1}";
 
         /// <summary>
         /// Returns available variables matching the given content type. If getAllAssignableTypes 
@@ -165,14 +334,14 @@ namespace AtMycelia.Hyphlow
         /// content type (e.g. if contentType is Component, it also returns variables of type 
         /// SpriteRenderer since SpriteRenderer is a Component).
         /// </summary>
-        public IReadOnlyDictionary<string, IVariable> GetVarsOfType(Type contentType = null, 
+        public static IReadOnlyDictionary<string, IVariable> GetVarsOfType(Type contentType = null, 
             bool getAllAssignableTypes = false)
         {
             IReadOnlyDictionary<string, IVariable> result;
             bool giveThemEverything = contentType == null;
             if (giveThemEverything)
             {
-                result = _vars;
+                result = _registeredVars;
             }
             else
             {
@@ -211,14 +380,15 @@ namespace AtMycelia.Hyphlow
         /// Returns available variables matching any of the given content types.
         /// If null/empty, returns all.
         /// </summary>
-        public IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(IList<Type> contentTypes = null, 
+        public static IReadOnlyDictionary<string, IVariable> GetVarsOfMultiTypes(
+            IList<Type> contentTypes = null, 
             bool getAllAssignableTypes = false)
         {
             IReadOnlyDictionary<string, IVariable> result;
             bool giveThemEverything = contentTypes == null || contentTypes.Count == 0;
             if (giveThemEverything)
             {
-                result = _vars;
+                result = _registeredVars;
             }
             else if (contentTypes.Count == 1)
             {

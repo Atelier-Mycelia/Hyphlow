@@ -25,7 +25,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
             var varData = varDataObj as VariableData;
-            AnyVariableData anyVarData = varData as AnyVariableData; // We want to handle AnyVariableData as a special case
+            AnyVariableData anyVarData = varData as AnyVariableData; 
+            // ^We want to handle AnyVariableData as a special case
             if (varData == null)
             {
                 EditorGUI.EndProperty();
@@ -428,8 +429,6 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected static readonly int _popupGap = 5;
         protected static int SpaceForPopup => _popupWidth + _popupGap;
         protected static readonly float _MinimumValueWidth = 80f;
-        protected static VariableRegistry VarRegistry => VariableRegistryService.Registry;
-
         private static IReadOnlyDictionary<string, IVariable> GetValidVariables(SerializedProperty varDataProp, 
             FieldInfo fieldInfo)
         {
@@ -447,11 +446,11 @@ namespace AtMycelia.Hyphlow.EditorExt
                 var allowedTypes = GetAllowedTypes(fieldInfo);
                 if (allowedTypes != null && allowedTypes.Length > 0)
                 {
-                    validVars = VarRegistry.GetVarsOfMultiTypes(allowedTypes, true);
+                    validVars = VariableRegistry.GetVarsOfMultiTypes(allowedTypes, true);
                 }
                 else
                 {
-                    validVars = VarRegistry.GetVarsOfType(typeof(object), true);
+                    validVars = VariableRegistry.GetVarsOfType(typeof(object), true);
                 }
             }
             else
@@ -459,7 +458,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 Type contentType = varData.ContentType;
                 if (contentType != null)
                 {
-                    validVars = VarRegistry.GetVarsOfType(contentType, true);
+                    validVars = VariableRegistry.GetVarsOfType(contentType, true);
                 }
                 else
                 {

@@ -37,7 +37,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                         fc = fcWindow.Flowchart;
                     }
                 }
-                VariableRegistryService.RebuildAll(fc);
+                VariableRegistry.Rebuild(fc);
             }
         }
 
@@ -49,30 +49,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             UnityObj targetObject = varRefProp.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
-            VariableRegistry varRegistry = null;
+            bool canContinue = true;
 
-            EnsurePrerequisites(out bool canContinue);
-            void EnsurePrerequisites(out bool success)
-            {
-                success = false;
-
-                varRegistry = VariableRegistryService.Registry;
-                if (varRegistry == null)
-                {
-                    EditorGUI.LabelField(position, label.text, "Variable registry not available.");
-                    EditorGUI.EndProperty();
-                    return;
-                }
-
-                success = true;
-            }
-
-            if (!canContinue)
-            {
-                return;
-            }
-
-            var validVarsInScene = varRegistry.GetVarsOfMultiTypes(allowedContentTypes);
+            var validVarsInScene = VariableRegistry.GetVarsOfMultiTypes(allowedContentTypes);
 
             List<IVariable> candidates = new List<IVariable>(validVarsInScene.Values);
             string[] options = validVarsInScene.Keys

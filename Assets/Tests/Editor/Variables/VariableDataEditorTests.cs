@@ -20,7 +20,7 @@ namespace VScriptingTests.VariableOperations
         [SetUp]
         public void SetUp()
         {
-            VariableRegistryService.EnsureDefault();
+            VariableRegistry.Rebuild();
 
             // Create a Flowchart to act as owner for variables referenced by VariableData
             var fcGo = new GameObject("TestFlowchart");
@@ -39,7 +39,7 @@ namespace VScriptingTests.VariableOperations
         [TearDown]
         public void TearDown()
         {
-            VariableRegistryService.RebuildAll(); // Clear out any test vars
+            VariableRegistry.Rebuild(); // Clear out any test vars
             foreach (var obj in toDestroyInTearDown)
             {
                 if (obj != null)
@@ -93,7 +93,7 @@ namespace VScriptingTests.VariableOperations
             Assert.Greater(intVar.ItemId, 0, "Muscariable ItemId should be assigned.");
 
             _flowchart.Refresh();
-            VariableRegistryService.RebuildAll(_flowchart); // To make sure the registry knows about it
+            VariableRegistry.Rebuild(_flowchart); // To make sure the registry knows about it
 
             var holder = ScriptableObject.CreateInstance<IntegerDataHolder>();
             toDestroyInTearDown.Add(holder);

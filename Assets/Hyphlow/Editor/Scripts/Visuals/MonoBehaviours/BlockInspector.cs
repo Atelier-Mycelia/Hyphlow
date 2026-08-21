@@ -47,7 +47,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (currentFc != null)
             {
                 //Debug.Log($"Rebuilding Variable Registry for Block Inspector and Flowchart {currentFc.name}");
-                VariableRegistryService.RebuildAll(currentFc);
+                VariableRegistry.Rebuild(currentFc);
                 // ^For cases where the fc the FlowchartWindow is handling is not selected
             }
         }
