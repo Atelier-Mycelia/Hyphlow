@@ -21,6 +21,7 @@
 
 .main-tab-set {
     width: 256px; /* 20% of 1280 */
+    height: 100%;
     flex-direction: column;
     padding: 6px;
     border-right-width: 2px;

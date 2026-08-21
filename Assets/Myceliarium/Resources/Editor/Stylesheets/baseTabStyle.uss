@@ -9,8 +9,7 @@
 }
 
 .tabButton {
-    height: 100%;
-    width: 100%;
+    width: 60%;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
@@ -24,7 +23,8 @@
 }
 
 .tabButton > Image {
-    width: 20% margin-right 5px;
+    width: 20%;
+    margin-right: 5px;
 }
 
 .tabLabel {
@@ -58,5 +58,5 @@
 }
 
 .tab-selected {
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgba(255, 255, 255, 0.1);
 }

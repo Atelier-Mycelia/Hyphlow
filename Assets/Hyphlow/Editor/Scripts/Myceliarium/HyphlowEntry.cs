@@ -17,7 +17,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             #region Register the instances
             var subsToAdd = new List<ControlPanelEntry>
             {
-                new FcGlobalDefaultsEntry()
+                new FcGlobalDefaultsEntry(),
+                new FlowchartEditorQolEntry()
             };
             _subentries.AddRange(subsToAdd);
             #endregion

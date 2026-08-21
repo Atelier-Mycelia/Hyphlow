@@ -1,5 +1,7 @@
 .hyphlow-tab {
+    justify-content: center;
     color: rgb(222, 222, 222);
+    -unity-text-align: middle-center;
     background-color: rgb(60, 60, 60);
     border-color: rgb(30, 30, 30);
     border-width: 1px;
@@ -7,6 +9,9 @@
     transition-duration: 0.2s;
     width: 100%;
     padding: 0;
+    flex-direction: column;
+    height: 60px;
+    flex-grow: 0;
 }
 
 .hyphlow-tab > Toggle {
@@ -34,7 +39,6 @@
 
 .hyphlow-tab:hover {
     background-color: rgb(70, 70, 70);
-    width: 100%;
 }
 
 .hyphlow-tab:active {
