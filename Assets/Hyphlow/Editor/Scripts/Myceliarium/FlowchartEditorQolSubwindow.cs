@@ -1,132 +1,97 @@
+using AtMycelia.Hyphlow.EditorExt;
+using AtMycelia.Myceliarium;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
 
-namespace AtMycelia.Hyphlow.EditorExt
+namespace AtMycelia.Hyphlow.MyceliariumInt
 {
-    public sealed class FlowchartEditorQolManagerWindow : EditorWindow
+    /// <summary>
+    /// Subwindow for managing Flowchart Editor QoL assets in the Control Panel.
+    /// </summary>
+    public sealed class FlowchartEditorQolSubwindow : ControlPanelSubwindow
     {
         private const string ResourcesPath = "Assets/Resources/AtMycelia/Hyphlow";
-        private const string UxmlPath = "Editor/UIToolkitTemplates/FlowchartEditorQolItem";
+        private const string ItemUxmlPath = "Editor/UIToolkitTemplates/FlowchartEditorQolItem";
         private const string CommandsToHidePropertyName = "_commandsToHide";
 
-        [MenuItem("Window/Atelier Mycelia/Hyphlow/Manage Flowchart Editor Qol")]
-        public static void Open()
-        {
-            FlowchartEditorQolManagerWindow window = GetWindow<FlowchartEditorQolManagerWindow>();
-            window.titleContent = new GUIContent("Flowchart Editor QoL Manager");
-            window.minSize = window.maxSize = _windowSize;
-            window.Show();
-        }
+        public override string PathToUxml => 
+            "Editor/UIToolkitTemplates/Myceliarium/FlowchartEditorQolSubmenu";
 
-        private static Vector2 _windowSize = new Vector2(600f, 800f);
-
-        private void OnEnable()
+        protected override void RegisterVisualElements()
         {
-            if (_s != null && _s != this)
+            base.RegisterVisualElements();
+
+            _newAssetNameField = Root.Q<TextField>("NewAssetNameField");
+            _createButton = Root.Q<Button>("CreateButton");
+            _qolAssetsListView = Root.Q<ListView>("QolAssetsListView");
+
+            bool allFound = _newAssetNameField != null && _createButton != null 
+                && _qolAssetsListView != null;
+            if (!allFound)
             {
-                _s.Focus();
-                Close();
-                return;
+                string logMessage = "Failed to find required UI elements in" +
+                    "FlowchartEditorQolSubmenu.uxml.\n" +
+                    $"NewAssetNameField: {_newAssetNameField != null},\n" +
+                    $"CreateButton: {_createButton != null},\n" +
+                    $"QolAssetsListView: {_qolAssetsListView != null}";
+                throw new InvalidOperationException(logMessage);
             }
 
-            _s = this;
             LoadItemTemplate();
-            LoadAllQolAssets();
-        }
-
-        private static FlowchartEditorQolManagerWindow _s;
-        private VisualTreeAsset _itemTemplate;
-        
-        private void LoadItemTemplate()
-        {
-            _itemTemplate = Resources.Load<VisualTreeAsset>(UxmlPath);
-            if (_itemTemplate == null)
-            {
-                Debug.LogError($"Failed to load UXML template from Resources at path: {UxmlPath}");
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (_s == this)
-            {
-                _s = null;
-            }
-        }
-
-        private void OnFocus()
-        {
-            LoadAllQolAssets();
-            RefreshListView();
-        }
-
-        public void CreateGUI()
-        {
-            rootVisualElement.Clear();
-
-            VisualElement content = new VisualElement();
-            content.style.paddingLeft = 8f;
-            content.style.paddingRight = 8f;
-            content.style.paddingTop = 8f;
-            content.style.paddingBottom = 8f;
-
-            UitkLabel titleLabel = new UitkLabel("Flowchart Editor QoL Assets");
-            titleLabel.style.fontSize = 14;
-            titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            titleLabel.style.marginBottom = 8f;
-
-            VisualElement addNewSection = new VisualElement();
-            addNewSection.style.flexDirection = FlexDirection.Row;
-            addNewSection.style.marginBottom = 8f;
-
-            _newAssetNameField = new TextField("New Asset Name")
-            {
-                value = "FlowchartEditorQOL"
-            };
-            _newAssetNameField.style.flexGrow = 1f;
-
-            _addNewButton = new Button(OnAddNewQolAsset)
-            {
-                text = "Create New"
-            };
-            _addNewButton.style.marginLeft = 4f;
-
-            addNewSection.Add(_newAssetNameField);
-            addNewSection.Add(_addNewButton);
-
-            _qolAssetsListView = new ListView(_qolAssetsBuffer,
-                -1,
-                MakeQolAssetItem,
-                BindQolAssetItem)
-            {
-                selectionType = SelectionType.Single,
-                reorderable = false,
-                showAlternatingRowBackgrounds = AlternatingRowBackground.All,
-                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
-            };
-            _qolAssetsListView.style.minHeight = 200f;
-            _qolAssetsListView.style.flexGrow = 1f;
-
-            content.Add(titleLabel);
-            content.Add(addNewSection);
-            content.Add(_qolAssetsListView);
-
-            rootVisualElement.Add(content);
-
-            RefreshListView();
+            InitializeListView();
+            ToggleSubs(true);
         }
 
         private TextField _newAssetNameField;
-        private Button _addNewButton;
+        private Button _createButton;
         private ListView _qolAssetsListView;
+        private VisualTreeAsset _itemTemplate;
         private readonly List<FlowchartEditorQol> _qolAssetsBuffer = new List<FlowchartEditorQol>();
+        private readonly Dictionary<QolAssetRow, FlowchartEditorQol> _rowsInWindow = 
+            new Dictionary<QolAssetRow, FlowchartEditorQol>();
 
-        private void LoadAllQolAssets()
+        private void LoadItemTemplate()
+        {
+            _itemTemplate = Resources.Load<VisualTreeAsset>(ItemUxmlPath);
+            if (_itemTemplate == null)
+            {
+                Debug.LogError($"Failed to load UXML template from Resources at path: {ItemUxmlPath}");
+            }
+        }
+
+        private void InitializeListView()
+        {
+            _qolAssetsListView.makeItem = MakeQolAssetItem;
+            _qolAssetsListView.bindItem = BindQolAssetItem;
+            _qolAssetsListView.itemsSource = _qolAssetsBuffer;
+            _qolAssetsListView.selectionType = SelectionType.Single;
+            _qolAssetsListView.reorderable = false;
+            _qolAssetsListView.showAlternatingRowBackgrounds = AlternatingRowBackground.All;
+            _qolAssetsListView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
+            _qolAssetsListView.style.minHeight = 300f;
+            _qolAssetsListView.style.flexGrow = 1f;
+
+            LoadAllQolAssets();
+        }
+
+        private void ToggleSubs(bool on)
+        {
+            if (on)
+            {
+                _createButton.clicked += OnCreateNewQolAsset;
+            }
+            else
+            {
+                _createButton.clicked -= OnCreateNewQolAsset;
+            }
+        }
+
+        public void LoadAllQolAssets()
         {
             _qolAssetsBuffer.Clear();
 
@@ -141,12 +106,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 }
             }
 
-            _qolAssetsBuffer.Sort(SortQolAssets);
-        }
-
-        private int SortQolAssets(FlowchartEditorQol first, FlowchartEditorQol second)
-        {
-            return string.Compare(first.name, second.name, System.StringComparison.Ordinal);
+            _qolAssetsBuffer.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
+            RefreshListView();
         }
 
         private void RefreshListView()
@@ -172,35 +133,19 @@ namespace AtMycelia.Hyphlow.EditorExt
             Button deleteButton = root.Q<Button>("DeleteButton");
             TextField nameField = root.Q<TextField>("NameField");
 
-            bool foundAllRequiredElements = foldout != null && propertiesContainer != null &&
-                commandsToHideField != null && selectButton != null &&
-                deleteButton != null;
-            if (!foundAllRequiredElements)
+            if (foldout == null || propertiesContainer == null || commandsToHideField == null ||
+                selectButton == null || deleteButton == null || nameField == null)
             {
                 Debug.LogError("Failed to find required elements in UXML template.");
                 return root;
             }
 
-            if (commandsToHideField == null)
-            {
-                Debug.LogError("Failed to find CommandsToHideField in UXML template.");
-                return root;
-            }
-
-            if (nameField == null)
-            {
-                Debug.LogError("Failed to find NameField in UXML template.");
-                return root;
-            }
-
-            // Keep list binding fully programmatic for this field.
             commandsToHideField.bindingPath = string.Empty;
 
             QolAssetRow rowData = new QolAssetRow(foldout, propertiesContainer, commandsToHideField,
                 selectButton, deleteButton, nameField);
             root.userData = rowData;
 
-            // register commit handlers (Enter and focus out). Use rowData index at bind time.
             nameField.RegisterCallback<KeyDownEvent>(evt =>
             {
                 if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
@@ -217,9 +162,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             return root;
         }
 
-        private readonly IDictionary<QolAssetRow, FlowchartEditorQol> _rowsInWindow = 
-            new Dictionary<QolAssetRow, FlowchartEditorQol>();
-
         private void BindQolAssetItem(VisualElement element, int index)
         {
             if (element.userData is not QolAssetRow rowData)
@@ -232,9 +174,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 ? _qolAssetsBuffer[index]
                 : null;
 
-            rowData.Foldout.text = qol != null ? 
-                qol.name : 
-                "<None>";
+            rowData.Foldout.text = qol != null ? qol.name : "<None>";
             rowData.PropertiesContainer.Unbind();
             rowData.CommandsToHideField.Unbind();
 
@@ -248,14 +188,10 @@ namespace AtMycelia.Hyphlow.EditorExt
             rowData.BoundQolAsset = qol;
             rowData.PropertiesContainer.SetEnabled(true);
             rowData.Foldout.value = false;
-            
 
             SerializedObject serializedObject = new SerializedObject(qol);
-            
-            // Binds Slider/Toggle fields declared in UXML by their binding-path.
             rowData.PropertiesContainer.Bind(serializedObject);
 
-            // List<string> field is bound programmatically.
             SerializedProperty commandsToHideProp = serializedObject.FindProperty(CommandsToHidePropertyName);
             if (commandsToHideProp != null)
             {
@@ -266,7 +202,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 Debug.LogWarning($"Could not find '{CommandsToHidePropertyName}' on {qol.name}.");
             }
 
-            // set the NameField value programmatically using the guard:
             rowData.IsUpdatingName = true;
             rowData.NameField.value = qol.name;
             rowData.IsUpdatingName = false;
@@ -274,20 +209,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             _rowsInWindow[rowData] = qol;
         }
 
-        private void RefreshFoldoutTexts()
-        {
-            foreach (var kvp in _rowsInWindow)
-            {
-                QolAssetRow rowData = kvp.Key;
-                FlowchartEditorQol qol = kvp.Value;
-                if (rowData != null && qol != null)
-                {
-                    rowData.Foldout.text = qol.name;
-                }
-            }
-        }
-
-        private void OnAddNewQolAsset()
+        private void OnCreateNewQolAsset()
         {
             string assetName = _newAssetNameField.value;
             if (string.IsNullOrWhiteSpace(assetName))
@@ -311,18 +233,17 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (File.Exists(fullPath))
             {
-                EditorUtility.DisplayDialog("File Exists", $"An asset with the name " +
-                    $"'{fileName}' already exists.", "OK");
+                EditorUtility.DisplayDialog("File Exists", 
+                    $"An asset with the name '{fileName}' already exists.", "OK");
                 return;
             }
 
-            FlowchartEditorQol newQol = CreateInstance<FlowchartEditorQol>();
+            FlowchartEditorQol newQol = ScriptableObject.CreateInstance<FlowchartEditorQol>();
             AssetDatabase.CreateAsset(newQol, fullPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
             LoadAllQolAssets();
-            RefreshListView();
 
             Selection.activeObject = newQol;
             EditorGUIUtility.PingObject(newQol);
@@ -343,11 +264,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             Selection.activeObject = qol;
             EditorGUIUtility.PingObject(qol);
-        }
-
-        private void OnAssetRenamed()
-        {
-            RefreshFoldoutTexts();
         }
 
         private void OnDeleteQolAsset(QolAssetRow rowData)
@@ -376,7 +292,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 AssetDatabase.Refresh();
 
                 LoadAllQolAssets();
-                RefreshListView();
             }
         }
 
@@ -386,7 +301,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             return index >= 0 && index < _qolAssetsBuffer.Count;
         }
 
-        // Add CommitNameEdit helper and small guard to avoid triggering on programmatic updates:
         private void CommitNameEdit(QolAssetRow rowData)
         {
             if (!TryGetQolAssetIndex(rowData, out int index))
@@ -395,13 +309,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             FlowchartEditorQol qol = _qolAssetsBuffer[index];
-            if (qol == null)
-            {
-                return;
-            }
-
-            // Prevent reacting if we're currently updating the field programmatically
-            if (rowData.IsUpdatingName)
+            if (qol == null || rowData.IsUpdatingName)
             {
                 return;
             }
@@ -411,7 +319,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             if (string.IsNullOrEmpty(newName) || newName == currentName)
             {
-                // restore programmatic value to ensure UI shows canonical name in case of invalid input
                 rowData.IsUpdatingName = true;
                 rowData.NameField.value = currentName;
                 rowData.IsUpdatingName = false;
@@ -423,29 +330,33 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (!string.IsNullOrEmpty(err))
             {
                 EditorUtility.DisplayDialog("Rename Failed", err, "OK");
-                // restore old name on failure
                 rowData.IsUpdatingName = true;
                 rowData.NameField.value = currentName;
                 rowData.IsUpdatingName = false;
                 return;
             }
-            else
-            {
-                rowData.Foldout.text = newName;
-            }
 
+            rowData.Foldout.text = newName;
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            // optional: select and ping the asset
             Selection.activeObject = qol;
             EditorGUIUtility.PingObject(qol);
+        }
+
+        public override void Dispose()
+        {
+            ToggleSubs(false);
+            _rowsInWindow.Clear();
+            _qolAssetsBuffer.Clear();
+            base.Dispose();
         }
 
         private sealed class QolAssetRow
         {
             public QolAssetRow(Foldout foldout, VisualElement propertiesContainer,
-                PropertyField commandsToHideField, Button selectButton, Button deleteButton, TextField nameField)
+                PropertyField commandsToHideField, Button selectButton, Button deleteButton, 
+                TextField nameField)
             {
                 Foldout = foldout;
                 PropertiesContainer = propertiesContainer;
@@ -461,7 +372,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             public Button SelectButton { get; }
             public Button DeleteButton { get; }
             public TextField NameField { get; }
-            public bool IsUpdatingName { get; set; } = false;
+            public bool IsUpdatingName { get; set; }
             public int Index { get; set; }
             public FlowchartEditorQol BoundQolAsset { get; set; }
         }

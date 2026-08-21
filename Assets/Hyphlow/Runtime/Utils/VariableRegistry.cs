@@ -180,16 +180,18 @@ namespace AtMycelia.Hyphlow
                     for (int i = 0; i < localVars.Count; i++)
                     {
                         IVariable toRegister = localVars[i];
-                        string key = string.Format(_localFlowchartKeyFormat,
+                        string key = string.Format(_localSourceKeyFormat,
                             localSource.Name, toRegister.Key);
                         Register(key, toRegister);
                     }
                 }
             }
 
-            RegisterOtherFcVars();
-            void RegisterOtherFcVars()
+            RegisterOtherNonGlobalSourceVars();
+            void RegisterOtherNonGlobalSourceVars()
             {
+                // At least for now, these will only be flowcharts. Why? Those are the
+                // only other variable sources that we expect to exist in a scene.
                 IReadOnlyList<Flowchart> otherFcs = FindFlowchartsToGoThrough();
                 IReadOnlyList<Flowchart> FindFlowchartsToGoThrough()
                 {
@@ -322,11 +324,11 @@ namespace AtMycelia.Hyphlow
             return dictForContentType;
         }
 
-        private static readonly string _localFlowchartKeyFormat = "!{0}!/{1}";
+        private static readonly string _localSourceKeyFormat = "This/{1}";
         // ^This should usually make the local Fc's name show up at the top of the
         // var-selection popup
-        private static readonly string _nonLocalFlowchartKeyFormat = "[{0}]/{1}";
-        private static readonly string _globalSourceKeyFormat = "|Globals|/~{0}~/{1}";
+        private static readonly string _nonLocalFlowchartKeyFormat = "[Others in Scene]/[{0}]/{1}";
+        private static readonly string _globalSourceKeyFormat = "~Globals~/~{0}~/{1}";
 
         /// <summary>
         /// Returns available variables matching the given content type. If getAllAssignableTypes 

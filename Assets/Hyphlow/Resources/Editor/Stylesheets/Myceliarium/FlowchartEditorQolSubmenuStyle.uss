@@ -1,0 +1,68 @@
+.root {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
+    background-color: rgb(56, 56, 56);
+}
+
+.submenu-title {
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: rgb(220, 220, 220);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(100, 100, 100);
+}
+
+.content-container {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-direction: column;
+    width: 100%;
+}
+
+.section {
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: rgb(50, 50, 50);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: rgb(70, 70, 70);
+}
+
+.section-header {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(200, 200, 200);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(80, 80, 80);
+}
+
+.add-new-row {
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.new-asset-name-field {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 8px;
+}
+
+.create-button {
+    height: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
+    flex-shrink: 0;
+}
+
+.qol-assets-list {
+    min-height: 300px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}

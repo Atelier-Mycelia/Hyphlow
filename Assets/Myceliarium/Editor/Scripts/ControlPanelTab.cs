@@ -29,6 +29,7 @@ namespace AtMycelia.Myceliarium
             }
 
             Root = vta.CloneTree();
+            Root.name = $"{GetType().Name}_Root";
         }
 
         public virtual void Register(IControlPanelTab subtab)
@@ -162,7 +163,7 @@ namespace AtMycelia.Myceliarium
 
         public virtual bool IsSelected
         {
-            get => _mainClickable?.ClassListContains("tab-selected") ?? false;
+            get => _mainClickable?.ClassListContains("selected") ?? false;
             set
             {
                 if (_mainClickable == null)
