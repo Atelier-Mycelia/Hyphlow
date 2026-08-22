@@ -13,7 +13,7 @@ namespace AtMycelia.Myceliarium
         protected override string WindowTitle => "Atelier Mycelia Control Panel";
         #endregion
 
-        [MenuItem("Window/Atelier Mycelia/Control Panel")]
+        [MenuItem("Window/Atelier Mycelia/Control Panel", priority = 0)]
         public static void BringUp()
         {
             if (S != null)

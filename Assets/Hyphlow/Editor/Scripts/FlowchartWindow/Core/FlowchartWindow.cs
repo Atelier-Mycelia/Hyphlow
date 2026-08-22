@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         /// Opens the FlowchartWindow, or focuses it if it's already open. Best use this instead
         /// of EditorWindow.GetWindow directly, since that would skip some important setup.
         /// </summary>
-        [MenuItem("Window/Atelier Mycelia/Hyphlow/Flowchart Window")]
+        [MenuItem("Window/Atelier Mycelia/Hyphlow/Flowchart Window", priority = 1)]
         public static void BringUp()
         {
             FlowchartWindow wnd = _s != null ?
