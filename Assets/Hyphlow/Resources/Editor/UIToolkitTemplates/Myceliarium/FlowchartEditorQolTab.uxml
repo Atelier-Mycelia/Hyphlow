@@ -1,5 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Myceliarium/Resources/Editor/Stylesheets/baseTabStyle.uss?fileID=7433441132597879392&amp;guid=e529783e7fb76b44ab24de2f7649c171&amp;type=3#baseTabStyle" />
-    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/Myceliarium/FlowchartEditorQolTabStyle.uss?fileID=7433441132597879392&amp;guid=a8c12b6b2f02a8041b8b2a0f362b3af4&amp;type=3#FlowchartEditorQolTabStyle" />
+    <Style src="project://database/Packages/com.ateliermycelia.hyphlow/Resources/Editor/Stylesheets/Myceliarium/FlowchartEditorQolTabStyle.uss?fileID=7433441132597879392&amp;guid=a8c12b6b2f02a8041b8b2a0f362b3af4&amp;type=3#FlowchartEditorQolTabStyle" />
     <ui:Button text="Editor QoL" name="Button" selectable="true" class="tabButton editor-qol-tab" />
 </ui:UXML>
