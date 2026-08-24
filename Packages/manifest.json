@@ -2,6 +2,7 @@
   "dependencies": {
     "com.ateliermycelia.commonlib": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib",
     "com.ateliermycelia.hyphatween": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+    "com.ateliermycelia.myceliarium": "https://github.com/Atelier-Mycelia/Myceliarium.git?path=Assets/Myceliarium#develop_bak",
     "com.unity.feature.2d": "2.0.1",
     "com.unity.ide.rider": "3.0.39",
     "com.unity.ide.visualstudio": "2.0.26",
