@@ -1,18 +1,18 @@
-:root
-{
+:root {
     width: 100%;
 }
 
 .flowchart-defaults-tab {
-    color: rgb(222, 222, 222);
-    background-color: rgb(60, 60, 60);
     border-color: rgb(30, 30, 30);
     border-width: 1px;
     transition-property: background-color;
     transition-duration: 0.2s;
-    height: 50px;
-    width: 100%;
-    margin: 5px 0px 5px 0px;
+    margin: 5px 0 5px 0;
+    color: rgb(222, 222, 222);
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
 }
 
 .flowchart-defaults-tab:hover {

@@ -11,11 +11,11 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     public class ContentTypeConstraintAttribute : PropertyAttribute
     {
-        public ContentTypeConstraintAttribute(params System.Type[] types)
+        public ContentTypeConstraintAttribute(params Type[] types)
         {
-            if (types == null)
+            if (types == null || types.Length == 0)
             {
-                AllowedTypes = Array.Empty<Type>();
+                AllowedTypes = _everything;
             }
             else
             {
@@ -24,6 +24,8 @@ namespace AtMycelia.Hyphlow
             
         }
 
-        public IList<System.Type> AllowedTypes { get; }
+        public IList<Type> AllowedTypes { get; }
+
+        private static readonly Type[] _everything = new Type[] { typeof(object) };
     }
 }
