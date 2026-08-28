@@ -1,6 +1,5 @@
 using UnityEditor;
 using Debug = UnityEngine.Debug;
-using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {

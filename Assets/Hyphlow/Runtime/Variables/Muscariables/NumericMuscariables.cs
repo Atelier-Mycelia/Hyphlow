@@ -8,7 +8,8 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true,
         "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core")]
-    public abstract class NumericMuscariable<T> : Muscariable<T>, IComparable<T>, IComparable<NumericMuscariable<T>>
+    public abstract class NumericMuscariable<T> : Muscariable<T>, IComparable<T>,
+        IComparable<NumericMuscariable<T>>
         where T : IComparable<T>, IEquatable<T>
     {
         public override bool IsArithmeticSupported(SetOperator op) => true;

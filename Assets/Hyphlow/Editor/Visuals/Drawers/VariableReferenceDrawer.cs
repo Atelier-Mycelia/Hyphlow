@@ -97,7 +97,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
             EditorGUI.BeginChangeCheck();
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, options);
-            // ^This is what lets the user choose a variable from the dropdown, and it returns the index of the chosen option
+            // ^This is what lets the user choose a variable from the dropdown, and it
+            // returns the index of the chosen option
 
             if (EditorGUI.EndChangeCheck())
             {

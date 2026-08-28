@@ -13,7 +13,8 @@ namespace AtMycelia.Hyphlow
     [MovedFrom(true,
         "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core", "Muscariable")]
-    public abstract class Muscariable : IVariable, IEquatable<Muscariable>, ISerializationCallbackReceiver
+    public abstract class Muscariable : IVariable, IEquatable<Muscariable>,
+        ISerializationCallbackReceiver
     {
         [SerializeField]
         protected AccessScope _scope = AccessScope.Private;
@@ -27,14 +28,14 @@ namespace AtMycelia.Hyphlow
 
         #region Legacy stuff
         [SerializeField]
-[FormerlySerializedAs("scope")]
+        [FormerlySerializedAs("scope")]
         protected AccessScope scope = AccessScope.Private;
         [SerializeField]
-[FormerlySerializedAs("key")]
+        [FormerlySerializedAs("key")]
         protected string key = string.Empty;
         [HideInInspector]
         [SerializeField] [FormerlySerializedAs("itemID")]
-protected byte itemID = InvalidId;
+        protected byte itemID = InvalidId;
 
         #endregion
 
@@ -310,7 +311,7 @@ protected byte itemID = InvalidId;
     public abstract class Muscariable<T> : Muscariable, IVariable<T>, IEquatable<T>, IEquatable<IVariable<T>>
     {
         [SerializeField]
-[FormerlySerializedAs("value")]
+        [FormerlySerializedAs("value")]
         protected T value;
 
         [SerializeField]
@@ -320,23 +321,27 @@ protected byte itemID = InvalidId;
         protected T _value;
 
         [SerializeField]
-[FormerlySerializedAs("startValue")]
+        [FormerlySerializedAs("startValue")]
         protected T startValue;
 
         protected override void ApplyLegacyDataOnAfterDeserialize()
         {
             base.ApplyLegacyDataOnAfterDeserialize();
 
-            bool origValueIsDefault = EqualityComparer<T>.Default.Equals(value, default) || value == null;
-            bool currentValueIsDefault = EqualityComparer<T>.Default.Equals(_value, default) || _value == null;
+            bool origValueIsDefault = EqualityComparer<T>.Default.Equals(value, default) || 
+                value == null;
+            bool currentValueIsDefault = EqualityComparer<T>.Default.Equals(_value, default) || 
+                _value == null;
             // ^The == null is to account for fake Unity nulls
             if (!origValueIsDefault && currentValueIsDefault)
             {
                 _value = value;
             }
 
-            bool origStartValueIsDefault = EqualityComparer<T>.Default.Equals(startValue, default) || startValue == null;
-            bool currentStartValueIsDefault = EqualityComparer<T>.Default.Equals(_startValue, default) || _startValue == null;
+            bool origStartValueIsDefault = EqualityComparer<T>.Default.Equals(startValue, default) || 
+                startValue == null;
+            bool currentStartValueIsDefault = EqualityComparer<T>.Default.Equals(_startValue, default) 
+                || _startValue == null;
             if (!origStartValueIsDefault && currentStartValueIsDefault)
             {
                 _startValue = startValue;
@@ -445,8 +450,9 @@ protected byte itemID = InvalidId;
             }
             else
             {
-                Debug.LogError($"Cannot do Evaluate on variable, as object type: {value.GetType().Name} " +
-                    $"is incompatible with  + {typeof(T).Name}");
+                Debug.LogError($"Cannot do Evaluate on variable, as object " +
+                    $"type: {value.GetType().Name} is incompatible with " +
+                    $"{typeof(T).Name}");
             }
 
             return result;
@@ -479,7 +485,8 @@ protected byte itemID = InvalidId;
                 case CompareOperator.NotEquals:
                     result = !this.Value.Equals(toCompareTo); break;
                 default:
-                    string errorMessage = $"Muscariable<{typeof(T).Name}> {Key} not compatible with CompareOperator {op}";
+                    string errorMessage = $"Muscariable<{typeof(T).Name}> {Key} not compatible " +
+                        $"with CompareOperator {op}";
                     throw new ArgumentException(errorMessage);
             }
 
