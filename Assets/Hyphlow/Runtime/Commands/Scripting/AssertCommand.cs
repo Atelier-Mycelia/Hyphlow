@@ -17,13 +17,13 @@ namespace AtMycelia.Hyphlow
     public class AssertCommand : Command
     {
         [SerializeField]
-[FormerlySerializedAs("message")]
+        [FormerlySerializedAs("message")]
         protected StringData message;
 
         [SerializeField]
         [VariableProperty()]
-[FormerlySerializedAs("a")]
-[FormerlySerializedAs("b")]
+        [FormerlySerializedAs("a")]
+        [FormerlySerializedAs("b")]
         protected Variable a, b;
 
         public enum Method

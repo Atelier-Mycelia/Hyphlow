@@ -1,7 +1,5 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <Style src="project://database/Assets/Myceliarium/Resources/Editor/Stylesheets/baseTabStyle.uss?fileID=7433441132597879392&amp;guid=e529783e7fb76b44ab24de2f7649c171&amp;type=3#baseTabStyle" />
-    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/Myceliarium/HyphlowTabStyle.uss?fileID=7433441132597879392&amp;guid=91cb0247855e3b0438800c75506e9904&amp;type=3#HyphlowTabStyle" />
-    <ui:VisualElement name="Root" class="tabRoot">
-        <ui:Foldout text="Hyphlow" name="HyphlowTab" class="hyphlow-tab" />
-    </ui:VisualElement>
+    <Style src="project://database/Packages/com.ateliermycelia.hyphlow/Resources/Editor/Stylesheets/Myceliarium/hyphlowTabStyle.uss?fileID=7433441132597879392&amp;guid=91cb0247855e3b0438800c75506e9904&amp;type=3#hyphlowTabStyle" />
+    <ui:Foldout text="Hyphlow" name="HyphlowTab" class="hyphlow-tab" />
 </ui:UXML>

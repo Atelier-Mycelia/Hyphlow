@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow
     {
         public override void OnEnter()
         {
-            outValue.Value = Mathf.Exp(inValue.Value);
+            _outValue.Value = Mathf.Exp(_inValue.Value);
 
             Continue();
         }

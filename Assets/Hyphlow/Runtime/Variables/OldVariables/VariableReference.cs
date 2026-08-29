@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityObj = UnityEngine.Object;
-
+using Type = System.Type;
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -16,7 +16,8 @@ namespace AtMycelia.Hyphlow
     public class VariableReference
     {
         // What we do is store the id of the var, and then return the var itself based on
-        // what source we're asked to work with. This minimizes the amount of data we need to serialize.
+        // what source we're asked to work with. This minimizes the amount of data we need
+        // to serialize.
         [SerializeField]
         [FormerlySerializedAs("itemId")]
         private byte _itemId;
@@ -26,11 +27,11 @@ namespace AtMycelia.Hyphlow
 
         [FormerlySerializedAs("owningFc")]
         [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningFc")]
-private Flowchart legacyOwningFc;
+        private Flowchart _legacyOwningFc;
 
         [FormerlySerializedAs("owningVsa")]
         [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningVsa")]
-private VariableSourceAsset legacyOwningVsa;
+        private VariableSourceAsset _legacyOwningVsa;
 
         /// <summary>
         /// The key of the variable this is referencing. This is just for display purposes,
@@ -44,6 +45,17 @@ private VariableSourceAsset legacyOwningVsa;
                 return var != null ? 
                     var.Key : 
                     "";
+            }
+        }
+
+        public virtual Type VarContentType
+        {
+            get
+            {
+                IVariable var = Variable;
+                return var != null ? 
+                    var.ContentType : 
+                    null;
             }
         }
 
@@ -105,16 +117,16 @@ private VariableSourceAsset legacyOwningVsa;
 
             if (IsUnityObjectNull(_owningSource))
             {
-                if (!IsUnityObjectNull(legacyOwningFc))
+                if (!IsUnityObjectNull(_legacyOwningFc))
                 {
-                    _owningSource = legacyOwningFc;
-                    legacyOwningFc = null;
-                    legacyOwningVsa = null;
+                    _owningSource = _legacyOwningFc;
+                    _legacyOwningFc = null;
+                    _legacyOwningVsa = null;
                 }
-                else if (!IsUnityObjectNull(legacyOwningVsa))
+                else if (!IsUnityObjectNull(_legacyOwningVsa))
                 {
-                    _owningSource = legacyOwningVsa;
-                    legacyOwningVsa = null;
+                    _owningSource = _legacyOwningVsa;
+                    _legacyOwningVsa = null;
                 }
             }
 
@@ -160,8 +172,8 @@ private VariableSourceAsset legacyOwningVsa;
             {
                 varOwner = value;
                 _owningSource = value as UnityObj;
-                legacyOwningFc = null;
-                legacyOwningVsa = null;
+                _legacyOwningFc = null;
+                _legacyOwningVsa = null;
             }
         }
 

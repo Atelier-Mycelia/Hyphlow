@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/Myceliarium/FlowchartEditorQolSubmenuStyle.uss?fileID=7433441132597879392&amp;guid=PLACEHOLDER&amp;type=3#FlowchartEditorQolSubmenu" />
+    <ui:VisualElement name="Root" class="root">
+        <ui:Label text="Flowchart Editor QoL Manager" name="Header" class="submenu-title" />
+        <ui:VisualElement name="ContentContainer" class="content-container">
+            <ui:VisualElement name="AddNewSection" class="section">
+                <ui:Label text="Create New QoL Asset" class="section-header" />
+                <ui:VisualElement name="AddNewRow" class="add-new-row">
+                    <ui:TextField name="NewAssetNameField" label="Asset Name" value="FlowchartEditorQOL" class="new-asset-name-field" />
+                    <ui:Button name="CreateButton" text="Create New" class="create-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="AssetsListSection" class="section">
+                <ui:Label text="QoL Assets" class="section-header" />
+                <ui:ListView name="QolAssetsListView" class="qol-assets-list" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
