@@ -117,9 +117,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
             else
             {
-                string warningMessage = $"[Hyphlow] Variable value changed, but {nameof(FlowchartWindow)} is" +
-                    $"null. This likely means that the change was made during an editor test. If you are a" +
-                    $"user and see this message, please report it to the developers.";
+                string warningMessage = $"[Hyphlow] Variable value changed, but " +
+                    $"{nameof(FlowchartWindow)} is null. This likely means that the " +
+                    $"change was made during an editor test. If you are a user and see " +
+                    $"this message, please report it to the developers.";
                 Debug.LogWarning(warningMessage);
             }
         }

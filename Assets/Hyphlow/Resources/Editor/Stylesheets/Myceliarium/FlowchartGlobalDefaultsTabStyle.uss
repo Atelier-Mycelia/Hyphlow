@@ -1,10 +1,17 @@
-:root {
-    width: 100%;
+.tabRoot
+{
+    height: 50px;
+}
+
+.tabIcon
+{
+    background-image: none;
 }
 
 .flowchart-defaults-tab {
     border-color: rgb(30, 30, 30);
     border-width: 1px;
+    font-size: 20px;
     transition-property: background-color;
     transition-duration: 0.2s;
     margin: 5px 0 5px 0;
@@ -13,6 +20,8 @@
     margin-right: 0;
     margin-bottom: 0;
     margin-left: 0;
+    background-image: none
+    
 }
 
 .flowchart-defaults-tab:hover {

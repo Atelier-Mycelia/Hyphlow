@@ -1,6 +1,4 @@
 using AtMycelia.Myceliarium;
-using System;
-using UnityEngine.UIElements;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
