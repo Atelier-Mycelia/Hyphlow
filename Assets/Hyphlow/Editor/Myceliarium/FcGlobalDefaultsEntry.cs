@@ -42,6 +42,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         }
 
         private FlowchartGlobalDefaults _workingState;
+        public FlowchartGlobalDefaults WorkingState => _workingState;
 
         protected override void PrepareLeftSidebarTab()
         {
