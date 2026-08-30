@@ -1,3 +1,14 @@
+:root
+{
+    --hyphlow-tab-icon: resource("Editor/Icons/mianeCeliaMugshot_aiGen");
+}
+
+.tabIcon
+{
+    background-image: var(--hyphlow-tab-icon);
+    margin-left: 5px;
+}
+
 .hyphlow-tab {
     justify-content: center;
     color: rgb(222, 222, 222);

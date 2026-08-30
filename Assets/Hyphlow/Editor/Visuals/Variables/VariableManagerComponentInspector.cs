@@ -19,7 +19,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected VisualElement _rootElement;
         protected TemplateContainer _inspectorRoot;
 
-        protected readonly string _pathToUxml = "Editor/UIToolkitTemplates/VariableDisplayEditor";
+        protected readonly string _pathToUxml = "Editor/Uxml/VariableDisplayEditor";
 
         protected virtual void OnEnable()
         {
