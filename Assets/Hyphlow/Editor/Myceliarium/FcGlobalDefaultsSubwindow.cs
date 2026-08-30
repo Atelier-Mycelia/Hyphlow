@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public sealed class FcGlobalDefaultsSubwindow : ControlPanelSubwindow
     {
         public override string PathToUxml =>
-            "Editor/UIToolkitTemplates/Myceliarium/FlowchartDefaultsSubmenu";
+            "Editor/Uxml/Myceliarium/FlowchartDefaultsSubmenu";
 
         public FcGlobalDefaultsSubwindow(FlowchartGlobalDefaults workingState)
         {

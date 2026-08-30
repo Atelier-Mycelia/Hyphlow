@@ -6,7 +6,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public class HyphlowTab : ControlPanelTab
     {
         public override string DisplayName => "Hyphlow";
-        public override string PathToUxml => "Editor/UIToolkitTemplates/Myceliarium/HyphlowTab";
+        public override string PathToUxml => "Editor/Uxml/Myceliarium/HyphlowTab";
 
         protected override void RegisterMainClickable()
         {

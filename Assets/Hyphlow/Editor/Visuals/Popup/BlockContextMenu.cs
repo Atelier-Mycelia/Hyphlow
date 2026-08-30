@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public class BlockContextMenu : VisualElement, IDisposable
     {
-        private static readonly string _uxmlPath = "Editor/UIToolkitTemplates/ContextMenus/BlockContextMenu";
+        private static readonly string _uxmlPath = "Editor/Uxml/ContextMenus/BlockContextMenu";
 
         public BlockContextMenu()
         {

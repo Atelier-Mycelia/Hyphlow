@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         public override string DisplayName => "Editor QoL";
 
         public override string PathToUxml => 
-            "Editor/UIToolkitTemplates/Myceliarium/FlowchartEditorQolTab";
+            "Editor/Uxml/Myceliarium/FlowchartEditorQolTab";
 
     }
 }

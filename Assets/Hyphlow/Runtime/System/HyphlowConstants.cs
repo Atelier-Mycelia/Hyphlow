@@ -52,7 +52,7 @@ namespace AtMycelia.Hyphlow
             get
             {
                 #if UNITY_EDITOR
-                return $"{PathToEditorResourceFolder}/UIToolkitTemplates/VariableDisplayEditor";
+                return $"{PathToEditorResourceFolder}/Uxml/VariableDisplayEditor";
 #else
                 string warningMessage = $"Trying to access editor-only resource {nameof(PathToVariableDisplayEditorUxml)} at runtime. This is not supported.";
                 Debug.LogWarning(warningMessage);

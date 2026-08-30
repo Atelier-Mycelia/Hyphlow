@@ -16,11 +16,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public sealed class FlowchartEditorQolSubwindow : ControlPanelSubwindow
     {
         private const string ResourcesPath = "Assets/Resources/AtMycelia/Hyphlow";
-        private const string ItemUxmlPath = "Editor/UIToolkitTemplates/FlowchartEditorQolItem";
+        private const string ItemUxmlPath = "Editor/Uxml/FlowchartEditorQolItem";
         private const string CommandsToHidePropertyName = "_commandsToHide";
 
         public override string PathToUxml => 
-            "Editor/UIToolkitTemplates/Myceliarium/FlowchartEditorQolSubmenu";
+            "Editor/Uxml/Myceliarium/FlowchartEditorQolSubmenu";
 
         protected override void RegisterVisualElements()
         {
