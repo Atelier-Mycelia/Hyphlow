@@ -462,7 +462,7 @@ namespace VScriptingTests.VariableOperations
         protected virtual int PooledHandlerCount => _rowFactory.PooledHandlerCount;
     }
 
-    [RowVisualHandler("Null", typeof(FakeHandlerWithBadPath), "5ryw45y", "_EditorResources/UIToolkitTemplates/VarRows/BadPathRow")]
+    [RowVisualHandler("Null", typeof(FakeHandlerWithBadPath), "5ryw45y", "_EditorResources/Uxml/VarRows/BadPathRow")]
     public class FakeHandlerWithBadPath : RowVisualHandler<FakeHandlerWithBadPath>
     {
         public static bool SuppressTemplateErrorsForTests = true;

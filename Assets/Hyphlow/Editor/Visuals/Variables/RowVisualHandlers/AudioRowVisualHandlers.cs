@@ -5,7 +5,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Audio",
         contentType: typeof(AudioClip),
         typeDisplayName: "AudioClip",
-        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Audio/AudioClipVariableRow")]
+        pathToTemplate: "Editor/Uxml/VarRows/Audio/AudioClipVariableRow")]
     public class AudioClipRowVisualHandler : RowVisualHandler<AudioClip>
     {
     }
@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Audio",
         contentType: typeof(AudioSource),
         typeDisplayName: "AudioSource",
-        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Audio/AudioSourceVariableRow")]
+        pathToTemplate: "Editor/Uxml/VarRows/Audio/AudioSourceVariableRow")]
     public class AudioSourceRowVisualHandler : RowVisualHandler<AudioSource>
     {
     }

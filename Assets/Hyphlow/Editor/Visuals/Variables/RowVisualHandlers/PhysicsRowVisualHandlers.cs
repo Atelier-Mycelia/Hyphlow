@@ -5,7 +5,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Physics",
         contentType: typeof(Collider2D),
         typeDisplayName: "ColliderTwoD",
-        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Physics/ColliderTwoDVariableRow")]
+        pathToTemplate: "Editor/Uxml/VarRows/Physics/ColliderTwoDVariableRow")]
     public class ColliderTwoDRowVisualHandler : RowVisualHandler<Collider2D>
     {
     }
@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Physics",
         contentType: typeof(Collider), 
         typeDisplayName: "ColliderThreeD",
-        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Physics/ColliderThreeDVariableRow")]
+        pathToTemplate: "Editor/Uxml/VarRows/Physics/ColliderThreeDVariableRow")]
     public class ColliderThreeDRowVisualHandler : RowVisualHandler<Collider>
     {
     }
@@ -21,7 +21,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Physics",
         contentType: typeof(Rigidbody2D),
         typeDisplayName: "RigidbodyTwoD",
-        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Physics/RigidbodyTwoDVariableRow")]
+        pathToTemplate: "Editor/Uxml/VarRows/Physics/RigidbodyTwoDVariableRow")]
     public class RigidbodyTwoDRowVisualHandler : RowVisualHandler<Rigidbody2D>
     {
     }
@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Physics",
         contentType: typeof(Rigidbody),
         typeDisplayName: "RigidbodyThreeD",
-        pathToTemplate: "Editor/UIToolkitTemplates/VarRows/Physics/RigidbodyThreeDVariableRow")]
+        pathToTemplate: "Editor/Uxml/VarRows/Physics/RigidbodyThreeDVariableRow")]
     public class RigidbodyThreeDRowVisualHandler : RowVisualHandler<Rigidbody>
     {
     }

@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// to know this, hence it being in the Runtime assembly.
     /// </summary>
     [CreateAssetMenu(fileName = "FlowchartEditorQOL",
-        menuName = "Atelier Mycelia/Hyphlow/FlowchartEditorQOL", 
+        menuName = "Atelier Mycelia/Hyphlow/FlowchartEditorQOL",
         order = 1)]
     public class FlowchartEditorQol : ScriptableObject
     {
@@ -60,9 +60,40 @@ namespace AtMycelia.Hyphlow.EditorExt
             get => _commandsToHide;
         }
 
+        public virtual void ClearCommandsToHide()
+        {
+            _commandsToHide.Clear();
+        }
+
+        public virtual void AddMultiCommandsToHide(IList<string> commandNames)
+        {
+            for (int i = 0; i < commandNames.Count; i++)
+            {
+                AddCommandToHide(commandNames[i]);
+            }
+        }
+
+        public virtual void AddCommandToHide(string commandName)
+        {
+            if (!_commandsToHide.Contains(commandName))
+            {
+                _commandsToHide.Add(commandName);
+            }
+        }
+
         public virtual bool HideComponents
         {
             get => _hideComponents;
+        }
+
+        public virtual void ApplyStateTo(FlowchartEditorQol other)
+        {
+            other._stepPause = _stepPause;
+            other._saveSelection = _saveSelection;
+            other._showLineNumbers = _showLineNumbers;
+            other._hideComponents = _hideComponents;
+            other.ClearCommandsToHide();
+            other.AddMultiCommandsToHide(_commandsToHide);
         }
     }
 }
