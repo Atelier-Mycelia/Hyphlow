@@ -6,7 +6,12 @@
 .tabIcon
 {
     background-image: var(--hyphlow-tab-icon);
-    margin-left: 5px;
+    margin-left: 3px;
+}
+
+.tabIconHolder
+{
+    padding-bottom: 1px;
 }
 
 .hyphlow-tab {
