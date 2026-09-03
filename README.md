@@ -1,4 +1,4 @@
-[![hyphlow-Logo.png](https://i.postimg.cc/02S7Jmr6/hyphlow-Logo.png)](https://postimg.cc/56xXhXB1)
+[![hyphlow-Logo.png](https://i.postimg.cc/gJGt11YY/hyphlow-Logo.png)](https://postimg.cc/t1mzxSZf)
 
 # 🌱 Hyphlow: Alchemic Logic Engine
 A community‑driven evolution of [Fungus](https://github.com/snozbot/fungus/)‑style visual scripting.
