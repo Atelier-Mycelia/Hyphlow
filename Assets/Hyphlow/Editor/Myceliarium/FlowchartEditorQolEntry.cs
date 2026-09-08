@@ -1,5 +1,5 @@
-using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Myceliarium;
+using AtMycelia.Hyphlow.EditorExt;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -10,7 +10,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 {
     /// <summary>
     /// Control Panel entry for managing Flowchart Editor QoL assets.
-    /// Now uses a working-state list injected into the subwindow.
+    /// Uses a working-state list injected into the subwindow.
     /// </summary>
     public sealed class FlowchartEditorQolEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
@@ -32,6 +32,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         {
             _workingState.Clear();
             _realAssets.Clear();
+            _workingToRealMap.Clear();
 
             string[] guids = AssetDatabase.FindAssets($"t:{nameof(FlowchartEditorQol)}");
             for (int i = 0; i < guids.Length; i++)
@@ -42,16 +43,18 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 if (real != null)
                 {
                     _realAssets[real.name] = real;
-                    var copy = UnityObj.Instantiate(real);
+                    FlowchartEditorQol copy = UnityObj.Instantiate(real);
+                    copy.name = real.name; // Keep the name consistent for display purposes.
                     _workingState.Add(copy);
+                    _workingToRealMap[copy] = real;
                 }
             }
 
-            _workingState.Sort(ByName);
+            //_workingState.Sort(ByName);
         }
 
         public IReadOnlyDictionary<string, FlowchartEditorQol> RealAssets => _realAssets;
-        private readonly Dictionary<string, FlowchartEditorQol> _realAssets = 
+        private readonly Dictionary<string, FlowchartEditorQol> _realAssets =
             new Dictionary<string, FlowchartEditorQol>();
 
         // For letting the user edit copies of the QoL assets without modifying the
@@ -59,11 +62,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private readonly List<FlowchartEditorQol> _workingState =
             new List<FlowchartEditorQol>();
 
-        private int ByName(FlowchartEditorQol firstState, FlowchartEditorQol secondState)
-        {
-            int result = string.Compare(firstState.name, secondState.name, StringComparison.Ordinal);
-            return result;
-        }
+        private readonly Dictionary<FlowchartEditorQol, FlowchartEditorQol> _workingToRealMap =
+            new Dictionary<FlowchartEditorQol, FlowchartEditorQol>();
 
         protected override void PrepareLeftSidebarTab()
         {
@@ -77,6 +77,135 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _subwindow.Init();
         }
 
+        protected override void ToggleSubs(bool on)
+        {
+            base.ToggleSubs(on);
+
+            if (_subwindow is not FlowchartEditorQolSubwindow qolSubwindow)
+            {
+                return;
+            }
+
+            if (on)
+            {
+                qolSubwindow.CreateRequested += OnCreateRequested;
+                qolSubwindow.RenameRequested += OnRenameRequested;
+                qolSubwindow.DeleteRequested += OnDeleteRequested;
+                qolSubwindow.SelectRequested += OnSelectRequested;
+                ControlPanelSignals.SaveCompleted += OnSaveCompleted;
+            }
+            else
+            {
+                qolSubwindow.CreateRequested -= OnCreateRequested;
+                qolSubwindow.RenameRequested -= OnRenameRequested;
+                qolSubwindow.DeleteRequested -= OnDeleteRequested;
+                qolSubwindow.SelectRequested -= OnSelectRequested;
+                ControlPanelSignals.SaveCompleted -= OnSaveCompleted;
+            }
+        }
+
+        private void OnCreateRequested(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                EditorUtility.DisplayDialog("Invalid Name",
+                    "Please enter a valid asset name.", "OK");
+                return;
+            }
+
+            var wState = ScriptableObject.CreateInstance<FlowchartEditorQol>();
+            wState.name = name;
+            _workingState.Add(wState);
+            
+            //_workingState.Sort(ByName); 
+            // Todo: Implement a sort button in the subwindow instead of auto-sorting on create.
+
+            RefreshSubwindow();
+        }
+
+        private void RefreshSubwindow()
+        {
+            if (_subwindow is FlowchartEditorQolSubwindow qolSubwindow)
+            {
+                qolSubwindow.Refresh();
+            }
+        }
+
+        private void OnRenameRequested(int index, string newName)
+        {
+            bool isValidIndex = index >= 0 && index < _workingState.Count;
+            if (!isValidIndex)
+            {
+                string logMessage = $"Invalid index {index} for renaming QoL asset. " +
+                    $"Valid range is 0 to {_workingState.Count - 1}.";
+                Debug.LogError(logMessage);
+                return;
+            }
+            
+            if (!string.IsNullOrEmpty(newName))
+            {
+                FlowchartEditorQol wState = _workingState[index];
+                wState.name = newName;
+            }
+
+            RefreshSubwindow();
+        }
+
+        private void OnDeleteRequested(int index)
+        {
+            bool isValidIndex = index >= 0 && index < _workingState.Count;
+            if (!isValidIndex)
+            {
+                string logMessage = $"Invalid index {index} for deleting QoL asset. " +
+                    $"Valid range is 0 to {_workingState.Count - 1}.";
+                Debug.LogError(logMessage);
+                return;
+            }
+
+            FlowchartEditorQol wState = _workingState[index];
+            _workingState.RemoveAt(index);
+            _workingToRealMap.Remove(wState);
+
+            RefreshSubwindow();
+        }
+
+        private void OnSelectRequested(int index)
+        {
+            bool isValidIndex = index >= 0 && index < _workingState.Count;
+            if (!isValidIndex)
+            {
+                return;
+            }
+
+            FlowchartEditorQol wState = _workingState[index];
+            FlowchartEditorQol real = _workingToRealMap.TryGetValue(wState, out var mappedReal) ?
+                mappedReal :
+                null;
+
+            if (real == null)
+            {
+                EditorUtility.DisplayDialog("No Real Asset Found",
+                    $"No real asset found for working-state '{wState.name}'. " +
+                    $"Need to click Save to make sure it is written on disk.",
+                    "OK");
+                return;
+            }
+
+            Selection.activeObject = real;
+            EditorGUIUtility.PingObject(real);
+        }
+
+        private void OnSaveCompleted(IControlPanelEntry completedFor)
+        {
+            bool ignoreIt = completedFor != this;
+            if (ignoreIt)
+            {
+                return;
+            }
+
+            Refresh();
+        }
+
         public override void OnSelected()
         {
             base.OnSelected();
@@ -85,7 +214,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             if (_subwindow is FlowchartEditorQolSubwindow qolSubwindow)
             {
-                qolSubwindow.RefreshFromWorkingState();
+                qolSubwindow.Refresh();
             }
         }
 
@@ -105,13 +234,23 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 var qolsExtracted = JsonUtility.FromJson<List<FlowchartEditorQol>>(stringifiedState);
 
                 _workingState.Clear();
-                _workingState.AddRange(qolsExtracted);
+                _workingToRealMap.Clear();
 
-                if (_subwindow is FlowchartEditorQolSubwindow qolSubwindow)
+                if (qolsExtracted != null)
                 {
-                    qolSubwindow.RefreshFromWorkingState();
+                    _workingState.AddRange(qolsExtracted);
                 }
 
+                for (int i = 0; i < _workingState.Count; i++)
+                {
+                    FlowchartEditorQol wState = _workingState[i];
+                    if (_realAssets.TryGetValue(wState.name, out FlowchartEditorQol real))
+                    {
+                        _workingToRealMap[wState] = real;
+                    }
+                }
+
+                RefreshSubwindow();
                 success = true;
             }
             catch (Exception ex)
@@ -124,9 +263,14 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         public override void Dispose()
         {
             _workingState.Clear();
+            _workingToRealMap.Clear();
             base.Dispose();
         }
 
+        public void Refresh()
+        {
+            LoadWorkingStateFromRealAssets();
+            RefreshSubwindow();
+        }
     }
-
 }

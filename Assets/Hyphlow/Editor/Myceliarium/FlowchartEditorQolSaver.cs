@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public sealed class FlowchartEditorQolSaver : ControlPanelEntrySaver,
         IAtMyceliaControlPanelEntrySaver
     {
-        private const string AssetFolder = "Assets/Resources/AtMycelia/Hyphlow";
+        private const string AssetFolder = "Assets/Resources/AtMycelia/Hyphlow/Editor";
 
         public override bool IsCompatibleWith(IControlPanelEntry toSaveFor)
         {
@@ -78,30 +78,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-
+            ControlPanelSignals.SaveCompleted(entry);
             onComplete?.Invoke();
-        }
-
-        /// <summary>
-        /// Keyed by name.
-        /// </summary>
-        private IDictionary<string, FlowchartEditorQol> LoadRealAssets()
-        {
-            var result = new Dictionary<string, FlowchartEditorQol>();
-
-            string[] guids = AssetDatabase.FindAssets($"t:{nameof(FlowchartEditorQol)}");
-            for (int i = 0; i < guids.Length; i++)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-                FlowchartEditorQol real = AssetDatabase.LoadAssetAtPath<FlowchartEditorQol>(path);
-
-                if (real != null)
-                {
-                    result[real.name] = real;
-                }
-            }
-
-            return result;
         }
 
         private void ApplyWorkingStateToReal(FlowchartEditorQol wState, FlowchartEditorQol real)

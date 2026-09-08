@@ -4,7 +4,7 @@
         <engine:VisualElement name="ContentContainer" class="qol-content-container">
             <engine:VisualElement name="PropertiesContainer" class="qol-properties-container">
                 <engine:TextField label="Name" placeholder-text="filler text" name="NameField" is-delayed="true" />
-                <engine:Slider label="StepPause" value="0" high-value="5" binding-path="_stepPause" name="StepPauseField" />
+                <engine:Slider label="StepPause" value="0" high-value="5" binding-path="_stepPause" name="StepPauseField" show-input-field="true" />
                 <engine:Toggle label="Save Selection" binding-path="_saveSelection" name="SaveSelectionField" />
                 <engine:Toggle label="Toggle" binding-path="_showLineNumbers" name="ShowLineNumbersField" />
                 <engine:Toggle label="Hide Components" binding-path="_hideComponents" name="HideComponentsField" />
