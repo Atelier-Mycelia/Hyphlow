@@ -137,7 +137,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         /// <summary>
         /// Called by the entry whenever working-state is refreshed.
         /// </summary>
-        public void Refresh()
+        public override void Refresh()
         {
             _listView.RefreshItems();
         }

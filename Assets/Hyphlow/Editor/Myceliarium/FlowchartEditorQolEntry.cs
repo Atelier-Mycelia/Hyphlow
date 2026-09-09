@@ -147,6 +147,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 FlowchartEditorQol wState = _workingState[index];
                 wState.name = newName;
             }
+            else
+            {
+                EditorUtility.DisplayDialog("Invalid Name",
+                    "Please enter a valid asset name.", "OK");
+            }
 
             RefreshSubwindow();
         }
