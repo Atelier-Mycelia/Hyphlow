@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public sealed class FlowchartEditorQolSaver : ControlPanelEntrySaver,
         IAtMyceliaControlPanelEntrySaver
     {
-        private const string AssetFolder = "Assets/Resources/AtMycelia/Hyphlow";
+        private const string AssetFolder = "Assets/Resources/AtMycelia/Hyphlow/Editor";
 
         public override bool IsCompatibleWith(IControlPanelEntry toSaveFor)
         {
@@ -55,6 +55,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                     real = ScriptableObject.CreateInstance<FlowchartEditorQol>();
                     string path = $"{AssetFolder}/{wState.name}.asset";
                     AssetDatabase.CreateAsset(real, path);
+                    ScriptableObjectExtensions.MarkDirtyAndSave(real);
                     realAssets[wState.name] = real;
                     #endregion
                 }
@@ -76,40 +77,15 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
             #endregion
 
-            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-
+            ControlPanelSignals.SaveCompleted(entry);
             onComplete?.Invoke();
-        }
-
-        /// <summary>
-        /// Keyed by name.
-        /// </summary>
-        private IDictionary<string, FlowchartEditorQol> LoadRealAssets()
-        {
-            var result = new Dictionary<string, FlowchartEditorQol>();
-
-            string[] guids = AssetDatabase.FindAssets($"t:{nameof(FlowchartEditorQol)}");
-            for (int i = 0; i < guids.Length; i++)
-            {
-                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-                FlowchartEditorQol real = AssetDatabase.LoadAssetAtPath<FlowchartEditorQol>(path);
-
-                if (real != null)
-                {
-                    result[real.name] = real;
-                }
-            }
-
-            return result;
         }
 
         private void ApplyWorkingStateToReal(FlowchartEditorQol wState, FlowchartEditorQol real)
         {
             RenameAsNeeded(wState, real);
-            real.ClearCommandsToHide();
-            real.AddMultiCommandsToHide(wState.CommandsToHide as IList<string>);
-            EditorUtility.SetDirty(real);
+            wState.ApplyStateTo(real);
         }
 
         private void RenameAsNeeded(FlowchartEditorQol wState, FlowchartEditorQol real)

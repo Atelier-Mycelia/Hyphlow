@@ -1,26 +1,21 @@
-﻿using AtMycelia.Hyphlow.EditorExt;
-using AtMycelia.Myceliarium;
+﻿using AtMycelia.Myceliarium;
+using AtMycelia.Hyphlow.EditorExt;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
     /// <summary>
-    /// Subwindow for managing Flowchart Editor QoL assets WITHOUT auto-applying changes.
-    /// All edits are made to working-state copies injected by the entry.
+    /// Subwindow for managing Flowchart Editor QoL assets.
+    /// Focuses on UI element setup and callback wiring.
     /// </summary>
     public sealed class FlowchartEditorQolSubwindow : ControlPanelSubwindow
     {
         public override string PathToUxml => "Editor/Uxml/Myceliarium/FlowchartEditorQolSubmenu";
-
-        // Mapping UI rows → working-state objects
-        private readonly Dictionary<QolAssetRow, FlowchartEditorQol> _rows =
-            new Dictionary<QolAssetRow, FlowchartEditorQol>();
 
         // UI elements
         private TextField _newAssetNameField;
@@ -31,13 +26,18 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private static readonly string _itemTemplatePath =
             "Editor/Uxml/Myceliarium/FlowchartEditorQolItem";
 
+        // Working-state list injected by the entry
+        private readonly List<FlowchartEditorQol> _workingBuffer;
+
+        internal Action<string> CreateRequested { get; set; } = delegate { };
+        internal Action<int, string> RenameRequested { get; set; } = delegate { };
+        internal Action<int> DeleteRequested { get; set; } = delegate { };
+        internal Action<int> SelectRequested { get; set; } = delegate { };
+
         internal FlowchartEditorQolSubwindow(List<FlowchartEditorQol> workingBuffer)
         {
             _workingBuffer = workingBuffer;
         }
-
-        // Working-state list injected by the entry
-        private readonly List<FlowchartEditorQol> _workingBuffer;
 
         protected override void RegisterVisualElements()
         {
@@ -64,14 +64,14 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         {
             _listView.makeItem = MakeItem;
             _listView.bindItem = BindItem;
-            _listView.itemsSource = (System.Collections.IList)_workingBuffer;
+            _listView.itemsSource = _workingBuffer;
             _listView.selectionType = SelectionType.Single;
             _listView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
         }
 
         private VisualElement MakeItem()
         {
-            QolAssetRow row = CreateAssetRow();//
+            QolAssetRow row = CreateAssetRow();
             WireUpAssetRowCallbacks(row);
             return row.Root;
         }
@@ -84,28 +84,34 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             VisualElement props = root.Q<VisualElement>("PropertiesContainer");
             TextField nameField = root.Q<TextField>("NameField");
             PropertyField commandsList = root.Q<PropertyField>("CommandsToHideField");
+            Button selectButton = root.Q<Button>("SelectButton");
             Button deleteButton = root.Q<Button>("DeleteButton");
 
-            QolAssetRow row = new QolAssetRow(foldout, props, nameField, commandsList, deleteButton);
+            QolAssetRow row = new QolAssetRow(foldout, props, nameField, commandsList,
+                selectButton, deleteButton);
             root.userData = row;
-            return row;//
+            return row;
         }
 
         private void WireUpAssetRowCallbacks(QolAssetRow row)
         {
+            // The stuff we can't put in ToggleSubs due to needing the row
+            // reference for the callbacks.
             var nameField = row.NameField;
 
             nameField.RegisterCallback<KeyDownEvent>(evt =>
             {
-                if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
+                bool doneEditing = evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter;
+                if (doneEditing)
                 {
-                    CommitNameEdit(row);
+                    RaiseRenameRequested(row);
                     evt.StopPropagation();
                 }
             });
 
-            nameField.RegisterCallback<FocusOutEvent>(_ => CommitNameEdit(row));
-            row.DeleteButton.clicked += () => DeleteWorkingAsset(row);
+            nameField.RegisterCallback<FocusOutEvent>(_ => RaiseRenameRequested(row));
+            row.DeleteButton.clicked += () => RaiseDeleteRequested(row);
+            row.SelectButton.clicked += () => RaiseSelectRequested(row);
         }
 
         private void BindItem(VisualElement element, int index)
@@ -122,56 +128,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
 
             FlowchartEditorQol wState = _workingBuffer[index];
-            _rows[row] = wState;
 
             row.Index = index;
             row.Foldout.text = wState.name;
-            row.NameField.value = wState.name;
-
-            // Bind commands list to working-state list
-            row.CommandsListView.Unbind();
-            SerializedObject serializedObject = new SerializedObject(wState);
-            row.CommandsListView.Bind(serializedObject);
-
+            row.Asset = wState;
         }
 
         /// <summary>
         /// Called by the entry whenever working-state is refreshed.
         /// </summary>
-        public void RefreshFromWorkingState()
+        public override void Refresh()
         {
-            _rows.Clear();
-            _listView.RefreshItems();
-        }
-
-        
-        private void CommitNameEdit(QolAssetRow row)
-        {
-            if (!_rows.TryGetValue(row, out var wState))
-                return;
-
-            string newName = row.NameField.value?.Trim() ?? "";
-            if (string.IsNullOrEmpty(newName))
-            {
-                row.NameField.value = wState.name;
-                return;
-            }
-
-            wState.name = newName;
-            row.Foldout.text = newName;
-
-            _workingBuffer.Sort((a, b) =>
-                string.Compare(a.name, b.name, StringComparison.Ordinal));
-            _listView.RefreshItems();
-        }
-
-        private void DeleteWorkingAsset(QolAssetRow row)
-        {
-            if (!_rows.TryGetValue(row, out var wState))
-                return;
-
-            _workingBuffer.Remove(wState);
-            _rows.Remove(row);
             _listView.RefreshItems();
         }
 
@@ -179,53 +146,80 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         {
             if (on)
             {
-                _createButton.clicked += CreateWorkingAsset;
+                _createButton.clicked += RaiseCreateRequested;
             }
             else
             {
-                _createButton.clicked -= CreateWorkingAsset;
+                _createButton.clicked -= RaiseCreateRequested;
             }
         }
 
-        private void CreateWorkingAsset()
+        private void RaiseCreateRequested()
         {
             string name = _newAssetNameField.value?.Trim();
-            if (string.IsNullOrEmpty(name))
+            CreateRequested?.Invoke(name);
+        }
+
+        private void RaiseRenameRequested(QolAssetRow row)
+        {
+            if (!IsValidIndex(row.Index))
             {
-                EditorUtility.DisplayDialog("Invalid Name",
-                    "Please enter a valid asset name.", "OK");
                 return;
             }
 
-            var wState = ScriptableObject.CreateInstance<FlowchartEditorQol>();
-            wState.name = name;
-            _workingBuffer.Add(wState);
+            string newName = row.NameField.value?.Trim() ?? "";
+            RenameRequested?.Invoke(row.Index, newName);
+        }
 
-            #region Sort by name
-            _workingBuffer.Sort((first, second) =>
-                string.Compare(first.name, second.name, StringComparison.Ordinal));
-            #endregion
+        private void RaiseDeleteRequested(QolAssetRow row)
+        {
+            if (!IsValidIndex(row.Index))
+            {
+                return;
+            }
 
-            _listView.RefreshItems();
+            if (!row.Asset.IsDeletable)
+            {
+                string logMessage = $"Attempted to delete non-deletable asset: {row.Asset.name}";
+                Debug.LogWarning(logMessage);
+                return;
+            }
+
+            DeleteRequested?.Invoke(row.Index);
+        }
+
+        private void RaiseSelectRequested(QolAssetRow row)
+        {
+            if (!IsValidIndex(row.Index))
+            {
+                return;
+            }
+
+            SelectRequested?.Invoke(row.Index);
+        }
+
+        private bool IsValidIndex(int index)
+        {
+            return index >= 0 && index < _workingBuffer.Count;
         }
 
         public override void Dispose()
         {
             ToggleSubs(false);
-            _rows.Clear();
-            // DO NOT clear _workingBuffer (the entry as a whole owns it)
             base.Dispose();
         }
 
         internal sealed class QolAssetRow
         {
             public QolAssetRow(Foldout foldout, VisualElement props,
-                TextField nameField, PropertyField commandsList, Button deleteButton)
+                TextField nameField, PropertyField commandsList,
+                Button selectButton, Button deleteButton)
             {
                 Foldout = foldout;
                 PropertiesContainer = props;
                 NameField = nameField;
                 CommandsListView = commandsList;
+                SelectButton = selectButton;
                 DeleteButton = deleteButton;
             }
 
@@ -235,8 +229,41 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             public VisualElement PropertiesContainer { get; }
             public TextField NameField { get; }
             public PropertyField CommandsListView { get; }
+            public Button SelectButton { get; }
             public Button DeleteButton { get; }
             public int Index { get; set; }
+
+            public FlowchartEditorQol Asset
+            {
+                get => _asset;
+                set
+                {
+                    _asset = value;
+                    UnbindFields();
+                    BindFields();
+                }
+            }
+
+            private FlowchartEditorQol _asset;
+
+            private void UnbindFields()
+            {
+                CommandsListView.Unbind();
+                PropertiesContainer.Unbind();
+            }
+
+            private void BindFields()
+            {
+                if (_asset != null)
+                {
+                    SerializedObject serializedObject = new SerializedObject(_asset);
+                    CommandsListView.Bind(serializedObject);
+                    PropertiesContainer.Bind(serializedObject);//
+                    NameField.value = _asset.name; 
+                    // ^Not bound to serialized property, since we want to let 
+                    // the entry logic validate it
+                }
+            }
         }
     }
 }

@@ -40,6 +40,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             "Deselect to inspect the block and command components that make up the Flowchart.")]
         [SerializeField] protected bool _hideComponents = true;
 
+        [SerializeField] protected bool _isDeletable = true;
+
         public virtual float StepPause
         {
             get => _stepPause;
@@ -58,6 +60,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual IReadOnlyList<string> CommandsToHide
         {
             get => _commandsToHide;
+        }
+
+        public virtual bool IsDeletable
+        {
+            get => _isDeletable;
         }
 
         public virtual void ClearCommandsToHide()

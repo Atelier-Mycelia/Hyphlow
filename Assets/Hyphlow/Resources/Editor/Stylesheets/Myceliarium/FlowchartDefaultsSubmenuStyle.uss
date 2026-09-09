@@ -15,8 +15,9 @@
 }
 
 .content-container {
-    flex-grow: 1;
+    flex-grow: 0;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .sections-row {
