@@ -17,3 +17,4 @@ MonoBehaviour:
   _showLineNumbers: 0
   _commandsToHide: []
   _hideComponents: 1
+  _isDeletable: 0

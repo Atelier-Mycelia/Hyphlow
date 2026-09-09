@@ -55,6 +55,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                     real = ScriptableObject.CreateInstance<FlowchartEditorQol>();
                     string path = $"{AssetFolder}/{wState.name}.asset";
                     AssetDatabase.CreateAsset(real, path);
+                    ScriptableObjectExtensions.MarkDirtyAndSave(real);
                     realAssets[wState.name] = real;
                     #endregion
                 }
@@ -76,7 +77,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
             #endregion
 
-            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             ControlPanelSignals.SaveCompleted(entry);
             onComplete?.Invoke();
@@ -85,9 +85,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private void ApplyWorkingStateToReal(FlowchartEditorQol wState, FlowchartEditorQol real)
         {
             RenameAsNeeded(wState, real);
-            real.ClearCommandsToHide();
-            real.AddMultiCommandsToHide(wState.CommandsToHide as IList<string>);
-            EditorUtility.SetDirty(real);
+            wState.ApplyStateTo(real);
         }
 
         private void RenameAsNeeded(FlowchartEditorQol wState, FlowchartEditorQol real)

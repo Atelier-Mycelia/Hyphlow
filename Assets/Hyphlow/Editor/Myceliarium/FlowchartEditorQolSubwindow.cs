@@ -131,11 +131,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             row.Index = index;
             row.Foldout.text = wState.name;
-            row.NameField.value = wState.name;
-
-            row.CommandsListView.Unbind();
-            SerializedObject serializedObject = new SerializedObject(wState);
-            row.CommandsListView.Bind(serializedObject);
+            row.Asset = wState;
         }
 
         /// <summary>
@@ -179,6 +175,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         {
             if (!IsValidIndex(row.Index))
             {
+                return;
+            }
+
+            if (!row.Asset.IsDeletable)
+            {
+                string logMessage = $"Attempted to delete non-deletable asset: {row.Asset.name}";
+                Debug.LogWarning(logMessage);
                 return;
             }
 
@@ -245,9 +248,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             private void UnbindFields()
             {
-                NameField.Unbind();
                 CommandsListView.Unbind();
-
+                PropertiesContainer.Unbind();
             }
 
             private void BindFields()
@@ -255,8 +257,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 if (_asset != null)
                 {
                     SerializedObject serializedObject = new SerializedObject(_asset);
-                    NameField.Bind(serializedObject);
                     CommandsListView.Bind(serializedObject);
+                    PropertiesContainer.Bind(serializedObject);//
+                    NameField.value = _asset.name; 
+                    // ^Not bound to serialized property, since we want to let 
+                    // the entry logic validate it
                 }
             }
         }
