@@ -4961,16 +4961,16 @@ MonoBehaviour:
   _varManager: {fileID: 5497355695861605388}
   _execManager: {fileID: 2493143560599468798}
   _blockManager: {fileID: -1391116942679385116}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks:

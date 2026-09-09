@@ -12,19 +12,24 @@ namespace AtMycelia.Hyphlow.EditorExt
         public class EditorTexture
         {
             [SerializeField] [FormerlySerializedAs("free")]
-private Texture2D free;
+            private Texture2D _free;
             [SerializeField] [FormerlySerializedAs("pro")]
-private Texture2D pro;
+            private Texture2D _pro;
 
             public Texture2D Texture2D
             {
-                get { return EditorGUIUtility.isProSkin && pro != null ? pro : free; }
+                get
+                {
+                    return EditorGUIUtility.isProSkin && _pro != null ? 
+                        _pro : 
+                        _free;
+                }
             }
 
             public EditorTexture(Texture2D free, Texture2D pro)
             {
-                this.free = free;
-                this.pro = pro;
+                this._free = free;
+                this._pro = pro;
             }
         }
 

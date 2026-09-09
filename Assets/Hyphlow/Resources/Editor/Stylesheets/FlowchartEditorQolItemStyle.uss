@@ -1,0 +1,30 @@
+.qol-item-foldout {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 4px;
+}
+
+.qol-content-container {
+    padding-left: 16px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.qol-properties-container {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.qol-button-row {
+    flex-direction: row;
+    margin-top: 8px;
+}
+
+.qol-select-button {
+    flex-grow: 1;
+}
+
+.qol-delete-button {
+    flex-grow: 1;
+    margin-left: 4px;
+}

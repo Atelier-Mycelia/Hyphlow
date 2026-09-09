@@ -397,18 +397,18 @@ MonoBehaviour:
   _varManager: {fileID: 5931047070783665450}
   _execManager: {fileID: 1851314910480481682}
   _blockManager: {fileID: -4757318951579707816}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 1
-  version: 1
+  _version: 1
   _legacyVariables:
   - {fileID: 114979932131573080}
   - {fileID: 114455382144078078}
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks:

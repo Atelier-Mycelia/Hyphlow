@@ -78,6 +78,15 @@ namespace AtMycelia.Hyphlow
             RefreshOwner();
         }
 
+        public override string ToString()
+        {
+            string result = Block == null ? 
+                "No Block" : 
+                $"Block: {Block.BlockName} (ID: {Block.ItemId})";
+
+            return result;
+        }
+
     }
 
 }
