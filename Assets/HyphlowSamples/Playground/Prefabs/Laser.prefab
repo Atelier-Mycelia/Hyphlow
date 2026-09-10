@@ -524,8 +524,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -533,8 +533,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 2
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -610,8 +610,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 3
       _owningSource: {fileID: 11400000, guid: 986bcfca7dec34e4aac7bd1e87cfca67, type: 2}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: EnemyShot
     stringRef: {fileID: 0}
     stringVal: 
@@ -816,8 +816,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 50266752063846120}
     rigidbody2DRef: {fileID: 0}
     rigidbody2DVal: {fileID: 0}
@@ -827,8 +827,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -836,8 +836,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
@@ -845,8 +845,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -872,8 +872,8 @@ MonoBehaviour:
     - _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _value: Enemy
       stringRef: {fileID: 0}
       stringVal: 
@@ -881,8 +881,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -891,8 +891,8 @@ MonoBehaviour:
   _colliderVar:
     _itemId: 0
     _owningSource: {fileID: 0}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   colliderVar: {fileID: 0}
 --- !u!114 &4484725498435143672
 MonoBehaviour:
@@ -913,8 +913,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Laser hit enemy!
     stringRef: {fileID: 0}
     stringVal: 
@@ -936,8 +936,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1942691996823588}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -945,8 +945,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 114526636883379746}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0.001
     floatRef: {fileID: 0}
     floatVal: 0

@@ -16,9 +16,9 @@ namespace AtMycelia.Hyphlow
     {
         public override void OnEnter()
         {
-            var v = inValue.Value;
+            var v = _inValue.Value;
 
-            outValue.Value = v != 0 ? (1.0f / inValue.Value) : 0.0f;
+            _outValue.Value = v != 0 ? (1.0f / _inValue.Value) : 0.0f;
 
             Continue();
         }

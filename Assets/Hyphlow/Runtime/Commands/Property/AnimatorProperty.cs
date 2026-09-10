@@ -1,8 +1,6 @@
-using UnityEngine.Serialization;
 using UnityEngine;
-
-
 using UnityEngine.Scripting.APIUpdating;
+using UnityEngine.Serialization;
 
 namespace AtMycelia.Hyphlow
 {
@@ -13,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "Animator",
 				 "Get or Set a property of a Animator component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class AnimatorProperty : BaseVariableProperty
 	{
 		//generated property
@@ -61,135 +59,129 @@ namespace AtMycelia.Hyphlow
 
 		
 		[SerializeField]
-[FormerlySerializedAs("property")]
-		protected Property property;
-		
-		[SerializeField]
-		[VariableProperty(typeof(AnimatorVariable))]
-[FormerlySerializedAs("animatorVar")]
-		protected AnimatorVariable animatorVar;
+		[FormerlySerializedAs("property")]
+		protected Property _property;
 
 		[SerializeField]
-		[VariableProperty(typeof(BooleanVariable),
-						  typeof(FloatVariable),
-						  typeof(Vector3Variable),
-						  typeof(IntegerVariable))]
-[FormerlySerializedAs("inOutVar")]
-		protected Variable inOutVar;
+		[ContentTypeConstraint(typeof(Animator))]
+		protected VariableReference _animatorVar;
+
+		[SerializeField]
+		[ContentTypeConstraint(typeof(bool), typeof(float), typeof(Vector3), typeof(int))]
+		protected VariableReference _inOutVar;
 
 		public override void OnEnter()
 		{
-			var iob = inOutVar as BooleanVariable;
-			var iof = inOutVar as FloatVariable;
-			var iov = inOutVar as Vector3Variable;
-			var ioi = inOutVar as IntegerVariable;
+			var inOutBool = _inOutVar.Variable as IVariable<bool>;
+			var inOutFloat = _inOutVar.Variable as IVariable<float>;
+			var inOutVecThree = _inOutVar.Variable as IVariable<Vector3>;
+			var inOutInt = _inOutVar.Variable as IVariable<int>;
 
-
-			var target = animatorVar.Value;
+			var target = _animatorVar.GetValue<Animator>();
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
-					switch (property)
+					switch (_property)
 					{
 						case Property.IsOptimizable:
-							iob.Value = target.isOptimizable;
+							inOutBool.Value = target.isOptimizable;
 							break;
 						case Property.IsHuman:
-							iob.Value = target.isHuman;
+							inOutBool.Value = target.isHuman;
 							break;
 						case Property.HasRootMotion:
-							iob.Value = target.hasRootMotion;
+							inOutBool.Value = target.hasRootMotion;
 							break;
 						case Property.HumanScale:
-							iof.Value = target.humanScale;
+							inOutFloat.Value = target.humanScale;
 							break;
 						case Property.IsInitialized:
-							iob.Value = target.isInitialized;
+							inOutBool.Value = target.isInitialized;
 							break;
 						case Property.DeltaPosition:
-							iov.Value = target.deltaPosition;
+							inOutVecThree.Value = target.deltaPosition;
 							break;
 						case Property.Velocity:
-							iov.Value = target.velocity;
+							inOutVecThree.Value = target.velocity;
 							break;
 						case Property.AngularVelocity:
-							iov.Value = target.angularVelocity;
+							inOutVecThree.Value = target.angularVelocity;
 							break;
 						case Property.RootPosition:
-							iov.Value = target.rootPosition;
+							inOutVecThree.Value = target.rootPosition;
 							break;
 						case Property.ApplyRootMotion:
-							iob.Value = target.applyRootMotion;
+							inOutBool.Value = target.applyRootMotion;
 							break;
 						case Property.HasTransformHierarchy:
-							iob.Value = target.hasTransformHierarchy;
+							inOutBool.Value = target.hasTransformHierarchy;
 							break;
 						case Property.GravityWeight:
-							iof.Value = target.gravityWeight;
+							inOutFloat.Value = target.gravityWeight;
 							break;
 						case Property.BodyPosition:
-							iov.Value = target.bodyPosition;
+							inOutVecThree.Value = target.bodyPosition;
 							break;
 						case Property.StabilizeFeet:
-							iob.Value = target.stabilizeFeet;
+							inOutBool.Value = target.stabilizeFeet;
 							break;
 						case Property.LayerCount:
-							ioi.Value = target.layerCount;
+							inOutInt.Value = target.layerCount;
 							break;
 						case Property.ParameterCount:
-							ioi.Value = target.parameterCount;
+							inOutInt.Value = target.parameterCount;
 							break;
 						case Property.FeetPivotActive:
-							iof.Value = target.feetPivotActive;
+							inOutFloat.Value = target.feetPivotActive;
 							break;
 						case Property.PivotWeight:
-							iof.Value = target.pivotWeight;
+							inOutFloat.Value = target.pivotWeight;
 							break;
 						case Property.PivotPosition:
-							iov.Value = target.pivotPosition;
+							inOutVecThree.Value = target.pivotPosition;
 							break;
 						case Property.IsMatchingTarget:
-							iob.Value = target.isMatchingTarget;
+							inOutBool.Value = target.isMatchingTarget;
 							break;
 						case Property.Speed:
-							iof.Value = target.speed;
+							inOutFloat.Value = target.speed;
 							break;
 						case Property.TargetPosition:
-							iov.Value = target.targetPosition;
+							inOutVecThree.Value = target.targetPosition;
 							break;
 						case Property.PlaybackTime:
-							iof.Value = target.playbackTime;
+							inOutFloat.Value = target.playbackTime;
 							break;
 						case Property.RecorderStartTime:
-							iof.Value = target.recorderStartTime;
+							inOutFloat.Value = target.recorderStartTime;
 							break;
 						case Property.RecorderStopTime:
-							iof.Value = target.recorderStopTime;
+							inOutFloat.Value = target.recorderStopTime;
 							break;
 						case Property.HasBoundPlayables:
-							iob.Value = target.hasBoundPlayables;
+							inOutBool.Value = target.hasBoundPlayables;
 							break;
 						case Property.LayersAffectMassCenter:
-							iob.Value = target.layersAffectMassCenter;
+							inOutBool.Value = target.layersAffectMassCenter;
 							break;
 						case Property.LeftFeetBottomHeight:
-							iof.Value = target.leftFeetBottomHeight;
+							inOutFloat.Value = target.leftFeetBottomHeight;
 							break;
 						case Property.RightFeetBottomHeight:
-							iof.Value = target.rightFeetBottomHeight;
+							inOutFloat.Value = target.rightFeetBottomHeight;
 							break;
 						case Property.LogWarnings:
-							iob.Value = target.logWarnings;
+							inOutBool.Value = target.logWarnings;
 							break;
 						case Property.FireEvents:
-							iob.Value = target.fireEvents;
+							inOutBool.Value = target.fireEvents;
 							break;
 						case Property.KeepAnimatorStateOnDisable:
-							iob.Value = target.keepAnimatorStateOnDisable;
+							inOutBool.Value = target.keepAnimatorStateOnDisable;
 							break;
 						case Property.WriteDefaultValuesOnDisable:
-							iob.Value = target.writeDefaultValuesOnDisable;
+							inOutBool.Value = target.writeDefaultValuesOnDisable;
 							break;
 						default:
 							Debug.Log("Unsupported get or set attempted");
@@ -198,51 +190,51 @@ namespace AtMycelia.Hyphlow
 
 					break;
 				case GetSet.Set:
-					switch (property)
+					switch (_property)
 					{
 						case Property.RootPosition:
-							target.rootPosition = iov.Value;
+							target.rootPosition = inOutVecThree.Value;
 							break;
 						case Property.ApplyRootMotion:
-							target.applyRootMotion = iob.Value;
+							target.applyRootMotion = inOutBool.Value;
 							break;
 						case Property.BodyPosition:
-							target.bodyPosition = iov.Value;
+							target.bodyPosition = inOutVecThree.Value;
 							break;
 						case Property.StabilizeFeet:
-							target.stabilizeFeet = iob.Value;
+							target.stabilizeFeet = inOutBool.Value;
 							break;
 						case Property.FeetPivotActive:
-							target.feetPivotActive = iof.Value;
+							target.feetPivotActive = inOutFloat.Value;
 							break;
 						case Property.Speed:
-							target.speed = iof.Value;
+							target.speed = inOutFloat.Value;
 							break;
 						case Property.PlaybackTime:
-							target.playbackTime = iof.Value;
+							target.playbackTime = inOutFloat.Value;
 							break;
 						case Property.RecorderStartTime:
-							target.recorderStartTime = iof.Value;
+							target.recorderStartTime = inOutFloat.Value;
 							break;
 						case Property.RecorderStopTime:
-							target.recorderStopTime = iof.Value;
+							target.recorderStopTime = inOutFloat.Value;
 							break;
 						case Property.LayersAffectMassCenter:
-							target.layersAffectMassCenter = iob.Value;
+							target.layersAffectMassCenter = inOutBool.Value;
 							break;
 						case Property.LogWarnings:
-							target.logWarnings = iob.Value;
+							target.logWarnings = inOutBool.Value;
 							break;
 						case Property.FireEvents:
-							target.fireEvents = iob.Value;
+							target.fireEvents = inOutBool.Value;
 							break;
 						case Property.KeepAnimatorStateOnDisable:
-							target.keepAnimatorStateOnDisable = iob.Value;
+							target.keepAnimatorStateOnDisable = inOutBool.Value;
 							break;
 						case Property.WriteDefaultValuesOnDisable:
-							target.writeDefaultValuesOnDisable = iob.Value;
+							target.writeDefaultValuesOnDisable = inOutBool.Value;
 							break;
-				default:
+						default:
 							Debug.Log("Unsupported get or set attempted");
 							break;
 					}
@@ -257,16 +249,16 @@ namespace AtMycelia.Hyphlow
 
 		public override string GetSummary()
 		{
-			if (animatorVar == null)
+			if (_animatorVar == null)
 			{
 				return "Error: no animatorVar set";
 			}
-			if (inOutVar == null)
+			if (_inOutVar == null)
 			{
 				return "Error: no variable set to push or pull data to or from";
 			}
 
-			return getOrSet.ToString() + " " + property.ToString();
+			return getOrSet.ToString() + " " + _property.ToString();
 		}
 
 		public override Color GetButtonColor()
@@ -276,11 +268,43 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-            if (ReferenceEquals(animatorVar, variable) || ReferenceEquals(inOutVar, variable))
+			if (ReferenceEquals(_animatorVar.Variable, variable) || 
+				ReferenceEquals(_inOutVar.Variable, variable))
 				return true;
 
 			return false;
 		}
 
+		public override void ApplyBackwardsCompatibility()
+		{
+			base.ApplyBackwardsCompatibility();
+
+			if (_oldInOutVar != null)
+			{
+				_inOutVar.Variable = _oldInOutVar;
+				_oldInOutVar = null;
+			}
+
+			if (_oldAnimatorVar != null)
+			{
+				_animatorVar.Variable = _oldAnimatorVar;
+				_oldAnimatorVar = null;
+			}
+		}
+
+		[SerializeField]
+		[HideInInspector]
+		[VariableProperty(typeof(AnimatorVariable))]
+		[FormerlySerializedAs("animatorVar")]
+		protected AnimatorVariable _oldAnimatorVar;
+
+		[SerializeField]
+		[HideInInspector]
+		[VariableProperty(typeof(BooleanVariable),
+						  typeof(FloatVariable),
+						  typeof(Vector3Variable),
+						  typeof(IntegerVariable))]
+		[FormerlySerializedAs("inOutVar")]
+		protected Variable _oldInOutVar;
 	}
 }

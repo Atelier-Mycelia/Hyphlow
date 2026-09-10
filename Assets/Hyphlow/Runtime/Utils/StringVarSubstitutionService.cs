@@ -1,4 +1,3 @@
-using AtMycelia.Hyphlow.Sys;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -118,8 +117,8 @@ namespace AtMycelia.Hyphlow
         private bool TryGetVarFromGlobalSources(string key, out IVariable variable)
         {
             variable = null;
-            var sourcesToConsider = GetGlobalVariableSources();
-            
+            var sourcesToConsider = VariableRegistry.RegisteredSources;
+
             if (sourcesToConsider.Count == 0)
             {
                 return false;
@@ -138,50 +137,6 @@ namespace AtMycelia.Hyphlow
 #pragma warning restore CS0162 // Unreachable code detected
 
             bool result = variable != null;
-            return result;
-        }
-
-        private IList<VariableSourceAsset> GetGlobalVariableSources()
-        {
-            IList<VariableSourceAsset> result = new List<VariableSourceAsset>();
-            var registryConfigs = HyphlowRuntimeSysAssets.S.VariableRegistryConfigs;
-            if (registryConfigs == null)
-            {
-                string errorMessage = "StringVarSubstitutionService.TryGetVarFromGlobalSources was called, but " +
-                    "HyphlowRuntimeSysAssets.S.VariableRegistryConfigs is null.";
-                Debug.LogError(errorMessage);
-                return result;
-            }
-            for (int i = 0; i < registryConfigs.Count; i++)
-            {
-                VariableRegistryConfig config = registryConfigs[i];
-                bool validConfig = config != null && config.GlobalSources != null &&
-                    config.GlobalSources.Count > 0;
-                if (!validConfig)
-                {
-                    continue;
-                }
-
-                for (int j = 0; j < config.GlobalSources.Count; j++)
-                {
-                    VariableSourceAsset source = config.GlobalSources[j];
-                    if (source == null)
-                    {
-                        // Something likely went pretty wrong is the registry has any null entries,
-                        // so log an error but keep going to try to get as many valid sources as possible.
-                        string errorMessage = $"StringVarSubstitutionService.TryGetVarFromGlobalSources found " +
-                            $"a null VariableSourceAsset in the GlobalSources list of VariableRegistryConfig " +
-                            $"at index {i}.";
-                        Debug.LogError(errorMessage);
-                        continue;
-                    }
-
-                    result.Add(source);
-                }
-
-                break;
-            }
-
             return result;
         }
 

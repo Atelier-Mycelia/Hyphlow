@@ -1,6 +1,5 @@
 using UnityEngine.Serialization;
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -9,18 +8,18 @@ namespace AtMycelia.Hyphlow
     /// Base class for all simple Unary
     /// </summary>
     [AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public abstract class BaseUnaryMathCommand : Command
     {
         [Tooltip("Value to be passed in to the function.")]
         [SerializeField]
-[FormerlySerializedAs("inValue")]
-        protected FloatData inValue;
+        [FormerlySerializedAs("inValue")]
+        protected FloatData _inValue;
 
         [Tooltip("Where the result of the function is stored.")]
         [SerializeField]
-[FormerlySerializedAs("outValue")]
-        protected FloatData outValue;
+        [FormerlySerializedAs("outValue")]
+        protected FloatData _outValue;
         
         public override Color GetButtonColor()
         {
@@ -29,13 +28,20 @@ namespace AtMycelia.Hyphlow
 
         public override string GetSummary()
         {
-            return "in: " + (inValue.VarRef != null ? inValue.VarRef.Key : inValue.Value.ToString()) + 
-                   ", out: " + (outValue.VarRef != null ? outValue.VarRef.Key : outValue.Value.ToString());
+            string inValueStr = _inValue.VarRef != null ? 
+                _inValue.VarRef.Key : 
+                _inValue.Value.ToString();
+            string outValueStr = _outValue.VarRef != null ? 
+                _outValue.VarRef.Key : 
+                _outValue.Value.ToString();
+            string result = $"in: {inValueStr}, out: {outValueStr}";
+            return result;
         }
 
         public override bool HasReference(IVariable variable)
         {
-            return ReferenceEquals(variable, inValue.VarRef) || ReferenceEquals(variable, outValue.VarRef);
+            return ReferenceEquals(variable, _inValue.VarRef) || 
+                ReferenceEquals(variable, _outValue.VarRef);
         }
     }
 }

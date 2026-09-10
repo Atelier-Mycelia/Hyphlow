@@ -14,16 +14,25 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-    [CreateAssetMenu(fileName = "NewVariableSourceAsset", menuName = "Atelier Mycelia/Hyphlow/VariableSource")]
+    [CreateAssetMenu(fileName = "NewVariableSourceAsset",
+        menuName = "Atelier Mycelia/Hyphlow/VariableSource")]
     [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource,
         IForceResetUidHandler, IRefreshable
     {
         [SerializeField] private bool _includeInSaves = true;
+        [Tooltip("Whether or not this source's variables can be considered as options in " +
+            "the var-select popups.")]
+        [SerializeField] private bool _includeInRegistry = true;
         [FormerlySerializedAs("uniqueId")]
         [SerializeField, HideInInspector] private string _uniqueId = string.Empty;
         [SerializeField] private bool _alwaysKeepGuid = true;
         [SerializeField, HideInInspector] private VariableManager _varManager = new VariableManager();
+        
+        public virtual bool IncludeInRegistry
+        {
+            get => _includeInRegistry;
+        }
 
         public virtual void ForceResetUid()
         {
