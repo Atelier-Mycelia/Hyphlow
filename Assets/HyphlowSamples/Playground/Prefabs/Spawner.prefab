@@ -206,10 +206,23 @@ MonoBehaviour:
       _owningSource: {fileID: 114094183539183980}
       _legacyOwningFc: {fileID: 0}
       _legacyOwningVsa: {fileID: 0}
+    _data:
+      rid: -2
+  durationOLD: 0
+  _oldDurationFloatData:
+    _backingVarRef:
+      _itemId: 0
+      _owningSource: {fileID: 114094183539183980}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 2
     floatRef: {fileID: 0}
     floatVal: 0
-  durationOLD: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114533871774847328
 MonoBehaviour:
   m_ObjectHideFlags: 2

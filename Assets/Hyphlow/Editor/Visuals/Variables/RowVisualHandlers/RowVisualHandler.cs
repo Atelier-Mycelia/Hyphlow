@@ -28,12 +28,14 @@ namespace AtMycelia.Hyphlow.EditorExt
             RowRoot?.MarkDirtyRepaint();
             KeyField?.MarkDirtyRepaint();
             ScopeField?.MarkDirtyRepaint();
-            bool shouldHideScopeField = Variable != null && Variable.Owner is ScriptableObject;
-            if (shouldHideScopeField)
+            
+            bool shouldLockScopeField = Variable != null && Variable.Owner is ScriptableObject;
+            if (shouldLockScopeField)
             {
                 // Variables belonging to ScriptableObjects such as VariableSourceAssets
-                // are meant to be global, and thus showing their Scope fields is misleading.
-                ScopeField.visible = false;
+                // are meant to be global only, and thus we don't want users changing
+                // that.
+                ScopeField?.SetEnabled(false);
             }
             ToggleSubs(true);
         }
