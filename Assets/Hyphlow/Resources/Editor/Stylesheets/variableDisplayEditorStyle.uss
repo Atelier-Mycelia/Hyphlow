@@ -1,11 +1,37 @@
+:root
+{
+    --font-choice: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
+}
+
 /* Individual rows */
 #VariableDisplayEditorRoot
 {
     /* -unity-font-definition: resource('Runtime/Fonts/Amaranth/Amaranth-Regular SDF-UITK'); */
-    -unity-font-definition: resource('Runtime/Fonts/Exo2/Exo2-Regular SDF-UITK');
+    -unity-font-definition: var(--font-choice);
 
     background-color: rgba(0, 0, 255, 0.05);
     max-width: 500px;
+}
+
+#Normal .unity-base-field__label
+{
+    min-width: 160px;
+    width: 160px;
+    font-size: 16px;
+    -unity-font-definition: var(--font-choice);
+}
+
+#Normal .unity-base-field__input
+{
+    flex-grow: 1;
+    font-size: 16px;
+    -unity-font-definition: var(--font-choice);
+}
+
+#Normal TextField,
+#Normal Toggle
+{
+    -unity-font-definition: var(--font-choice);
 }
 
 #varHeaderBar

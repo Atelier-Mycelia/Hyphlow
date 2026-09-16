@@ -1,5 +1,6 @@
 using AtMycelia.EditorExt;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UitkLabel = UnityEngine.UIElements.Label;
@@ -30,8 +31,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             _inspectorRoot = _uxml.CloneTree();
             _rootElement.Add(_inspectorRoot);
+            _inspectorRoot.Bind(serializedObject);
             BuildManager(_inspectorRoot);
-            ShowUidLabel(_inspectorRoot);
         }
 
         protected VariableRowManager _manager;
@@ -161,13 +162,5 @@ namespace AtMycelia.Hyphlow.EditorExt
             _rootElement = null;
             ToggleSubs(false);
         }
-
-        private void ShowUidLabel(VisualElement inspectorRoot)
-        {
-            UitkLabel uidLabel = new UitkLabel();
-            VariableSourceAsset variableSource = (VariableSourceAsset)target;
-            uidLabel.text = $"Unique ID: {variableSource.UniqueId}";
-            inspectorRoot.Add(uidLabel);
+            }
         }
-    }
-}

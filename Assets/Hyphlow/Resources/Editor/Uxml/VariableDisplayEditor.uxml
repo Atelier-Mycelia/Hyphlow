@@ -1,6 +1,12 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Packages/com.ateliermycelia.hyphlow/Resources/Editor/Stylesheets/variableDisplayEditor.uss?fileID=7433441132597879392&amp;guid=9c0e2f55938933348bc8eb8a71cf2058&amp;type=3#variableDisplayEditor" />
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/variableDisplayEditorStyle.uss?fileID=7433441132597879392&amp;guid=9c0e2f55938933348bc8eb8a71cf2058&amp;type=3#variableDisplayEditorStyle" />
     <ui:VisualElement name="VariableDisplayEditorRoot" class="variable-editor">
+        <ui:VisualElement name="Normal" style="flex-grow: 1;">
+            <ui:TextField label="Unique Id" placeholder-text="filler text" name="UniqueId" binding-path="_uniqueId" readonly="true" />
+            <ui:Toggle label="Include in Saves" name="IncludeInSaves" binding-path="_includeInSaves" />
+            <ui:Toggle label="Include in Registry" name="IncludeInRegistry" binding-path="_includeInRegistry" />
+            <ui:Toggle label="Always Keep Unique Id" name="AlwaysKeepGuid" binding-path="_alwaysKeepGuid" />
+        </ui:VisualElement>
         <ui:Foldout text="Variables" name="Foldout" style="font-size: 28px; color: rgb(229, 229, 229); margin-top: 15px; margin-right: 0; margin-bottom: 0; margin-left: 0;">
             <ui:VisualElement name="varHeaderBar" view-data-key="varHeaderBar">
                 <ui:Label name="varCountLabel" text="Count: 0" view-data-key="varCountLabel" class="var-count" />

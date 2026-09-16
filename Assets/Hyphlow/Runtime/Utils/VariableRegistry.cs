@@ -241,6 +241,11 @@ namespace AtMycelia.Hyphlow
                 for (int i = 0; i < _registeredSources.Count; i++)
                 {
                     VariableSourceAsset source = _registeredSources[i];
+                    if (!source.IncludeInRegistry)
+                    {
+                        continue;
+                    }
+
                     IReadOnlyList<IVariable> sourceVariables = source.Variables;
                     for (int j = 0; j < sourceVariables.Count; j++)
                     {
