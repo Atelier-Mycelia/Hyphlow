@@ -109,7 +109,7 @@ namespace AtMycelia.Hyphlow
         public virtual Muscariable<TContent> AddNewVariableOfContentType<TContent>(string key,
             TContent startingVal = default, AccessScope scope = AccessScope.Private)
         {
-            var result = _varManager.AddNewVariable(key, startingVal, AccessScope.Public);
+            var result = _varManager.AddNewVariable(key, startingVal, AccessScope.Global);
             return (Muscariable<TContent>)result; 
         }
 
