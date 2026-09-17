@@ -148,6 +148,7 @@ namespace AtMycelia.Hyphlow
         {
             _typeMap.Clear();
             _contentTypeToLegacyVarType.Clear();
+            _contentTypeToMuscariType.Clear();
             _legacyTypes.Clear();
             _muscariableTypes.Clear();
             _actionsRegistered.Clear();

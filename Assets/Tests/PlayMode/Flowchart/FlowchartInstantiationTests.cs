@@ -138,13 +138,18 @@ namespace VScriptingTests.FlowchartLifecycle
             TestGameStarted.TriggerCount = 0;
 
             // Given the timing of when we set up the TestGameStarted block, we need to force 
-            // the Flowchart to invoke Start() again so it will kick off GameStarted coroutine.
-            // Start() is protected, so call via reflection.
-            Type fcType = typeof(Flowchart);
+            // the BlockExecutionManagerComponent to invoke Start() again so it will kick off the
+            // GameStarted-triggering coroutine (Flowchart.Start() itself is a no-op; the actual
+            // logic lives on BlockExecutionManagerComponent). Start() is protected, so call via
+            // reflection.
+            var execManager = testFc.GetComponent<BlockExecutionManagerComponent>();
+            Assert.IsNotNull(execManager, "Could not find BlockExecutionManagerComponent on Flowchart.");
+
+            Type execManagerType = typeof(BlockExecutionManagerComponent);
             BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            MethodInfo startMethod = fcType.GetMethod("Start", flags);
-            Assert.IsNotNull(startMethod, "Could not reflect Flowchart.Start().");
-            startMethod.Invoke(testFc, null);
+            MethodInfo startMethod = execManagerType.GetMethod("Start", flags);
+            Assert.IsNotNull(startMethod, "Could not reflect BlockExecutionManagerComponent.Start().");
+            startMethod.Invoke(execManager, null);
 
             // Given the timing of when we set up the TestGameStarted block, we need to force 
             // Act: enable and wait for Flowchart.Start + coroutine to run
