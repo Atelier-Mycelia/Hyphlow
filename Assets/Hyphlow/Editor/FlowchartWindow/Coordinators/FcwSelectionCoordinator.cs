@@ -47,7 +47,16 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             if (context == null || context.Flowchart == null)
             {
-                fcNameLabel.text = zoomAmountLabel.text = string.Empty;
+                if (fcNameLabel != null)
+                {
+                    fcNameLabel.text = string.Empty;
+                }
+
+                if (zoomAmountLabel != null)
+                {
+                    zoomAmountLabel.text = string.Empty;
+                }
+
                 return;
             }
 
