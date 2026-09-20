@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HyphlowSamplesSoundFx
   m_EditorClassIdentifier: 
   _includeInSaves: 1
+  _includeInRegistry: 1
   _uniqueId: a49d980e-8a6d-4a86-9202-5709d008f444
   _alwaysKeepGuid: 1
   _varManager:

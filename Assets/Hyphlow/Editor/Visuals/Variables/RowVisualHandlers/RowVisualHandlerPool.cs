@@ -87,17 +87,17 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
         public void Release(IRowVisualHandler handler)
         {
-            PrepHandlerForReuse();
-            void PrepHandlerForReuse()
+            bool isReusable = handler is IResettable resettable;
+            if (isReusable)
             {
-                if (handler is IResettable resettable)
-                {
-                    resettable.Reset();
-                }
-                else
-                {
-                    handler.Dispose();
-                }
+                ((IResettable)handler).Reset();
+            }
+            else
+            {
+                // Non-resettable handlers are one-shot: once disposed, they are no longer
+                // safe to hand back out, so they must not be pooled for reuse.
+                handler.Dispose();
+                return;
             }
 
             Type handlerType = handler.GetType();

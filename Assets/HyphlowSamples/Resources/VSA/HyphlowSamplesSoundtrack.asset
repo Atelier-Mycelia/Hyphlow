@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HyphlowSamplesSoundtrack
   m_EditorClassIdentifier: 
   _includeInSaves: 1
+  _includeInRegistry: 1
   _uniqueId: dd71598a-90d7-41cd-9d48-c4bda978f3b0
   _alwaysKeepGuid: 1
   _varManager:
