@@ -92,10 +92,10 @@ namespace AtMycelia.Hyphlow
                 FlowchartSignals.FlowchartDestroyed += OnFlowchartDestroyed;
                 VariableSignals.PostValueChange += OnVariableValueChanged;
 
-                VsaSignals.VsaEnabled -= OnVsaChanged;
-                VsaSignals.VsaDisabled -= OnVsaChanged;
-                VsaSignals.VariableAdded -= OnAnyVariableChanged;
-                VsaSignals.VariableRemoved -= OnAnyVariableChanged;
+                VarSetSignals.VsaEnabled -= OnVsaChanged;
+                VarSetSignals.VsaDisabled -= OnVsaChanged;
+                VarSetSignals.VariableAdded -= OnAnyVariableChanged;
+                VarSetSignals.VariableRemoved -= OnAnyVariableChanged;
             }
             else
             {
@@ -105,19 +105,19 @@ namespace AtMycelia.Hyphlow
                 FlowchartSignals.FlowchartDestroyed -= OnFlowchartDestroyed;
                 VariableSignals.PostValueChange -= OnVariableValueChanged;
 
-                VsaSignals.VsaEnabled -= OnVsaChanged;
-                VsaSignals.VsaDisabled -= OnVsaChanged;
-                VsaSignals.VariableAdded -= OnAnyVariableChanged;
-                VsaSignals.VariableRemoved -= OnAnyVariableChanged;
+                VarSetSignals.VsaEnabled -= OnVsaChanged;
+                VarSetSignals.VsaDisabled -= OnVsaChanged;
+                VarSetSignals.VariableAdded -= OnAnyVariableChanged;
+                VarSetSignals.VariableRemoved -= OnAnyVariableChanged;
             }
         }
 
-        private static void OnVsaChanged(VariableSourceAsset asset)
+        private static void OnVsaChanged(VariableSet asset)
         {
             Rebuild();
         }
 
-        private static void OnAnyVariableChanged(VariableSourceAsset _, IVariable _2)
+        private static void OnAnyVariableChanged(VariableSet _, IVariable _2)
         {
             Rebuild();
         }
@@ -240,7 +240,7 @@ namespace AtMycelia.Hyphlow
             {
                 for (int i = 0; i < _registeredSources.Count; i++)
                 {
-                    VariableSourceAsset source = _registeredSources[i];
+                    VariableSet source = _registeredSources[i];
                     if (!source.IncludeInRegistry)
                     {
                         continue;
@@ -277,7 +277,7 @@ namespace AtMycelia.Hyphlow
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 assetPaths.Add(path);
 
-                var asset = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(path);
+                var asset = AssetDatabase.LoadAssetAtPath<VariableSet>(path);
                 if (asset.IncludeInRegistry)
                 {
                     _registeredSources.Add(asset);
@@ -287,10 +287,10 @@ namespace AtMycelia.Hyphlow
 
         // This should exclude the VSAs that have their IncludeInRegistry property set to false,
         // since those are meant to be ignored by this class.
-        private static readonly List<VariableSourceAsset> _registeredSources 
-            = new List<VariableSourceAsset>();
+        private static readonly List<VariableSet> _registeredSources 
+            = new List<VariableSet>();
 
-        public static IReadOnlyList<VariableSourceAsset> RegisteredSources => _registeredSources;
+        public static IReadOnlyList<VariableSet> RegisteredSources => _registeredSources;
 
         // Master dictionary of all variables
         private static readonly Dictionary<string, IVariable> _registeredVars = 
@@ -449,7 +449,7 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
-        private static readonly IReadOnlyList<VariableSourceAsset> _emptySources = new List<VariableSourceAsset>();
+        private static readonly IReadOnlyList<VariableSet> _emptySources = new List<VariableSet>();
         private static readonly ReadOnlyDictionary<string, IVariable> _emptyDict =
             new ReadOnlyDictionary<string, IVariable>(new Dictionary<string, IVariable>());
     }

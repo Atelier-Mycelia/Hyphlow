@@ -9,9 +9,9 @@ using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.VariableOperations
 {
-    public class VariableSourceTests
+    public class VariableSetTests
     {
-        private VariableSourceAsset _source;
+        private VariableSet _source;
 
         [SetUp]
         public void SetUp()
@@ -22,7 +22,7 @@ namespace VScriptingTests.VariableOperations
             {
                 // We want to make it an actual asset file so that it handles MuscariableHolders 
                 // like it should in production.
-                _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                _source = ScriptableObject.CreateInstance<VariableSet>();
                 AssetDatabase.CreateAsset(_source, TestAssetPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
