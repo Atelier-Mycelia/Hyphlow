@@ -28,6 +28,10 @@ namespace VScriptingTests.VariableOperations
         public virtual void TearDown()
         {
             Debug.unityLogger.logEnabled = true;
+
+            // Restore the registry to a real, fully-discovered state so that other
+            // suites relying on it aren't affected by this suite running first.
+            VariableTypeDiscovery.DiscoverAndRegister();
         }
 
         [Test]

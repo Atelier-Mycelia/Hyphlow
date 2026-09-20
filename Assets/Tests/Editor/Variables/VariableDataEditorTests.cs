@@ -44,9 +44,17 @@ namespace VScriptingTests.VariableOperations
             {
                 if (obj != null)
                 {
-                    UnityObj.DestroyImmediate(obj);
+                    if (obj is EditorWindow wnd)
+                    {
+                        wnd.Close();
+                    }
+                    else
+                    {
+                        UnityObj.DestroyImmediate(obj);
+                    }
                 }
             }
+            toDestroyInTearDown.Clear();
         }
 
         // Replace direct drawer usage with window-based rendering

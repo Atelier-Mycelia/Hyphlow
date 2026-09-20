@@ -64,6 +64,8 @@ namespace AtMycelia.Hyphlow
                 bool isTestScene = string.IsNullOrEmpty(sceneName) ||
                     sceneName.IndexOf("test", StringComparison.OrdinalIgnoreCase) >= 0;
 
+                // We want all var data types registered in test scenes, but
+                // not in runtime scenes. 
                 if (isTestScene)
                 {
                     return true;
