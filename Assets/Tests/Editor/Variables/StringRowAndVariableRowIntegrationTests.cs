@@ -37,7 +37,7 @@ namespace VScriptingTests.VariableOperations
             {
                 // We want to make it an actual asset file so that it handles MuscariableHolders 
                 // like it should in production.
-                _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                _source = ScriptableObject.CreateInstance<VariableSet>();
                 AssetDatabase.CreateAsset(_source, TestAssetPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -133,7 +133,7 @@ namespace VScriptingTests.VariableOperations
             }
         }
 
-        protected VariableSourceAsset _source;
+        protected VariableSet _source;
         protected readonly string initStringVarKey = "greeting";
         protected readonly string initStringVarValue = "hello";
         private const string TestAssetPath = "Assets/TestVariableSource.asset";
@@ -246,7 +246,7 @@ namespace VScriptingTests.VariableOperations
             {
                 BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
 
-                var sourceType = typeof(VariableSourceAsset);
+                var sourceType = typeof(VariableSet);
                 var varManagerInfo = sourceType.GetField("_varManager", flags);
                 Assert.IsNotNull(varManagerInfo, "Could not find private '_varManager' field via reflection.");
 

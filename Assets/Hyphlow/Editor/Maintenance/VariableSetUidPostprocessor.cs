@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    public sealed class VariableSourceAssetUidPostprocessor : AssetPostprocessor
+    public sealed class VariableSetUidPostprocessor : AssetPostprocessor
     {
         private static bool _isProcessing;
 
@@ -23,7 +23,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 for (int i = 0; i < importedAssets.Length; i++)
                 {
                     string importedPath = importedAssets[i];
-                    VariableSourceAsset importedSource = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>
+                    VariableSet importedSource = AssetDatabase.LoadAssetAtPath<VariableSet>
                         (importedPath);
                     if (importedSource == null || string.IsNullOrEmpty(importedSource.UniqueId))
                     {
@@ -46,9 +46,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        private static bool HasDuplicateUid(VariableSourceAsset sourceToCheck, string sourcePath)
+        private static bool HasDuplicateUid(VariableSet sourceToCheck, string sourcePath)
         {
-            string[] guidList = AssetDatabase.FindAssets($"t:{nameof(VariableSourceAsset)}");
+            string[] guidList = AssetDatabase.FindAssets($"t:{nameof(VariableSet)}");
             for (int i = 0; i < guidList.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guidList[i]);
@@ -57,7 +57,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     continue;
                 }
 
-                VariableSourceAsset other = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(path);
+                VariableSet other = AssetDatabase.LoadAssetAtPath<VariableSet>(path);
                 if (other == null)
                 {
                     continue;

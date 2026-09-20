@@ -127,7 +127,7 @@ namespace AtMycelia.Hyphlow
 #pragma warning disable CS0162 // Unreachable code detected
             for (int i = 0; i < sourcesToConsider.Count; i++)
             {
-                VariableSourceAsset source = sourcesToConsider[i];
+                VariableSet source = sourcesToConsider[i];
 
                 IVariable candidate = source.GetVariableByName(key, StringComparison.Ordinal);
                 variable = candidate;

@@ -430,7 +430,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             void FindVsa(out bool found)
             {
                 found = false;
-                var vsasInProject = Resources.LoadAll<VariableSourceAsset>("");
+                var vsasInProject = Resources.LoadAll<VariableSet>("");
                 var vsaFound = vsasInProject.Where((vsa) => vsa.UniqueId == _lastSourceUid).FirstOrDefault();
                 if (vsaFound != null)
                 {

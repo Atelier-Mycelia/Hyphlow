@@ -31,7 +31,7 @@ namespace AtMycelia.Hyphlow
 
         [FormerlySerializedAs("owningVsa")]
         [SerializeField] [HideInInspector] [FormerlySerializedAs("legacyOwningVsa")]
-        private VariableSourceAsset _legacyOwningVsa;
+        private VariableSet _legacyOwningVsa;
 
         /// <summary>
         /// The key of the variable this is referencing. This is just for display purposes,
@@ -131,7 +131,7 @@ namespace AtMycelia.Hyphlow
             }
 
             varOwner ??= _owningSource as Flowchart;
-            varOwner ??= _owningSource as VariableSourceAsset;
+            varOwner ??= _owningSource as VariableSet;
         }
 
         private static bool IsUnityObjectNull(UnityObj unityObj)

@@ -14,10 +14,11 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-    [CreateAssetMenu(fileName = "NewVariableSourceAsset",
-        menuName = "Atelier Mycelia/Hyphlow/VariableSource")]
-    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
-    public class VariableSourceAsset : ScriptableObject, IReorderableMuscariableSource,
+    [CreateAssetMenu(fileName = "NewVariableSet",
+        menuName = "Atelier Mycelia/Hyphlow/VariableSet")]
+    [MovedFrom(true, sourceNamespace: "AtMycelia.Hyphlow", sourceAssembly: "Assembly-CSharp",
+        sourceClassName: "VariableSourceAsset")]
+    public class VariableSet : ScriptableObject, IReorderableMuscariableSource,
         IForceResetUidHandler, IRefreshable
     {
         [SerializeField] private bool _includeInSaves = true;
@@ -324,7 +325,7 @@ namespace AtMycelia.Hyphlow
             }
 #endif
             EnsureValidUniqueId();
-            VsaSignals.VsaEnabled(this);
+            VarSetSignals.VsaEnabled(this);
         }
 
         protected virtual void ToggleSubs(bool on)
@@ -349,22 +350,22 @@ namespace AtMycelia.Hyphlow
 
         private void OnPostVarAdded(IVariable variable)
         {
-            VsaSignals.VariableAdded(this, variable);
+            VarSetSignals.VariableAdded(this, variable);
         }
 
         private void OnPostVarRemoved(IVariable variable)
         {
-            VsaSignals.VariableRemoved(this, variable);
+            VarSetSignals.VariableRemoved(this, variable);
         }
 
         private void OnPreVarAdded(IVariable variable)
         {
-            VsaSignals.PreVariableAdded(this, variable);
+            VarSetSignals.PreVariableAdded(this, variable);
         }
 
         private void OnPreVarRemoved(IVariable variable)
         {
-            VsaSignals.PreVariableRemoved(this, variable);
+            VarSetSignals.PreVariableRemoved(this, variable);
         }
 
         protected virtual void EditorToggleSubs(bool on)
@@ -449,12 +450,12 @@ namespace AtMycelia.Hyphlow
         protected virtual void OnDisable()
         {
             ToggleSubs(false);
-            VsaSignals.VsaDisabled(this);
+            VarSetSignals.VsaDisabled(this);
         }
 
         protected virtual void OnDestroy()
         {
-            VsaSignals.VsaDestroyed(name, _uniqueId);
+            VarSetSignals.VsaDestroyed(name, _uniqueId);
         }
 
         protected virtual void OnValidate()

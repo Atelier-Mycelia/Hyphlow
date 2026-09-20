@@ -7,12 +7,12 @@ using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    [CustomEditor(typeof(VariableSourceAsset))]
-    public class VariableSourceAssetInspector : Editor
+    [CustomEditor(typeof(VariableSet))]
+    public class VariableSetInspector : Editor
     {
         protected virtual void OnEnable()
         {
-            var target = (VariableSourceAsset)this.target;
+            var target = (VariableSet)this.target;
             target.Refresh(); // Ensure variable ownership is properly asserted
             PrepGUI();
             ToggleSubs(false);
@@ -40,13 +40,13 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected VariableRowPool _rowPool;
         protected VisualTreeAsset _uxml;
         protected static readonly string _pathToUxml = 
-            "Editor/Uxml/VariableSourceAssetInspector";
+            "Editor/Uxml/VariableSetInspector";
         protected VisualElement _rootElement;
         protected TemplateContainer _inspectorRoot;
 
         protected void BuildManager(VisualElement rootElem)
         {
-            var varSource = (VariableSourceAsset)target;
+            var varSource = (VariableSet)target;
             if (varSource == null)
                 return;
 
@@ -101,7 +101,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected virtual void ToggleSubs(bool on)
         {
-            var source = (VariableSourceAsset)target;
+            var source = (VariableSet)target;
             if (on)
             {
                 HyphlowEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
@@ -127,7 +127,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected virtual void UpdateSourceAssetFile()
         {
-            if (target is VariableSourceAsset source)
+            if (target is VariableSet source)
             {
                 EditorUtility.SetDirty(source);
                 AssetDatabase.SaveAssetIfDirty(source);

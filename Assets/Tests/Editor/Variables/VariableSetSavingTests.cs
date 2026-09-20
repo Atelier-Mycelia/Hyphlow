@@ -6,18 +6,18 @@ using UnityObj = UnityEngine.Object;
 
 namespace VScriptingTests.VariableOperations
 {
-    public class VariableSourceAssetSavingTests
+    public class VariableSetSavingTests
     {
         private const string TestAssetPath = "Assets/TestVariableSourceSaving.asset";
 
-        private VariableSourceAsset _source;
+        private VariableSet _source;
 
         [SetUp]
         public void SetUp()
         {
             AssetDatabase.DeleteAsset(TestAssetPath);
 
-            _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+            _source = ScriptableObject.CreateInstance<VariableSet>();
             AssetDatabase.CreateAsset(_source, TestAssetPath);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -48,7 +48,7 @@ namespace VScriptingTests.VariableOperations
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(TestAssetPath);
+            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSet>(TestAssetPath);
             Assert.IsNotNull(reloaded);
             Assert.AreEqual(1, reloaded.Variables.Count);
 
@@ -69,7 +69,7 @@ namespace VScriptingTests.VariableOperations
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(TestAssetPath);
+            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSet>(TestAssetPath);
             Assert.IsNotNull(reloaded);
             Assert.AreEqual(4, reloaded.Variables.Count);
 
@@ -89,7 +89,7 @@ namespace VScriptingTests.VariableOperations
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(TestAssetPath);
+            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSet>(TestAssetPath);
             Assert.IsNotNull(reloaded);
             Assert.AreEqual(expectedId, reloaded.UniqueId);
         }
@@ -116,7 +116,7 @@ namespace VScriptingTests.VariableOperations
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(TestAssetPath);
+            var reloaded = AssetDatabase.LoadAssetAtPath<VariableSet>(TestAssetPath);
             Assert.IsNotNull(reloaded);
             Assert.IsFalse(reloaded.IncludeInSaves);
         }

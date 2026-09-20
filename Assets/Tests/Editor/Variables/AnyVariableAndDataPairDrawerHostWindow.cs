@@ -7,7 +7,7 @@ namespace VScriptingTests.VariableOperations
 {
     // Testing-only window to exercise AnyVariableAndDataPairDrawer via Unity's IMGUI pipeline,
     // mirroring the pattern used by VariableReferenceDrawerHostWindow.
-    public class AnyVariableAndDataPairDrawerHostWindow : EditorWindow
+    public class AnyVariableAndDataPairDrawerHostWindow : EditorWindow//
     {
         internal AnyVariableAndDataPairDrawer Drawer;
         internal SerializedObject SO;

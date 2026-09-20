@@ -4,9 +4,9 @@ using UnityEditor;
 namespace AtMycelia.Hyphlow.EditorExt
 {
     [InitializeOnLoad]
-    public static class VariableSourceAssetMigrationRunner
+    public static class VariableSetMigrationRunner
     {
-        static VariableSourceAssetMigrationRunner()
+        static VariableSetMigrationRunner()
         {
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
         }
@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             for (int i = 0; i < guids.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-                VariableSourceAsset asset = AssetDatabase.LoadAssetAtPath<VariableSourceAsset>(path);
+                VariableSet asset = AssetDatabase.LoadAssetAtPath<VariableSet>(path);
                 if (asset != null)
                 {
                 }
