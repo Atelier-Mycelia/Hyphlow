@@ -150,6 +150,8 @@ namespace VScriptingTests.VariableRows
             VariableRow row = GetRowFor(variable);
             Assert.NotNull(row, "Variable row could not be materialized.");
 
+            yield return WaitUntilAttachedToPanel(row.RootElement);
+
             object originalValue = variable.BoxedValue;
 
             ApplyValueThroughUi(row, newValue, contentType);
@@ -165,6 +167,22 @@ namespace VScriptingTests.VariableRows
             variable = _flowchart.GetVariable(variableId) ?? _flowchart.GetVariable(variableKey, StringComparison.Ordinal);
             Assert.NotNull(variable, "Variable was not found after redo.");
             Assert.AreEqual(newValue, variable.BoxedValue, "Redo did not reapply the edited value.");
+        }
+
+        private static IEnumerator WaitUntilAttachedToPanel(VisualElement element, int maxFrames = 60)
+        {
+            for (int i = 0; i < maxFrames; i++)
+            {
+                if (element != null && element.panel != null)
+                {
+                    yield break;
+                }
+
+                yield return null;
+            }
+
+            Assert.Fail("Variable row's visual element never got attached to a panel; " +
+                "value change events cannot be dispatched.");
         }
 
         private VariableRow GetRowFor(IVariable variable)
