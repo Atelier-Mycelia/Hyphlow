@@ -5068,8 +5068,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 4609403763382270970}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1149276904164830}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -5077,8 +5077,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 4609403763382270970}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0

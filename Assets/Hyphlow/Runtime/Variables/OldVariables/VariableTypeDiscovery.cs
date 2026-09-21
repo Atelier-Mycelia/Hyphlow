@@ -28,9 +28,8 @@ namespace AtMycelia.Hyphlow
 
         private static void RefreshVariableTypeRegistry()
         {
-            IEnumerable<Type> varSubtypes = AppDomain.CurrentDomain.GetAssemblies()
-                         .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, _iVariableType) && 
+            IEnumerable<Type> varSubtypes = TypeCache.GetTypesDerivedFrom<IVariable>()
+                         .Where((elem) => elem.IsConcrete() &&
                          !ShouldExcludeDueToBeingForTests(elem));
 
             SetVarTypeRegistry();
@@ -46,26 +45,6 @@ namespace AtMycelia.Hyphlow
                 VariableTypeRegistry.RegisterMultiVariableTypes(varSubtypes, typeActions);
             }
         }
-
-        static IEnumerable<Type> SafeGetTypes(Assembly toGetTypesFrom)
-        {
-            try
-            {
-                return toGetTypesFrom.GetTypes();
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                return ex.Types.Where(typeFound => typeFound != null);
-            }
-        }
-
-        private static bool IsInstantiatableType(Type typeToCheck, Type baseVarType)
-        {
-            bool result = typeToCheck.IsConcrete() && baseVarType.IsAssignableFrom(typeToCheck);
-            return result;
-        }
-
-        private static readonly Type _iVariableType = typeof(IVariable);
 
         private static bool VarCompareFunc(IVariable varInvolved, IVariableData varData, CompareOperator compareOp)
         {
@@ -108,9 +87,8 @@ namespace AtMycelia.Hyphlow
 
         private static void RefreshVariableDataTypeRegistry()
         {
-            IEnumerable<Type> varDataSubtypes = AppDomain.CurrentDomain.GetAssemblies()
-                         .SelectMany(SafeGetTypes)
-                         .Where((elem) => IsInstantiatableType(elem, _iVariableDataType));
+            IEnumerable<Type> varDataSubtypes = TypeCache.GetTypesDerivedFrom<IVariableData>()
+                         .Where((elem) => elem.IsConcrete());
 
             VariableDataTypeRegistry.Clear();
 
@@ -123,8 +101,6 @@ namespace AtMycelia.Hyphlow
                 }
             }
         }
-
-        private static readonly Type _iVariableDataType = typeof(IVariableData);
 
     }
 }

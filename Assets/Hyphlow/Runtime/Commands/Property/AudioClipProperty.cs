@@ -1,6 +1,5 @@
 using UnityEngine.Serialization;
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -12,7 +11,7 @@ namespace AtMycelia.Hyphlow
 				 "AudioClip",
 				 "Get or Set a property of a AudioClip component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class AudioClipProperty : BaseVariableProperty
 	{
 		//generated property
@@ -29,18 +28,18 @@ namespace AtMycelia.Hyphlow
 
 
 		[SerializeField]
-[FormerlySerializedAs("property")]
+		[FormerlySerializedAs("property")]
 		protected Property property;
 
 		[SerializeField]
-[FormerlySerializedAs("audioClipData")]
+		[FormerlySerializedAs("audioClipData")]
 		protected AudioClipData audioClipData;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
 						  typeof(IntegerVariable),
 						  typeof(BooleanVariable))]
-[FormerlySerializedAs("inOutVar")]
+		[FormerlySerializedAs("inOutVar")]
 		protected Variable inOutVar;
 
 		public override void OnEnter()
@@ -123,7 +122,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-            if (ReferenceEquals(audioClipData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+			if (ReferenceEquals(audioClipData.VarRef, variable) || ReferenceEquals(inOutVar, variable))
 				return true;
 
 			return false;

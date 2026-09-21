@@ -288,16 +288,16 @@ MonoBehaviour:
   _varManager: {fileID: 44481360}
   _execManager: {fileID: 44481365}
   _blockManager: {fileID: 44481366}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
@@ -2207,16 +2207,16 @@ MonoBehaviour:
   _varManager: {fileID: 1267026896}
   _execManager: {fileID: 1267026910}
   _blockManager: {fileID: 1267026909}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks:
@@ -4261,16 +4261,16 @@ MonoBehaviour:
   _varManager: {fileID: 1617824588}
   _execManager: {fileID: 1617824591}
   _blockManager: {fileID: 1617824592}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []

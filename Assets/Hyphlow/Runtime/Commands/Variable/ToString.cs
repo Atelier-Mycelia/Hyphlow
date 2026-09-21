@@ -1,6 +1,5 @@
 using UnityEngine.Serialization;
 using UnityEngine;
-
 using UnityEngine.Scripting.APIUpdating;
 
 namespace AtMycelia.Hyphlow
@@ -12,55 +11,125 @@ namespace AtMycelia.Hyphlow
                  "To String",
                  "Stores the result of a ToString on given variable in a string.")]
     [AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public class ToString : Command
     {
-        [Tooltip("Target variable to get String of.")]
-        [VariableProperty()]
-        [SerializeField] [FormerlySerializedAs("variable")]
-protected Variable variable;
+        [Tooltip("Target variable to get a string ver of.")]
+        [SerializeField] protected VariableReference _targetVariable;
 
-        [Tooltip("Variable to store the result of ToString")]
-        [VariableProperty(typeof(StringVariable))]
-        [SerializeField] [FormerlySerializedAs("outValue")]
-protected StringVariable outValue;
+        [Tooltip("Where the string ver gets stored.")]
+        [SerializeField] [ContentTypeConstraint(typeof(string))]
+        protected VariableReference _outValue;
 
-        //[Tooltip("Optional formatting string given to ToString")]
-        //[SerializeField] protected StringData format;
+        [Tooltip("Optional formatting (especially useful for numerics).")]
+        [SerializeField] protected StringData _format;
 
         public override void OnEnter()
         {
-            if (variable != null && outValue != null)
+            ValidateInputs(out bool success);
+            if (!success)
             {
-                outValue.Value = variable.ToString();
+                Continue();
+                return;
             }
+
+            string targVal = DecideTargValStr();
+            _outValue.SetValue(targVal);
 
             Continue();
         }
 
-        public override string GetSummary()
+        private void ValidateInputs(out bool success)
         {
-            if (variable == null)
+            success = false;
+            bool validVarInputs = _targetVariable.Variable != null && _outValue.Variable != null;
+            if (!validVarInputs)
             {
-                return "Error: Variable not selected";
+                string warningMessage = $"ToString Command requires both a target" +
+                    $"variable and an output variable to be set. Target variable: " +
+                    $"{_targetVariable.Variable?.Key ?? "null"},\nOutput variable: " +
+                    $"{_outValue.Variable?.Key ?? "null"}";
+                Debug.LogWarning(warningMessage);
+                Continue();
+                return;
+            }
+            success = true;
+        }
+
+        private string DecideTargValStr()
+        {
+            var realTargVar = _targetVariable.Variable;
+            var targVal = realTargVar.BoxedValue;
+            string result;
+
+            bool shouldFormat = _format != null && !string.IsNullOrEmpty(_format.Value);
+            if (shouldFormat)
+            {
+                result = targVal != null ? 
+                    string.Format("{0:" + _format.Value + "}", realTargVar.BoxedValue) : 
+                    "null";
+            }
+            else
+            {
+                result = targVal != null ?
+                            targVal.ToString() :
+                            "null";
             }
 
-            if (outValue == null)
+            return result;
+        }
+
+        public override string GetSummary()
+        {
+            if (_targetVariable.Variable == null)
+            {
+                return "Error: Target Variable not selected";
+            }
+
+            if (_outValue.Variable == null)
             {
                 return "Error: outValue not set";
             }
 
-            return outValue.Key + " = " + variable.Key + ".ToString";
+            string result = $"{_targetVariable.VarKey}.ToString into {_outValue.VarKey}";
+            return result;
         }
 
         public override bool HasReference(IVariable variable)
         {
-            return ReferenceEquals(variable, this.variable) || ReferenceEquals(outValue, variable);
+            return ReferenceEquals(variable, this._targetVariable.Variable) ||
+                ReferenceEquals(_outValue.Variable, variable);
         }
 
         public override Color GetButtonColor()
         {
-            return new Color32(253, 253, 150, 255);
+            return CommandColors.Variables;
         }
+
+        #region Backwards Compatibility
+        public override void ApplyBackwardsCompatibility()
+        {
+            base.ApplyBackwardsCompatibility();
+            if (_oldVariable != null)
+            {
+                _targetVariable.Variable = _oldVariable;
+            }
+            if (_oldOutValue != null)
+            {
+                _outValue.Variable = _oldOutValue;
+            }
+
+            _oldVariable = null;
+            _oldOutValue = null;
+        }
+
+        [SerializeField]
+        [FormerlySerializedAs("variable")]
+        protected Variable _oldVariable;
+
+        [SerializeField]
+        [FormerlySerializedAs("outValue")]
+        protected StringVariable _oldOutValue;
+        #endregion
     }
 }

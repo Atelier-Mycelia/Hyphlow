@@ -37,28 +37,28 @@ namespace AtMycelia.Hyphlow
             switch (function)
             {
                 case Function.Rad2Deg:
-                    outValue.Value = inValue.Value * Mathf.Rad2Deg;
+                    _outValue.Value = _inValue.Value * Mathf.Rad2Deg;
                     break;
                 case Function.Deg2Rad:
-                    outValue.Value = inValue.Value * Mathf.Deg2Rad;
+                    _outValue.Value = _inValue.Value * Mathf.Deg2Rad;
                     break;
                 case Function.ACos:
-                    outValue.Value = Mathf.Acos(inValue.Value);
+                    _outValue.Value = Mathf.Acos(_inValue.Value);
                     break;
                 case Function.ASin:
-                    outValue.Value = Mathf.Asin(inValue.Value);
+                    _outValue.Value = Mathf.Asin(_inValue.Value);
                     break;
                 case Function.ATan:
-                    outValue.Value = Mathf.Atan(inValue.Value);
+                    _outValue.Value = Mathf.Atan(_inValue.Value);
                     break;
                 case Function.Cos:
-                    outValue.Value = Mathf.Cos(inValue.Value);
+                    _outValue.Value = Mathf.Cos(_inValue.Value);
                     break;
                 case Function.Sin:
-                    outValue.Value = Mathf.Sin(inValue.Value);
+                    _outValue.Value = Mathf.Sin(_inValue.Value);
                     break;
                 case Function.Tan:
-                    outValue.Value = Mathf.Tan(inValue.Value);
+                    _outValue.Value = Mathf.Tan(_inValue.Value);
                     break;
                 default:
                     break;

@@ -1,0 +1,38 @@
+.tabRoot
+{
+    height: 50px;
+}
+
+.tabIcon
+{
+    background-image: none;
+}
+
+.flowchart-defaults-tab {
+    border-color: rgb(30, 30, 30);
+    border-width: 1px;
+    font-size: 20px;
+    transition-property: background-color;
+    transition-duration: 0.2s;
+    margin: 5px 0 5px 0;
+    color: rgb(222, 222, 222);
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    background-image: none
+    
+}
+
+.flowchart-defaults-tab:hover {
+    background-color: rgb(70, 70, 70);
+}
+
+.flowchart-defaults-tab:active {
+    background-color: rgb(50, 50, 50);
+}
+
+.flowchart-defaults-tab.selected {
+    background-color: rgb(80, 120, 180);
+    border-color: rgb(100, 140, 200);
+}
