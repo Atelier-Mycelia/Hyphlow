@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public virtual void Refresh()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             EnsureVisualsAreReady();
             ApplyVarFieldsToOurControls();
             RowRoot?.MarkDirtyRepaint();
@@ -37,11 +37,11 @@ namespace AtMycelia.Hyphlow.EditorExt
                 // that.
                 ScopeField?.SetEnabled(false);
             }
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
         #region Subscriptions
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             ToggleButtonClickSubs(on);
             ToggleValueChangeSubs(on);
@@ -249,7 +249,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public virtual void Reset()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             Hide();
             NullOutVars();
         }

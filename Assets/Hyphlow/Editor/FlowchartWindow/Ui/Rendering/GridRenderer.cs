@@ -37,10 +37,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             style.width = Length.Percent(100);
             style.height = Length.Percent(100);
 
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -105,7 +105,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             _isDisposed = true;
 
-            ToggleSubs(false);
+            SetSubs(false);
         }
 
         private void OnGenerateVisualContent(MeshGenerationContext mgc)

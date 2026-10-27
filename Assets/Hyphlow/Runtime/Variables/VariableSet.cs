@@ -314,8 +314,8 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnEnable()
         {
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
             _varManager.VarOwner = this;
 #if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
@@ -328,7 +328,7 @@ namespace AtMycelia.Hyphlow
             VarSetSignals.VsaEnabled(this);
         }
 
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             if (on)
             {
@@ -345,7 +345,7 @@ namespace AtMycelia.Hyphlow
                 _varManager.PreVariableRemoved -= OnPreVarRemoved;
             }
 
-            EditorToggleSubs(on);
+            EditorSetSubs(on);
         }
 
         private void OnPostVarAdded(IVariable variable)
@@ -368,7 +368,7 @@ namespace AtMycelia.Hyphlow
             VarSetSignals.PreVariableRemoved(this, variable);
         }
 
-        protected virtual void EditorToggleSubs(bool on)
+        protected virtual void EditorSetSubs(bool on)
         {
 #if UNITY_EDITOR
             if (on)
@@ -449,7 +449,7 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             VarSetSignals.VsaDisabled(this);
         }
 

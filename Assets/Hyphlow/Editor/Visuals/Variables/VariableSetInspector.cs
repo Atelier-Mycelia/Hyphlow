@@ -15,8 +15,8 @@ namespace AtMycelia.Hyphlow.EditorExt
             var target = (VariableSet)this.target;
             target.Refresh(); // Ensure variable ownership is properly asserted
             PrepGUI();
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
         }
 
         protected virtual void PrepGUI()
@@ -99,7 +99,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
         protected VariableRowFactory _rowFactory = new VariableRowFactory();
 
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             var source = (VariableSet)target;
             if (on)
@@ -160,7 +160,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             _manager = null;
             _inspectorRoot = null;
             _rootElement = null;
-            ToggleSubs(false);
+            SetSubs(false);
         }
             }
         }

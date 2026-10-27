@@ -13,8 +13,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         static FlowchartVariableManagerInitializer()
         {
             DelayedInitializeFlowcharts();
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
         }
 
         private static void DelayedInitializeFlowcharts()
@@ -27,7 +27,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             DelayedInitializeFlowcharts();//
         }
 
-        private static void ToggleSubs(bool on)
+        private static void SetSubs(bool on)
         {
             if (on)
             {

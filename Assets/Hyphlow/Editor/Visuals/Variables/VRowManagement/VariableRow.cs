@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual void Init(IVariable toRepresent, IRowVisualHandler visHandler)
         {
             _isDisposed = false;
-            ToggleSubs(false); 
+            SetSubs(false); 
             // ^In case we're reusing. Best unsub from the prev vis handler we were working with, so...
 
             _currentVariable = toRepresent;
@@ -28,13 +28,13 @@ namespace AtMycelia.Hyphlow.EditorExt
                 VisualHandler.Refresh();
             }
 
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
         protected bool _isDisposed;
         protected IVariable _currentVariable;
 
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         { 
             if (VisualHandler == null)
             {
@@ -94,7 +94,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            ToggleSubs(false);
+            SetSubs(false);
             Clear();
             RootElement?.RemoveFromHierarchy();
             _currentVariable = null;

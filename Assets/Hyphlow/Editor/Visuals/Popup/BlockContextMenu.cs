@@ -24,7 +24,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             Add(root);
 
             RegisterControls();
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
         private void RegisterControls()
@@ -36,7 +36,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private Button _copyButton, _cutButton, _deleteButton;
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (_copyButton == null || _cutButton == null || _deleteButton == null)
             {
@@ -80,7 +80,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public void Dispose()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             _copyButton = null;
             _cutButton = null;
             _deleteButton = null;

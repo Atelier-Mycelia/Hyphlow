@@ -24,7 +24,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             _isDisposed = false;
 
             EnsurePopupsExist();
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
         private FlowchartWindow _owner;
@@ -47,7 +47,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private FcEmptySpacePopupWindow _emptySpacePopup;
         private BlockContextMenu _blockPopup;
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -341,7 +341,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             _isDisposed = true;
-            ToggleSubs(false);
+            SetSubs(false);
 
             _emptySpacePopup?.Dispose();
             _emptySpacePopup = null;

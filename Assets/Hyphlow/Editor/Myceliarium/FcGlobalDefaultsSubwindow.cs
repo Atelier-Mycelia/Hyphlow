@@ -37,6 +37,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private Slider _stepPauseField;
         private ObjectField _configAssetField;
 
+        protected override void ConfigureVisualElements()
+		{
+			// No need for further config
+		}
+        
         public override void Init()
         {
             base.Init();

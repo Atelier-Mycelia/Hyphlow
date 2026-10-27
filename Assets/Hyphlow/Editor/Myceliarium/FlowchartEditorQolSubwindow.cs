@@ -15,12 +15,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     /// </summary>
     public sealed class FlowchartEditorQolSubwindow : ControlPanelSubwindow
     {
-        public override string PathToUxml => "Editor/Uxml/Myceliarium/FlowchartEditorQolSubmenu";
-
-        // UI elements
-        private TextField _newAssetNameField;
-        private Button _createButton;
-        private ListView _listView;
+        public override string PathToUxml =>
+            "Editor/Uxml/Myceliarium/FlowchartEditorQolSubmenu";
 
         private VisualTreeAsset _itemTemplate;
         private static readonly string _itemTemplatePath =
@@ -47,8 +43,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             LoadItemTemplate();
             InitListView();
-            ToggleSubs(true);
+            SetSubs(true);
         }
+
+        private TextField _newAssetNameField;
+        private Button _createButton;
+        private ListView _listView;
+
+		protected override void ConfigureVisualElements()
+		{
+			// None needed atm
+		}
 
         private void LoadItemTemplate()
         {
@@ -95,7 +100,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private void WireUpAssetRowCallbacks(QolAssetRow row)
         {
-            // The stuff we can't put in ToggleSubs due to needing the row
+            // The stuff we can't put in SetSubs due to needing the row
             // reference for the callbacks.
             var nameField = row.NameField;
 
@@ -142,7 +147,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _listView.RefreshItems();
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -205,7 +210,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         public override void Dispose()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             base.Dispose();
         }
 

@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
     {
         private readonly List<IFlowchartWindowModule> _modules = new List<IFlowchartWindowModule>();
         private readonly Dictionary<Type, IList> _responderBuckets = new Dictionary<Type, IList>();
-        public abstract void ToggleSubs(bool on);
+        public abstract void SetSubs(bool on);
 
 
         public virtual void AddModule(object module)

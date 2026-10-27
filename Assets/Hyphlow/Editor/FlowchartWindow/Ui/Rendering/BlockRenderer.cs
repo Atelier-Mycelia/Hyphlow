@@ -53,7 +53,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -78,8 +78,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         {
             _owner = window;
             _initialRefreshPending = true;
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
             TryRefreshAfterLayout();
         }
 
@@ -517,7 +517,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 return;
             }
-            ToggleSubs(false);
+            SetSubs(false);
             _isDisposed = true;
             ClearAll();
             UnregisterCallback<AttachToPanelEvent>(OnAttachedToPanel);

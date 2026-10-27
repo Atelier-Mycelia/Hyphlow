@@ -19,13 +19,13 @@ namespace AtMycelia.Hyphlow
         [InitializeOnLoadMethod]
         private static void InitializeRegistry()
         {
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
 
             InitializeDelayed();
         }
 
-        private static void ToggleSubs(bool on)
+        private static void SetSubs(bool on)
         {
             ToggleEditorSubs(on);
             ToggleRuntimeSubs(on);
