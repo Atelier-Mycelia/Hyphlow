@@ -3,10 +3,10 @@ using UnityEngine.UIElements;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
-    public class HyphlowTab : ControlPanelTab
+    public class HyphlowRootTab : ControlPanelTab
     {
         public override string DisplayName => "Hyphlow";
-        public override string PathToUxml => "Editor/Uxml/Myceliarium/HyphlowTab";
+        public override string PathToUxml => "Editor/Uxml/Myceliarium/HyphlowRootTab";
 
         protected override void RegisterMainClickable()
         {
@@ -22,7 +22,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         }
 
         protected override StyleLength OverrideSubtabHeight { get; set; } = 50f;
-        //
     }
 
 }

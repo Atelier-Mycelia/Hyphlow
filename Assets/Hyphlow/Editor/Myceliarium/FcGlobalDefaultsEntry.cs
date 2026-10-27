@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public sealed class FcGlobalDefaultsEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
         #region Display Configuration
-        public override string MainDisplayName => "Flowchart Defaults";
+        public override string SortingName => "Flowchart Defaults";
 
         #endregion
 
@@ -56,35 +56,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _subwindow.Init();
         }
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
             if (_subwindow == null)
             {
                 return;
             }
 
-            base.ToggleSubs(on);
+            base.SetSubs(on);
         }
 
-        public override void Apply(string stringifiedState, out bool success)
-        {
-            try
-            {
-                JsonUtility.FromJsonOverwrite(stringifiedState, _workingState);
-                _subwindow.Unbind();
-                _subwindow.Bind();
-                success = true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to apply stringified state to " +
-                    $"{nameof(FcGlobalDefaultsEntry)}: {ex.Message}");
-                success = false;
-            }
-        }
 
-        public override string StringifiedState =>
-            JsonUtility.ToJson(_workingState, prettyPrint: true);
     }
 
 }

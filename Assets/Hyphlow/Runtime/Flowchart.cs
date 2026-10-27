@@ -224,12 +224,12 @@ namespace AtMycelia.Hyphlow
             }
 
             Refresh();
-            ToggleSubs(true);
+            SetSubs(true);
 
             FlowchartSignals.FlowchartEnabled(this);
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (_varManager == null)
             {
@@ -406,7 +406,7 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             StopAllBlocks();
             StopAllCoroutines();
             FlowchartSignals.FlowchartDisabled(this);

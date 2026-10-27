@@ -53,15 +53,15 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
             CaptureExistingFlowcharts();
             _isInitialized = true;
         }
 
         private static bool _isInitialized;
 
-        private static void ToggleSubs(bool on)
+        private static void SetSubs(bool on)
         {
             if (on)
             {

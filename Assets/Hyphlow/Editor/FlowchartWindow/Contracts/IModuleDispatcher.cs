@@ -5,7 +5,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         void AddModule(object module);
         void RemoveModule(object module);
         void ClearModules();
-        void ToggleSubs(bool on);
+        void SetSubs(bool on);
     }
 
     internal interface IModuleDispatcher<T> : IModuleDispatcher

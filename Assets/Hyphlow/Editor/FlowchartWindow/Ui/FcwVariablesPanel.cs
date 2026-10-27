@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             BuildManager(_window.Flowchart);
-            ToggleSubs(true);
+            SetSubs(true);
             _panelRoot.BringToFront();
         }
 
@@ -89,7 +89,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         private readonly VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
         private readonly VariableRowFactory _rowFactory = new VariableRowFactory();
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -126,7 +126,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             _isDisposed = true;
-            ToggleSubs(false);
+            SetSubs(false);
 
             _manager?.Dispose();
             _manager = null;

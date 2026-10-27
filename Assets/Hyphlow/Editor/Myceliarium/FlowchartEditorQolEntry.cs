@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     /// </summary>
     public sealed class FlowchartEditorQolEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
-        public override string MainDisplayName => "Editor QoL";
+        public override string SortingName => "Editor QoL";
         public override bool IsTopLevel => false;
 
         internal IReadOnlyList<FlowchartEditorQol> WorkingState => _workingState;
@@ -77,9 +77,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _subwindow.Init();
         }
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
-            base.ToggleSubs(on);
+            base.SetSubs(on);
 
             if (_subwindow is not FlowchartEditorQolSubwindow qolSubwindow)
             {
@@ -92,7 +92,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 qolSubwindow.RenameRequested += OnRenameRequested;
                 qolSubwindow.DeleteRequested += OnDeleteRequested;
                 qolSubwindow.SelectRequested += OnSelectRequested;
-                ControlPanelSignals.SaveCompleted += OnSaveCompleted;
             }
             else
             {
@@ -100,7 +99,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 qolSubwindow.RenameRequested -= OnRenameRequested;
                 qolSubwindow.DeleteRequested -= OnDeleteRequested;
                 qolSubwindow.SelectRequested -= OnSelectRequested;
-                ControlPanelSignals.SaveCompleted -= OnSaveCompleted;
             }
         }
 
@@ -200,7 +198,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             EditorGUIUtility.PingObject(real);
         }
 
-        private void OnSaveCompleted(IControlPanelEntry completedFor)
+        protected override void OnSaveCompleted(IControlPanelEntry completedFor)
         {
             bool ignoreIt = completedFor != this;
             if (ignoreIt)
@@ -208,12 +206,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
+            base.OnSaveCompleted(completedFor);
             Refresh();
         }
 
-        public override void OnSelected()
+        public override void Select()
         {
-            base.OnSelected();
+            base.Select();
 
             LoadWorkingStateFromRealAssets();
 
@@ -222,49 +221,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 qolSubwindow.Refresh();
             }
         }
-
-        /// <summary>
-        /// JSON representation of working-state.
-        /// </summary>
-        public override string StringifiedState =>
-            EditorJsonUtility.ToJson(_workingState, prettyPrint: true);
-
-        /// <summary>
-        /// Applies JSON to working-state, then refreshes the subwindow.
-        /// </summary>
-        public override void Apply(string stringifiedState, out bool success)
-        {
-            try
-            {
-                var qolsExtracted = JsonUtility.FromJson<List<FlowchartEditorQol>>(stringifiedState);
-
-                _workingState.Clear();
-                _workingToRealMap.Clear();
-
-                if (qolsExtracted != null)
-                {
-                    _workingState.AddRange(qolsExtracted);
-                }
-
-                for (int i = 0; i < _workingState.Count; i++)
-                {
-                    FlowchartEditorQol wState = _workingState[i];
-                    if (_realAssets.TryGetValue(wState.name, out FlowchartEditorQol real))
-                    {
-                        _workingToRealMap[wState] = real;
-                    }
-                }
-
-                RefreshSubwindow();
-                success = true;
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Failed to apply QoL working-state: {ex.Message}");
-                success = false;
-            }
-        }
-
+        
         public override void Dispose()
         {
             _workingState.Clear();

@@ -40,7 +40,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
         public Flowchart Flowchart => _fcContext?.Flowchart;
         private FlowchartContext _fcContext;
 
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             _eventBinder.Toggle(on);
         }
@@ -203,7 +203,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             _s = this;
                 
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
         public void CreateGUI()
@@ -469,7 +469,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 _s = null;
             }
-            ToggleSubs(false);
+            SetSubs(false);
 
             FcwTeardownRequest request = new FcwTeardownRequest(_moduleHost, _fcContext, _graphicsRenderer, 
                 _viewportManager, _inputDetector, _contextMenuManager,

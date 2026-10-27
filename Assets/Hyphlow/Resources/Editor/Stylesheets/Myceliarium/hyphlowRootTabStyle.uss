@@ -1,17 +1,22 @@
 :root
 {
-    --hyphlow-tab-icon: resource("Editor/Icons/mianeCeliaMugshot_aiGen");
+    --hyphlow-tab-icon: resource("Editor/Icons/mianeRootTabIcon_aiGen");
 }
 
 .tabIcon
 {
     background-image: var(--hyphlow-tab-icon);
-    margin-left: 3px;
+    -unity-background-scale-mode: scale-to-fit;
+
+    background-position-y: bottom; 
+    /* ^Prevents empty space below the icon that wasn't in the source image. */
 }
 
 .tabIconHolder
 {
-    padding-bottom: 1px;
+    padding: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 3px;
+    width: 60px;
 }
 
 .hyphlow-tab {

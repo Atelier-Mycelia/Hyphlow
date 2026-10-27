@@ -17,12 +17,12 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
             _owner = window;
             _isDisposed = false;
-            ToggleSubs(true);
+            SetSubs(true);
         }
         private FlowchartWindow _owner;
         private bool _isDisposed;
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -66,7 +66,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 return;
             }
-            ToggleSubs(false);
+            SetSubs(false);
             _isDisposed = true;
         }
 

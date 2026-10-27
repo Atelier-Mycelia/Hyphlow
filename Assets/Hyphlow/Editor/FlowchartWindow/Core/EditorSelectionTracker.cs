@@ -76,8 +76,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             DestroyLegacyStateInstances();
             AttemptInitialHydration();
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
         }
 
         private static void SelectFlowchartBasedOnCache()
@@ -305,7 +305,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        private static void ToggleSubs(bool on)
+        private static void SetSubs(bool on)
         {
             if (on)
             {
@@ -486,7 +486,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             _isCleaningUp = true;
 
-            ToggleSubs(false);
+            SetSubs(false);
         }
 
         private static bool _isCleaningUp;

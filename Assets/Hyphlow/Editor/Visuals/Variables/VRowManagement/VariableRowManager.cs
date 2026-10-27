@@ -76,9 +76,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             PrepEventListeners();
             void PrepEventListeners()
             {
-                ToggleSubs(false);
+                SetSubs(false);
                 _variableSource = initArgs.VariableSource;
-                ToggleSubs(true);
+                SetSubs(true);
             }
 
             _varManagerComponent = _variableSource as VariableManagerComponent;
@@ -102,7 +102,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         public VisualElement Root { get; protected set; }
 
         #region Event Wiring / Visual Init
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             if (_variableSource == null || _listView == null)
             {
@@ -293,9 +293,9 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return true;
             }
 
-            ToggleSubs(false);
+            SetSubs(false);
             _variableSource = newSource;
-            ToggleSubs(true);
+            SetSubs(true);
             Refresh();
             return HasLiveVariableSourceReference();
         }
@@ -528,7 +528,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             EditorApplication.update -= TryExecuteScheduledRefresh;
             _refreshScheduled = false;
 
-            ToggleSubs(false);
+            SetSubs(false);
             ReleaseRowsFromList();
 
             _listView?.Dispose();

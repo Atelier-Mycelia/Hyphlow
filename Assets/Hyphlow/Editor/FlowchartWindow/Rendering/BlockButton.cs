@@ -92,7 +92,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             if (enableSubscriptions)
             {
-                ToggleSubs(true);
+                SetSubs(true);
             }
         }
 
@@ -355,7 +355,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             _clickable.EnableInClassList(SelectedClass, isSelected);
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -435,7 +435,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void Dispose()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             _templateInstance?.RemoveFromHierarchy();
             RemoveFromHierarchy();
             _clickable = null;
