@@ -14,7 +14,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             var subsToAdd = new List<ControlPanelEntry>
             {
                 new FcGlobalDefaultsEntry(),
-                new FlowchartEditorQolEntry()
+                new FlowchartEditorQolEntry(),
+                new VariableSetsEntry()
             };
             return subsToAdd;
             
