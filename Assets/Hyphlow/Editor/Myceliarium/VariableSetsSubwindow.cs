@@ -12,8 +12,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 {
     /// <summary>
     /// Master-detail view for Variable Sets: a searchable list on the left, and the
-    /// selected set's own inspector on the right. Asset operations are raised as
-    /// requests for the entry to carry out.
+    /// selected set's own inspector on the right. Nothing here changes the project. Edits
+    /// land on the records' detached copies, and everything else is raised as a request
+    /// for the entry to stage.
     /// </summary>
     public sealed class VariableSetsSubwindow : ControlPanelSubwindow
     {
@@ -35,8 +36,15 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         internal event Action<VariableSetRecord, string> RenameRequested = delegate { };
         internal event Action<VariableSetRecord> DuplicateRequested = delegate { };
         internal event Action<VariableSetRecord> DeleteRequested = delegate { };
-        internal event Action<VariableSetRecord> MoveRequested = delegate { };
+        internal event Action<VariableSetRecord> KeepRequested = delegate { };
+        internal event Action<VariableSetRecord> MoveToggled = delegate { };
         internal event Action MoveAllRequested = delegate { };
+
+        /// <summary>
+        /// Raised when the selected set's edits have made it newly different from (or the
+        /// same as) what's on disk.
+        /// </summary>
+        internal event Action StateMayHaveChanged = delegate { };
 
         protected override void RegisterVisualElements()
         {
@@ -61,9 +69,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _showInProjectButton = Root.Q<Button>("ShowInProjectButton");
             _duplicateButton = Root.Q<Button>("DuplicateButton");
             _deleteButton = Root.Q<Button>("DeleteButton");
-            _locationNotice = Root.Q("LocationNotice");
-            _locationNoticeText = Root.Q<UitkLabel>("LocationNoticeText");
-            _moveButton = Root.Q<Button>("MoveButton");
+            _notice = Root.Q("Notice");
+            _noticeText = Root.Q<UitkLabel>("NoticeText");
+            _noticeButton = Root.Q<Button>("NoticeButton");
             _inspectorHolder = Root.Q("InspectorHolder");
 
             _itemTemplate = Resources.Load<VisualTreeAsset>(_itemTemplatePath);
@@ -94,9 +102,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private Button _showInProjectButton;
         private Button _duplicateButton;
         private Button _deleteButton;
-        private VisualElement _locationNotice;
-        private UitkLabel _locationNoticeText;
-        private Button _moveButton;
+        private VisualElement _notice;
+        private UitkLabel _noticeText;
+        private Button _noticeButton;
         private VisualElement _inspectorHolder;
 
         private VisualTreeAsset _itemTemplate;
@@ -110,12 +118,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _listView.fixedItemHeight = ItemHeight;
             _listView.virtualizationMethod = CollectionVirtualizationMethod.FixedHeight;
 
-            _nameField.isDelayed = true; // Renaming touches the disk, so not on every keystroke
+            _nameField.isDelayed = true; // So it's a rename when they're done typing, not a dozen
 
-            string folderTooltip = $"New sets are saved to {VariableSetAssetOps.VsaFolder}";
-            _createButton.tooltip = folderTooltip;
-            _moveButton.tooltip = _moveAllButton.tooltip =
-                $"Moves to {VariableSetAssetOps.VsaFolder}. References to the set are kept.";
+            _createButton.tooltip = $"New sets are saved to {VariableSetAssetOps.VsaFolder}";
+            _moveAllButton.tooltip =
+                $"Moves them to {VariableSetAssetOps.VsaFolder} when you save. References to them are kept.";
             _showInProjectButton.tooltip = "Highlights this set in the Project window. " +
                 "(Double-clicking it in the list does the same.)";
         }
@@ -126,8 +133,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         {
             VisualElement root = _itemTemplate.CloneTree();
             root.style.flexGrow = 1; // Else the TemplateContainer shrinks to fit, defeating the row's height: 100%
-            var row = new ItemRow(root.Q<UitkLabel>("NameLabel"), root.Q<UitkLabel>("InfoLabel"),
-                root.Q<UitkLabel>("Badge"));
+            var row = new ItemRow(root.Q("ItemRoot"), root.Q<UitkLabel>("NameLabel"),
+                root.Q<UitkLabel>("InfoLabel"), root.Q<UitkLabel>("Badge"));
             root.userData = row;
             return root;
         }
@@ -142,9 +149,12 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             VariableSetRecord record = _visibleRecords[index];
             row.Name.text = record.Name;
             row.Info.text = $"{VariableCountPhrase(record.VariableCount)}  ·  {FolderPhrase(record)}";
-            element.tooltip = record.Path;
-            ApplyBadge(row.Badge, record.Location);
+            row.Root.EnableInClassList(DeletedItemClass, record.PendingDelete);
+            element.tooltip = record.IsNew ? "Not saved yet" : record.Path;
+            ApplyBadge(row.Badge, record);
         }
+
+        private const string DeletedItemClass = "vsets-item--deleted";
 
         private static string VariableCountPhrase(int count)
         {
@@ -153,52 +163,92 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private static string FolderPhrase(VariableSetRecord record)
         {
-            string folder = VariableSetAssetOps.FolderOf(record.Path);
-            switch (record.Location)
+            string folder = record.PendingMove ? VariableSetAssetOps.VsaFolder : record.Folder;
+            string phrase;
+
+            if (folder == VariableSetAssetOps.VsaFolder)
             {
-                case VariableSetLocation.VsaFolder:
-                    return "VSA folder";
-                case VariableSetLocation.VsaSubfolder:
-                    return "VSA/" + folder.Substring(VariableSetAssetOps.VsaFolder.Length + 1);
-                default:
-                    return folder.StartsWith("Assets/", StringComparison.Ordinal) ?
-                        folder.Substring("Assets/".Length) :
-                        folder;
+                phrase = "VSA folder";
             }
+            else if (folder.StartsWith(VariableSetAssetOps.VsaFolder + "/", StringComparison.Ordinal))
+            {
+                phrase = "VSA/" + folder.Substring(VariableSetAssetOps.VsaFolder.Length + 1);
+            }
+            else
+            {
+                phrase = folder.StartsWith("Assets/", StringComparison.Ordinal) ?
+                    folder.Substring("Assets/".Length) :
+                    folder;
+            }
+
+            return record.PendingMove ? "→ " + phrase : phrase;
         }
 
         /// <summary>
-        /// Only the exceptions get badges, so they stand out instead of every row
-        /// saying the same thing. The text matters as much as the color, for those who
-        /// can't easily tell the colors apart.
+        /// What's staged takes priority over where the set is, and the rest get no badge,
+        /// so the exceptions stand out instead of every row saying the same thing. The text
+        /// matters as much as the color, for those who can't easily tell the colors apart.
         /// </summary>
-        private static void ApplyBadge(UitkLabel badge, VariableSetLocation location)
+        private static void ApplyBadge(UitkLabel badge, VariableSetRecord record)
         {
+            badge.RemoveFromClassList(BadgePendingClass);
+            badge.RemoveFromClassList(BadgeDeletingClass);
             badge.RemoveFromClassList(BadgeOutsideClass);
             badge.RemoveFromClassList(BadgeReadOnlyClass);
 
-            switch (location)
+            string text = string.Empty;
+            string tooltip = string.Empty;
+            string cssClass = null;
+
+            if (record.PendingDelete)
             {
-                case VariableSetLocation.Elsewhere:
-                    badge.text = "Outside";
-                    badge.tooltip = $"Not in {VariableSetAssetOps.VsaFolderDisplay}. " +
-                        "Select it to move it there.";
-                    badge.AddToClassList(BadgeOutsideClass);
-                    break;
-                case VariableSetLocation.ReadOnly:
-                    badge.text = "Read-only";
-                    badge.tooltip = "Inside a package. Duplicate it to get an editable copy.";
-                    badge.AddToClassList(BadgeReadOnlyClass);
-                    break;
-                default:
-                    badge.text = string.Empty;
-                    badge.tooltip = string.Empty;
-                    break;
+                text = "Deleting";
+                tooltip = "Moves to the trash when you save.";
+                cssClass = BadgeDeletingClass;
+            }
+            else if (record.IsNew)
+            {
+                text = "New";
+                tooltip = "Created when you save.";
+                cssClass = BadgePendingClass;
+            }
+            else if (record.PendingMove && record.Location == VariableSetLocation.Elsewhere)
+            {
+                text = "Moving";
+                tooltip = $"Moves to {VariableSetAssetOps.VsaFolderDisplay} when you save.";
+                cssClass = BadgePendingClass;
+            }
+            else if (record.IsRenamed || record.StateChanged)
+            {
+                text = "Edited";
+                tooltip = "Has changes that are saved when you save.";
+                cssClass = BadgePendingClass;
+            }
+            else if (record.Location == VariableSetLocation.Elsewhere)
+            {
+                text = "Outside";
+                tooltip = $"Not in {VariableSetAssetOps.VsaFolderDisplay}. Select it to move it there.";
+                cssClass = BadgeOutsideClass;
+            }
+            else if (record.Location == VariableSetLocation.ReadOnly)
+            {
+                text = "Read-only";
+                tooltip = "Inside a package. Duplicate it to get an editable copy.";
+                cssClass = BadgeReadOnlyClass;
             }
 
-            badge.style.display = string.IsNullOrEmpty(badge.text) ? DisplayStyle.None : DisplayStyle.Flex;
+            badge.text = text;
+            badge.tooltip = tooltip;
+            if (cssClass != null)
+            {
+                badge.AddToClassList(cssClass);
+            }
+
+            badge.style.display = text.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
 
+        private const string BadgePendingClass = "vsets-badge--pending";
+        private const string BadgeDeletingClass = "vsets-badge--deleting";
         private const string BadgeOutsideClass = "vsets-badge--outside";
         private const string BadgeReadOnlyClass = "vsets-badge--readonly";
 
@@ -217,10 +267,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 _showInProjectButton.clicked += OnShowInProjectClicked;
                 _duplicateButton.clicked += OnDuplicateClicked;
                 _deleteButton.clicked += OnDeleteClicked;
-                _moveButton.clicked += OnMoveClicked;
+                _noticeButton.clicked += OnNoticeButtonClicked;
                 _moveAllButton.clicked += OnMoveAllClicked;
                 RegisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
                 EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+
+                _pollItem?.Pause();
+                _pollItem = schedule.Execute(PollSelectedRecord).Every(PollIntervalMs);
             }
             else
             {
@@ -235,10 +288,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 _showInProjectButton.clicked -= OnShowInProjectClicked;
                 _duplicateButton.clicked -= OnDuplicateClicked;
                 _deleteButton.clicked -= OnDeleteClicked;
-                _moveButton.clicked -= OnMoveClicked;
+                _noticeButton.clicked -= OnNoticeButtonClicked;
                 _moveAllButton.clicked -= OnMoveAllClicked;
                 UnregisterCallback<DetachFromPanelEvent>(OnDetachedFromPanel);
                 EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+
+                _pollItem?.Pause();
+                _pollItem = null;
             }
         }
 
@@ -246,15 +302,21 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private void OnCreateClicked()
         {
             string name = _newSetNameField.value?.Trim();
-            if (VariableSetAssetOps.ValidateNameForCreate(name, _records) != null)
+            if (CreateNameError(name) != null)
             {
                 return; // The hint is already telling them why
             }
 
-            // Treated as a suggestion from here on, so a successful create's Refresh swaps
-            // in a fresh one, while a failed create leaves the name there to fix.
+            // Treated as a suggestion from here on, so the refresh that comes of a
+            // successful create swaps in a fresh one, while a failed create leaves the
+            // name there to fix.
             _lastSuggestedName = _newSetNameField.value;
             CreateRequested(name);
+        }
+
+        private string CreateNameError(string name)
+        {
+            return VariableSetAssetOps.ValidateName(name, _records, null, VariableSetAssetOps.VsaFolder);
         }
 
         private void OnNewSetNameChanged(ChangeEvent<string> evt)
@@ -265,13 +327,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private void RefreshCreateValidation()
         {
             string name = _newSetNameField.value?.Trim();
-            string error = VariableSetAssetOps.ValidateNameForCreate(name, _records);
+            string error = CreateNameError(name);
             bool isValid = error == null;
 
             _createButton.SetEnabled(isValid && !EditorApplication.isPlaying);
             _createHint.EnableInClassList(ErrorClass, !isValid);
             _createHint.text = isValid ?
-                $"Saved to {VariableSetAssetOps.VsaFolderDisplay}/{name}.asset" :
+                $"Created in {VariableSetAssetOps.VsaFolderDisplay} when you save." :
                 error;
         }
 
@@ -279,16 +341,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private void OnNewSetNameKeyDown(KeyDownEvent evt)
         {
-            if (IsSubmitKey(evt.keyCode))
+            if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
             {
                 OnCreateClicked();
                 evt.StopPropagation();
             }
-        }
-
-        private static bool IsSubmitKey(KeyCode key)
-        {
-            return key == KeyCode.Return || key == KeyCode.KeypadEnter;
         }
 
         /// <summary>
@@ -303,7 +360,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
-            _lastSuggestedName = VariableSetAssetOps.SuggestName(VariableSetAssetOps.DefaultName, _records);
+            _lastSuggestedName = VariableSetAssetOps.SuggestName(VariableSetAssetOps.DefaultName,
+                _records, VariableSetAssetOps.VsaFolder);
             _newSetNameField.SetValueWithoutNotify(_lastSuggestedName);
         }
 
@@ -327,13 +385,15 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 var record = _records[i];
                 bool matches = !hasSearch ||
                     record.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    record.Path.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+                    (record.Path?.IndexOf(search, StringComparison.OrdinalIgnoreCase) ?? -1) >= 0;
                 if (matches)
                 {
                     _visibleRecords.Add(record);
                 }
             }
 
+            // By their staged names, so a renamed or new set lands where it'll be once saved
+            _visibleRecords.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase));
             RefreshEmptyListState(hasSearch, search);
         }
 
@@ -354,7 +414,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 if (item is VariableSetRecord record)
                 {
-                    _selectedGuid = record.Guid;
+                    PollSelectedRecordNow(); // Last chance to catch what was edited in the previous one
+                    _selectedKey = record.Key;
                     _lastSelectedIndex = _listView.selectedIndex;
                     RefreshDetails();
                 }
@@ -362,9 +423,20 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
         }
 
-        // Tracked by GUID since records get rebuilt whenever the project changes
-        private string _selectedGuid;
+        // Tracked by key since the records get rebuilt whenever the project changes
+        private string _selectedKey;
         private int _lastSelectedIndex;
+
+        internal VariableSetRecord SelectedRecord => FindRecord(_selectedKey);
+
+        /// <summary>
+        /// For when the records get replaced, and the selection needs to point at the new
+        /// one. Takes effect on the next Refresh.
+        /// </summary>
+        internal void SelectKey(string key)
+        {
+            _selectedKey = key;
+        }
 
         private void OnItemsChosen(IEnumerable<object> chosen)
         {
@@ -373,17 +445,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private void RestoreSelection()
         {
-            bool selectionGone = FindRecord(_selectedGuid) == null;
+            bool selectionGone = FindRecord(_selectedKey) == null;
             if (selectionGone)
             {
                 // Lands on whatever took the old one's place, so deleting several in a
                 // row doesn't need a click in between.
-                _selectedGuid = _visibleRecords.Count > 0 ?
-                    _visibleRecords[Mathf.Clamp(_lastSelectedIndex, 0, _visibleRecords.Count - 1)].Guid :
+                _selectedKey = _visibleRecords.Count > 0 ?
+                    _visibleRecords[Mathf.Clamp(_lastSelectedIndex, 0, _visibleRecords.Count - 1)].Key :
                     null;
             }
 
-            int index = IndexOfVisible(_selectedGuid);
+            int index = IndexOfVisible(_selectedKey);
             if (index < 0)
             {
                 _listView.SetSelectionWithoutNotify(Array.Empty<int>());
@@ -401,16 +473,16 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private bool _scrollToSelection;
 
-        private VariableSetRecord FindRecord(string guid)
+        private VariableSetRecord FindRecord(string key)
         {
-            if (string.IsNullOrEmpty(guid))
+            if (string.IsNullOrEmpty(key))
             {
                 return null;
             }
 
             for (int i = 0; i < _records.Count; i++)
             {
-                if (_records[i].Guid == guid)
+                if (_records[i].Key == key)
                 {
                     return _records[i];
                 }
@@ -419,11 +491,11 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             return null;
         }
 
-        private int IndexOfVisible(string guid)
+        private int IndexOfVisible(string key)
         {
             for (int i = 0; i < _visibleRecords.Count; i++)
             {
-                if (_visibleRecords[i].Guid == guid)
+                if (_visibleRecords[i].Key == key)
                 {
                     return i;
                 }
@@ -434,24 +506,24 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private void RefreshSummary()
         {
-            int outsideCount = 0;
+            int movableCount = 0, unsavedCount = 0;
             for (int i = 0; i < _records.Count; i++)
             {
-                if (_records[i].Location == VariableSetLocation.Elsewhere)
-                {
-                    outsideCount++;
-                }
+                VariableSetRecord record = _records[i];
+                unsavedCount += record.IsDirty ? 1 : 0;
+
+                bool canBeMoved = !record.IsNew && !record.PendingDelete && !record.PendingMove &&
+                    record.Location == VariableSetLocation.Elsewhere;
+                movableCount += canBeMoved ? 1 : 0;
             }
 
             string total = _records.Count == 1 ? "1 set" : $"{_records.Count} sets";
-            _summaryLabel.text = outsideCount > 0 ?
-                $"{total}  ·  {outsideCount} outside the VSA folder" :
-                total;
+            _summaryLabel.text = unsavedCount > 0 ? $"{total}  ·  {unsavedCount} unsaved" : total;
 
-            _moveAllButton.style.display = outsideCount > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            _moveAllButton.text = outsideCount == 1 ?
+            _moveAllButton.style.display = movableCount > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            _moveAllButton.text = movableCount == 1 ?
                 "Move It to the VSA Folder" :
-                $"Move All {outsideCount} to the VSA Folder";
+                $"Move All {movableCount} to the VSA Folder";
         }
 
         private void OnMoveAllClicked()
@@ -461,9 +533,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         #endregion
 
         #region Details
-        private VariableSetRecord SelectedRecord => FindRecord(_selectedGuid);
-
-        private void RefreshDetails(bool forceRebuildInspector = false)
+        private void RefreshDetails()
         {
             VariableSetRecord record = SelectedRecord;
             bool hasSelection = record != null;
@@ -484,15 +554,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 HideNameError();
             }
 
-            _pathLabel.text = record.Path;
-            RefreshLocationNotice(record);
+            _pathLabel.text = record.IsNew ?
+                $"Will be created at {VariableSetAssetOps.PathIn(record.Folder, record.Name)}" :
+                record.Path;
+            RefreshNotice(record);
 
             // Rebuilding drops focus and scroll position, which would make editing a
-            // variable impossible: saving it changes the project, which leads here.
-            bool needsNewInspector = forceRebuildInspector || _inspectedSet != record.Asset;
-            if (needsNewInspector)
+            // variable impossible, so it's only done for a different set
+            VariableSet working = record.EnsureWorking();
+            if (_inspectedSet != working)
             {
-                RebuildEmbeddedInspector(record.Asset);
+                RebuildEmbeddedInspector(working);
             }
 
             RefreshEditability();
@@ -515,29 +587,78 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _nameError.style.display = DisplayStyle.Flex;
         }
 
-        private void RefreshLocationNotice(VariableSetRecord record)
+        /// <summary>
+        /// Says what's going to happen to the set (or what could), and offers the way to
+        /// take back what's staged, since there's no confirmation dialog to fall back on.
+        /// </summary>
+        private void RefreshNotice(VariableSetRecord record)
         {
-            string notice = null;
-            bool canMove = false;
+            string text = null, buttonText = null, noticeClass = null;
+            Action buttonAction = null;
+            VariableSetLocation location = record.Location;
 
-            switch (record.Location)
+            if (record.PendingDelete)
             {
-                case VariableSetLocation.Elsewhere:
-                    notice = $"This set is outside {VariableSetAssetOps.VsaFolderDisplay}. Moving it " +
-                        "there keeps your shared variables in one place, and anything that " +
-                        "uses this set keeps working.";
-                    canMove = true;
-                    break;
-                case VariableSetLocation.ReadOnly:
-                    notice = "This set is inside a package, so it can't be renamed, moved, deleted " +
-                        "or edited here. Duplicate it to get an editable copy in " +
-                        $"{VariableSetAssetOps.VsaFolderDisplay}.";
-                    break;
+                text = "This set moves to the trash when you save.";
+                buttonText = "Keep It";
+                buttonAction = () => KeepRequested(record);
+                noticeClass = NoticeDangerClass;
+            }
+            else if (record.IsNew)
+            {
+                text = "New set. It's created when you save.";
+                noticeClass = NoticeInfoClass;
+            }
+            else if (record.PendingMove && location == VariableSetLocation.Elsewhere)
+            {
+                text = $"This set moves to {VariableSetAssetOps.VsaFolderDisplay} when you save. " +
+                    "Anything that uses it keeps working.";
+                buttonText = "Undo Move";
+                buttonAction = () => MoveToggled(record);
+                noticeClass = NoticeInfoClass;
+            }
+            else if (location == VariableSetLocation.Elsewhere)
+            {
+                text = $"This set is outside {VariableSetAssetOps.VsaFolderDisplay}. Moving it " +
+                    "there keeps your shared variables in one place, and anything that " +
+                    "uses this set keeps working.";
+                buttonText = "Move to the VSA Folder";
+                buttonAction = () => MoveToggled(record);
+                noticeClass = NoticeWarningClass;
+            }
+            else if (location == VariableSetLocation.ReadOnly)
+            {
+                text = "This set is inside a package, so it can't be renamed, moved, deleted " +
+                    "or edited here. Duplicate it to get an editable copy in " +
+                    $"{VariableSetAssetOps.VsaFolderDisplay}.";
+                noticeClass = NoticeWarningClass;
             }
 
-            _locationNotice.style.display = notice != null ? DisplayStyle.Flex : DisplayStyle.None;
-            _locationNoticeText.text = notice ?? string.Empty;
-            _moveButton.style.display = canMove ? DisplayStyle.Flex : DisplayStyle.None;
+            _notice.RemoveFromClassList(NoticeInfoClass);
+            _notice.RemoveFromClassList(NoticeWarningClass);
+            _notice.RemoveFromClassList(NoticeDangerClass);
+            _notice.style.display = text != null ? DisplayStyle.Flex : DisplayStyle.None;
+            _noticeText.text = text ?? string.Empty;
+
+            if (noticeClass != null)
+            {
+                _notice.AddToClassList(noticeClass);
+            }
+
+            _noticeAction = buttonAction;
+            _noticeButton.text = buttonText ?? string.Empty;
+            _noticeButton.style.display = buttonAction != null ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        private Action _noticeAction;
+
+        private const string NoticeInfoClass = "vsets-notice--info";
+        private const string NoticeWarningClass = "vsets-notice--warning";
+        private const string NoticeDangerClass = "vsets-notice--danger";
+
+        private void OnNoticeButtonClicked()
+        {
+            _noticeAction?.Invoke();
         }
 
         private void RebuildEmbeddedInspector(VariableSet set)
@@ -562,7 +683,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private void DestroyEmbeddedInspector()
         {
-            SaveInspectedSetIfDirty();
             _inspectorHolder.Clear();
 
             if (_embeddedEditor != null)
@@ -575,16 +695,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         }
 
         /// <summary>
-        /// Some of the set's fields (the toggles, for one) only mark it dirty, which
-        /// would leave the change unsaved until the project is. Never done in Play Mode,
-        /// where that would make temporary values permanent.
+        /// The inspector is looking at the records' detached copies, so whoever is about to
+        /// get rid of those (the entry, when the records are replaced or deleted) has to
+        /// call this first. It's rebuilt on the next Refresh.
         /// </summary>
-        private void SaveInspectedSetIfDirty()
+        internal void ReleaseInspector()
         {
-            if (_inspectedSet != null && !EditorApplication.isPlaying)
-            {
-                AssetDatabase.SaveAssetIfDirty(_inspectedSet);
-            }
+            DestroyEmbeddedInspector();
         }
 
         private void OnNameCommitted(ChangeEvent<string> evt)
@@ -602,7 +719,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
-            string error = VariableSetAssetOps.ValidateName(newName, _records, record);
+            string error = VariableSetAssetOps.ValidateName(newName, _records, record, record.Folder);
             if (error != null)
             {
                 ShowNameError(error + "  (Esc to undo.)");
@@ -610,7 +727,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
 
             HideNameError();
-            SaveInspectedSetIfDirty(); // Renaming reimports the asset
             RenameRequested(record, newName);
         }
 
@@ -630,39 +746,63 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private void OnShowInProjectClicked()
         {
             VariableSetRecord record = SelectedRecord;
-            if (record?.Asset == null)
+            if (record?.Real == null)
             {
-                return;
+                return; // Not on disk yet
             }
 
             EditorUtility.FocusProjectWindow();
-            EditorGUIUtility.PingObject(record.Asset);
+            EditorGUIUtility.PingObject(record.Real);
         }
 
         private void OnDuplicateClicked()
         {
-            RaiseForSelected(DuplicateRequested);
-        }
-
-        private void RaiseForSelected(Action<VariableSetRecord> request)
-        {
             VariableSetRecord record = SelectedRecord;
             if (record != null)
             {
-                SaveInspectedSetIfDirty();
-                request(record);
+                PollSelectedRecordNow(); // So the copy starts from what's on screen
+                DuplicateRequested(record);
             }
         }
 
         private void OnDeleteClicked()
         {
-            RaiseForSelected(DeleteRequested);
+            VariableSetRecord record = SelectedRecord;
+            if (record != null)
+            {
+                DeleteRequested(record);
+            }
+        }
+        #endregion
+
+        #region Tracking edits
+        /// <summary>
+        /// Edits made in the embedded inspector don't announce themselves, and the Save
+        /// button (and the prompt for closing the window) depend on knowing about them.
+        /// </summary>
+        private void PollSelectedRecord()
+        {
+            if (IsVisible && !EditorApplication.isPlaying)
+            {
+                PollSelectedRecordNow();
+            }
         }
 
-        private void OnMoveClicked()
+        private void PollSelectedRecordNow()
         {
-            RaiseForSelected(MoveRequested);
+            VariableSetRecord record = SelectedRecord;
+            if (record == null || !record.HasWorking || !record.RefreshStateChanged())
+            {
+                return;
+            }
+
+            _listView.RefreshItems();
+            RefreshSummary();
+            StateMayHaveChanged();
         }
+
+        private const long PollIntervalMs = 250;
+        private IVisualElementScheduledItem _pollItem;
         #endregion
 
         #region Play Mode
@@ -673,12 +813,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
-            // Leaving Play Mode restores the sets' pre-play values, which the inspector
-            // wouldn't otherwise know about.
-            bool valuesWereRestored = change == PlayModeStateChange.EnteredEditMode;
-            RefreshDetails(forceRebuildInspector: valuesWereRestored);
+            RefreshDetails();
             RefreshCreateValidation();
-            RefreshEditability();
         }
 
         /// <summary>
@@ -693,17 +829,19 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _moveAllButton.SetEnabled(!isPlaying);
 
             VariableSetRecord record = SelectedRecord;
-            bool canEdit = !isPlaying && record != null && !record.IsReadOnly;
+            bool hasRecord = record != null;
+            bool canEdit = !isPlaying && hasRecord && !record.IsReadOnly && !record.PendingDelete;
             _nameField.SetEnabled(canEdit);
             _deleteButton.SetEnabled(canEdit);
-            _moveButton.SetEnabled(canEdit);
+            _noticeButton.SetEnabled(!isPlaying);
             _inspectorHolder.SetEnabled(canEdit);
-            _duplicateButton.SetEnabled(!isPlaying && record != null);
+            _duplicateButton.SetEnabled(!isPlaying && hasRecord && !record.PendingDelete);
+            _showInProjectButton.SetEnabled(hasRecord && record.Real != null);
         }
         #endregion
 
         /// <summary>
-        /// Called by the entry whenever the records have been reloaded.
+        /// Called by the entry whenever the records have changed.
         /// </summary>
         public override void Refresh()
         {
@@ -717,16 +855,16 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         }
 
         /// <summary>
-        /// Refreshes, then selects (and scrolls to) the set with the given asset GUID.
-        /// A search that would hide it gets cleared.
+        /// Refreshes, then selects (and scrolls to) the set with the given key. A search
+        /// that would hide it gets cleared.
         /// </summary>
-        internal void Refresh(string guidToSelect)
+        internal void Refresh(string keyToSelect)
         {
-            _selectedGuid = guidToSelect;
+            _selectedKey = keyToSelect;
             _scrollToSelection = true;
 
             ApplyFilter();
-            if (IndexOfVisible(guidToSelect) < 0)
+            if (IndexOfVisible(keyToSelect) < 0)
             {
                 _searchField.SetValueWithoutNotify(string.Empty);
             }
@@ -736,13 +874,14 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         public override void Hide()
         {
-            SaveInspectedSetIfDirty();
+            PollSelectedRecordNow(); // Leaving the tab means no more polling
             base.Hide();
         }
 
         private void OnDetachedFromPanel(DetachFromPanelEvent evt)
         {
-            // The next Refresh rebuilds it if this gets shown again
+            // Window closing. The next Refresh rebuilds the inspector if this gets shown again.
+            PollSelectedRecordNow();
             DestroyEmbeddedInspector();
         }
 
@@ -760,13 +899,15 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private sealed class ItemRow
         {
-            public ItemRow(UitkLabel name, UitkLabel info, UitkLabel badge)
+            public ItemRow(VisualElement root, UitkLabel name, UitkLabel info, UitkLabel badge)
             {
+                Root = root;
                 Name = name;
                 Info = info;
                 Badge = badge;
             }
 
+            public VisualElement Root { get; }
             public UitkLabel Name { get; }
             public UitkLabel Info { get; }
             public UitkLabel Badge { get; }

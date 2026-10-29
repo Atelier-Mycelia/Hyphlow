@@ -20,6 +20,13 @@ namespace AtMycelia.Hyphlow
         public static Action<VariableSet, IVariable> VariableAdded = delegate { };
         public static Action<VariableSet, IVariable> VariableRemoved = delegate { };
 
+        /// <summary>
+        /// Executes after a VSA has had another's state applied to it (see
+        /// VariableSet.ApplyStateFrom). Its variables' keys, values and order may
+        /// all have changed, without a signal for each.
+        /// </summary>
+        public static Action<VariableSet> StateApplied = delegate { };
+
         public static Action<VariableSet> VsaEnabled = delegate { };
         public static Action<VariableSet> VsaDisabled = delegate { };
 

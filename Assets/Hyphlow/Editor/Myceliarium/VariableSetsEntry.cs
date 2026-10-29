@@ -1,29 +1,106 @@
+using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Myceliarium;
 using System.Collections.Generic;
-using System.Text;
 using UnityEditor;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
     /// <summary>
     /// Control Panel entry for creating and organizing Variable Sets on disk.
-    /// Unlike the other Hyphlow entries, this doesn't stage changes for the Save button:
-    /// Variable Sets already write straight to disk from their inspector, so asset
-    /// operations here do the same, and nothing is ever left unsaved.
+    /// Everything done here is staged on <see cref="VariableSetRecord"/>s (edits go to
+    /// detached copies of the sets) and only reaches the project when the user saves,
+    /// through <see cref="VariableSetsSaver"/>.
     /// </summary>
     public sealed class VariableSetsEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
         public override string SortingName => "Variable Sets";
         public override bool IsTopLevel => false;
 
-        private void ReloadRecords()
+        public override bool HasUnsavedChanges => AnyRecordIsDirty();
+
+        private bool AnyRecordIsDirty()
         {
-            _records.Clear();
-            _records.AddRange(VariableSetAssetOps.FindAll());
+            for (int i = 0; i < _records.Count; i++)
+            {
+                if (_records[i].IsDirty)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Computed from the records, so the base class's own change notification doesn't
+        /// apply; this is what tells the panel when the answer may have changed.
+        /// </summary>
+        private void NotifyIfDirtyChanged()
+        {
+            bool dirty = AnyRecordIsDirty();
+            if (dirty != _lastReportedDirty)
+            {
+                _lastReportedDirty = dirty;
+                NotifyUnsavedChangesChanged();
+            }
+        }
+
+        private bool _lastReportedDirty;
+
+        internal int PendingDeleteCount
+        {
+            get
+            {
+                int count = 0;
+                for (int i = 0; i < _records.Count; i++)
+                {
+                    if (_records[i].PendingDelete && !_records[i].IsNew)
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
         }
 
         // The subwindow holds onto this same instance, so it gets refilled rather than replaced
         private readonly List<VariableSetRecord> _records = new List<VariableSetRecord>();
+
+        private VariableSetsSubwindow SetsSubwindow => _subwindow as VariableSetsSubwindow;
+
+        #region Loading
+        /// <summary>
+        /// Throws away whatever's staged and starts over from what's on disk. The inspector
+        /// shown in the subwindow has to let go of the detached copies first.
+        /// </summary>
+        private void ReloadRecords()
+        {
+            VariableSetsSubwindow subwindow = SetsSubwindow;
+            VariableSet selectedAsset = subwindow?.SelectedRecord?.Real;
+            subwindow?.ReleaseInspector();
+
+            DisposeRecords();
+            _records.AddRange(VariableSetAssetOps.FindAll());
+
+            if (selectedAsset != null)
+            {
+                // The records are all new objects now, so selection goes by asset
+                subwindow.SelectKey(_records.Find(record => record.Real == selectedAsset)?.Key);
+            }
+
+            NotifyIfDirtyChanged();
+        }
+
+        private void DisposeRecords()
+        {
+            for (int i = 0; i < _records.Count; i++)
+            {
+                _records[i].Dispose();
+            }
+
+            _records.Clear();
+        }
 
         protected override void PrepareLeftSidebarTab()
         {
@@ -38,7 +115,63 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _subwindow.Init();
         }
 
-        private VariableSetsSubwindow SetsSubwindow => _subwindow as VariableSetsSubwindow;
+        public override void Select()
+        {
+            // Reloading would throw out what's staged, which is what coming back to this
+            // tab shouldn't do
+            if (!HasUnsavedChanges)
+            {
+                ReloadRecords();
+                SetsSubwindow?.Refresh();
+            }
+
+            base.Select();
+        }
+
+        /// <summary>
+        /// Keeps the list in step with changes made outside the panel (Project window,
+        /// version control, etc.), as long as that wouldn't cost the user their staged changes.
+        /// </summary>
+        private void OnProjectChanged()
+        {
+            VariableSetsSubwindow subwindow = SetsSubwindow;
+            bool isOnScreen = subwindow != null && subwindow.IsVisible && subwindow.panel != null;
+            if (!isOnScreen || HasUnsavedChanges || DiskMatchesRecords())
+            {
+                return;
+            }
+
+            ReloadRecords();
+            subwindow.Refresh();
+        }
+
+        /// <summary>
+        /// Project changes are frequent and mostly unrelated to us, and reloading rebuilds
+        /// the inspector (losing the user's focus and scroll position in it), so this is
+        /// checked first.
+        /// </summary>
+        private bool DiskMatchesRecords()
+        {
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(VariableSet)}");
+            if (guids.Length != _records.Count)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < guids.Length; i++)
+            {
+                VariableSetRecord record = _records.Find(r => r.Key == guids[i]);
+                bool unchanged = record != null &&
+                    record.Path == AssetDatabase.GUIDToAssetPath(guids[i]);
+                if (!unchanged)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        #endregion
 
         protected override void SetSubs(bool on)
         {
@@ -47,10 +180,12 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             if (on)
             {
                 EditorApplication.projectChanged += OnProjectChanged;
+                VariableSetPlayModeSnapshots.BeforeCapture += OnBeforePlayModeSnapshot;
             }
             else
             {
                 EditorApplication.projectChanged -= OnProjectChanged;
+                VariableSetPlayModeSnapshots.BeforeCapture -= OnBeforePlayModeSnapshot;
             }
 
             var subwindow = SetsSubwindow;
@@ -65,8 +200,10 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 subwindow.RenameRequested += OnRenameRequested;
                 subwindow.DuplicateRequested += OnDuplicateRequested;
                 subwindow.DeleteRequested += OnDeleteRequested;
-                subwindow.MoveRequested += OnMoveRequested;
+                subwindow.KeepRequested += OnKeepRequested;
+                subwindow.MoveToggled += OnMoveToggled;
                 subwindow.MoveAllRequested += OnMoveAllRequested;
+                subwindow.StateMayHaveChanged += NotifyIfDirtyChanged;
             }
             else
             {
@@ -74,33 +211,16 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 subwindow.RenameRequested -= OnRenameRequested;
                 subwindow.DuplicateRequested -= OnDuplicateRequested;
                 subwindow.DeleteRequested -= OnDeleteRequested;
-                subwindow.MoveRequested -= OnMoveRequested;
+                subwindow.KeepRequested -= OnKeepRequested;
+                subwindow.MoveToggled -= OnMoveToggled;
                 subwindow.MoveAllRequested -= OnMoveAllRequested;
+                subwindow.StateMayHaveChanged -= NotifyIfDirtyChanged;
             }
         }
 
-        /// <summary>
-        /// Keeps the list in step with changes made outside the panel (Project window,
-        /// version control, etc.).
-        /// </summary>
-        private void OnProjectChanged()
-        {
-            var subwindow = SetsSubwindow;
-            bool isOnScreen = subwindow != null && subwindow.IsVisible && subwindow.panel != null;
-            if (!isOnScreen)
-            {
-                return; // Select reloads anyway
-            }
-
-            ReloadRecords();
-            subwindow.Refresh();
-        }
-
-        public override void Select()
-        {
-            ReloadRecords();
-            base.Select();
-        }
+        #region Staging
+        // Play Mode makes the panel read-only, but these guard against it anyway, since
+        // changes to Variable Sets made then get reverted
 
         private void OnCreateRequested(string name)
         {
@@ -109,14 +229,22 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
-            VariableSet created = VariableSetAssetOps.Create(name, _records, out string error);
-            if (created == null)
+            string folder = VariableSetAssetOps.VsaFolder;
+            string error = VariableSetAssetOps.ValidateName(name, _records, null, folder);
+            if (error != null)
             {
                 ShowError("Couldn't Create Variable Set", error);
                 return;
             }
 
-            ReloadAndSelect(created);
+            Add(VariableSetRecord.CreateNew(name, folder));
+        }
+
+        private void Add(VariableSetRecord record)
+        {
+            _records.Add(record);
+            SetsSubwindow?.Refresh(record.Key);
+            NotifyIfDirtyChanged();
         }
 
         private static void ShowError(string title, string message)
@@ -124,32 +252,25 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             EditorUtility.DisplayDialog(title, message, "OK");
         }
 
-        private void ReloadAndSelect(VariableSet toSelect)
-        {
-            ReloadRecords();
-            string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(toSelect));
-            SetsSubwindow?.Refresh(guid);
-        }
-
-        private void ReloadAndRefresh()
-        {
-            ReloadRecords();
-            SetsSubwindow?.Refresh();
-        }
-
         private void OnRenameRequested(VariableSetRecord record, string newName)
         {
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying || record.IsReadOnly)
             {
                 return;
             }
 
-            if (!VariableSetAssetOps.Rename(record, newName, _records, out string error))
+            string error = VariableSetAssetOps.ValidateName(newName, _records, record, record.Folder);
+            if (error != null)
             {
                 ShowError("Couldn't Rename Variable Set", error);
             }
+            else
+            {
+                record.Name = newName;
+            }
 
-            ReloadAndRefresh();
+            SetsSubwindow?.Refresh(record.Key);
+            NotifyIfDirtyChanged();
         }
 
         private void OnDuplicateRequested(VariableSetRecord record)
@@ -159,58 +280,68 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
-            VariableSet copy = VariableSetAssetOps.Duplicate(record, _records, out string error);
-            if (copy == null)
-            {
-                ShowError("Couldn't Duplicate Variable Set", error);
-                ReloadAndRefresh();
-                return;
-            }
+            // Next to the original when it's in the VSA folder (or a subfolder of it).
+            // Otherwise, in the VSA folder, same as any other new set.
+            bool keepNextToOriginal = record.IsNew ||
+                record.Location == VariableSetLocation.VsaFolder ||
+                record.Location == VariableSetLocation.VsaSubfolder;
+            string folder = keepNextToOriginal ? record.Folder : VariableSetAssetOps.VsaFolder;
+            string name = VariableSetAssetOps.SuggestName(record.Name, _records, folder);
 
-            ReloadAndSelect(copy);
+            Add(VariableSetRecord.CreateCopyOf(record, name, folder));
         }
 
         private void OnDeleteRequested(VariableSetRecord record)
         {
-            if (EditorApplication.isPlaying)
+            if (EditorApplication.isPlaying || record.IsReadOnly)
             {
                 return;
             }
 
-            int varCount = record.VariableCount;
-            string varPhrase = varCount == 1 ? "its 1 variable" : $"its {varCount} variables";
-            string message = $"\"{record.Name}\" and {varPhrase} will be moved to your system's " +
-                "trash.\n\nFlowcharts and commands that use these variables will lose " +
-                "those references.";
-
-            bool confirmed = EditorUtility.DisplayDialog("Delete Variable Set?", message,
-                "Delete", "Cancel");
-            if (!confirmed)
+            if (record.IsNew)
             {
-                return;
+                // Nothing on disk to take care of at save time, so there's nothing to stage
+                SetsSubwindow?.ReleaseInspector();
+                _records.Remove(record);
+                record.Dispose();
+            }
+            else
+            {
+                record.PendingDelete = true;
             }
 
-            if (!VariableSetAssetOps.Delete(record, out string error))
-            {
-                ShowError("Couldn't Delete Variable Set", error);
-            }
-
-            ReloadAndRefresh();
+            SetsSubwindow?.Refresh();
+            NotifyIfDirtyChanged();
         }
 
-        private void OnMoveRequested(VariableSetRecord record)
+        private void OnKeepRequested(VariableSetRecord record)
         {
-            if (EditorApplication.isPlaying)
+            string error = VariableSetAssetOps.ValidateName(record.Name, _records, record);
+            if (error != null)
+            {
+                // Something else took its name while it was staged for deletion
+                ShowError("Couldn't Keep Variable Set",
+                    error + "\n\nRename one of them, then try again.");
+                return;
+            }
+
+            record.PendingDelete = false;
+            SetsSubwindow?.Refresh(record.Key);
+            NotifyIfDirtyChanged();
+        }
+
+        private void OnMoveToggled(VariableSetRecord record)
+        {
+            bool canMove = !EditorApplication.isPlaying && !record.IsNew && !record.PendingDelete &&
+                record.Location == VariableSetLocation.Elsewhere;
+            if (!canMove)
             {
                 return;
             }
 
-            if (!VariableSetAssetOps.MoveToVsaFolder(record, out string error))
-            {
-                ShowError("Couldn't Move Variable Set", error);
-            }
-
-            ReloadAndRefresh();
+            record.PendingMove = !record.PendingMove;
+            SetsSubwindow?.Refresh(record.Key);
+            NotifyIfDirtyChanged();
         }
 
         private void OnMoveAllRequested()
@@ -220,60 +351,81 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 return;
             }
 
-            List<VariableSetRecord> toMove = _records.FindAll(IsElsewhere);
-            static bool IsElsewhere(VariableSetRecord record)
+            for (int i = 0; i < _records.Count; i++)
             {
-                return record.Location == VariableSetLocation.Elsewhere;
+                VariableSetRecord record = _records[i];
+                if (!record.IsNew && !record.PendingDelete &&
+                    record.Location == VariableSetLocation.Elsewhere)
+                {
+                    record.PendingMove = true;
+                }
             }
 
-            if (toMove.Count == 0 || !ConfirmMoveAll(toMove))
+            SetsSubwindow?.Refresh();
+            NotifyIfDirtyChanged();
+        }
+        #endregion
+
+        #region Saving
+        /// <summary>
+        /// Carries out everything that's staged. Returns whether all of it went through;
+        /// what didn't stays staged.
+        /// </summary>
+        internal bool Commit()
+        {
+            // The inspector is showing the detached copies, and deleted records dispose theirs
+            SetsSubwindow?.ReleaseInspector();
+
+            VariableSetCommit.Result result = VariableSetCommit.Run(_records);
+            if (!result.Succeeded)
+            {
+                ShowError("Some Variable Set Changes Weren't Saved",
+                    result.Summary + "\nThey're still staged in the Control Panel, so you can " +
+                    "fix them and save again.");
+            }
+
+            SetsSubwindow?.Refresh();
+            NotifyIfDirtyChanged();
+            return result.Succeeded;
+        }
+
+        /// <summary>
+        /// Entering Play Mode reloads scripts, which throws away everything staged here
+        /// (it only exists in memory). Rather than let that happen silently, this asks.
+        /// It's run by the snapshot module before it backs the sets up, so that what gets
+        /// saved here is part of the backup.
+        /// </summary>
+        private void OnBeforePlayModeSnapshot()
+        {
+            if (!HasUnsavedChanges)
             {
                 return;
             }
 
-            // Not batched in Start/StopAssetEditing: two same-named sets would both get
-            // the same unique path, since the first move wouldn't register until the end.
-            var failures = new StringBuilder();
-            for (int i = 0; i < toMove.Count; i++)
-            {
-                if (!VariableSetAssetOps.MoveToVsaFolder(toMove[i], out string error))
-                {
-                    failures.AppendLine($"• {toMove[i].Path}: {error}");
-                }
-            }
+            int deleteCount = PendingDeleteCount;
+            string deleteNote = deleteCount > 0 ?
+                $"\n\nSaving will also move {deleteCount} Variable Set(s) to the trash." :
+                string.Empty;
 
-            if (failures.Length > 0)
-            {
-                ShowError("Some Variable Sets Weren't Moved", failures.ToString());
-            }
+            const int save = 0, cancel = 1; // Anything else is Discard, which needs nothing done
+            int choice = EditorUtility.DisplayDialogComplex("Unsaved Variable Set Changes",
+                "The Control Panel has Variable Set changes that haven't been saved, and " +
+                "entering Play Mode would discard them." + deleteNote,
+                "Save and Play", "Cancel", "Discard and Play");
 
-            ReloadAndRefresh();
+            bool stayInEditMode = choice == cancel || (choice == save && !Commit());
+            if (stayInEditMode)
+            {
+                EditorApplication.isPlaying = false;
+            }
         }
+        #endregion
 
-        private static bool ConfirmMoveAll(IReadOnlyList<VariableSetRecord> toMove)
+        public override void Dispose()
         {
-            const int maxListed = 8;
-            var message = new StringBuilder();
-            string setPhrase = toMove.Count == 1 ? "1 Variable Set" : $"{toMove.Count} Variable Sets";
-            message.AppendLine($"Move {setPhrase} into {VariableSetAssetOps.VsaFolder}?");
-            message.AppendLine();
-
-            for (int i = 0; i < toMove.Count && i < maxListed; i++)
-            {
-                message.AppendLine($"• {toMove[i].Path}");
-            }
-
-            if (toMove.Count > maxListed)
-            {
-                message.AppendLine($"…and {toMove.Count - maxListed} more");
-            }
-
-            message.AppendLine();
-            message.Append("References to them are kept. Sets already in that folder or its " +
-                "subfolders aren't affected.");
-
-            return EditorUtility.DisplayDialog("Move Variable Sets?", message.ToString(),
-                "Move", "Cancel");
+            base.Dispose(); // Lets go of the inspector first, which is looking at the copies
+            DisposeRecords();
+            _lastReportedDirty = false;
         }
     }
 }

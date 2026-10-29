@@ -15,6 +15,7 @@
     --vsets-danger: rgb(150, 55, 40);
     --vsets-danger-hover: rgb(185, 70, 50);
     --vsets-info-bg: rgba(80, 120, 180, 0.18);
+    --vsets-danger-bg: rgba(235, 110, 100, 0.14);
 
     /* The Control Panel window has a fixed size, so the panes can too. Fixed heights
        let the list and the inspector scroll on their own, instead of the whole page. */
@@ -267,6 +268,26 @@
     -unity-font-style: bold;
 }
 
+/* Staged changes: what the Save button will do */
+.vsets-badge--pending
+{
+    color: var(--vsets-accent-hover);
+    border-color: var(--vsets-accent-hover);
+    background-color: var(--vsets-info-bg);
+}
+
+.vsets-badge--deleting
+{
+    color: var(--vsets-error);
+    border-color: var(--vsets-error);
+    background-color: var(--vsets-danger-bg);
+}
+
+.vsets-item--deleted
+{
+    opacity: 0.55;
+}
+
 .vsets-badge--outside
 {
     color: var(--vsets-warning);
@@ -359,14 +380,31 @@
 
 .vsets-notice
 {
+    display: none; /* Shown when there's something to say about the set */
     flex-direction: row;
     align-items: center;
     margin-bottom: 8px;
     padding: 8px 10px 8px 10px;
     border-radius: 4px;
     border-left-width: 4px;
+}
+
+.vsets-notice--info
+{
+    border-left-color: var(--vsets-accent);
+    background-color: var(--vsets-info-bg);
+}
+
+.vsets-notice--warning
+{
     border-left-color: var(--vsets-warning);
     background-color: var(--vsets-warning-bg);
+}
+
+.vsets-notice--danger
+{
+    border-left-color: var(--vsets-error);
+    background-color: var(--vsets-danger-bg);
 }
 
 .vsets-notice__text

@@ -127,7 +127,9 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected virtual void UpdateSourceAssetFile()
         {
-            if (target is VariableSet source)
+            // Detached copies are what the Control Panel stages edits on; they only reach
+            // disk when it saves them
+            if (target is VariableSet source && !source.IsDetached)
             {
                 EditorUtility.SetDirty(source);
                 AssetDatabase.SaveAssetIfDirty(source);

@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "com.ateliermycelia.commonlib": {
-      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib",
+      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib#develop_bak",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       },
-      "hash": "993e0084327dc6c59f9c5477beed6ec21f4683b3"
+      "hash": "88ad70e762f60179e4d6f499296f52b79f968a9d"
     },
     "com.ateliermycelia.hyphatween": {
       "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
