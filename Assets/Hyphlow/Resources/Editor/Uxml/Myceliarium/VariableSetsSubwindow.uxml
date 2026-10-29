@@ -3,7 +3,7 @@
     <ui:VisualElement name="Root" class="vsets-root">
         <ui:VisualElement name="Header" class="vsets-header">
             <ui:Label text="Variable Sets" class="vsets-title" />
-            <ui:Label text="Variables shared by every Flowchart and scene. Changes made here are saved to the project right away." class="vsets-subtitle" />
+            <ui:Label text="Variables shared by every Flowchart and scene. Changes made here are applied to the project when you click Save." class="vsets-subtitle" />
         </ui:VisualElement>
         <ui:VisualElement name="PlayModeBanner" class="vsets-banner">
             <ui:Label text="Play Mode is running, so Variable Sets are read-only here. Anything they change during Play Mode is reverted once it ends." class="vsets-banner__text" />
@@ -37,13 +37,13 @@
                         <ui:TextField name="NameField" label="Name" is-delayed="true" class="vsets-name-field" />
                         <ui:Button name="ShowInProjectButton" text="Show in Project" class="vsets-button" />
                         <ui:Button name="DuplicateButton" text="Duplicate" class="vsets-button" />
-                        <ui:Button name="DeleteButton" text="Delete…" class="vsets-button vsets-button--danger" />
+                        <ui:Button name="DeleteButton" text="Delete" class="vsets-button vsets-button--danger" />
                     </ui:VisualElement>
                     <ui:Label name="NameError" class="vsets-hint vsets-hint--error vsets-name-error" />
                     <ui:Label name="PathLabel" class="vsets-path" />
-                    <ui:VisualElement name="LocationNotice" class="vsets-notice">
-                        <ui:Label name="LocationNoticeText" class="vsets-notice__text" />
-                        <ui:Button name="MoveButton" text="Move to the VSA Folder" class="vsets-button" />
+                    <ui:VisualElement name="Notice" class="vsets-notice">
+                        <ui:Label name="NoticeText" class="vsets-notice__text" />
+                        <ui:Button name="NoticeButton" class="vsets-button" />
                     </ui:VisualElement>
                     <ui:ScrollView name="InspectorScroll" class="vsets-inspector-scroll">
                         <ui:VisualElement name="InspectorHolder" class="vsets-inspector-holder" />

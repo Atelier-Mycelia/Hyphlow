@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 #if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace AtMycelia.Hyphlow
@@ -16,7 +16,13 @@ namespace AtMycelia.Hyphlow
     /// </summary>
     public static class VariableRegistry
     {
+        // The runtime one is what gets builds going, as the editor one only exists in the
+        // editor. In the editor, both run (the latter on entering Play Mode), which is fine:
+        // subscribing is reset first, and an extra rebuild does no harm.
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void InitializeRegistry()
         {
             SetSubs(false);
@@ -45,10 +51,13 @@ namespace AtMycelia.Hyphlow
             {
                 Selection.selectionChanged -= OnSelectionChanged;
                 AssemblyReloadEvents.afterAssemblyReload -= InitializeDelayed;
+                EditorSceneManager.sceneOpened -= OnSceneOpened;
+                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             }
 #endif
         }
 
+#if UNITY_EDITOR
         private static void OnPlayModeStateChanged(PlayModeStateChange change)
         {
             if (change == PlayModeStateChange.ExitingPlayMode)
@@ -61,6 +70,7 @@ namespace AtMycelia.Hyphlow
         {
             Rebuild();
         }
+#endif
 
         private static void OnSelectionChanged()
         {
@@ -76,10 +86,14 @@ namespace AtMycelia.Hyphlow
 
         private static void InitializeDelayed()
         {
+#if UNITY_EDITOR
             EditorApplication.delayCall += () =>
             {
                 Rebuild();
             };
+#else
+            Rebuild(); // No delayCall in builds, but nothing to wait out either
+#endif
         }
 
         private static void ToggleRuntimeSubs(bool on)
@@ -268,22 +282,52 @@ namespace AtMycelia.Hyphlow
         private static void RefreshSources()
         {
             _registeredSources.Clear();
-            IList<string> assetGuids = AssetDatabase.FindAssets($"t:{nameof(VariableSet)}");
-            IList<string> assetPaths = new List<string>(assetGuids.Count);
-
-            for (int i = 0; i < assetGuids.Count; i++)
+            IReadOnlyList<VariableSet> candidates = FindCandidateSources();
+            for (int i = 0; i < candidates.Count; i++)
             {
-                string guid = assetGuids[i];
-                string path = AssetDatabase.GUIDToAssetPath(guid);
-                assetPaths.Add(path);
-
-                var asset = AssetDatabase.LoadAssetAtPath<VariableSet>(path);
-                if (asset.IncludeInRegistry)
+                VariableSet candidate = candidates[i];
+                bool shouldRegister = candidate != null && candidate.IncludeInRegistry &&
+                    !candidate.IsDetached;
+                if (shouldRegister)
                 {
-                    _registeredSources.Add(asset);
+                    _registeredSources.Add(candidate);
                 }
             }
         }
+
+        private static IReadOnlyList<VariableSet> FindCandidateSources()
+        {
+#if UNITY_EDITOR
+            // Every set in the project, loaded or not
+            string[] guids = AssetDatabase.FindAssets($"t:{nameof(VariableSet)}");
+            var result = new List<VariableSet>(guids.Length);
+            for (int i = 0; i < guids.Length; i++)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guids[i]);
+                result.Add(AssetDatabase.LoadAssetAtPath<VariableSet>(path));
+            }
+
+            return result;
+#else
+            // Builds can only see the sets in Resources folders (which is part of why the
+            // Control Panel keeps them in one), plus whichever ones loaded scenes reference.
+            EnsureResourcesSetsLoaded();
+            return Resources.FindObjectsOfTypeAll<VariableSet>();
+#endif
+        }
+
+#if !UNITY_EDITOR
+        private static void EnsureResourcesSetsLoaded()
+        {
+            if (_resourcesSets == null)
+            {
+                _resourcesSets = Resources.LoadAll<VariableSet>(string.Empty);
+            }
+        }
+
+        // Held onto so that unloading unused assets can't take them away between rebuilds
+        private static VariableSet[] _resourcesSets;
+#endif
 
         // This should exclude the VSAs that have their IncludeInRegistry property set to false,
         // since those are meant to be ignored by this class.

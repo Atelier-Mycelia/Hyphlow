@@ -169,20 +169,43 @@ namespace VScriptingTests.VariableRows
             Assert.AreEqual(newValue, variable.BoxedValue, "Redo did not reapply the edited value.");
         }
 
-        private static IEnumerator WaitUntilAttachedToPanel(VisualElement element, int maxFrames = 60)
+        private static IEnumerator WaitUntilAttachedToPanel(VisualElement element, int maxFrames = 60,
+            double maxSeconds = 3)
         {
-            for (int i = 0; i < maxFrames; i++)
+            // The host window is created natively, so how many editor updates that takes
+            // isn't fixed: an idle editor can tick through dozens of them in a few
+            // milliseconds. Hence waiting on time as well as frames.
+            double start = EditorApplication.timeSinceStartup;
+            int frames = 0;
+            while (!(element != null && element.panel != null))
             {
-                if (element != null && element.panel != null)
+                double waited = EditorApplication.timeSinceStartup - start;
+                if (frames >= maxFrames && waited >= maxSeconds)
                 {
-                    yield break;
+                    Assert.Fail("Variable row's visual element never got attached to a panel; " +
+                        "value change events cannot be dispatched. " + DescribeEditorState(frames, waited));
                 }
 
+                frames++;
                 yield return null;
             }
+        }
 
-            Assert.Fail("Variable row's visual element never got attached to a panel; " +
-                "value change events cannot be dispatched.");
+        /// <summary>
+        /// For telling a slow window from one that never opened, and a leak from an editor
+        /// that isn't in front, when this fails in a full run but not on its own.
+        /// </summary>
+        private static string DescribeEditorState(int frames, double seconds)
+        {
+            var windows = Resources.FindObjectsOfTypeAll<EditorWindow>()
+                .Select(window => window.GetType().Name)
+                .GroupBy(name => name)
+                .Select(group => group.Count() > 1 ? $"{group.Key} x{group.Count()}" : group.Key);
+
+            return $"[Waited {frames} frames / {seconds:F1}s. " +
+                $"Editor focused: {UnityEditorInternal.InternalEditorUtility.isApplicationActive}. " +
+                $"Compiling: {EditorApplication.isCompiling}. Updating: {EditorApplication.isUpdating}. " +
+                $"Open windows: {string.Join(", ", windows)}]";
         }
 
         private VariableRow GetRowFor(IVariable variable)

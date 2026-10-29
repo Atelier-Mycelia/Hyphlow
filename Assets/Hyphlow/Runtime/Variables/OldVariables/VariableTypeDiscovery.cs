@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Scripting.APIUpdating;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace AtMycelia.Hyphlow
 {
@@ -13,22 +16,56 @@ namespace AtMycelia.Hyphlow
     public static class VariableTypeDiscovery
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
         public static void DiscoverAndRegister()
         {
             RefreshVariableTypeRegistry();
             RefreshVariableDataTypeRegistry();
 
+#if UNITY_EDITOR
             AssemblyReloadEvents.afterAssemblyReload -= RefreshVariableTypeRegistry;
             AssemblyReloadEvents.afterAssemblyReload -= RefreshVariableDataTypeRegistry;
 
             AssemblyReloadEvents.afterAssemblyReload += RefreshVariableTypeRegistry;
             AssemblyReloadEvents.afterAssemblyReload += RefreshVariableDataTypeRegistry;
+#endif
         }
+
+        /// <summary>
+        /// TypeCache is editor-only (and much faster), so builds fall back to reflection.
+        /// </summary>
+        private static IEnumerable<Type> TypesDerivedFrom<T>()
+        {
+#if UNITY_EDITOR
+            return TypeCache.GetTypesDerivedFrom<T>();
+#else
+            Type baseType = typeof(T);
+            return AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(TypesIn)
+                .Where(type => type != baseType && baseType.IsAssignableFrom(type));
+#endif
+        }
+
+#if !UNITY_EDITOR
+        private static IEnumerable<Type> TypesIn(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                // Some types failing to load shouldn't cost us the rest of the assembly's
+                return e.Types.Where(type => type != null);
+            }
+        }
+#endif
 
         private static void RefreshVariableTypeRegistry()
         {
-            IEnumerable<Type> varSubtypes = TypeCache.GetTypesDerivedFrom<IVariable>()
+            IEnumerable<Type> varSubtypes = TypesDerivedFrom<IVariable>()
                          .Where((elem) => elem.IsConcrete() &&
                          !ShouldExcludeDueToBeingForTests(elem));
 
@@ -87,7 +124,7 @@ namespace AtMycelia.Hyphlow
 
         private static void RefreshVariableDataTypeRegistry()
         {
-            IEnumerable<Type> varDataSubtypes = TypeCache.GetTypesDerivedFrom<IVariableData>()
+            IEnumerable<Type> varDataSubtypes = TypesDerivedFrom<IVariableData>()
                          .Where((elem) => elem.IsConcrete());
 
             VariableDataTypeRegistry.Clear();

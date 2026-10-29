@@ -872,8 +872,10 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        // OnValidate only ever runs in the editor, but it still has to compile in builds
         private void OnValidate()
         {
+#if UNITY_EDITOR
             if (!this.IsInTheScene || Application.isPlaying)
             {
                 // Don't do anything if this isn't even in the scene yet
@@ -899,10 +901,10 @@ namespace AtMycelia.Hyphlow
                 }
 
                 Refresh();
-                
+
 
             };
-
+#endif
         }
 
         protected virtual void AssertUniqueID()
