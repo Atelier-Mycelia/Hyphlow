@@ -1,5 +1,4 @@
 using AtMycelia.Hyphlow;
-using AtMycelia.Hyphlow;
 using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Hyphlow.EditorExt.FcWindow;
 using NUnit.Framework;
