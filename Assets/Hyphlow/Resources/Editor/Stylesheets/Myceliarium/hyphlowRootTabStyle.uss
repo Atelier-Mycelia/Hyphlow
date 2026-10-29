@@ -1,6 +1,24 @@
 :root
 {
-    --hyphlow-tab-icon: resource("Editor/Icons/mianeRootTabIcon_aiGen");
+    --tab-selected-color: rgb(44, 93, 135);
+    --tab-selected-text-color: rgb(222, 222, 222);
+    --tab-normal-text-color: rgb(222, 222, 222);
+    --tab-normal-bg-color: rgb(60, 60, 60);
+    --hover-color: rgb(100, 100, 100);
+    --active-color: rgb(50, 50, 50);
+    --selected-border-color: rgb(100, 140, 200);
+    --hyphlow-tab-icon: resource("Editor/Icons/hyphlowLogo_noText");
+    --border-color: rgb(30, 30, 30);
+    --height: 60px;
+    --label-font-size: 24px;
+    --border-width: 2px;
+    --border-radius: 5px;
+}
+
+.tabRoot 
+{
+    margin: 0px 0px 0px 0px;
+    border-radius: var(--border-radius);
 }
 
 .tabIcon
@@ -14,24 +32,25 @@
 
 .tabIconHolder
 {
-    padding: 5px 0px 0px 0px;
+    padding: 8px 0px 0px 0px;
     margin: 0px 0px 0px 3px;
     width: 60px;
 }
 
 .hyphlow-tab {
     justify-content: center;
-    color: rgb(222, 222, 222);
+    height: var(--height);
+    color: var(--tab-normal-text-color);
     -unity-text-align: middle-center;
-    background-color: rgb(60, 60, 60);
-    border-color: rgb(30, 30, 30);
-    border-width: 1px;
+    background-color: var(--tab-normal-bg-color);
+    border-color: var(--border-color);
+    border-width: var(--border-width);
     transition-property: background-color;
     transition-duration: 0.2s;
     width: 100%;
     padding: 0;
     flex-direction: column;
-    height: 60px;
+    
     flex-grow: 0;
 }
 
@@ -52,21 +71,21 @@
 }
 
 .hyphlow-tab > Toggle > VisualElement > Label {
-    font-size: 24px;
+    font-size: var(--label-font-size);
     flex-grow: 1;
     height: 100%;
     -unity-text-align: middle-center;
 }
 
 .hyphlow-tab:hover {
-    background-color: rgb(70, 70, 70);
+    /* background-color: var(--hover-color); */
 }
 
 .hyphlow-tab:active {
-    background-color: rgb(50, 50, 50);
+    background-color: var(--active-color);
 }
 
 .hyphlow-tab.selected {
-    background-color: rgb(80, 120, 180);
-    border-color: rgb(100, 140, 200);
+    background-color: var(--tab-selected-color);
+    border-color: var(--selected-border-color);
 }

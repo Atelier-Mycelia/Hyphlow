@@ -1,6 +1,6 @@
 ﻿<Solution>
-  <Project Path="AtMycelia.Hyphlow.Editor.csproj" />
   <Project Path="AtMycelia.Hyphlow.Core.csproj" />
+  <Project Path="AtMycelia.Hyphlow.Editor.csproj" />
   <Project Path="HyphlowEditorTests.csproj" />
   <Project Path="HyphlowPlayModeTests.csproj" />
   <Project Path="AtMycelia.DevOnlyTools.Core.csproj" />
