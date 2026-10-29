@@ -1,0 +1,396 @@
+/* Palette follows the other Hyphlow submenus (FlowchartDefaults, Editor QoL) */
+:root
+{
+    --vsets-bg: rgb(56, 56, 56);
+    --vsets-pane-bg: rgb(50, 50, 50);
+    --vsets-pane-border: rgb(70, 70, 70);
+    --vsets-divider: rgb(80, 80, 80);
+    --vsets-text: rgb(220, 220, 220);
+    --vsets-text-muted: rgb(160, 160, 160);
+    --vsets-accent: rgb(80, 120, 180);
+    --vsets-accent-hover: rgb(95, 140, 205);
+    --vsets-warning: rgb(214, 160, 64);
+    --vsets-warning-bg: rgba(214, 160, 64, 0.14);
+    --vsets-error: rgb(235, 110, 100);
+    --vsets-danger: rgb(150, 55, 40);
+    --vsets-danger-hover: rgb(185, 70, 50);
+    --vsets-info-bg: rgba(80, 120, 180, 0.18);
+
+    /* The Control Panel window has a fixed size, so the panes can too. Fixed heights
+       let the list and the inspector scroll on their own, instead of the whole page. */
+    --vsets-body-height: 540px;
+    --vsets-list-width: 330px;
+}
+
+.vsets-root
+{
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 12px 16px 12px 16px;
+    background-color: var(--vsets-bg);
+    color: var(--vsets-text);
+}
+
+/* ---- Header ---- */
+
+.vsets-header
+{
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(100, 100, 100);
+}
+
+.vsets-title
+{
+    font-size: 26px;
+    -unity-font-style: bold;
+    color: var(--vsets-text);
+}
+
+.vsets-subtitle
+{
+    font-size: 13px;
+    color: var(--vsets-text-muted);
+    white-space: normal;
+    margin-top: 2px;
+}
+
+.vsets-banner
+{
+    display: none; /* Shown in Play Mode */
+    margin-bottom: 12px;
+    padding: 8px 12px 8px 12px;
+    border-radius: 4px;
+    border-left-width: 4px;
+    border-left-color: var(--vsets-warning);
+    background-color: var(--vsets-warning-bg);
+}
+
+.vsets-banner__text
+{
+    font-size: 13px;
+    white-space: normal;
+    color: var(--vsets-text);
+}
+
+/* ---- Layout ---- */
+
+.vsets-body
+{
+    flex-direction: row;
+    height: var(--vsets-body-height);
+}
+
+.vsets-pane
+{
+    padding: 12px;
+    background-color: var(--vsets-pane-bg);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: var(--vsets-pane-border);
+}
+
+.vsets-list-pane
+{
+    width: var(--vsets-list-width);
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+.vsets-detail-pane
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+/* ---- Buttons ---- */
+
+.vsets-button
+{
+    height: 24px;
+    margin: 0 0 0 6px;
+    padding: 0 12px 0 12px;
+    flex-shrink: 0;
+    border-radius: 3px;
+}
+
+.vsets-button--primary
+{
+    background-color: var(--vsets-accent);
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+}
+
+.vsets-button--primary:hover
+{
+    background-color: var(--vsets-accent-hover);
+}
+
+.vsets-button--danger
+{
+    background-color: var(--vsets-danger);
+    color: rgb(255, 255, 255);
+}
+
+.vsets-button--danger:hover
+{
+    background-color: var(--vsets-danger-hover);
+}
+
+.vsets-button:disabled
+{
+    opacity: 0.45;
+}
+
+/* ---- Create ---- */
+
+.vsets-create
+{
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--vsets-divider);
+}
+
+.vsets-section-label
+{
+    font-size: 14px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.vsets-create__row
+{
+    flex-direction: row;
+    align-items: center;
+}
+
+.vsets-create__field
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+}
+
+.vsets-create__field > .unity-base-field__input
+{
+    height: 24px;
+}
+
+.vsets-hint
+{
+    font-size: 11px;
+    color: var(--vsets-text-muted);
+    white-space: normal;
+    margin-top: 4px;
+}
+
+.vsets-hint--error
+{
+    color: var(--vsets-error);
+}
+
+/* ---- List ---- */
+
+.vsets-search
+{
+    width: auto;
+    margin: 0 0 8px 0;
+}
+
+.vsets-list-holder
+{
+    flex-grow: 1;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    border-radius: 3px;
+    background-color: rgb(42, 42, 42);
+}
+
+.vsets-list
+{
+    flex-grow: 1;
+}
+
+.vsets-empty-list
+{
+    display: none;
+    flex-grow: 1;
+    padding: 16px;
+    font-size: 13px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    color: var(--vsets-text-muted);
+}
+
+.vsets-item
+{
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding: 0 8px 0 10px;
+}
+
+.vsets-item__text
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+}
+
+.vsets-item__name
+{
+    font-size: 14px;
+    -unity-font-style: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vsets-item__info
+{
+    font-size: 11px;
+    color: var(--vsets-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vsets-badge
+{
+    flex-shrink: 0;
+    margin-left: 6px;
+    padding: 1px 6px 1px 6px;
+    border-radius: 8px;
+    border-width: 1px;
+    font-size: 10px;
+    -unity-font-style: bold;
+}
+
+.vsets-badge--outside
+{
+    color: var(--vsets-warning);
+    border-color: var(--vsets-warning);
+    background-color: var(--vsets-warning-bg);
+}
+
+.vsets-badge--readonly
+{
+    color: var(--vsets-text-muted);
+    border-color: rgb(110, 110, 110);
+}
+
+.vsets-list-footer
+{
+    margin-top: 8px;
+}
+
+.vsets-summary
+{
+    font-size: 11px;
+    color: var(--vsets-text-muted);
+    margin-bottom: 6px;
+}
+
+.vsets-list-footer > .vsets-button
+{
+    margin-left: 0;
+}
+
+/* ---- Details ---- */
+
+.vsets-empty-details
+{
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.vsets-empty-details__text
+{
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    color: var(--vsets-text-muted);
+}
+
+.vsets-details
+{
+    flex-grow: 1;
+}
+
+.vsets-details__header
+{
+    flex-direction: row;
+    align-items: center;
+}
+
+.vsets-name-field
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0;
+}
+
+.vsets-name-field > .unity-base-field__label
+{
+    min-width: 48px;
+    width: 48px;
+    font-size: 14px;
+    -unity-font-style: bold;
+}
+
+.vsets-name-field > .unity-base-field__input
+{
+    height: 24px;
+    font-size: 15px;
+}
+
+.vsets-name-error
+{
+    display: none; /* Shown when a rename is rejected */
+    margin-left: 52px;
+}
+
+.vsets-path
+{
+    font-size: 11px;
+    color: var(--vsets-text-muted);
+    margin: 4px 0 8px 52px;
+}
+
+.vsets-notice
+{
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px 10px 8px 10px;
+    border-radius: 4px;
+    border-left-width: 4px;
+    border-left-color: var(--vsets-warning);
+    background-color: var(--vsets-warning-bg);
+}
+
+.vsets-notice__text
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 12px;
+    white-space: normal;
+}
+
+.vsets-inspector-scroll
+{
+    flex-grow: 1;
+    padding-top: 6px;
+    border-top-width: 1px;
+    border-top-color: var(--vsets-divider);
+}
+
+.vsets-inspector-holder
+{
+    padding-right: 6px;
+}
+
+.vsets-inspector-holder:disabled
+{
+    opacity: 0.6;
+}

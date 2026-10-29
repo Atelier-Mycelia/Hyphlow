@@ -1,0 +1,46 @@
+/* Matches the Editor QoL tab, so Hyphlow's subtabs read as one group */
+:root
+{
+    --base-color: rgb(222, 222, 222);
+    --border-color: rgb(30, 30, 30);
+    --hover-color: rgb(70, 70, 70);
+    --active-color: rgb(50, 50, 50);
+    --selected-color: rgb(80, 120, 180);
+    --selected-border-color: black;
+    --font-size: 20px;
+}
+
+.tabRoot
+{
+    margin: 0px 0px 0px 0px;
+    height: 50px;
+}
+
+.tabIcon
+{
+    background-image: none;
+}
+
+.variable-sets-tab {
+    font-size: var(--font-size);
+    color: var(--base-color);
+    border-color: var(--border-color);
+
+    transition-property: background-color;
+    transition-duration: 0.2s;
+
+    background-image: none;
+}
+
+.variable-sets-tab:hover {
+    background-color: var(--hover-color);
+}
+
+.variable-sets-tab:active {
+    background-color: var(--active-color);
+}
+
+.variable-sets-tab.selected {
+    background-color: var(--selected-color);
+    border-color: var(--selected-border-color);
+}

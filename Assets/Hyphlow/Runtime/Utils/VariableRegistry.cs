@@ -268,7 +268,7 @@ namespace AtMycelia.Hyphlow
         private static void RefreshSources()
         {
             _registeredSources.Clear();
-            IList<string> assetGuids = AssetDatabase.FindAssets("t:VariableSourceAsset");
+            IList<string> assetGuids = AssetDatabase.FindAssets($"t:{nameof(VariableSet)}");
             IList<string> assetPaths = new List<string>(assetGuids.Count);
 
             for (int i = 0; i < assetGuids.Count; i++)
