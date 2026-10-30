@@ -120,6 +120,33 @@ namespace VScriptingTests.VariableOperations
         }
 
         [Test]
+        public void ResetWorking_PicksUpWhatTheAssetHasChangedToSince()
+        {
+            VariableSetRecord record = MakeExisting("Restored");
+            record.EnsureWorking();
+            Greeting(record.Real).Value = "changed behind its back";
+
+            record.ResetWorking();
+
+            Assert.IsFalse(record.HasWorking);
+            Assert.AreEqual("changed behind its back", Greeting(record.EnsureWorking()).Value);
+            Assert.IsFalse(record.RefreshStateChanged());
+            Assert.IsFalse(record.IsDirty);
+        }
+
+        [Test]
+        public void ResetWorking_LeavesAStagedNewSetAlone()
+        {
+            VariableSetRecord record = Stage(VariableSetRecord.CreateNew("Fresh", Folder));
+            record.Working.AddNewVariableOfContentType<int>("count", 5);
+
+            record.ResetWorking();
+
+            Assert.IsTrue(record.HasWorking);
+            Assert.AreEqual(1, record.VariableCount);
+        }
+
+        [Test]
         public void StagedRenameDeleteMoveAndNew_AllCountAsDirty()
         {
             VariableSetRecord renamed = MakeExisting("Renamed");

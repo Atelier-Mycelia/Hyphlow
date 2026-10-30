@@ -69,6 +69,20 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private VariableSetsSubwindow SetsSubwindow => _subwindow as VariableSetsSubwindow;
 
+        internal IReadOnlyList<VariableSetRecord> Records => _records;
+
+        // Swappable so tests don't block on modal dialogs
+        internal System.Action<string, string> ErrorDialog { get; set; } =
+            (title, message) => EditorUtility.DisplayDialog(title, message, "OK");
+
+        /// <summary>
+        /// Takes the title and message, and returns which button was picked (the same as
+        /// DisplayDialogComplex: 0 for the first, 1 for the second, 2 for the third).
+        /// </summary>
+        internal System.Func<string, string, int> UnsavedChangesBeforePlayDialog { get; set; } =
+            (title, message) => EditorUtility.DisplayDialogComplex(title, message,
+                "Save and Play", "Cancel", "Discard and Play");
+
         #region Loading
         /// <summary>
         /// Throws away whatever's staged and starts over from what's on disk. The inspector
@@ -129,6 +143,51 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         }
 
         /// <summary>
+        /// Entries outlive the window, so reopening it doesn't initialize or select this
+        /// again, and project changes made while it was closed went unnoticed (the
+        /// handler below only reacts while the subwindow is on screen). What's shown may
+        /// be out of date by now. Staged changes are what the user left unfinished, so
+        /// they're kept.
+        /// </summary>
+        protected override void OnControlPanelOpened(IControlPanel panel)
+        {
+            base.OnControlPanelOpened(panel);
+
+            if (!HasUnsavedChanges)
+            {
+                ReloadRecords();
+                SetsSubwindow?.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// A set's state was applied from somewhere else, which is what restoring the sets
+        /// after Play Mode does. A working copy made before that (from the values Play Mode
+        /// left) is out of date, and what the inspector shows comes from it. Copies that
+        /// have staged edits are left alone, since those are the user's to keep or discard.
+        /// </summary>
+        private void OnSetStateApplied(VariableSet set)
+        {
+            if (_isCommitting)
+            {
+                return; // Our own saving; the copies are already in step
+            }
+
+            VariableSetRecord record = _records.Find(r => r.Real == set);
+            bool isStale = record != null && record.HasWorking && !record.StateChanged;
+            if (!isStale)
+            {
+                return;
+            }
+
+            SetsSubwindow?.ReleaseInspector();
+            record.ResetWorking();
+            SetsSubwindow?.Refresh();
+        }
+
+        private bool _isCommitting;
+
+        /// <summary>
         /// Keeps the list in step with changes made outside the panel (Project window,
         /// version control, etc.), as long as that wouldn't cost the user their staged changes.
         /// </summary>
@@ -181,11 +240,13 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 EditorApplication.projectChanged += OnProjectChanged;
                 VariableSetPlayModeSnapshots.BeforeCapture += OnBeforePlayModeSnapshot;
+                VarSetSignals.StateApplied += OnSetStateApplied;
             }
             else
             {
                 EditorApplication.projectChanged -= OnProjectChanged;
                 VariableSetPlayModeSnapshots.BeforeCapture -= OnBeforePlayModeSnapshot;
+                VarSetSignals.StateApplied -= OnSetStateApplied;
             }
 
             var subwindow = SetsSubwindow;
@@ -220,9 +281,10 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         #region Staging
         // Play Mode makes the panel read-only, but these guard against it anyway, since
-        // changes to Variable Sets made then get reverted
+        // changes to Variable Sets made then get reverted. Internal rather than private
+        // so tests can drive them without going through the subwindow's buttons.
 
-        private void OnCreateRequested(string name)
+        internal void OnCreateRequested(string name)
         {
             if (EditorApplication.isPlaying)
             {
@@ -247,12 +309,12 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             NotifyIfDirtyChanged();
         }
 
-        private static void ShowError(string title, string message)
+        private void ShowError(string title, string message)
         {
-            EditorUtility.DisplayDialog(title, message, "OK");
+            ErrorDialog(title, message);
         }
 
-        private void OnRenameRequested(VariableSetRecord record, string newName)
+        internal void OnRenameRequested(VariableSetRecord record, string newName)
         {
             if (EditorApplication.isPlaying || record.IsReadOnly)
             {
@@ -273,7 +335,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             NotifyIfDirtyChanged();
         }
 
-        private void OnDuplicateRequested(VariableSetRecord record)
+        internal void OnDuplicateRequested(VariableSetRecord record)
         {
             if (EditorApplication.isPlaying)
             {
@@ -291,7 +353,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             Add(VariableSetRecord.CreateCopyOf(record, name, folder));
         }
 
-        private void OnDeleteRequested(VariableSetRecord record)
+        internal void OnDeleteRequested(VariableSetRecord record)
         {
             if (EditorApplication.isPlaying || record.IsReadOnly)
             {
@@ -314,7 +376,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             NotifyIfDirtyChanged();
         }
 
-        private void OnKeepRequested(VariableSetRecord record)
+        internal void OnKeepRequested(VariableSetRecord record)
         {
             string error = VariableSetAssetOps.ValidateName(record.Name, _records, record);
             if (error != null)
@@ -330,7 +392,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             NotifyIfDirtyChanged();
         }
 
-        private void OnMoveToggled(VariableSetRecord record)
+        internal void OnMoveToggled(VariableSetRecord record)
         {
             bool canMove = !EditorApplication.isPlaying && !record.IsNew && !record.PendingDelete &&
                 record.Location == VariableSetLocation.Elsewhere;
@@ -344,7 +406,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             NotifyIfDirtyChanged();
         }
 
-        private void OnMoveAllRequested()
+        internal void OnMoveAllRequested()
         {
             if (EditorApplication.isPlaying)
             {
@@ -376,7 +438,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             // The inspector is showing the detached copies, and deleted records dispose theirs
             SetsSubwindow?.ReleaseInspector();
 
-            VariableSetCommit.Result result = VariableSetCommit.Run(_records);
+            VariableSetCommit.Result result;
+            _isCommitting = true;
+            try
+            {
+                result = VariableSetCommit.Run(_records);
+            }
+            finally
+            {
+                _isCommitting = false;
+            }
+
             if (!result.Succeeded)
             {
                 ShowError("Some Variable Set Changes Weren't Saved",
@@ -395,7 +467,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         /// It's run by the snapshot module before it backs the sets up, so that what gets
         /// saved here is part of the backup.
         /// </summary>
-        private void OnBeforePlayModeSnapshot()
+        internal void OnBeforePlayModeSnapshot()
         {
             if (!HasUnsavedChanges)
             {
@@ -408,10 +480,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 string.Empty;
 
             const int save = 0, cancel = 1; // Anything else is Discard, which needs nothing done
-            int choice = EditorUtility.DisplayDialogComplex("Unsaved Variable Set Changes",
+            int choice = UnsavedChangesBeforePlayDialog("Unsaved Variable Set Changes",
                 "The Control Panel has Variable Set changes that haven't been saved, and " +
-                "entering Play Mode would discard them." + deleteNote,
-                "Save and Play", "Cancel", "Discard and Play");
+                "entering Play Mode would discard them." + deleteNote);
 
             bool stayInEditMode = choice == cancel || (choice == save && !Commit());
             if (stayInEditMode)
