@@ -22,6 +22,7 @@ MonoBehaviour:
     _legacyVariables: []
     _nextValidVarID: 2
     _isInitted: 0
+  _isDetached: 0
   _nextVarID: 1
   references:
     version: 2

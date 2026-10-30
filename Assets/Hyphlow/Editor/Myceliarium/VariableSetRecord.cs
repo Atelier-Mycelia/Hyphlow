@@ -139,6 +139,29 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private bool _stateChanged;
 
         /// <summary>
+        /// Throws away the working copy, so the next EnsureWorking makes a new one from the
+        /// asset as it is now. For when the asset was changed behind the record's back (say,
+        /// restored after Play Mode) and there's nothing staged on the copy worth keeping.
+        /// Whatever's showing the copy has to let go of it first.
+        /// </summary>
+        internal void ResetWorking()
+        {
+            if (IsNew)
+            {
+                return; // The copy is all there is of it
+            }
+
+            if (Working != null)
+            {
+                UnityObj.DestroyImmediate(Working);
+            }
+
+            Working = null;
+            _baselineJson = null;
+            _stateChanged = false;
+        }
+
+        /// <summary>
         /// Re-checks whether the working copy's variables or settings differ from what's on
         /// disk. Edits to it don't announce themselves, so whoever's showing it calls this.
         /// Returns whether the answer changed.
