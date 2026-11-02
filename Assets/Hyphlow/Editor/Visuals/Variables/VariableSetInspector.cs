@@ -25,8 +25,47 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             _inspectorRoot = _uxml.CloneTree();
             _rootElement.Add(_inspectorRoot);
+            var set = (VariableSet)target;
+            if (set.IsDetached)
+            {
+                // Before binding, so the fields never get hold of the serialized properties
+                SetUpUnboundFields(set);
+            }
+
             _inspectorRoot.Bind(serializedObject);
             BuildManager(_inspectorRoot);
+        }
+
+        /// <summary>
+        /// Fields bound to serialized properties record their edits on Unity's undo stack,
+        /// which detached sets stay off of (see <see cref="VariableUndo"/>). So their fields
+        /// write to the set directly instead.
+        /// </summary>
+        private void SetUpUnboundFields(VariableSet set)
+        {
+            var uniqueId = _inspectorRoot.Q<TextField>("UniqueId");
+            if (uniqueId != null)
+            {
+                uniqueId.bindingPath = null;
+                uniqueId.SetValueWithoutNotify(set.UniqueId);
+            }
+
+            SetUpToggle("IncludeInSaves", set.IncludeInSaves, value => set.IncludeInSaves = value);
+            SetUpToggle("IncludeInRegistry", set.IncludeInRegistry, value => set.IncludeInRegistry = value);
+            SetUpToggle("AlwaysKeepGuid", set.AlwaysKeepGuid, value => set.AlwaysKeepGuid = value);
+
+            void SetUpToggle(string elementName, bool current, System.Action<bool> apply)
+            {
+                var toggle = _inspectorRoot.Q<Toggle>(elementName);
+                if (toggle == null)
+                {
+                    return;
+                }
+
+                toggle.bindingPath = null;
+                toggle.SetValueWithoutNotify(current);
+                toggle.RegisterValueChangedCallback(evt => apply(evt.newValue));
+            }
         }
 
         protected VariableRowManager _manager;
