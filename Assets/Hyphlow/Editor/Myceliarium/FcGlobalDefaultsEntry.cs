@@ -1,72 +1,70 @@
 using AtMycelia.Hyphlow.EditorExt;
-using System;
-using UnityEngine;
 using AtMycelia.Myceliarium;
+using System;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
     /// <summary>
-    /// Handles the UI logic for the Flowchart Global Defaults control panel entry.
-    /// Manages the tab button and submenu for configuring global Flowchart settings.
-    /// Later on, this will become a sub-entry for the Hyphlow Entry.
+    /// Control panel entry for configuring the global Flowchart settings. The user edits
+    /// a working copy (owned by <see cref="FcGlobalDefaultsLogic"/>) that only reaches the
+    /// real asset when saving.
     /// </summary>
     public sealed class FcGlobalDefaultsEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
-        #region Display Configuration
         public override string SortingName => "Flowchart Defaults";
 
-        #endregion
+        protected override Type SidebarTabType => typeof(FcGlobalDefaultsTab);
+        protected override Type SubwindowType => typeof(FcGlobalDefaultsSubwindow);
+        protected override Type LoaderType => typeof(FcGlobalDefaultsLoader);
+        protected override Type LogicType => typeof(FcGlobalDefaultsLogic);
 
-        public override void Init(bool forceReinit = false)
+        private FcGlobalDefaultsSubwindow DefaultsSubwindow => _subwindow as FcGlobalDefaultsSubwindow;
+        private FcGlobalDefaultsLogic DefaultsLogic => Logic as FcGlobalDefaultsLogic;
+
+        /// <summary>
+        /// The copy the user is editing, which isn't necessarily what's on disk.
+        /// </summary>
+        public FlowchartGlobalDefaults WorkingState => DefaultsLogic?.Working;
+
+        protected override void SetSubs(bool wantsSubsActive)
         {
-            LoadTempSettingsFromAsset();
-            base.Init(forceReinit);
-        }
+            base.SetSubs(wantsSubsActive);
 
-        private void LoadTempSettingsFromAsset()
-        {
-            var globalDefaults = FlowchartGlobalDefaults.S;
-            if (globalDefaults == null)
-            {
-                Debug.LogError("FlowchartGlobalDefaults asset not found. Please ensure it" +
-                    "exists in the Resources folder.");
-                return;
-            }
-
-            if (_workingState == null)
-            {
-                _workingState = ScriptableObject.CreateInstance<FlowchartGlobalDefaults>();
-            }
-            
-            globalDefaults.ApplyStateTo(_workingState);
-        }
-
-        private FlowchartGlobalDefaults _workingState;
-        public FlowchartGlobalDefaults WorkingState => _workingState;
-
-        protected override void PrepareLeftSidebarTab()
-        {
-            _tab = new FcGlobalDefaultsTab();
-            _tab.Init();
-        }
-
-        protected override void PrepareSubwindow()
-        {
-            _subwindow ??= new FcGlobalDefaultsSubwindow(_workingState);
-            _subwindow.Init();
-        }
-
-        protected override void SetSubs(bool on)
-        {
-            if (_subwindow == null)
+            FcGlobalDefaultsSubwindow subwindow = DefaultsSubwindow;
+            FcGlobalDefaultsLogic logic = DefaultsLogic;
+            if (subwindow == null || logic == null)
             {
                 return;
             }
 
-            base.SetSubs(on);
+            if (wantsSubsActive)
+            {
+                subwindow.StateMayHaveChanged += logic.RecordPendingChange;
+                logic.StateRestoredByHistory += ShowWorkingState;
+            }
+            else
+            {
+                subwindow.StateMayHaveChanged -= logic.RecordPendingChange;
+                logic.StateRestoredByHistory -= ShowWorkingState;
+            }
         }
 
+        protected override void OnLoadingDone()
+        {
+            base.OnLoadingDone();
+            ShowWorkingState();
+        }
 
+        private void ShowWorkingState()
+        {
+            DefaultsSubwindow?.ShowState(WorkingState);
+        }
+
+        public override void Dispose()
+        {
+            // The logic destroys the working copy, which the subwindow's fields are bound to
+            DefaultsSubwindow?.Unbind();
+            base.Dispose();
+        }
     }
-
 }

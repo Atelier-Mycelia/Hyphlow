@@ -24,7 +24,8 @@ MonoBehaviour:
     - rid: 588464199262798079
     _legacyVariables: []
     _nextValidVarID: 6
-    _isInitted: 0
+    _isInitted: 1
+  _isDetached: 0
   _nextVarID: 1
   references:
     version: 2

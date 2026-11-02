@@ -1,5 +1,4 @@
 using AtMycelia.Myceliarium;
-using System;
 using System.Collections;
 using UnityEditor;
 
@@ -16,14 +15,14 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             return toSaveFor is VariableSetsEntry;
         }
 
-        protected override IEnumerator SaveProcess(IControlPanelEntry toSaveFor, Action onComplete)
+        // Each way of not saving everything is reported with ReportFailure rather than by
+        // throwing, since the user has been told why by a dialog and a logged exception
+        // would only add noise.
+        protected override IEnumerator SaveProcess(EntrySaveRequest request)
         {
-            yield return null; // So delayed fields have the time to commit their values
-
-            var entry = (VariableSetsEntry)toSaveFor;
+            var entry = (VariableSetsEntry)request.Entry;
             if (!entry.HasUnsavedChanges)
             {
-                onComplete?.Invoke();
                 yield break;
             }
 
@@ -33,27 +32,14 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 EditorUtility.DisplayDialog("Can't Save in Play Mode",
                     "Variable Sets can't be changed while Play Mode is running. Your changes " +
                     "are still here; exit Play Mode, then save.", "OK");
-                ControlPanelSignals.SaveFailed(entry);
-                onComplete?.Invoke();
+                request.ReportFailure();
                 yield break;
             }
 
-            if (!ConfirmDeletes(entry))
+            if (!ConfirmDeletes(entry) || !entry.Commit())
             {
-                onComplete?.Invoke();
-                yield break;
+                request.ReportFailure();
             }
-
-            if (entry.Commit())
-            {
-                ControlPanelSignals.SaveCompleted(entry);
-            }
-            else
-            {
-                ControlPanelSignals.SaveFailed(entry);
-            }
-
-            onComplete?.Invoke();
         }
 
         private static bool ConfirmDeletes(VariableSetsEntry entry)

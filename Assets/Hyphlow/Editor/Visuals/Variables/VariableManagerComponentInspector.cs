@@ -1,8 +1,6 @@
-using AtMycelia.EditorExt;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
@@ -10,11 +8,6 @@ namespace AtMycelia.Hyphlow.EditorExt
     public class VariableManagerComponentInspector : Editor
     {
         protected VariableRowManager _manager;
-        protected VariableRowFactory _rowFactory = new VariableRowFactory();
-        protected IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
-        protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
-        protected RowVisualHandlerPool _handlerPool;
-        protected VariableRowPool _rowPool;
         protected VisualTreeAsset _uxml;
         protected VisualElement _rootElement;
         protected TemplateContainer _inspectorRoot;
@@ -42,9 +35,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected virtual void PrepGUI()
         {
-            _manager = new VariableRowManager();
-            _handlerPool = new RowVisualHandlerPool(_resolver, RowVisualHandlerRegistry.VisualHandlerLookup);
-            _rowPool = new VariableRowPool();
             _uxml = Resources.Load<VisualTreeAsset>(_pathToUxml);
 
             _rootElement = new VisualElement();
@@ -65,35 +55,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            _factoryInitArgs.Holder = rootElem;
-            _factoryInitArgs.HandlerPool = _handlerPool;
-            _factoryInitArgs.RowPool = _rowPool;
-            _rowFactory.Init(_factoryInitArgs);
-
-            ListView list = rootElem.Q<ListView>("rowList");
-            
-            UitkLabel count = rootElem.Q<UitkLabel>("varCountLabel");
-            Button addBtn = rootElem.Q<Button>("addVarButton");
-
-            VariableListViewInitArgs listViewArgs = new VariableListViewInitArgs()
-            {
-                List = list,
-                CountLabel = count,
-                RowFactory = _rowFactory,
-                VariableSource = component,
-                AssetResolver = new DefaultEditorAssetResolver(),
-            };
-            VariableListView view = new VariableListView(listViewArgs);
-
-            VRowManagerInitArgs managerInitArgs = new VRowManagerInitArgs
-            {
-                Root = rootElem,
-                AddButton = addBtn,
-                VariableSource = component,
-                VariableListView = view,
-            };
-
-            _manager.Init(managerInitArgs);
+            _manager = VariableRowManager.CreateFor(rootElem, component);
         }
 
         protected void AddMigrationButton(VisualElement rootElem)

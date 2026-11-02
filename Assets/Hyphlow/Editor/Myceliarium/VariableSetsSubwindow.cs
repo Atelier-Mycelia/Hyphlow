@@ -24,12 +24,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private static readonly string _itemTemplatePath =
             "Editor/Uxml/Myceliarium/VariableSetListItem";
 
-        internal VariableSetsSubwindow(IReadOnlyList<VariableSetRecord> records)
+        /// <summary>
+        /// The entry's logic owns the records, so the subwindow is handed its list once
+        /// that exists. The list is refilled rather than replaced, so this is called just
+        /// once per initialization.
+        /// </summary>
+        internal void UseRecords(IReadOnlyList<VariableSetRecord> records)
         {
             _records = records;
         }
 
-        private readonly IReadOnlyList<VariableSetRecord> _records;
+        private IReadOnlyList<VariableSetRecord> _records = Array.Empty<VariableSetRecord>();
         private readonly List<VariableSetRecord> _visibleRecords = new List<VariableSetRecord>();
 
         internal event Action<string> CreateRequested = delegate { };

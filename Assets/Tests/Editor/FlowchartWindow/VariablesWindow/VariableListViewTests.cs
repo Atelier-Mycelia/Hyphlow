@@ -25,11 +25,6 @@ namespace VScriptingTests.VariableOperations
         ListView _uiList;
         UITKLabel _countLabel;
         VariableListView _view;
-        VariableRowFactory _factory;
-        VariableRowFactoryInitArgs _factoryArgs;
-        VariableRowPool _rowPool;
-        RowVisualHandlerPool _handlerPool;
-        IRowVisualHandlerResolver _resolver;
 
         readonly List<IVariable> _createdVars = new();
 
@@ -44,25 +39,10 @@ namespace VScriptingTests.VariableOperations
             _uiList = new ListView();
             _countLabel = new UITKLabel();
 
-            _resolver = new RowVisualHandlerResolver();
-            _handlerPool = new RowVisualHandlerPool(_resolver, RowVisualHandlerRegistry.VisualHandlerLookup);
-            _rowPool = new VariableRowPool();
-
-            _factory = new VariableRowFactory();
-            _factoryArgs = new VariableRowFactoryInitArgs
-            {
-                RowPool = _rowPool,
-                HandlerPool = _handlerPool,
-                Holder = null
-            };
-            _factory.Init(_factoryArgs);
-
             var listViewArgs = new VariableListViewInitArgs()
             {
                 List = _uiList,
                 CountLabel = _countLabel,
-                RowFactory = _factory,
-                AssetResolver = new DefaultEditorAssetResolver(),
             };
             _view = new VariableListView(listViewArgs);
 
@@ -92,7 +72,6 @@ namespace VScriptingTests.VariableOperations
 
             _createdVars.Clear();
             _view?.Dispose();
-            _factory?.Dispose();
 
             if (_host != null)
                 UnityObj.DestroyImmediate(_host);
@@ -296,16 +275,35 @@ namespace VScriptingTests.VariableOperations
         }
 
         [Test]
-        public void RowAtIndex_NullWhenNotMaterialized()
+        public void TryGetHandler_FalseWhenNotMaterialized()
         {
             var firstVar = CreateVar<FloatVariable, float>("f1", 1f);
             _view.AddVariable(firstVar);
-            Assert.IsNull(_view.RowAtIndex(0));
+            Assert.IsFalse(_view.TryGetHandler(firstVar, out _));
         }
 
-        // New test reproducing the old phantom-row behavior and verifying the reference-equality fix.
         [Test]
-        public void AddMultiple_Variables_WithValueBasedEquals_DoNotCollide_InActiveRowMap()
+        public void RemoveVariable_UsesReferenceEquality()
+        {
+            var firstVar = _host.AddComponent<ValueEqualsVariable>();
+            firstVar.Key = "same-key";
+            var secondVar = _host.AddComponent<ValueEqualsVariable>();
+            secondVar.Key = "same-key";
+            _createdVars.Add(firstVar);
+            _createdVars.Add(secondVar);
+            _view.AddVariable(firstVar);
+            _view.AddVariable(secondVar);
+
+            _view.RemoveVariable(secondVar);
+
+            Assert.AreEqual(1, InternalVariables.Count);
+            Assert.AreSame(firstVar, InternalVariables[0],
+                "Removing the second variable must not remove the first one that merely Equals it.");
+        }
+
+        // New test reproducing the old phantom-row behavior and verifying that rows are matched to variables by reference.
+        [Test]
+        public void AddMultiple_Variables_WithValueBasedEquals_DoNotCollide_WhenMaterialized()
         {
             // Arrange: create three distinct component variables that intentionally override equality
             var firstVar = _host.AddComponent<ValueEqualsVariable>();
@@ -338,27 +336,23 @@ namespace VScriptingTests.VariableOperations
             // Materialize rows as the ListView virtualization would do
             _view.ForceMaterializeAllRowsForTests();
 
-            // Assert: each variable has its own materialized row (no collisions in _activeRows)
-            string errorMessage = "Expected three active rows; value-based Equals " +
-                "should not collapse distinct instances.";
-            Assert.AreEqual(3, _view.Rows.Count, errorMessage);
+            // Assert: each variable has its own handler (no collisions from value-based Equals)
+            Assert.IsTrue(_view.TryGetHandler(firstVar, out var firstHandler));
+            Assert.IsTrue(_view.TryGetHandler(secondVar, out var secondHandler));
+            Assert.IsTrue(_view.TryGetHandler(thirdVar, out var thirdHandler));
 
-            var firstRow = _view.RowAtIndex(0);
-            var secondRow = _view.RowAtIndex(1);
-            var thirdRow = _view.RowAtIndex(2);
+            Assert.AreNotSame(firstHandler, secondHandler);
+            Assert.AreNotSame(secondHandler, thirdHandler);
+            Assert.AreNotSame(firstHandler, thirdHandler);
 
-            Assert.IsNotNull(firstRow);
-            Assert.IsNotNull(secondRow);
-            Assert.IsNotNull(thirdRow);
-
-            Assert.AreNotSame(firstRow, secondRow);
-            Assert.AreNotSame(secondRow, thirdRow);
-            Assert.AreNotSame(firstRow, thirdRow);
+            Assert.AreSame(firstVar, firstHandler.Variable);
+            Assert.AreSame(secondVar, secondHandler.Variable);
+            Assert.AreSame(thirdVar, thirdHandler.Variable);
 
             // Also ensure the visuals were created
-            Assert.IsNotNull(firstRow.RootElement);
-            Assert.IsNotNull(secondRow.RootElement);
-            Assert.IsNotNull(thirdRow.RootElement);
+            Assert.IsNotNull(firstHandler.RowRoot);
+            Assert.IsNotNull(secondHandler.RowRoot);
+            Assert.IsNotNull(thirdHandler.RowRoot);
         }
 
         [Test]
@@ -437,7 +431,6 @@ namespace VScriptingTests.VariableOperations
                 {
                     List = new ListView(),
                     CountLabel = new UITKLabel(),
-                    RowFactory = _factory
                 });
 
                 testView.SetSource(flowchart);

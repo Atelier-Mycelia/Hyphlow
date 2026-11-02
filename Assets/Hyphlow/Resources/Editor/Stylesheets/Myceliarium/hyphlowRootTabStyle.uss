@@ -62,6 +62,12 @@
     height: 100%;
 }
 
+/* Room for the icon, on the header instead of the Foldout so subtabs aren't indented
+   (Myceliarium's tab styles take care of the rest once the tab has subtabs) */
+.tabRoot.tab-foldout-root > .unity-foldout > .unity-toggle {
+    padding-left: 60px;
+}
+
 /* To hide the checkmark */
 .unity-toggle__checkmark
 {

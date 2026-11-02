@@ -1,90 +1,108 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UitkLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    public class VariableRowManager : IDisposable
+    /// <summary>
+    /// Sits between a variable source and the list view showing it: keeps the list in step
+    /// with the source, and is the only place that applies edits made in the rows back onto
+    /// the variables (with Undo and dirtying).
+    /// </summary>
+    public class VariableRowManager : IRowEditHost, IDisposable
     {
-        public virtual void Init(VRowManagerInitArgs initArgs)
+        /// <summary>
+        /// Builds the list view and manager for a panel made from the VariableDisplayEditor
+        /// UXML (it needs elements named rowList, varCountLabel and addVarButton).
+        /// </summary>
+        public static VariableRowManager CreateFor(VisualElement root, IReorderableVariableSource source)
         {
-            _isDisposed = false;
-
-            bool allWentWell;
-            ValidateArgs();
-            void ValidateArgs()
+            if (root == null || source == null)
             {
-                int errorLogs = 0;
-                if (initArgs == null)
-                {
-                    Debug.LogError("VariableRowManager was given a null args object.");
-                    allWentWell = false;
-                    return;
-                }
-
-                if (initArgs.VariableSource == null)
-                {
-                    Debug.LogError("VariableRowManager was not given a Flowchart to work with.");
-                    errorLogs++;
-                }
-
-                if (initArgs.VariableListView == null)
-                {
-                    Debug.LogError($"VariableRowManager was not given a list view to work with.");
-                    errorLogs++;
-                }
-
-                if (initArgs.Root == null)
-                {
-                    Debug.LogError("VariableRowManager was not given a root to work with.");
-                    errorLogs++;
-                }
-
-                if (initArgs.AddButton == null)
-                {
-                    Debug.LogError("VariableRowManager was not given an add button to work with");
-                    errorLogs++;
-                }
-
-                allWentWell = errorLogs == 0;
+                Debug.LogError("VariableRowManager.CreateFor needs both a root element and a variable source.");
+                return null;
             }
 
-            if (!allWentWell)
+            var listViewArgs = new VariableListViewInitArgs
+            {
+                List = root.Q<ListView>("rowList"),
+                CountLabel = root.Q<UitkLabel>("varCountLabel"),
+                VariableSource = source,
+            };
+            var view = new VariableListView(listViewArgs);
+
+            var manager = new VariableRowManager();
+            manager.Init(new VRowManagerInitArgs
+            {
+                Root = root,
+                AddButton = root.Q<Button>("addVarButton"),
+                VariableSource = source,
+                VariableListView = view,
+            });
+            return manager;
+        }
+
+        public virtual void Init(VRowManagerInitArgs initArgs)
+        {
+            // In case we're being re-initialized; unsubscribe from what we had before
+            SetSubs(false);
+            _isDisposed = false;
+
+            if (!ValidateArgs(initArgs))
             {
                 Debug.LogError("Failed to initialize VariableRowManager.");
                 return;
             }
 
-            PrepListView();
-            void PrepListView()
-            {
-                _listView = initArgs.VariableListView;
-            }
-
-            InitVisuals(initArgs);
-            void InitVisuals(VRowManagerInitArgs initArgs)
-            {
-                Root = initArgs.Root;
-                _addButton = initArgs.AddButton;
-            }
-
-            PrepEventListeners();
-            void PrepEventListeners()
-            {
-                SetSubs(false);
-                _variableSource = initArgs.VariableSource;
-                SetSubs(true);
-            }
-
+            _listView = initArgs.VariableListView;
+            _listView.EditHost = this;
+            Root = initArgs.Root;
+            _addButton = initArgs.AddButton;
+            _variableSource = initArgs.VariableSource;
             _varManagerComponent = _variableSource as VariableManagerComponent;
-            
 
+            SetSubs(true);
             Refresh();
+        }
+
+        private bool ValidateArgs(VRowManagerInitArgs initArgs)
+        {
+            if (initArgs == null)
+            {
+                Debug.LogError("VariableRowManager was given a null args object.");
+                return false;
+            }
+
+            int errorLogs = 0;
+            if (initArgs.VariableSource == null)
+            {
+                Debug.LogError("VariableRowManager was not given a Flowchart to work with.");
+                errorLogs++;
+            }
+
+            if (initArgs.VariableListView == null)
+            {
+                Debug.LogError($"VariableRowManager was not given a list view to work with.");
+                errorLogs++;
+            }
+
+            if (initArgs.Root == null)
+            {
+                Debug.LogError("VariableRowManager was not given a root to work with.");
+                errorLogs++;
+            }
+
+            if (initArgs.AddButton == null)
+            {
+                Debug.LogError("VariableRowManager was not given an add button to work with");
+                errorLogs++;
+            }
+
+            return errorLogs == 0;
         }
 
         protected bool _isDisposed;
@@ -94,114 +112,42 @@ namespace AtMycelia.Hyphlow.EditorExt
         protected IVariableListView _listView;
         protected Button _addButton;
 
-        private const float PlayModeRefreshCooldownSeconds = 0.2f;
-        private float _lastListRefreshTime = float.NegativeInfinity;
-        private bool _refreshScheduled;
-        private float _nextRefreshTime;
-
         public VisualElement Root { get; protected set; }
 
-        #region Event Wiring / Visual Init
+        #region Event Wiring
         protected virtual void SetSubs(bool on)
         {
-            if (_variableSource == null || _listView == null)
+            if (on == _subsActive || _variableSource == null || _listView == null || _addButton == null)
             {
                 return;
             }
 
-            if (on && !_subsActive)
+            if (on)
             {
                 VariableSignals.PostValueChange += OnVariableValueChanged;
                 _variableSource.VariableAdded += OnVariableAdded;
                 _variableSource.VariableRemoved += OnVariableRemoved;
                 _listView.OrderChanged += OnOrderChanged;
                 _addButton.clicked += OnAddButtonClicked;
-                HyphlowEditorSignals.VarRowRemoveButtonClicked += OnVarRowRemovalButtonClicked;
-
-                // By responding to the changes in the UI this way, we can ensure that
-                // undo operations work as expected. Because again: we are not going to
-                // rely on UITK's built-in binding system for this.
-                HyphlowEditorSignals.KeyFieldChanged += OnKeyFieldChanged;
-                HyphlowEditorSignals.ScopeFieldChanged += OnScopeFieldChanged;
-                HyphlowEditorSignals.ValueFieldChanged += OnValueFieldChanged;
-                _subsActive = true;
             }
-            else if (!on)
+            else
             {
                 VariableSignals.PostValueChange -= OnVariableValueChanged;
                 _variableSource.VariableAdded -= OnVariableAdded;
                 _variableSource.VariableRemoved -= OnVariableRemoved;
                 _listView.OrderChanged -= OnOrderChanged;
                 _addButton.clicked -= OnAddButtonClicked;
-                HyphlowEditorSignals.VarRowRemoveButtonClicked -= OnVarRowRemovalButtonClicked;
-
-                HyphlowEditorSignals.KeyFieldChanged -= OnKeyFieldChanged;
-                HyphlowEditorSignals.ScopeFieldChanged -= OnScopeFieldChanged;
-                HyphlowEditorSignals.ValueFieldChanged -= OnValueFieldChanged;
-                _subsActive = false;
             }
+
+            _subsActive = on;
         }
 
-        private void OnVariableValueChanged(IVariable variable, object arg2)
+        protected bool _subsActive = false;
+
+        private void OnVariableValueChanged(IVariable variable, object newValue)
         {
-            // Only respond if it's a variable in a row we're managing
-            if (!_listView.VarsToDisplay.Contains(variable))
-            {
-                return;
-            }
-
-            if (!Application.isPlaying)
-            {
-                RefreshListView();
-                return;
-            }
-
-            float now = Time.realtimeSinceStartup;
-            float timeSinceLastRefresh = now - _lastListRefreshTime;
-            if (timeSinceLastRefresh >= PlayModeRefreshCooldownSeconds)
-            {
-                RefreshListView();
-            }
-            else
-            {
-                ScheduleRefreshIfNeeded();
-            }
-        }
-
-        private void RefreshListView()
-        {
-            if (_isDisposed || _listView == null)
-            {
-                return;
-            }
-
-            _lastListRefreshTime = Time.realtimeSinceStartup;
-            _listView.Refresh();
-        }
-
-        private void ScheduleRefreshIfNeeded()
-        {
-            if (_refreshScheduled)
-            {
-                return;
-            }
-
-            _refreshScheduled = true;
-            _nextRefreshTime = Mathf.Max(_lastListRefreshTime + PlayModeRefreshCooldownSeconds, Time.realtimeSinceStartup);
-            EditorApplication.update -= TryExecuteScheduledRefresh;
-            EditorApplication.update += TryExecuteScheduledRefresh;
-        }
-
-        private void TryExecuteScheduledRefresh()
-        {
-            if (Time.realtimeSinceStartup < _nextRefreshTime)
-            {
-                return;
-            }
-
-            EditorApplication.update -= TryExecuteScheduledRefresh;
-            _refreshScheduled = false;
-            RefreshListView();
+            // Only the row showing this variable (if any) needs to catch up
+            _listView?.RefreshValueOf(variable);
         }
 
         protected virtual void OnVariableAdded(IVariable added)
@@ -216,7 +162,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             _listView?.RemoveVariable(removed);
         }
 
-        protected virtual void OnOrderChanged(IList<IVariable> newlyOrderedVars)
+        protected virtual void OnOrderChanged(System.Collections.Generic.IList<IVariable> newlyOrderedVars)
         {
             _variableSource.ReorderVariables(newlyOrderedVars);
         }
@@ -235,8 +181,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 VariableSelectPopupWindowContent.DoAddVariable(rect, "", muscaSource);
             }
         }
-
-        protected bool _subsActive = false;
 
         protected bool HasLiveVariableSourceReference()
         {
@@ -265,10 +209,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-#if UNITY_EDITOR
             var fcFromTracker = EditorSelectionTracker.ActiveFlowchart;
             TryRebindTo(fcFromTracker);
-#endif
         }
 
         protected bool TryRebindTo(IVariableSource candidate)
@@ -336,82 +278,92 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
         #endregion
 
-        #region Variable Event Handlers
+        #region IRowEditHost
+        // Rows report straight to the manager of the list they sit in, so there's no need to
+        // work out whether an edit belongs to us. We only make sure the source is still usable.
 
-        protected virtual void OnVarRowRemovalButtonClicked(VariableRow row)
+        public virtual void RemoveRequested(IVariable variable)
         {
-            if (!WeAreManaging(row))
+            if (!ReadyToEdit(variable))
             {
                 return;
             }
 
-            if (row == null || row.VarToRepresent == null)
-            {
-                string logMessage = "VariableRowManager was given a null VariableRow or VariableRow with " +
-                    "null VarToRepresent.";
-                Debug.LogError(logMessage);
-                return;
-            }
+            IVariableSource owner = variable.Owner ?? _variableSource;
 
-            IVariable varInvolved = row.VarToRepresent;
-            var owner = varInvolved.Owner;
-
-            PrepUndoRecordForOwner();
-            void PrepUndoRecordForOwner()
+            if (owner is UnityObj ownerObj && ownerObj != null)
             {
-                if (owner is UnityObj ownerObj && ownerObj != null)
+                string typeName = variable.ContentType.Name;
+                if (typeName.Equals("Single"))
                 {
-                    string typeName = varInvolved.ContentType.Name;
-                    if (typeName.Equals("Single"))
-                    {
-                        typeName = "Float";
-                    }
-
-                    Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
+                    typeName = "Float";
                 }
-            }
-            
-            owner.RemoveVariable(varInvolved);
 
-            if (varInvolved is UnityObj legacyVar && legacyVar != null)
+                Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
+            }
+
+            owner.RemoveVariable(variable);
+
+            if (variable is UnityObj legacyVar && legacyVar != null)
             {
                 UnityObj.DestroyImmediate(legacyVar);
             }
         }
 
-        protected virtual void OnKeyFieldChanged(VariableRow rowInvolved, string newKey)
+        public virtual void KeyEdited(IVariable variable, string newKey)
         {
-            if (!WeAreManaging(rowInvolved))
+            if (!ReadyToEdit(variable))
             {
                 return;
             }
 
-            IVariable theVar = rowInvolved.VarToRepresent;
-            if (theVar.Key != newKey)
+            if (variable.Key != newKey)
             {
-                RecordAndApplyChange(theVar, "Key", (varToChange) => varToChange.Key = newKey);
+                RecordAndApplyChange(variable, "Key", (varToChange) => varToChange.Key = newKey);
             }
         }
 
-        protected virtual bool WeAreManaging(VariableRow row)
+        public virtual void ScopeEdited(IVariable variable, AccessScope newScope)
         {
-            if (row == null || row.VarToRepresent == null)
+            if (!ReadyToEdit(variable))
+            {
+                return;
+            }
+
+            if (variable.Scope != newScope)
+            {
+                RecordAndApplyChange(variable, "Scope", (varToChange) => varToChange.Scope = newScope);
+            }
+        }
+
+        public virtual void ValueEdited(IVariable variable, object newValue)
+        {
+            if (!ReadyToEdit(variable))
+            {
+                return;
+            }
+
+            if (!Equals(variable.BoxedValue, newValue))
+            {
+                RecordAndApplyChange(variable, "Value", (varToChange) => varToChange.BoxedValue = newValue);
+            }
+        }
+
+        protected virtual bool ReadyToEdit(IVariable variable)
+        {
+            if (_isDisposed || variable == null)
             {
                 return false;
             }
 
-            IVariable variable = row.VarToRepresent;
-            IVariableSource owner = variable.Owner;
-
             if (!HasLiveVariableSourceReference())
             {
-                EnsureVariableSource(owner);
+                EnsureVariableSource(variable.Owner);
             }
 
-            if (owner == null && HasLiveVariableSourceReference())
+            if (variable.Owner == null && HasLiveVariableSourceReference())
             {
                 variable.Owner = _variableSource;
-                owner = _variableSource;
             }
 
             if (_variableSource is Flowchart fc && _varManagerComponent == null)
@@ -419,9 +371,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 _varManagerComponent = fc.GetComponent<VariableManagerComponent>();
             }
 
-            bool result = owner != null && _variableSource != null && 
-                (ReferenceEquals(owner, _variableSource) || _varManagerComponent != null);
-            return result;
+            return _variableSource != null;
         }
 
         private static void MarkDirty(UnityObj target)
@@ -478,35 +428,6 @@ namespace AtMycelia.Hyphlow.EditorExt
                 so.MarkDirtyAndSave();
             }
         }
-
-        protected virtual void OnScopeFieldChanged(VariableRow row, AccessScope scope)
-        {
-            if (!WeAreManaging(row))
-            {
-                return;
-            }
-
-            IVariable theVar = row.VarToRepresent;
-            if (theVar.Scope != scope)
-            {
-                RecordAndApplyChange(theVar, "Scope", (varToChange) => varToChange.Scope = scope);
-            }
-        }
-        
-        protected virtual void OnValueFieldChanged(VariableRow row, object newVal)
-        {
-            if (!WeAreManaging(row))
-            {
-                return;
-            }
-
-            IVariable theVar = row.VarToRepresent;
-            if (!Equals(theVar.BoxedValue, newVal))
-            {
-                RecordAndApplyChange(theVar, "Value", (varToChange) => varToChange.BoxedValue = newVal);
-            }
-        }
-
         #endregion
 
         #region Refresh APIs
@@ -515,7 +436,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (_isDisposed || _variableSource == null || _listView == null)
                 return;
 
-            
             _listView.SetVariables(_variableSource.Variables);
         }
         #endregion
@@ -525,13 +445,14 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             if (_isDisposed) return;
 
-            EditorApplication.update -= TryExecuteScheduledRefresh;
-            _refreshScheduled = false;
-
             SetSubs(false);
             ReleaseRowsFromList();
 
-            _listView?.Dispose();
+            if (_listView != null)
+            {
+                _listView.EditHost = null;
+                _listView.Dispose();
+            }
 
             _listView = null;
             _variableSource = null;

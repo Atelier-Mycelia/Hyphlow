@@ -1,9 +1,7 @@
-using AtMycelia.EditorExt;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
@@ -21,10 +19,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         protected virtual void PrepGUI()
         {
-            _manager = new VariableRowManager();
-            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
-            _handlerPool ??= new RowVisualHandlerPool(_resolver, visualHandlerLookup);
-            _rowPool ??= new VariableRowPool();
             _uxml = Resources.Load<VisualTreeAsset>(_pathToUxml);
 
             _rootElement = new VisualElement();
@@ -36,10 +30,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
 
         protected VariableRowManager _manager;
-        protected RowVisualHandlerPool _handlerPool;
-        protected VariableRowPool _rowPool;
         protected VisualTreeAsset _uxml;
-        protected static readonly string _pathToUxml = 
+        protected static readonly string _pathToUxml =
             "Editor/Uxml/VariableSetInspector";
         protected VisualElement _rootElement;
         protected TemplateContainer _inspectorRoot;
@@ -50,61 +42,15 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (varSource == null)
                 return;
 
-            var holder = rootElem;
-
-            PrepFactory();
-            void PrepFactory()
-            {
-                _factoryInitArgs.Holder = holder;
-                _factoryInitArgs.HandlerPool = _handlerPool;
-                _factoryInitArgs.RowPool = _rowPool;
-                _rowFactory.Init(_factoryInitArgs);
-            }
-
-            VariableListView view;
-            Button addBtn;
-            PrepVarListView();
-            void PrepVarListView()
-            {
-                var list = rootElem.Q<ListView>("rowList");
-                var count = rootElem.Q<UitkLabel>("varCountLabel");
-                addBtn = rootElem.Q<Button>("addVarButton");
-
-                var listViewArgs = new VariableListViewInitArgs()
-                {
-                    List = list,
-                    CountLabel = count,
-                    RowFactory = _rowFactory,
-                    VariableSource = varSource,
-                    AssetResolver = new DefaultEditorAssetResolver(),
-                };
-                view = new VariableListView(listViewArgs);
-            }
-
-            InitManager();
-            void InitManager()
-            {
-                VRowManagerInitArgs managerInitArgs = new VRowManagerInitArgs
-                {
-                    Root = rootElem,
-                    AddButton = addBtn,
-                    VariableSource = varSource,
-                    VariableListView = view,
-                };
-
-                _manager.Init(managerInitArgs);
-            }
+            _manager?.Dispose();
+            _manager = VariableRowManager.CreateFor(rootElem, varSource);
         }
-
-        protected VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
-        protected VariableRowFactory _rowFactory = new VariableRowFactory();
 
         protected virtual void SetSubs(bool on)
         {
             var source = (VariableSet)target;
             if (on)
             {
-                HyphlowEditorSignals.VarRowControlLostFocus += OnVarRowControlLostFocus;
                 source.VariableAdded += OnVariableAdded;
                 source.VariableRemoved += OnVariableRemoved;
                 source.VariablesReordered += UpdateSourceAssetFile;
@@ -112,17 +58,11 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
             else
             {
-                HyphlowEditorSignals.VarRowControlLostFocus -= OnVarRowControlLostFocus;
                 source.VariableAdded -= OnVariableAdded;
                 source.VariableRemoved -= OnVariableRemoved;
                 source.VariablesReordered -= UpdateSourceAssetFile;
                 source.Refreshed -= UpdateSourceAssetFile;
             }
-        }
-
-        protected virtual void OnVarRowControlLostFocus(FocusOutEvent evt)
-        {
-            UpdateSourceAssetFile();
         }
 
         protected virtual void UpdateSourceAssetFile()
@@ -147,8 +87,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             UpdateSourceAssetFile();
         }
 
-        protected readonly IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
-        
         // This executes twice in a row when the asset is clicked, and then once again when you click some
         // other asset
         public override VisualElement CreateInspectorGUI()
@@ -164,5 +102,5 @@ namespace AtMycelia.Hyphlow.EditorExt
             _rootElement = null;
             SetSubs(false);
         }
-            }
-        }
+    }
+}
