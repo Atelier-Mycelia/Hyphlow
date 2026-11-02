@@ -299,7 +299,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     typeName = "Float";
                 }
 
-                Undo.RecordObject(ownerObj, $"Remove {typeName} Variable");
+                RecordUndo(ownerObj, $"Remove {typeName} Variable");
             }
 
             owner.RemoveVariable(variable);
@@ -394,6 +394,21 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
+        /// <summary>
+        /// Detached sets are staged on by the Control Panel, which has its own history. If
+        /// edits to them also went on Unity's undo stack, Edit > Undo would change a set
+        /// behind the panel's back.
+        /// </summary>
+        protected virtual bool RecordsUnityUndo => !(_variableSource is VariableSet set && set.IsDetached);
+
+        private void RecordUndo(UnityObj target, string label)
+        {
+            if (RecordsUnityUndo)
+            {
+                Undo.RecordObject(target, label);
+            }
+        }
+
         protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)
         {
             if (variable == null || applyChange == null)
@@ -412,7 +427,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            Undo.RecordObject(toRecord, $"Change to {varType} {description}");
+            RecordUndo(toRecord, $"Change to {varType} {description}");
 
             applyChange(variable);
 

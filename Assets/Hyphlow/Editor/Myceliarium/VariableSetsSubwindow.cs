@@ -51,6 +51,12 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         /// </summary>
         internal event Action StateMayHaveChanged = delegate { };
 
+        /// <summary>
+        /// Raised each time the selected set's working copy is checked for edits, whether
+        /// or not it turned out to differ.
+        /// </summary>
+        internal event Action EditsPolled = delegate { };
+
         protected override void RegisterVisualElements()
         {
             _playModeBanner = Root.Q("PlayModeBanner");
@@ -419,13 +425,34 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 if (item is VariableSetRecord record)
                 {
-                    PollSelectedRecordNow(); // Last chance to catch what was edited in the previous one
-                    _selectedKey = record.Key;
-                    _lastSelectedIndex = _listView.selectedIndex;
-                    RefreshDetails();
+                    string key = record.Key;
+                    int index = _listView.selectedIndex;
+                    if (CommitFocusedRowField())
+                    {
+                        // The field's focus-out is queued behind the event being handled now,
+                        // so the old inspector has to outlive this call for it to commit
+                        schedule.Execute(() => ApplySelection(key, index));
+                    }
+                    else
+                    {
+                        ApplySelection(key, index);
+                    }
                 }
                 return;
             }
+        }
+
+        private void ApplySelection(string key, int index)
+        {
+            if (FindRecord(key) == null)
+            {
+                return; // Gone while waiting
+            }
+
+            PollSelectedRecordNow(); // Last chance to catch what was edited in the previous one
+            _selectedKey = key;
+            _lastSelectedIndex = index;
+            RefreshDetails();
         }
 
         // Tracked by key since the records get rebuilt whenever the project changes
@@ -765,6 +792,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             VariableSetRecord record = SelectedRecord;
             if (record != null)
             {
+                CommitFocusedRowField();
                 PollSelectedRecordNow(); // So the copy starts from what's on screen
                 DuplicateRequested(record);
             }
@@ -793,10 +821,36 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
         }
 
+        /// <summary>
+        /// The rows' fields only report an edit when they lose focus (or on Enter), and
+        /// clicking another set in the list changes the selection, and with it the
+        /// inspector, before focus has moved. Without this, what was typed in the field
+        /// that still had focus is thrown away with the old inspector. The commit isn't
+        /// immediate (see <see cref="OnListSelectionChanged"/>); returns whether there was a
+        /// field to blur, so the caller knows to wait.
+        /// </summary>
+        private bool CommitFocusedRowField()
+        {
+            var focused = _inspectorHolder.panel?.focusController?.focusedElement as VisualElement;
+            if (focused == null || !_inspectorHolder.Contains(focused))
+            {
+                return false;
+            }
+
+            focused.Blur();
+            return true;
+        }
+
         private void PollSelectedRecordNow()
         {
             VariableSetRecord record = SelectedRecord;
-            if (record == null || !record.HasWorking || !record.RefreshStateChanged())
+            if (record == null || !record.HasWorking)
+            {
+                return;
+            }
+
+            EditsPolled();
+            if (!record.RefreshStateChanged())
             {
                 return;
             }
