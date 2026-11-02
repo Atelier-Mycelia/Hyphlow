@@ -145,6 +145,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             SetsSubwindow?.ReleaseInspector();
             record.ResetWorking();
+            SetsLogic.History.Clear(); // Its commands point at states of the copy that's gone
             SetsSubwindow?.Refresh();
         }
 
@@ -241,6 +242,8 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 subwindow.MoveToggled += OnMoveToggled;
                 subwindow.MoveAllRequested += OnMoveAllRequested;
                 subwindow.StateMayHaveChanged += logic.NotifyIfDirtyChanged;
+                subwindow.EditsPolled += logic.RecordPendingEdits;
+                logic.RecordRestoredByHistory += OnRecordRestoredByHistory;
             }
             else
             {
@@ -252,7 +255,17 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
                 subwindow.MoveToggled -= OnMoveToggled;
                 subwindow.MoveAllRequested -= OnMoveAllRequested;
                 subwindow.StateMayHaveChanged -= logic.NotifyIfDirtyChanged;
+                subwindow.EditsPolled -= logic.RecordPendingEdits;
+                logic.RecordRestoredByHistory -= OnRecordRestoredByHistory;
             }
+        }
+
+        private void OnRecordRestoredByHistory(VariableSetRecord record)
+        {
+            // The inspector's rows were built from the copy as it was; showing the restored
+            // state means building them again, for the set that was undone
+            SetsSubwindow?.ReleaseInspector();
+            SetsSubwindow?.Refresh(record.Key);
         }
 
         #region Staging

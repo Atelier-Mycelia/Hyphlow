@@ -1,4 +1,5 @@
 using AtMycelia.Myceliarium;
+using System;
 using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
@@ -72,6 +73,58 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         {
             base.MarkSaved();
             NotifyIfDirtyChanged();
+        }
+        #endregion
+
+        #region Undo
+        // Only edits to a set's variables and settings go on the history. Creating,
+        // renaming, deleting and moving sets are staged on the records and show up as such
+        // in the list, so Cancel is what takes those back.
+
+        /// <summary>
+        /// Raised after undoing or redoing changed a record's working copy, so the UI
+        /// can show it.
+        /// </summary>
+        public event Action<VariableSetRecord> RecordRestoredByHistory = delegate { };
+
+        /// <summary>
+        /// To be called when the user may have edited a working copy (they're edited
+        /// through the inspector, which doesn't announce it). Does nothing for copies that
+        /// weren't, so it's fine to call it too often.
+        /// </summary>
+        public void RecordPendingEdits()
+        {
+            for (int i = 0; i < _records.Count; i++)
+            {
+                VariableSetRecord record = _records[i];
+                if (!record.TryCaptureEdit(out string before, out string after))
+                {
+                    continue;
+                }
+
+                History.Record(new DelegateCommand(
+                    execute: () => Restore(record, after),
+                    undo: () => Restore(record, before)));
+            }
+        }
+
+        private void Restore(VariableSetRecord record, string state)
+        {
+            bool stillThere = _records.Contains(record) && record.HasWorking;
+            if (!stillThere)
+            {
+                return;
+            }
+
+            record.RestoreEdit(state);
+            RecordRestoredByHistory(record);
+            NotifyIfDirtyChanged();
+        }
+
+        public override void CommitPendingEdits()
+        {
+            base.CommitPendingEdits();
+            RecordPendingEdits(); // So an undo right after an edit has that edit to undo
         }
         #endregion
 

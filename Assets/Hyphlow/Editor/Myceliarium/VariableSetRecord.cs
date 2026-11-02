@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         /// <summary>
         /// Anywhere in Assets outside the VSA folder. These are the ones we offer to move.
         /// </summary>
-        Elsewhere,
+        Elsewhere,//
         ReadOnly,
     }
 
@@ -45,13 +45,15 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         /// </summary>
         internal static VariableSetRecord CreateNew(string name, string targetFolder)
         {
-            return new VariableSetRecord
+            var record = new VariableSetRecord
             {
                 Key = Guid.NewGuid().ToString("N"),
                 TargetFolder = targetFolder,
                 Name = name,
                 Working = VariableSet.CreateDetached(),
             };
+            record._editedJson = JsonOf(record.Working);
+            return record;
         }
 
         /// <summary>
@@ -60,13 +62,15 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         internal static VariableSetRecord CreateCopyOf(VariableSetRecord source, string name,
             string targetFolder)
         {
-            return new VariableSetRecord
+            var record = new VariableSetRecord
             {
                 Key = Guid.NewGuid().ToString("N"),
                 TargetFolder = targetFolder,
                 Name = name,
                 Working = source.EnsureWorking().CreateDetachedCopy(),
             };
+            record._editedJson = JsonOf(record.Working);
+            return record;
         }
 
         /// <summary>
@@ -129,6 +133,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 Working = Real.CreateDetachedCopy();
                 _baselineJson = JsonOf(Working);
+                _editedJson = _baselineJson;
                 _stateChanged = false;
             }
 
@@ -137,6 +142,54 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
         private string _baselineJson;
         private bool _stateChanged;
+
+        // The working copy as of the last edit the Control Panel's history knows about
+        private string _editedJson;
+
+        /// <summary>
+        /// Whether the working copy was edited since this last said so (or since it was
+        /// made). If so, hands back its state from before and after, for the history.
+        /// </summary>
+        internal bool TryCaptureEdit(out string before, out string after)
+        {
+            before = _editedJson;
+            after = null;
+            if (Working == null || before == null)
+            {
+                return false;
+            }
+
+            after = JsonOf(Working);
+            if (after == before)
+            {
+                return false;
+            }
+
+            _editedJson = after;
+            return true;
+        }
+
+        /// <summary>
+        /// Puts the working copy back to a state from <see cref="TryCaptureEdit"/>. Its
+        /// variable instances are kept where they still exist. Whatever's showing the copy
+        /// should refresh afterwards.
+        /// </summary>
+        internal void RestoreEdit(string json)
+        {
+            VariableSet snapshot = VariableSet.CreateDetached();
+            try
+            {
+                EditorJsonUtility.FromJsonOverwrite(json, snapshot);
+                Working.ApplyStateFrom(snapshot);
+            }
+            finally
+            {
+                UnityObj.DestroyImmediate(snapshot);
+            }
+
+            _editedJson = json;
+            RefreshStateChanged();
+        }
 
         /// <summary>
         /// Throws away the working copy, so the next EnsureWorking makes a new one from the
@@ -158,6 +211,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             Working = null;
             _baselineJson = null;
+            _editedJson = null;
             _stateChanged = false;
         }
 
