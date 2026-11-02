@@ -394,19 +394,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        /// <summary>
-        /// Detached sets are staged on by the Control Panel, which has its own history. If
-        /// edits to them also went on Unity's undo stack, Edit > Undo would change a set
-        /// behind the panel's back.
-        /// </summary>
-        protected virtual bool RecordsUnityUndo => !(_variableSource is VariableSet set && set.IsDetached);
-
         private void RecordUndo(UnityObj target, string label)
         {
-            if (RecordsUnityUndo)
-            {
-                Undo.RecordObject(target, label);
-            }
+            VariableUndo.RecordObject(target, _variableSource, label);
         }
 
         protected void RecordAndApplyChange(IVariable variable, string description, Action<IVariable> applyChange)

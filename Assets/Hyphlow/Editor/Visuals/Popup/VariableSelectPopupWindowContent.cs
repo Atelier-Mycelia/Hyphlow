@@ -341,7 +341,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 typeName = "Float";
             }
 
-            Undo.RecordObject(varSourceObj, $"Add {typeName} Variable");
+            VariableUndo.RecordObject(varSourceObj, _curSource, $"Add {typeName} Variable");
             _curSource.AddNewVariableOfContentType(info.ContentType, suggestedName);
             MarkDirty(varSourceObj);
         }

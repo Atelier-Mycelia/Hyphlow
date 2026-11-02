@@ -35,6 +35,7 @@ namespace AtMycelia.Hyphlow
         public virtual bool IncludeInRegistry
         {
             get => _includeInRegistry;
+            set => _includeInRegistry = value;
         }
 
         public virtual void ForceResetUid()
