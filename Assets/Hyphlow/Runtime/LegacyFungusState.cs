@@ -47,11 +47,11 @@ protected Flowchart lastSelectedFc;
 #if UNITY_EDITOR
         protected virtual void OnEnable()
         {
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
         }
 
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             if (on)
             {
@@ -65,7 +65,7 @@ protected Flowchart lastSelectedFc;
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
+            SetSubs(false);
         }
 
         public virtual void Refresh()

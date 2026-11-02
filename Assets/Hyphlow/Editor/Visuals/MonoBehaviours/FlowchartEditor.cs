@@ -24,14 +24,14 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             _addTexture = HyphlowEditorSysAssets.AddSmall;
-            ToggleSubs(true);
+            SetSubs(true);
             _fcTarg = target as Flowchart;
             _fcTarg.UpdateHideFlags();
         }
 
         private Flowchart _fcTarg;
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -74,7 +74,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             LogLifecycle(nameof(OnDisable), "Entered");
             _popup = null;
         }

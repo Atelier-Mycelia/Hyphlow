@@ -16,8 +16,8 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
         public void ToggleDispatcherSubs(bool on)
         {
-            _blockModuleDispatcher.ToggleSubs(on);
-            _mouseModuleDispatcher.ToggleSubs(on);
+            _blockModuleDispatcher.SetSubs(on);
+            _mouseModuleDispatcher.SetSubs(on);
         }
 
         public void Register(IFlowchartWindowModule module)

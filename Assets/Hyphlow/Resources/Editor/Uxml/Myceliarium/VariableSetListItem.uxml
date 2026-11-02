@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <!-- Styled by VariableSetsSubwindowStyle, which the subwindow it's cloned into already has -->
+    <ui:VisualElement name="ItemRoot" class="vsets-item">
+        <ui:VisualElement class="vsets-item__text">
+            <ui:Label name="NameLabel" class="vsets-item__name" />
+            <ui:Label name="InfoLabel" class="vsets-item__info" />
+        </ui:VisualElement>
+        <ui:Label name="Badge" class="vsets-badge" />
+    </ui:VisualElement>
+</ui:UXML>

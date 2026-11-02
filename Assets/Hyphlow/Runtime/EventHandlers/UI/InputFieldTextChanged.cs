@@ -39,9 +39,9 @@ namespace AtMycelia.Hyphlow
 
         protected InputField field;
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
-            base.ToggleSubs(on);
+            base.SetSubs(on);
             if (field == null)
             {
                 return;

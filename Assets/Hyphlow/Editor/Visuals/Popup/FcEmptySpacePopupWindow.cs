@@ -29,7 +29,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             VisualElement root = visualTreeAsset.Instantiate();
             Add(root);
             RegisterControls();
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
         private bool _isDisposed;
@@ -50,7 +50,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             GradientDrawer.AttachVerticalGradient(element, GradientTop, GradientBottom);
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (on)
             {
@@ -85,7 +85,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
             _isDisposed = true;
-            ToggleSubs(false);
+            SetSubs(false);
             this.RemoveFromHierarchy();
         }
 

@@ -29,10 +29,13 @@ namespace AtMycelia.Hyphlow
         [SerializeField, HideInInspector] private string _uniqueId = string.Empty;
         [SerializeField] private bool _alwaysKeepGuid = true;
         [SerializeField, HideInInspector] private VariableManager _varManager = new VariableManager();
-        
+        // Serialized so detached copies stay detached through domain reloads
+        [SerializeField, HideInInspector] private bool _isDetached;
+
         public virtual bool IncludeInRegistry
         {
             get => _includeInRegistry;
+            set => _includeInRegistry = value;
         }
 
         public virtual void ForceResetUid()
@@ -74,6 +77,86 @@ namespace AtMycelia.Hyphlow
         {
             get => _alwaysKeepGuid;
             set => _alwaysKeepGuid = value;
+        }
+
+        /// <summary>
+        /// Whether this is a detached copy (see <see cref="CreateDetachedCopy"/>). Detached
+        /// copies share their original's UniqueId, but raise no VarSetSignals and take
+        /// no part in Play Mode backups, so the rest of Hyphlow never mistakes them for
+        /// the original.
+        /// </summary>
+        public bool IsDetached
+        {
+            get
+            {
+                if (s_creatingDetached)
+                {
+                    return true;
+                }
+
+#if UNITY_EDITOR
+                // Someone saved a copy as an asset of its own, which makes it a real set
+                if (_isDetached && AssetDatabase.Contains(this))
+                {
+                    return false;
+                }
+#endif
+                return _isDetached;
+            }
+        }
+
+        // Set while CreateDetached runs, since the new instance's OnEnable happens before
+        // we can flag it
+        private static bool s_creatingDetached;
+
+        /// <summary>
+        /// Makes a new, empty, in-memory set that's detached from the start. Meant for
+        /// sets that don't exist as assets yet (see CreateDetachedCopy for the rest).
+        /// Destroy it when done.
+        /// </summary>
+        public static VariableSet CreateDetached()
+        {
+            VariableSet created;
+            s_creatingDetached = true;
+            try
+            {
+                created = CreateInstance<VariableSet>();
+            }
+            finally
+            {
+                s_creatingDetached = false;
+            }
+
+            created._isDetached = true;
+            created.hideFlags = HideFlags.DontSave;
+            return created;
+        }
+
+        /// <summary>
+        /// Makes an in-memory copy of this set that's safe to edit or hold as a snapshot
+        /// without the rest of Hyphlow reacting to it. Use ApplyStateFrom to carry its
+        /// state back over. Destroy it when done; it's never saved with the scene or project.
+        /// </summary>
+        public VariableSet CreateDetachedCopy()
+        {
+            // Instantiate runs the copy's OnEnable before we'd get the chance to flag it, so
+            // the flag goes on this one for the duration, and gets copied over with the rest.
+            bool wasDetached = _isDetached;
+            _isDetached = true;
+            VariableSet copy;
+            try
+            {
+                copy = Instantiate(this);
+            }
+            finally
+            {
+                _isDetached = wasDetached;
+            }
+
+            copy.name = name;
+            copy.hideFlags = HideFlags.DontSave;
+            copy.Refresh();
+            return copy;
         }
 
         public IReadOnlyList<IVariable> Variables
@@ -314,9 +397,13 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnEnable()
         {
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
             _varManager.VarOwner = this;
+            if (IsDetached)
+            {
+                return;
+            }
 #if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
             {
@@ -328,7 +415,7 @@ namespace AtMycelia.Hyphlow
             VarSetSignals.VsaEnabled(this);
         }
 
-        protected virtual void ToggleSubs(bool on)
+        protected virtual void SetSubs(bool on)
         {
             if (on)
             {
@@ -345,95 +432,57 @@ namespace AtMycelia.Hyphlow
                 _varManager.PreVariableRemoved -= OnPreVarRemoved;
             }
 
-            EditorToggleSubs(on);
+            EditorSetSubs(on);
         }
 
+        // The manager's own events stay wired up even for detached copies (their own
+        // listeners may care); only relaying them to everyone else is skipped.
         private void OnPostVarAdded(IVariable variable)
         {
-            VarSetSignals.VariableAdded(this, variable);
+            if (!IsDetached)
+            {
+                VarSetSignals.VariableAdded(this, variable);
+            }
         }
 
         private void OnPostVarRemoved(IVariable variable)
         {
-            VarSetSignals.VariableRemoved(this, variable);
+            if (!IsDetached)
+            {
+                VarSetSignals.VariableRemoved(this, variable);
+            }
         }
 
         private void OnPreVarAdded(IVariable variable)
         {
-            VarSetSignals.PreVariableAdded(this, variable);
+            if (!IsDetached)
+            {
+                VarSetSignals.PreVariableAdded(this, variable);
+            }
         }
 
         private void OnPreVarRemoved(IVariable variable)
         {
-            VarSetSignals.PreVariableRemoved(this, variable);
+            if (!IsDetached)
+            {
+                VarSetSignals.PreVariableRemoved(this, variable);
+            }
         }
 
-        protected virtual void EditorToggleSubs(bool on)
+        /// <summary>
+        /// Hook for editor-only subscriptions. Restoring sets after Play Mode used to be
+        /// done from here, but is now VariableSetPlayModeSnapshots' job (in the editor
+        /// assembly). Kept so overrides in subclasses still compile.
+        /// </summary>
+        protected virtual void EditorSetSubs(bool on)
         {
-#if UNITY_EDITOR
-            if (on)
-            {
-                EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
-            }
-            else
-            {
-                EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
-            }
-#endif
         }
-
-#if UNITY_EDITOR
-        private void OnPlayModeStateChanged(PlayModeStateChange change)
-        {
-            // We want to make sure that the variables' states are returned to their 
-            // pre-enter-play-mode values when we exit play mode. Thus,
-            // we need to set up backups.
-            if (change == PlayModeStateChange.ExitingEditMode)
-            {
-                ReadyBackups();
-                void ReadyBackups()
-                {
-                    var varsToReady = Variables;
-                    // ^Caching here to avoid multiple calls to the property, which would cause
-                    // needless allocations and iterations.
-                    for (int i = 0; i < varsToReady.Count; i++)
-                    {
-                        var currentVar = varsToReady[i];
-                        string key = $"{_uniqueId}_{currentVar.ItemId}";
-                        string valueAsJson = EditorJsonUtility.ToJson(currentVar);
-                        PlayerPrefs.SetString(key, valueAsJson);
-                    }
-                }
-
-            }
-            else if (change == PlayModeStateChange.ExitingPlayMode)//
-            {
-                RestoreFromBackups();
-                void RestoreFromBackups()
-                {
-                    var varsToRestore = Variables;
-                    for (int i = 0; i < varsToRestore.Count; i++)//
-                    {
-                        var currentVar = varsToRestore[i];
-                        string key = $"{_uniqueId}_{currentVar.ItemId}";
-                        if (PlayerPrefs.HasKey(key))
-                        {
-                            string valueAsJson = PlayerPrefs.GetString(key);
-                            EditorJsonUtility.FromJsonOverwrite(valueAsJson, currentVar);
-
-                            PlayerPrefs.DeleteKey(key);
-                        }
-                    }
-                }
-            }
-        }
-
-#endif
 
         protected virtual void EnsureValidUniqueId()
         {
+            // Copies mirror their originals' ids, even when those are empty
             bool thisIsTestOnly = SceneManager.GetActiveScene().name.StartsWith("InitTestScene");
-            if (thisIsTestOnly)
+            if (thisIsTestOnly || IsDetached)
             {
                 return;
             }
@@ -449,17 +498,26 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
-            VarSetSignals.VsaDisabled(this);
+            SetSubs(false);
+            if (!IsDetached)
+            {
+                VarSetSignals.VsaDisabled(this);
+            }
         }
 
         protected virtual void OnDestroy()
         {
-            VarSetSignals.VsaDestroyed(name, _uniqueId);
+            // Would otherwise report the original (same name, same id) as destroyed
+            if (!IsDetached)
+            {
+                VarSetSignals.VsaDestroyed(name, _uniqueId);
+            }
         }
 
+        // Only the body is editor-only, so subclasses' overrides still compile in builds
         protected virtual void OnValidate()
         {
+#if UNITY_EDITOR
             if (!AssetDatabase.Contains(this))
             {
                 // We don't want to assign IDs to non-assets. At least, not necessarily right when they're created.
@@ -467,6 +525,7 @@ namespace AtMycelia.Hyphlow
             }
 
             EnsureValidUniqueId();
+#endif
         }
 
         public bool Contains(IVariable var)
@@ -507,6 +566,42 @@ namespace AtMycelia.Hyphlow
         public Muscariable AddNewVariableOfContentType(Type contentType, string key)
         {
             return (_varManager).AddNewVariableOfContentType(contentType, key);
+        }
+
+        /// <summary>
+        /// Makes this set's settings and variables match the source's. Variables both sets
+        /// have (same ItemId and type) keep their instances here, so registries, owners
+        /// and open UI that point at them stay valid; only their state is overwritten.
+        /// Variables only the source has get copied in, and ones it lacks get removed,
+        /// with the usual signals. Order ends up the same as the source's.
+        /// <br></br><br></br>
+        /// This set's identity is left alone: its name, UniqueId and asset file. This
+        /// marks the set dirty, but doesn't save it.
+        /// </summary>
+        public virtual void ApplyStateFrom(VariableSet source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (ReferenceEquals(source, this))
+            {
+                return;
+            }
+
+            _includeInSaves = source._includeInSaves;
+            _includeInRegistry = source._includeInRegistry;
+            _alwaysKeepGuid = source._alwaysKeepGuid;
+            _nextVarID = source._nextVarID;
+            _varManager.ApplyStateFrom(source._varManager);
+
+            Refresh();
+            EditorUtility.SetDirty(this);
+            if (!IsDetached)
+            {
+                VarSetSignals.StateApplied(this);
+            }
         }
 
 #endif

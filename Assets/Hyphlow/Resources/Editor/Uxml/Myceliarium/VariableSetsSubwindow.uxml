@@ -1,0 +1,55 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="../../Stylesheets/Myceliarium/VariableSetsSubwindowStyle.uss" />
+    <ui:VisualElement name="Root" class="vsets-root">
+        <ui:VisualElement name="Header" class="vsets-header">
+            <ui:Label text="Variable Sets" class="vsets-title" />
+            <ui:Label text="Variables shared by every Flowchart and scene. Changes made here are applied to the project when you click Save." class="vsets-subtitle" />
+        </ui:VisualElement>
+        <ui:VisualElement name="PlayModeBanner" class="vsets-banner">
+            <ui:Label text="Play Mode is running, so Variable Sets are read-only here. Anything they change during Play Mode is reverted once it ends." class="vsets-banner__text" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Body" class="vsets-body">
+            <ui:VisualElement name="ListPane" class="vsets-pane vsets-list-pane">
+                <ui:VisualElement name="CreateSection" class="vsets-create">
+                    <ui:Label text="New Variable Set" class="vsets-section-label" />
+                    <ui:VisualElement class="vsets-create__row">
+                        <ui:TextField name="NewSetNameField" class="vsets-create__field" />
+                        <ui:Button name="CreateButton" text="Create" class="vsets-button vsets-button--primary" />
+                    </ui:VisualElement>
+                    <ui:Label name="CreateHint" class="vsets-hint" />
+                </ui:VisualElement>
+                <uie:ToolbarSearchField name="SearchField" class="vsets-search" />
+                <ui:VisualElement class="vsets-list-holder">
+                    <ui:ListView name="SetsListView" class="vsets-list" />
+                    <ui:Label name="EmptyListLabel" class="vsets-empty-list" />
+                </ui:VisualElement>
+                <ui:VisualElement name="ListFooter" class="vsets-list-footer">
+                    <ui:Label name="SummaryLabel" class="vsets-summary" />
+                    <ui:Button name="MoveAllButton" text="Move All to the VSA Folder" class="vsets-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="DetailPane" class="vsets-pane vsets-detail-pane">
+                <ui:VisualElement name="EmptyDetails" class="vsets-empty-details">
+                    <ui:Label text="Select a Variable Set to edit it." class="vsets-empty-details__text" />
+                </ui:VisualElement>
+                <ui:VisualElement name="Details" class="vsets-details">
+                    <ui:VisualElement class="vsets-details__header">
+                        <ui:TextField name="NameField" label="Name" is-delayed="true" class="vsets-name-field" />
+                        <ui:Button name="ShowInProjectButton" text="Show in Project" class="vsets-button" />
+                        <ui:Button name="DuplicateButton" text="Duplicate" class="vsets-button" />
+                        <ui:Button name="DeleteButton" text="Delete" class="vsets-button vsets-button--danger" />
+                    </ui:VisualElement>
+                    <ui:Label name="NameError" class="vsets-hint vsets-hint--error vsets-name-error" />
+                    <ui:Label name="PathLabel" class="vsets-path" />
+                    <ui:VisualElement name="Notice" class="vsets-notice">
+                        <ui:Label name="NoticeText" class="vsets-notice__text" />
+                        <ui:Button name="NoticeButton" class="vsets-button" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="InspectorScroll" class="vsets-inspector-scroll">
+                        <ui:VisualElement name="InspectorHolder" class="vsets-inspector-holder" />
+                    </ui:ScrollView>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

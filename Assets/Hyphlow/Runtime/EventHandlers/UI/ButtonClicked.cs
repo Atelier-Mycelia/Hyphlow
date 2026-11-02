@@ -44,9 +44,9 @@ namespace AtMycelia.Hyphlow
 
         private Button _button;
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
-            base.ToggleSubs(on);
+            base.SetSubs(on);
             
             if (_button == null)
             {

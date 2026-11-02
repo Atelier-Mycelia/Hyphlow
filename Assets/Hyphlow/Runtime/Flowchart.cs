@@ -224,12 +224,12 @@ namespace AtMycelia.Hyphlow
             }
 
             Refresh();
-            ToggleSubs(true);
+            SetSubs(true);
 
             FlowchartSignals.FlowchartEnabled(this);
         }
 
-        private void ToggleSubs(bool on)
+        private void SetSubs(bool on)
         {
             if (_varManager == null)
             {
@@ -406,7 +406,7 @@ namespace AtMycelia.Hyphlow
 
         protected virtual void OnDisable()
         {
-            ToggleSubs(false);
+            SetSubs(false);
             StopAllBlocks();
             StopAllCoroutines();
             FlowchartSignals.FlowchartDisabled(this);
@@ -872,8 +872,10 @@ namespace AtMycelia.Hyphlow
             }
         }
 
+        // OnValidate only ever runs in the editor, but it still has to compile in builds
         private void OnValidate()
         {
+#if UNITY_EDITOR
             if (!this.IsInTheScene || Application.isPlaying)
             {
                 // Don't do anything if this isn't even in the scene yet
@@ -899,10 +901,10 @@ namespace AtMycelia.Hyphlow
                 }
 
                 Refresh();
-                
+
 
             };
-
+#endif
         }
 
         protected virtual void AssertUniqueID()

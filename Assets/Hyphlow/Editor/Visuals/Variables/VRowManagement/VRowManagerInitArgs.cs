@@ -7,10 +7,9 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public class VRowManagerInitArgs
     {
-        public VisualElement HoldsManager;
         public VisualElement Root;
         public Button AddButton;
         public IReorderableVariableSource VariableSource;
-        public IVariableListView VariableListView;          // NEW (optional)
+        public IVariableListView VariableListView;
     }
 }

@@ -1,46 +1,28 @@
 using AtMycelia.Myceliarium;
+using System;
 using System.Collections.Generic;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
+    /// <summary>
+    /// Hyphlow's top-level entry in the Control Panel. It has no subwindow of its own
+    /// (no SubwindowType), only its subentries nested under its tab.
+    /// </summary>
     public class HyphlowEntry : ControlPanelEntry, IAtMyceliaControlPanelEntry
     {
-        public override string MainDisplayName => "Hyphlow";
+        public override string SortingName => "Hyphlow";
         public override bool IsTopLevel => true;
-        public override bool IsMeantToHaveSubwindow => false;
-        public override string StringifiedState => "";
 
-        protected override void PrepareSubentries()
+        protected override Type SidebarTabType => typeof(HyphlowRootTab);
+
+        protected override IEnumerable<IControlPanelEntry> CreateSubentries()
         {
-            base.PrepareSubentries();
-
-            #region Register the instances
-            var subsToAdd = new List<ControlPanelEntry>
+            return new IControlPanelEntry[]
             {
                 new FcGlobalDefaultsEntry(),
-                new FlowchartEditorQolEntry()
+                new FlowchartEditorQolEntry(),
+                new VariableSetsEntry()
             };
-            _subentries.AddRange(subsToAdd);
-            #endregion
-
-            #region Init Subentries
-            for (int i = 0; i < _subentries.Count; i++)
-            {
-                var elem = _subentries[i];
-                elem.Init();
-                Tab.Register(elem.Tab);
-            }
-            #endregion
-
-            // At this time, the left sidebar tab should have been prepped.
         }
-
-        protected override void PrepareLeftSidebarTab()
-        {
-            _tab = new HyphlowTab();
-            _tab.Init();
-        }
-
     }
-
 }

@@ -114,9 +114,9 @@ namespace AtMycelia.Hyphlow
             _notifier = toAttachTo.GetOrAddComponent<PhysicsEventNotifier>();
         }
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
-            base.ToggleSubs(on);
+            base.SetSubs(on);
             if (_notifier == null)
             {
                 // Expected to trigger when OnDisable gets called before Awake

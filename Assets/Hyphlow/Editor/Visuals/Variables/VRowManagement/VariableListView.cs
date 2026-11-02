@@ -1,57 +1,58 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UITKLabel = UnityEngine.UIElements.Label;
 using UnityObj = UnityEngine.Object;
 using AtMycelia.Collections;
-using AtMycelia.EditorExt;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
     /// Virtualized, reorderable variable list view (Unity 2022.3 LTS + Unity 6).
-    /// Handles making sure that the VariableRows are shown correctly.
+    /// The ListView recycles shell elements; a <see cref="VariableRowBinder"/> decides which
+    /// pooled row handler lives in each shell. This class holds no per-variable row cache.
     /// </summary>
-    public partial class VariableListView : IVariableListView
+    public class VariableListView : IVariableListView
     {
         public VariableListView(VariableListViewInitArgs initArgs)
         {
             _listDisplay = initArgs.List;
             _countDisplay = initArgs.CountLabel;
-            _rowFactory = initArgs.RowFactory;
-            _variableSourceContext = initArgs.VariableSource as UnityObj;
 
-            if (_variableSourceContext == null)
-            {
-                Debug.LogWarning($"VariableListView was not given a valid variable source context" +
-                    $" (Flowchart or VariableSourceAsset). Some operations may not work as intended.");
-            }
-            else
-            {
-                SetVariables(initArgs.VariableSource.Variables);
-                _lastSourceUid = initArgs.VariableSource.UniqueId;
-            }
-            if (_listDisplay != null)
-            {
-                InitListViewStructure();
-            }
-            else
+            RowVisualHandlerPool pool = initArgs.HandlerPool ?? new RowVisualHandlerPool(
+                new RowVisualHandlerResolver(), RowVisualHandlerRegistry.VisualHandlerLookup);
+            _binder = new VariableRowBinder(pool);
+
+            if (_listDisplay == null)
             {
                 string errorMessage = $"VariableListView was not given a valid ListView in its init args.";
                 Debug.LogError(errorMessage);
+                return;
             }
 
+            InitListViewStructure();
+
+            if (initArgs.VariableSource != null)
+            {
+                SetSource(initArgs.VariableSource);
+            }
         }
 
         protected ListView _listDisplay;
         protected UITKLabel _countDisplay;
-        protected IVariableRowFactory _rowFactory;
+        protected readonly VariableRowBinder _binder;
 
-        protected UnityObj _variableSourceContext;
+        /// <summary>
+        /// Whoever should hear about edits made in the rows (normally the VariableRowManager).
+        /// </summary>
+        public IRowEditHost EditHost
+        {
+            get => _binder.Host;
+            set => _binder.Host = value;
+        }
 
         public virtual void SetSource(IVariableSource source)
         {
@@ -70,139 +71,28 @@ namespace AtMycelia.Hyphlow.EditorExt
             _listDisplay.selectionType = SelectionType.Single;
             _listDisplay.showAlternatingRowBackgrounds = AlternatingRowBackground.All;
 
-            PrepRowLifecycleFuncs();
-            void PrepRowLifecycleFuncs()
+            _listDisplay.makeItem = _binder.CreateShell;
+            _listDisplay.bindItem = (shell, index) =>
             {
-                SetMakeItem();
-                void SetMakeItem()
+                bool indexInRange = index >= 0 && index < _varsToDisplay.Count;
+                if (!indexInRange || _varsToDisplay[index] == null)
                 {
-                    _listDisplay.makeItem = () =>
-                    {
-                        // The items made here will be the parents of the var row handlers'
-                        // root elements
-                        var rowHolder = new VisualElement { name = "VariableRowContainer" };
-                        var styleForElem = rowHolder.style;
-                        styleForElem.flexDirection = FlexDirection.Column;
-                        styleForElem.position = Position.Relative;
-                        styleForElem.flexGrow = 0;
-                        styleForElem.flexShrink = 0;
-                        return rowHolder;
-                    };
+                    _binder.Unbind(shell);
+                    return;
                 }
 
-                SetBindItem();
-                void SetBindItem()
-                {
-                    _listDisplay.bindItem = (rowHolder, index) =>
-                    {
-                        bool indexInRange = index < _varsToDisplay.Count;
-                        if (!indexInRange)
-                        {
-                            rowHolder.userData = null;
-                            rowHolder.Clear();
-                            return;
-                        }
+                _binder.Bind(shell, _varsToDisplay[index]);
+            };
 
-                        IVariable currentVar = _varsToDisplay[index];
-                        if (currentVar == null)
-                        {
-                            rowHolder.userData = null;
-                            rowHolder.Clear();
-                            return;
-                        }
+            // Unbinding keeps the handler and its visuals in the shell, ready for the next
+            // bind. Handlers only go back to the pool when the shell is destroyed or needs a
+            // handler of another type.
+            _listDisplay.unbindItem = (shell, index) => _binder.Unbind(shell);
+            _listDisplay.destroyItem = shell => _binder.Destroy(shell);
 
-                        rowHolder.Clear();
-                        rowHolder.userData = null;
-                        VariableRow row = GetRowFor(currentVar);
-                        VariableRow GetRowFor(IVariable variable)
-                        {
-                            VariableRow row = GetOrCreateRow(currentVar);
-                            if (row == null)
-                            {
-                                Debug.LogError($"VariableListView.bindItem: GetOrCreateRow returned null for index={index}, key={currentVar.Key}, type={currentVar.ContentType?.FullName}");
-                            }
-                            else if (row.RootElement == null)
-                            {
-                                Debug.LogError($"VariableListView.bindItem: Row.RootElement is null for index={index}, key={currentVar.Key}, varType={currentVar.GetType().FullName}, contentType={currentVar.ContentType?.FullName}");
-                                row = null;
-                            }
-
-                            return row;
-                        }
-
-                        if (row == null)
-                        {
-                            return;
-                        }
-
-                        var visHandler = row.VisualHandler;
-
-                        AttachVisual();
-                        void AttachVisual()
-                        {
-                            // Attach visual
-                            try
-                            {
-                                rowHolder.Add(row.RootElement);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogError($"[VListView.bindItem] index={index} key='{currentVar.Key}' failed to Add(row.RootElement): {ex.Message}");
-                            }
-                        }
-                        if (currentVar is Muscariable && currentVar.Owner is Flowchart)
-                        {
-                            visHandler.Variable = currentVar; // Just in case
-                            visHandler.Refresh();
-                        }
-                        // Store the row itself (not the variable) for any per-visual cleanup
-                        rowHolder.userData = row;
-                    };
-                }
-
-                SetUnbindItem();
-                void SetUnbindItem()
-                {
-                    _listDisplay.unbindItem = (rowHolder, index) =>
-                    {
-                        // Despite how intuitive it feels, we should NOT release any rows
-                        // here. Due to the lifecycle of these ListView funcs, releasing
-                        // rows here can lead to empty ones getting displayed.
-                        // Best leave the row-releases as responses to vars getting
-                        // removed from the source list and such.
-                        // Diagnostics: log unbind
-                        try
-                        {
-                            if (rowHolder.userData is VariableRow r && r.VarToRepresent != null)
-                            {
-                                //Debug.Log($"[VListView.unbindItem] index={index} key='{r.VarToRepresent.Key}'");
-                            }
-                        }
-                        catch { }
-                        rowHolder.userData = null;
-                        rowHolder.Clear();
-                    };
-                }
-
-                SetDestroyItem();
-                void SetDestroyItem()
-                {
-                    _listDisplay.destroyItem = rowHolder =>
-                    {
-                        rowHolder.userData = null;
-                        rowHolder.Clear();
-                    };
-                }
-            }
-
-            HandleRemainingSubs();
-            void HandleRemainingSubs()
-            {
-                _listDisplay.reorderable = true;
-                _listDisplay.itemIndexChanged += OnItemReordered;
-                Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
-                Undo.undoRedoPerformed += HandleUndoRedoPerformed;
-            }
+            _listDisplay.itemIndexChanged += OnItemReordered;
+            Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
+            Undo.undoRedoPerformed += HandleUndoRedoPerformed;
 
             UpdateCount();
         }
@@ -218,52 +108,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             OrderChanged?.Invoke(_varsToDisplay);
         }
 
-        protected virtual VariableRow GetOrCreateRow(IVariable variable)
-        {
-            if (variable == null || _rowFactory == null) return null;
-
-            bool rowAlreadyAssignedToIt = _activeRows.TryGetValue(variable, out var existing);
-            if (rowAlreadyAssignedToIt)
-            {
-                return existing;
-            }
-
-            var row = _rowFactory.Create(variable);
-            if (row != null)
-            {
-                _activeRows[variable] = row;
-            }
-            else
-            {
-                Debug.LogWarning($"[GetOrCreateRow] Factory returned null row for key='{variable.Key}'");
-            }
-
-            return row;
-        }
-
-        // Use reference equality for keys to avoid value-based equality collisions that can
-        // cause distinct variable instances to be treated as the same key.
-        protected readonly Dictionary<IVariable, VariableRow> _activeRows =
-            new Dictionary<IVariable, VariableRow>(new ReferenceEqualityComparer<IVariable>());
-
-        protected virtual void ReleaseRow(IVariable variable)
-        {
-            if (variable == null) return;
-            if (_activeRows.TryGetValue(variable, out var row))
-            {
-                _activeRows.Remove(variable);
-                _rowFactory?.Release(row);
-            }
-        }
-
-        protected virtual void ReleaseAllActiveRows()
-        {
-            if (_activeRows.Count == 0) return;
-            foreach (var rowElem in _activeRows.Keys.ToList())
-                ReleaseRow(rowElem);
-            _activeRows.Clear();
-        }
-
         public virtual void AddVariable(IVariable toAdd)
         {
             if (this._isDisposed)
@@ -273,10 +117,15 @@ namespace AtMycelia.Hyphlow.EditorExt
                 return;
             }
 
-            if (toAdd == null || _varsToDisplay.ContainsReference(toAdd))
+            if (toAdd == null)
             {
                 string logMessage = $"Tried to add a null variable to VariableListView.";
                 Debug.LogWarning(logMessage);
+                return;
+            }
+
+            if (_varsToDisplay.ContainsReference(toAdd))
+            {
                 return;
             }
 
@@ -287,17 +136,18 @@ namespace AtMycelia.Hyphlow.EditorExt
         public virtual void RemoveVariable(IVariable variable)
         {
             if (variable == null) return;
-            int idx = _varsToDisplay.IndexOf(variable);
+
+            // Reference equality on purpose: variables may override Equals, and List.IndexOf
+            // would then pick the wrong one
+            int idx = _varsToDisplay.FindIndex(elem => ReferenceEquals(elem, variable));
             if (idx < 0) return;
 
             _varsToDisplay.RemoveAt(idx);
-            ReleaseRow(variable);
             Refresh();
         }
 
         public virtual void SetVariables(IEnumerable<IVariable> varsToSet)
         {
-            ReleaseAllActiveRows();
             _varsToDisplay.Clear();
             if (varsToSet != null)
             {
@@ -310,31 +160,38 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public virtual void Clear()
         {
-            ReleaseAllActiveRows();
             _varsToDisplay.Clear();
             Refresh();
         }
 
+        /// <summary>
+        /// Rebinds whatever rows are on screen.
+        /// </summary>
         public virtual void Refresh()
         {
-            _listDisplay.RefreshItems();
+            ReleaseTestShells();
+            _listDisplay?.RefreshItems();
             UpdateCount();
         }
 
-        public int RowCount => _varsToDisplay.Count;
-        public IReadOnlyList<VariableRow> Rows => _activeRows.Values.ToList();
-
-        IReadOnlyList<IVariable> IVariableListView.VarsToDisplay => VarsToDisplay;
-
-        public VariableRow RowAtIndex(int index)
+        /// <summary>
+        /// Updates just the row showing the variable (if it's on screen) instead of
+        /// rebinding the whole list.
+        /// </summary>
+        public virtual void RefreshValueOf(IVariable variable)
         {
-            if ((uint)index >= (uint)_varsToDisplay.Count) return null;
-            var v = _varsToDisplay[index];
-            _activeRows.TryGetValue(v, out var row);
-            return row;
+            if (_binder.TryGetHandler(variable, out IRowVisualHandler handler))
+            {
+                handler.RefreshValue();
+            }
         }
 
-        public bool Contains(VariableRow row) => row != null && _activeRows.Values.Contains(row);
+        public bool TryGetHandler(IVariable variable, out IRowVisualHandler handler)
+        {
+            return _binder.TryGetHandler(variable, out handler);
+        }
+
+        public int RowCount => _varsToDisplay.Count;
 
         public virtual void UpdateCount()
         {
@@ -350,7 +207,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             Undo.undoRedoPerformed -= HandleUndoRedoPerformed;
 
-            ReleaseAllActiveRows();
+            ReleaseTestShells();
             _varsToDisplay.Clear();
 
             DisposeListDisplay();
@@ -369,7 +226,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             ResetCountDisplay();
-            _rowFactory = null;
+            _binder.Dispose();
 
             _source = null;
             _isDisposed = true;
@@ -402,11 +259,12 @@ namespace AtMycelia.Hyphlow.EditorExt
             UpdateCount();
         }
 
-        // Returns true if the flowchart was found (or not even lost in the first place),
+        // Returns true if the source was found (or not even lost in the first place),
         // false otherwise.
         protected bool AcquireSourceIfLost()
         {
-            if (_source != null) return true;
+            bool sourceIsAlive = _source != null && (_source is not UnityObj unityObj || unityObj != null);
+            if (sourceIsAlive) return true;
 
             FindFlowchart(out bool found);
             void FindFlowchart(out bool found)
@@ -434,7 +292,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 var vsaFound = vsasInProject.Where((vsa) => vsa.UniqueId == _lastSourceUid).FirstOrDefault();
                 if (vsaFound != null)
                 {
-                    SetVariables(vsaFound.Variables);
+                    SetSource(vsaFound);
                     found = true;
                 }
             }
@@ -447,7 +305,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             if (source == null)
                 return;
 
-            ReleaseAllActiveRows();
             _varsToDisplay.Clear();
             var sourceToAdd = source.Where(IsValidVar);
 
@@ -466,91 +323,55 @@ namespace AtMycelia.Hyphlow.EditorExt
         #endregion
 
         #region For tests only
+        /// <summary>
+        /// A ListView outside a panel never binds anything, so tests call this to get a bound
+        /// row for every variable. They're dropped again on the next Refresh.
+        /// </summary>
         public virtual void ForceMaterializeAllRowsForTests()
         {
-            if (_listDisplay == null || _varsToDisplay.Count == 0)
+            if (_listDisplay == null)
                 return;
 
-            VisualElement container;
-            EnsureWeHaveContainer();
-            void EnsureWeHaveContainer()
+            VisualElement container = _listDisplay.contentContainer;
+            if (container == null)
             {
-                container = _listDisplay.contentContainer;
-                if (container == null)
+                if (_testMaterializedContainer == null)
                 {
-                    if (_testMaterializedContainer == null)
-                    {
-                        _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
-                        _listDisplay.hierarchy.Add(_testMaterializedContainer);
-                        Debug.Log($"[ForceMaterializeAllRowsForTests] Using test materialized container");
-                    }
-                    container = _testMaterializedContainer;
+                    _testMaterializedContainer = new VisualElement { name = "__TestMaterializedRows" };
+                    _listDisplay.hierarchy.Add(_testMaterializedContainer);
                 }
+                container = _testMaterializedContainer;
             }
 
-            // Removed the early bailout that skipped creation when child counts matched.
-            // Tests need full row materialization regardless of existing placeholder children.
-            PrepRowsForTheVars();
-            void PrepRowsForTheVars()
+            foreach (IVariable variable in _varsToDisplay)
             {
-                for (int i = 0; i < _varsToDisplay.Count; i++)
-                {
-                    var variable = _varsToDisplay[i];
-                    if (variable == null)
-                        continue;
+                if (variable == null || _binder.TryGetHandler(variable, out _))
+                    continue;
 
-                    var row = GetOrCreateRow(variable);
-                    if (row == null)
-                        continue;
-
-                    // If visuals not yet built, attempt a refresh to force template cloning.
-                    if (row.RootElement == null && row.VisualHandler != null)
-                    {
-                        try
-                        {
-                            row.VisualHandler.Refresh();
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Refresh failed " +
-                                $"for var key='{variable.Key}': {ex.Message}");
-                        }
-                    }
-
-                    if (row.RootElement == null)
-                    {
-                        Debug.LogWarning($"[ForceMaterializeAllRowsForTests] Row.RootElement still " +
-                            $"null for key='{variable.Key}'. Pooling will work but UI won’t show.");
-                        continue;
-                    }
-
-                    if (row.RootElement.parent == null)
-                    {
-                        container.Add(row.RootElement);
-                    }
-                }
+                VisualElement shell = _binder.CreateShell();
+                _binder.Bind(shell, variable);
+                container.Add(shell);
+                _testShells.Add(shell);
             }
         }
 
+        private void ReleaseTestShells()
+        {
+            if (_testShells.Count == 0)
+                return;
+
+            foreach (VisualElement shell in _testShells)
+            {
+                _binder.Destroy(shell);
+                shell.RemoveFromHierarchy();
+            }
+            _testShells.Clear();
+        }
+
+        private readonly List<VisualElement> _testShells = new List<VisualElement>();
         VisualElement _testMaterializedContainer;
         #endregion
 
-    }
-
-    /// <summary>
-    /// Simple reference-equality comparer used for dictionaries that must use object identity
-    /// rather than value-based equality.
-    /// </summary>
-    internal sealed class ReferenceEqualityComparer<T> : IEqualityComparer<T>
-        where T : class
-    {
-        public bool Equals(T x, T y) => ReferenceEquals(x, y);
-
-        public int GetHashCode(T obj)
-        {
-            if (obj == null) return 0;
-            return RuntimeHelpers.GetHashCode(obj);
-        }
     }
 
     public interface IVariableListView : IDisposable
@@ -559,22 +380,24 @@ namespace AtMycelia.Hyphlow.EditorExt
         void RemoveVariable(IVariable variable);
         void SetVariables(IEnumerable<IVariable> variables);
         void Clear();
-        VariableRow RowAtIndex(int index);
-        int RowCount { get; }
         void Refresh();
-        IReadOnlyList<VariableRow> Rows { get; }
-        bool Contains(VariableRow row);
+        void RefreshValueOf(IVariable variable);
+        bool TryGetHandler(IVariable variable, out IRowVisualHandler handler);
+        int RowCount { get; }
+        IRowEditHost EditHost { get; set; }
         event Action<IList<IVariable>> OrderChanged;
         IReadOnlyList<IVariable> VarsToDisplay { get; }
     }
 
     public class VariableListViewInitArgs
     {
-        public IVariableRowFactory RowFactory { get; set; }
         public ListView List { get; set; }
         public UITKLabel CountLabel { get; set; }
         public IVariableSource VariableSource { get; set; }
-        public IEditorAssetResolver AssetResolver { get; set; } // optional; testing override
-        public bool DisplayInInspector { get; set; } = false;
+
+        /// <summary>
+        /// Optional; a pool fed by the handler registry is created when omitted.
+        /// </summary>
+        public RowVisualHandlerPool HandlerPool { get; set; }
     }
 }

@@ -49,10 +49,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             _owner = window != null ? 
                 window : 
                 throw new ArgumentNullException(nameof(window));
-            ToggleSubs(true);
+            SetSubs(true);
         }
 
-        void ToggleSubs(bool on)
+        void SetSubs(bool on)
         {
             if (on)
             {
@@ -81,7 +81,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             {
                 return;
             }
-            ToggleSubs(false);
+            SetSubs(false);
             _isDisposed = true;
 
             

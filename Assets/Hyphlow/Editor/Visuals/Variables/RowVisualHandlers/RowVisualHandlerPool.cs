@@ -5,6 +5,10 @@ using Debug = UnityEngine.Debug;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
+    /// <summary>
+    /// The only pool in the variables panel: handlers (and the visuals they own) are recycled
+    /// per handler type.
+    /// </summary>
     public class RowVisualHandlerPool
     {
         public RowVisualHandlerPool
@@ -23,105 +27,74 @@ namespace AtMycelia.Hyphlow.EditorExt
         // are the types of the visual handlers
         protected readonly IDictionary<Type, Type> _visualHandlerLookup;
 
-        public IRowVisualHandler GetHandlerFor(Type contentType, IVariable variable)
+        public virtual Type ResolveHandlerType(Type contentType)
         {
-            IRowVisualHandler result;
-            // Figure out which handler *class* we need
-            Type handlerType = _handlerResolver.ResolveHandler(_visualHandlerLookup, contentType);
+            return _handlerResolver.ResolveHandler(_visualHandlerLookup, contentType);
+        }
 
-            bool recyclableInstanceAvailable = _poolMap.TryGetValue(handlerType, out var stack) && stack.Count > 0;
+        /// <summary>
+        /// Hands out an unbound handler of the given type, recycled if one is available.
+        /// </summary>
+        public virtual IRowVisualHandler Take(Type handlerType)
+        {
+            bool recyclableInstanceAvailable = _poolMap.TryGetValue(handlerType, out var stack) &&
+                stack.Count > 0;
             if (recyclableInstanceAvailable)
             {
-                result = stack.Pop();
-            }
-            else
-            {
-                result = (IRowVisualHandler)Activator.CreateInstance(handlerType);
+                IRowVisualHandler recycled = stack.Pop();
+                _pooled.Remove(recycled);
+                return recycled;
             }
 
-            result.Init(variable);
-            return result;
+            return (IRowVisualHandler)Activator.CreateInstance(handlerType);
+        }
+
+        /// <summary>
+        /// Unbinds the handler, detaches its visuals and keeps it for reuse.
+        /// </summary>
+        public virtual void Return(IRowVisualHandler handler)
+        {
+            if (handler == null || !_pooled.Add(handler))
+            {
+                return;
+            }
+
+            handler.Unbind();
+            handler.RowRoot?.RemoveFromHierarchy();
+
+            Type handlerType = handler.GetType();
+            if (!_poolMap.TryGetValue(handlerType, out var stack))
+            {
+                stack = new Stack<IRowVisualHandler>();
+                _poolMap[handlerType] = stack;
+            }
+
+            stack.Push(handler);
         }
 
         protected readonly Dictionary<Type, Stack<IRowVisualHandler>> _poolMap
             = new Dictionary<Type, Stack<IRowVisualHandler>>();
 
-        #region Just for testing
-        /// <summary>
-        /// How many handlers (of any particular IRowVisualHandler implementation)
-        /// are in the pool at this time.
-        /// </summary>
-        public virtual int PooledHandlerCount
-        {
-            get
-            {
-                int result = 0;
-                foreach (var key in _poolMap.Keys)
-                {
-                    var handlerHolder = _poolMap[key];
-                    result += handlerHolder.Count;
-                }
+        // Guards against double-returns without paying for Stack.Contains
+        private readonly HashSet<IRowVisualHandler> _pooled = new HashSet<IRowVisualHandler>();
 
-                return result;
-            }
-        }
-
+        public int PooledHandlerCount => _pooled.Count;
         public Dictionary<Type, Stack<IRowVisualHandler>> PoolMap => _poolMap;
 
+        /// <summary>
+        /// Disposes every pooled handler and forgets them.
+        /// </summary>
         public virtual void Clear()
         {
-            foreach (var stackEl in _poolMap.Values)
+            foreach (IRowVisualHandler handler in _pooled)
             {
-                stackEl.Clear();
-            }
-        }
-
-        #endregion
-
-        public virtual void ReleaseRange(IEnumerable<IRowVisualHandler> toRelease)
-        {
-            foreach (var elem in toRelease)
-            {
-                Release(elem);
-            }
-        }
-        public void Release(IRowVisualHandler handler)
-        {
-            bool isReusable = handler is IResettable resettable;
-            if (isReusable)
-            {
-                ((IResettable)handler).Reset();
-            }
-            else
-            {
-                // Non-resettable handlers are one-shot: once disposed, they are no longer
-                // safe to hand back out, so they must not be pooled for reuse.
                 handler.Dispose();
-                return;
             }
 
-            Type handlerType = handler.GetType();
-            bool haveStackReadyForThisType = _poolMap.TryGetValue(handlerType, out var stack);
-            if (!haveStackReadyForThisType)
+            _pooled.Clear();
+            foreach (var stack in _poolMap.Values)
             {
-                stack = new Stack<IRowVisualHandler>();
-                _poolMap[handlerType] = stack;
-                // Having things in a stack reduces lookup time from O(n) to O(1),
-                // since you'd be setting up dedicated containers for copies of
-                // whatever kind of instance you're looking for
-            }
-
-            if (!stack.Contains(handler))
-            {
-                stack.Push(handler);
-            }
-        }
-
-        public virtual void ReleaseIn(IEnumerable<VariableRow> rows)
-        {
-            foreach (var row in rows)
-            {
-                Release(row.VisualHandler);
+                stack.Clear();
             }
         }
 
