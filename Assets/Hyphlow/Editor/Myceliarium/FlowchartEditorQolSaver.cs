@@ -23,12 +23,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             return toSaveFor is FlowchartEditorQolEntry;
         }
 
-        protected override IEnumerator SaveProcess(IControlPanelEntry toSaveFor,
-            Action onComplete)
+        protected override IEnumerator SaveProcess(EntrySaveRequest request)
         {
-            yield return null;
-
-            FlowchartEditorQolEntry entry = toSaveFor as FlowchartEditorQolEntry;
+            FlowchartEditorQolEntry entry = (FlowchartEditorQolEntry)request.Entry;
             IReadOnlyList<FlowchartEditorQol> working = entry.WorkingState;
 
             // Ensure folder exists
@@ -77,15 +74,16 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
             #endregion
 
+            AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            ControlPanelSignals.SaveCompleted(entry);
-            onComplete?.Invoke();
+            yield break;
         }
 
         private void ApplyWorkingStateToReal(FlowchartEditorQol wState, FlowchartEditorQol real)
         {
             RenameAsNeeded(wState, real);
             wState.ApplyStateTo(real);
+            EditorUtility.SetDirty(real); // ApplyStateTo only sets fields
         }
 
         private void RenameAsNeeded(FlowchartEditorQol wState, FlowchartEditorQol real)

@@ -22,17 +22,28 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private static readonly string _itemTemplatePath =
             "Editor/Uxml/Myceliarium/FlowchartEditorQolItem";
 
-        // Working-state list injected by the entry
-        private readonly List<FlowchartEditorQol> _workingBuffer;
+        // The logic's working-state list, handed over by the entry
+        private List<FlowchartEditorQol> _workingBuffer = new List<FlowchartEditorQol>();
 
         internal Action<string> CreateRequested { get; set; } = delegate { };
         internal Action<int, string> RenameRequested { get; set; } = delegate { };
         internal Action<int> DeleteRequested { get; set; } = delegate { };
         internal Action<int> SelectRequested { get; set; } = delegate { };
 
-        internal FlowchartEditorQolSubwindow(List<FlowchartEditorQol> workingBuffer)
+        /// <summary>
+        /// The properties are bound to the working copies, so the fields apply the user's
+        /// edits themselves; this only says that the user may be done with one.
+        /// </summary>
+        internal event Action StateMayHaveChanged = delegate { };
+
+        /// <summary>
+        /// The list stays the same instance for as long as its logic lives, so this is
+        /// called just once per initialization.
+        /// </summary>
+        internal void UseWorkingList(List<FlowchartEditorQol> workingList)
         {
-            _workingBuffer = workingBuffer;
+            _workingBuffer = workingList ?? new List<FlowchartEditorQol>();
+            _listView.itemsSource = _workingBuffer;
         }
 
         protected override void RegisterVisualElements()
@@ -43,7 +54,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
 
             LoadItemTemplate();
             InitListView();
-            SetSubs(true);
         }
 
         private TextField _newAssetNameField;
@@ -147,16 +157,29 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _listView.RefreshItems();
         }
 
-        private void SetSubs(bool on)
+        protected override void SetSubs(bool wantsSubsActive)
         {
-            if (on)
+            base.SetSubs(wantsSubsActive);
+
+            _interactionWatcher?.Dispose();
+            _interactionWatcher = null;
+
+            if (wantsSubsActive)
             {
                 _createButton.clicked += RaiseCreateRequested;
+                _interactionWatcher = new InteractionWatcher(Root, RaiseStateMayHaveChanged);
             }
             else
             {
                 _createButton.clicked -= RaiseCreateRequested;
             }
+        }
+
+        private InteractionWatcher _interactionWatcher;
+
+        private void RaiseStateMayHaveChanged()
+        {
+            StateMayHaveChanged();
         }
 
         private void RaiseCreateRequested()

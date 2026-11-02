@@ -1,5 +1,4 @@
 using UnityEngine.UIElements;
-using UnityEngine;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
@@ -7,61 +6,20 @@ namespace AtMycelia.Hyphlow.EditorExt
         contentType: typeof(string),
         typeDisplayName: "String",
         pathToTemplate: "Editor/Uxml/VarRows/StringVariableRow")]
-    public class StringRowVisualHandler : RowVisualHandler<object>
+    public class StringRowVisualHandler : RowVisualHandler<string>
     {
-        protected override void RegisterVisualElements()
+        protected override void BuildValueEditor(VisualElement valueField)
         {
-            base.RegisterVisualElements();
-            _textValueField = ValueField as TextField;
+            // The base class already makes the field delayed, so change events only fire
+            // when the user presses enter or leaves the field
+            base.BuildValueEditor(valueField);
 
-            if (_textValueField == null)
+            if (valueField is TextField textField)
             {
-                Debug.LogError($"StringRowVisualHandler could not find a TextField named in the UXML template. Check your UXML.");
-                return;
-            }
-
-            _textValueField.isDelayed = true; // This way, the change events only fire when the user presses enter
-            _textValueField.multiline = true;
-            
-        }
-
-        protected TextField _textValueField;
-        protected override void ToggleValueChangeSubs(bool on)
-        {
-            base.ToggleValueChangeSubs(on);
-            if (_textValueField == null) return;
-            if (on)
-            {
-                _textValueField.RegisterValueChangedCallback(OnTextFieldChanged);
-                _textValueField.RegisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); //
-            }
-            else
-            {
-                _textValueField.UnregisterValueChangedCallback(OnTextFieldChanged);
-                _textValueField.UnregisterCallback<AttachToPanelEvent>(OnTextFieldAttachedToPanel); 
+                textField.multiline = true;
+                // A text field that got its value before reaching a panel can show up empty
+                textField.RegisterCallback<AttachToPanelEvent>(_ => RefreshValue());
             }
         }
-
-        protected virtual void OnTextFieldChanged(ChangeEvent<string> evt)
-        {
-            TriggerValueFieldChanged(evt.newValue);
-        }
-
-        protected virtual void OnTextFieldAttachedToPanel(AttachToPanelEvent evt)
-        {
-            ApplyVarValueToValueField();
-        }
-
-        protected override void ApplyVarValueToValueField()
-        {
-            _textValueField.schedule.Execute(() =>
-            {
-                if (_textValueField == null) return;
-                string textToApply = (string)_currentVariable.BoxedValue;
-                _textValueField.SetValueWithoutNotify(textToApply);
-                _textValueField.MarkDirtyRepaint();
-            }).ExecuteLater(1); // Delay by 1 frame to avoid UITK binding issues
-        }
-
     }
 }

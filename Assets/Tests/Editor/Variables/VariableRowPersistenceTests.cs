@@ -22,13 +22,7 @@ namespace VScriptingTests.VariableRows
         private Flowchart _flowchart;
         private VariableRowManager _rowManager;
         private VariableListView _variableListView;
-        private VariableRowFactory _rowFactory;
-        private VariableRowPool _rowPool;
-        private RowVisualHandlerPool _handlerPool;
         private List<UnityObject> _objectsToDestroy;
-
-        private IRowVisualTemplateProvider _originalTemplateProvider;
-        private IRowVisualElementBuilder _originalElementBuilder;
 
         private class TestHostWindow : EditorWindow { }
 
@@ -47,12 +41,6 @@ namespace VScriptingTests.VariableRows
 
             _objectsToDestroy = new List<UnityObject>();
 
-            _originalTemplateProvider = RowVisualTemplateProviderRegistry.Current;
-            _originalElementBuilder = RowVisualElementBuilderRegistry.Current;
-
-            RowVisualTemplateProviderRegistry.Current = new CachedRowVisualTemplateProvider();
-            RowVisualElementBuilderRegistry.Current = new DefaultRowVisualElementBuilder();
-
             var flowchartGO = new GameObject("TestFlowchart");
             _objectsToDestroy.Add(flowchartGO);
             _flowchart = flowchartGO.AddComponent<Flowchart>();
@@ -68,16 +56,6 @@ namespace VScriptingTests.VariableRows
 
         private void InitializeVariableUi()
         {
-            _rowPool = new VariableRowPool();
-            _handlerPool = new RowVisualHandlerPool(new RowVisualHandlerResolver(), BuildHandlerLookup());
-
-            _rowFactory = new VariableRowFactory();
-            _rowFactory.Init(new VariableRowFactoryInitArgs
-            {
-                RowPool = _rowPool,
-                HandlerPool = _handlerPool
-            });
-
             var listView = new ListView();
             var countLabel = new UitkLabel();
 
@@ -85,11 +63,8 @@ namespace VScriptingTests.VariableRows
             {
                 List = listView,
                 CountLabel = countLabel,
-                RowFactory = _rowFactory,
                 VariableSource = _flowchart
             });
-
-            _variableListView.SetSource(_flowchart);
 
             _uiRoot = new VisualElement { name = "VariableRowTestsRoot" };
             _addButton = new Button { name = "TestAddButton" };
@@ -112,10 +87,6 @@ namespace VScriptingTests.VariableRows
         {
             _rowManager?.Dispose();
             _variableListView?.Dispose();
-            _rowFactory?.Dispose();
-
-            RowVisualTemplateProviderRegistry.Current = _originalTemplateProvider;
-            RowVisualElementBuilderRegistry.Current = _originalElementBuilder;
 
             for (int i = _objectsToDestroy.Count - 1; i >= 0; i--)
             {
@@ -147,14 +118,14 @@ namespace VScriptingTests.VariableRows
             byte variableId = variable.ItemId;
             string variableKey = variable.Key;
 
-            VariableRow row = GetRowFor(variable);
-            Assert.NotNull(row, "Variable row could not be materialized.");
+            IRowVisualHandler handler = GetHandlerFor(variable);
+            Assert.NotNull(handler, "Variable row could not be materialized.");
 
-            yield return WaitUntilAttachedToPanel(row.RootElement);
+            yield return WaitUntilAttachedToPanel(handler.RowRoot);
 
             object originalValue = variable.BoxedValue;
 
-            ApplyValueThroughUi(row, newValue, contentType);
+            ApplyValueThroughUi(handler, newValue, contentType);
             yield return null;
             Assert.AreEqual(newValue, variable.BoxedValue, "Value change was not applied.");
 
@@ -208,28 +179,13 @@ namespace VScriptingTests.VariableRows
                 $"Open windows: {string.Join(", ", windows)}]";
         }
 
-        private VariableRow GetRowFor(IVariable variable)
+        private IRowVisualHandler GetHandlerFor(IVariable variable)
         {
             _variableListView.ForceMaterializeAllRowsForTests();
 
-            int index = FindVariableIndex(variable);
-            Assert.GreaterOrEqual(index, 0, "Variable was not found in the list view.");
-
-            return _variableListView.RowAtIndex(index);
-        }
-
-        private int FindVariableIndex(IVariable variable)
-        {
-            var vars = _variableListView.VarsToDisplay;
-            for (int i = 0; i < vars.Count; i++)
-            {
-                if (ReferenceEquals(vars[i], variable))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            Assert.IsTrue(_variableListView.TryGetHandler(variable, out IRowVisualHandler handler),
+                "Variable was not found in the list view.");
+            return handler;
         }
 
         private static readonly IReadOnlyDictionary<Type, Action<VisualElement, object>> valueAppliers =
@@ -485,9 +441,9 @@ namespace VScriptingTests.VariableRows
             }
         }
 
-        private static void ApplyValueThroughUi(VariableRow row, object newValue, Type contentType)
+        private static void ApplyValueThroughUi(IRowVisualHandler handler, object newValue, Type contentType)
         {
-            VisualElement valueElement = row.RootElement?.Q("ValueField");
+            VisualElement valueElement = handler.RowRoot?.Q("ValueField");
             Assert.NotNull(valueElement, "Variable row is missing a ValueField element.");
 
             if (!valueAppliers.TryGetValue(contentType, out var applyValue))
@@ -498,44 +454,6 @@ namespace VScriptingTests.VariableRows
             }
 
             applyValue(valueElement, newValue);
-        }
-
-        private IDictionary<Type, Type> BuildHandlerLookup()
-        {
-            return new Dictionary<Type, Type>
-            {
-                #region Numeric
-                { typeof(float), typeof(FloatRowVisualHandler) },
-                { typeof(Color), typeof(ColorRowVisualHandler) },
-                { typeof(int), typeof(IntRowVisualHandler) },
-                { typeof(Vector2), typeof(VectorTwoRowVisualHandler) },
-                { typeof(Vector3), typeof(VectorThreeRowVisualHandler) },
-                #endregion
-
-                #region Audio
-                { typeof(AudioClip), typeof(AudioClipRowVisualHandler) },
-                { typeof(AudioSource), typeof(AudioSourceRowVisualHandler) },
-                #endregion
-
-                #region Graphics
-                { typeof(string), typeof(StringRowVisualHandler) },
-                { typeof(Texture), typeof(TextureRowVisualHandler) },
-                { typeof(Material), typeof(MaterialRowVisualHandler) },
-                { typeof(Sprite), typeof(SpriteRowVisualHandler) },
-                { typeof(Animator), typeof(AnimatorRowVisualHandler) },
-                #endregion
-
-                #region Physics
-                //{ typeof(Rigidbody), typeof(RigidbodyThreeDRowVisualHandler) }, 
-                { typeof(Collider), typeof(ColliderThreeDRowVisualHandler) },
-                //{ typeof(Rigidbody2D), typeof(RigidbodyTwoDRowVisualHandler) },
-                { typeof(Collider2D), typeof(ColliderTwoDRowVisualHandler) },
-                #endregion
-
-                #region Etc
-                #endregion
-
-            };
         }
 
         private static IEnumerable<VariableRowTestCase> VariableRowCases()

@@ -1,9 +1,7 @@
-using AtMycelia.EditorExt;
 using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UitkLabel = UnityEngine.UIElements.Label;
 
 namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 {
@@ -50,44 +48,10 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
             }
 
             _manager?.Dispose();
-            _manager = new VariableRowManager();
-
-            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
-            var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
-            var rowPool = new VariableRowPool();
-
-            _factoryInitArgs.Holder = _panelRoot;
-            _factoryInitArgs.HandlerPool = handlerPool;
-            _factoryInitArgs.RowPool = rowPool;
-            _rowFactory.Init(_factoryInitArgs);
-
-            var list = _panelRoot.Q<ListView>("rowList");
-            var count = _panelRoot.Q<UitkLabel>("varCountLabel");
-            var addBtn = _panelRoot.Q<Button>("addVarButton");
-
-            var listViewArgs = new VariableListViewInitArgs
-            {
-                List = list,
-                CountLabel = count,
-                RowFactory = _rowFactory,
-                VariableSource = flowchart,
-                AssetResolver = new DefaultEditorAssetResolver(),
-            };
-            var view = new VariableListView(listViewArgs);
-
-            _manager.Init(new VRowManagerInitArgs
-            {
-                Root = _panelRoot,
-                AddButton = addBtn,
-                VariableSource = flowchart,
-                VariableListView = view,
-            });
+            _manager = VariableRowManager.CreateFor(_panelRoot, flowchart);
         }
 
         private VariableRowManager _manager;
-        private IRowVisualHandlerResolver _resolver = new RowVisualHandlerResolver();
-        private readonly VariableRowFactoryInitArgs _factoryInitArgs = new VariableRowFactoryInitArgs();
-        private readonly VariableRowFactory _rowFactory = new VariableRowFactory();
 
         private void SetSubs(bool on)
         {
@@ -133,7 +97,6 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
 
             _window = null;
             _panelRoot = null;
-            _resolver = null;
         }
     }
 }
