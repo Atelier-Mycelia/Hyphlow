@@ -37,7 +37,7 @@ namespace VScriptingTests.VariableOperations
             {
                 // We want to make it an actual asset file so that it handles MuscariableHolders 
                 // like it should in production.
-                _source = ScriptableObject.CreateInstance<VariableSourceAsset>();
+                _source = ScriptableObject.CreateInstance<VariableSet>();
                 AssetDatabase.CreateAsset(_source, TestAssetPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -51,28 +51,13 @@ namespace VScriptingTests.VariableOperations
             void PrepUIElements()
             {
                 uxml = Resources.Load<VisualTreeAsset>(PathToUxml);
-                _resolver = new RowVisualHandlerResolver();
-                _handlerPool = new RowVisualHandlerPool(_resolver, RowVisualHandlerRegistry.VisualHandlerLookup);
-                _rowPool = new VariableRowPool();
-
-                var factoryInit = new VariableRowFactoryInitArgs
-                {
-                    RowPool = _rowPool,
-                    HandlerPool = _handlerPool,
-                    Holder = new VisualElement()
-                };
-                _rowFactory = new VariableRowFactory();
-                _rowFactory.Init(factoryInit);
-
                 _uiList = new ListView();
                 _countLabel = new UITKLabel();
                 _listView = new VariableListView(new VariableListViewInitArgs
                 {
                     List = _uiList,
                     CountLabel = _countLabel,
-                    RowFactory = _rowFactory,
                     VariableSource = _source,
-                    AssetResolver = new DefaultEditorAssetResolver(),
                 });
 
                 InitManager();
@@ -114,10 +99,7 @@ namespace VScriptingTests.VariableOperations
             {
                 Assert.AreEqual(1, _listView.RowCount, "Expected one materialized row for single variable.");
 
-                var row = _listView.RowAtIndex(0);
-                Assert.IsNotNull(row, "Row should be present.");
-
-                var handler = row.VisualHandler as StringRowVisualHandler;
+                var handler = HandlerAt(0) as StringRowVisualHandler;
                 Assert.IsNotNull(handler, "Handler should be a StringRowVisualHandler.");
 
                 // Locate the KeyInput TextField and ValueField
@@ -133,16 +115,18 @@ namespace VScriptingTests.VariableOperations
             }
         }
 
-        protected VariableSourceAsset _source;
+        protected VariableSet _source;
         protected readonly string initStringVarKey = "greeting";
         protected readonly string initStringVarValue = "hello";
         private const string TestAssetPath = "Assets/TestVariableSource.asset";
 
-        protected RowVisualHandlerResolver _resolver;
-        protected RowVisualHandlerPool _handlerPool;
-        protected VariableRowPool _rowPool;
+        protected IRowVisualHandler HandlerAt(int index)
+        {
+            Assert.IsTrue(_listView.TryGetHandler(_listView.VarsToDisplay[index], out var handler),
+                $"No materialized row for the variable at index {index}.");
+            return handler;
+        }
 
-        protected VariableRowFactory _rowFactory;
         protected ListView _uiList;
         protected UITKLabel _countLabel;
         protected VariableListView _listView;
@@ -162,7 +146,6 @@ namespace VScriptingTests.VariableOperations
 
             try
             {
-                _rowFactory?.Dispose();
                 _listView?.Dispose();
             }
             catch
@@ -180,12 +163,8 @@ namespace VScriptingTests.VariableOperations
 
             _toDestroy.Clear();
             _listView = null;
-            _rowFactory = null;
             _uiList = null;
             _countLabel = null;
-            _rowPool = null;
-            _handlerPool = null;
-            _resolver = null;
             _source = null;
         }
 
@@ -199,9 +178,7 @@ namespace VScriptingTests.VariableOperations
             int expectedRowCount = 2; // including the initial one from SetUp
             Assert.AreEqual(expectedRowCount, _listView.RowCount);
 
-            var row = _listView.RowAtIndex(0);
-            Assert.IsNotNull(row, "First row is null when it shouldn't be");
-            var handler = row.VisualHandler as StringRowVisualHandler;
+            var handler = HandlerAt(0) as StringRowVisualHandler;
             Assert.IsNotNull(handler, "Expected StringRowVisualHandler for added string variable.");
 
             // Verify the underlying value is present and matches startingVal
@@ -246,7 +223,7 @@ namespace VScriptingTests.VariableOperations
             {
                 BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
 
-                var sourceType = typeof(VariableSourceAsset);
+                var sourceType = typeof(VariableSet);
                 var varManagerInfo = sourceType.GetField("_varManager", flags);
                 Assert.IsNotNull(varManagerInfo, "Could not find private '_varManager' field via reflection.");
 
@@ -303,21 +280,15 @@ namespace VScriptingTests.VariableOperations
             _source.MarkDirtyAndSave();
             Assert.AreEqual(2, _listView.RowCount, "There aren't as many rows registered as there should be.");
             _listView.ForceMaterializeAllRowsForTests();
-            var row = _listView.RowAtIndex(1);
-            Assert.IsNotNull(row);
-            var handler = row.VisualHandler as StringRowVisualHandler;
+            var handler = HandlerAt(1) as StringRowVisualHandler;
             Assert.IsNotNull(handler);
 
-            // Act: click the RemoveButton on the row template (invoke the UI click helper)
-            var btn = handler.RowRoot.Q<Button>("RemoveButton");
-
-            // Reflection-based invocation of the handler's protected click handler.
-            // This invokes the same internal path as the button's click (calls RemoveButtonClicked).
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
-            var onRemove = handler.GetType().GetMethod("OnRemoveButtonClicked", flags);
-            Assert.IsNotNull(onRemove, "Could not find OnRemoveButtonClicked on handler.");
+            // Act: a click on the row's RemoveButton makes the handler call its host, which
+            // is the same call made here (a Button can't be clicked outside of a panel)
+            Assert.IsNotNull(handler.RowRoot.Q<Button>("RemoveButton"),
+                "RemoveButton not found on the row template.");
             Selection.activeObject = _source; // So the list view can register the undo on it properly
-            onRemove.Invoke(handler, null);
+            _listView.EditHost.RemoveRequested(handler.Variable);
             _source.Refresh();
             _source.MarkDirtyAndSave();
 

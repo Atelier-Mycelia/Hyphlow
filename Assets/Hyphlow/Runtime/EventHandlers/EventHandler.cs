@@ -129,24 +129,24 @@ namespace AtMycelia.Hyphlow
 				ParentBlock = _parentMbBlock;
 			}
 
-			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+			if (SetSubsOnlyInRuntime && Application.IsPlaying(this))
 			{
-				ToggleSubs(true);
+				SetSubs(true);
 			}
-			else if (!ToggleSubsOnlyInRuntime)
+			else if (!SetSubsOnlyInRuntime)
 			{
-				ToggleSubs(true);
+				SetSubs(true);
 			}
 		}
 
 		// We want subclasses to have control of when they sub. Some would prefer to only
 		// sub in runtime, so...
-		protected virtual bool ToggleSubsOnlyInRuntime => true;
+		protected virtual bool SetSubsOnlyInRuntime => true;
 
 		/// <summary>
 		/// Enable or disable any subscriptions to events.
 		/// </summary>
-		protected virtual void ToggleSubs(bool on)
+		protected virtual void SetSubs(bool on)
 		{
 
 		}
@@ -170,13 +170,13 @@ namespace AtMycelia.Hyphlow
 
 		protected virtual void OnDisable()
 		{
-			if (ToggleSubsOnlyInRuntime && Application.IsPlaying(this))
+			if (SetSubsOnlyInRuntime && Application.IsPlaying(this))
 			{
-				ToggleSubs(false);
+				SetSubs(false);
 			}
-			else if (!ToggleSubsOnlyInRuntime)
+			else if (!SetSubsOnlyInRuntime)
 			{
-				ToggleSubs(false);
+				SetSubs(false);
 			}
 		}
 

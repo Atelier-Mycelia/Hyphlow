@@ -156,16 +156,16 @@ MonoBehaviour:
   _varManager: {fileID: 1194013733042030264}
   _execManager: {fileID: 8098928979701937383}
   _blockManager: {fileID: -406077119811257583}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 1
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
@@ -244,8 +244,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: OnRightGoalHit
     stringRef: {fileID: 0}
     stringVal: 
@@ -294,8 +294,8 @@ MonoBehaviour:
     - _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _value: Ball
       stringRef: {fileID: 0}
       stringVal: 
@@ -303,8 +303,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1846694562102150}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -313,8 +313,8 @@ MonoBehaviour:
   _colliderVar:
     _itemId: 0
     _owningSource: {fileID: 0}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   colliderVar: {fileID: 0}
 --- !u!114 &-406077119811257583
 MonoBehaviour:

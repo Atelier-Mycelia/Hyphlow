@@ -23,9 +23,9 @@ namespace AtMycelia.Hyphlow
         [VariableProperty()]
         [SerializeField] protected Variable variable;
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
-            base.ToggleSubs(on);
+            base.SetSubs(on);
             if (inputAction == null)
             {
                 Debug.LogError($"[InputActionEventHandler]: Missing InputAction in Flowchart {_fChart.name}, " +

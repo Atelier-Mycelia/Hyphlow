@@ -21,7 +21,7 @@ namespace AtMycelia.Hyphlow
 
         public override void OnEnter()
         {
-            outValue.Value = curve.Evaluate(inValue.Value);
+            _outValue.Value = curve.Evaluate(_inValue.Value);
 
             Continue();
         }

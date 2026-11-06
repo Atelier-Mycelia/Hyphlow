@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        private const string _defaultResourcesPath = "AtMycelia/Hyphlow/FcDefaultConfig";
+        private const string _defaultResourcesPath = "Hyphlow/FcDefaultConfig";
 
         public static FlowchartGlobalDefaults S
         {
@@ -103,6 +103,20 @@ namespace AtMycelia.Hyphlow.EditorExt
         }
 
         private static FlowchartGlobalDefaults _s;
+
+        public void ApplyStateTo(FlowchartGlobalDefaults other)
+        {
+            if (other == null)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+            other._newBlockScope = _newBlockScope;
+            other._firstBlockName = _firstBlockName;
+            other._newBlockName = _newBlockName;
+            other._blockSize = _blockSize;
+            other._stepPause = _stepPause;
+            other._firstBlockEventHandlerTypeName = _firstBlockEventHandlerTypeName;
+        }
 
         private void OnEnable()
         {

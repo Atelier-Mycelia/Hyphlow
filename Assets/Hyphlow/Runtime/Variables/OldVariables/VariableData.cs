@@ -147,6 +147,7 @@ namespace AtMycelia.Hyphlow
         public virtual void SetContentsTo(IVariableData otherVarData)
         {
             this.VarRef = otherVarData.VarRef;
+            this.BoxedValue = otherVarData.BoxedValue;
         }
 
         protected virtual bool CanHoldAsValue(object obj)

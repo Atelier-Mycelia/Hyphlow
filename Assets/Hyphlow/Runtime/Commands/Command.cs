@@ -1,5 +1,4 @@
 using AtMycelia.Amanita;
-using AtMycelia.Hyphlow.Sys;
 using AtMycelia.HyphaTween;
 using System;
 using System.Collections;
@@ -414,7 +413,6 @@ namespace AtMycelia.Hyphlow
         {
             hideFlags = HideFlags.HideInInspector;
             RefreshForVarDataStability();
-            RefreshVariableCache();
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.delayCall += () =>
             {

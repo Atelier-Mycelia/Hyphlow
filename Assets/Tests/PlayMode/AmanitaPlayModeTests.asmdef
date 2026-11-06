@@ -9,7 +9,9 @@
         "AtMycelia.Common.Core",
         "AtMycelia.HyphaTween.Core"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

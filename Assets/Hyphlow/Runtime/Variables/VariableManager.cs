@@ -1,6 +1,7 @@
 using AtMycelia.Collections;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
@@ -121,9 +122,15 @@ namespace AtMycelia.Hyphlow
             if (triggerSignals)
             {
                 VariableRemoved(toRemove);
-                VariableSignals.VariableRemoved(toRemove);
+                if (!OwnerIsDetached)
+                {
+                    VariableSignals.VariableRemoved(toRemove);
+                }
             }
         }
+
+        // Detached VariableSet copies are meant to go unnoticed outside of themselves
+        private bool OwnerIsDetached => VarOwner is VariableSet set && set.IsDetached;
 
         private Dictionary<byte, IVariable> _lookup = new();
         // ^For faster retrieval by ID. Must be kept in sync with the lists.
@@ -325,7 +332,10 @@ namespace AtMycelia.Hyphlow
             if (triggerSignals)
             {
                 VariableAdded(toAdd);
-                VariableSignals.VariableAdded(toAdd);
+                if (!OwnerIsDetached)
+                {
+                    VariableSignals.VariableAdded(toAdd);
+                }
             }
         }
 
@@ -804,6 +814,7 @@ namespace AtMycelia.Hyphlow
             newVar.Scope = scope;
             newVar.ItemId = NextValidVarID();
 
+            // AddVariable raises VariableAdded itself (and only when it really adds it)
             IVariable toRegister = newVar;
             AddVariable(toRegister);
 
@@ -812,8 +823,6 @@ namespace AtMycelia.Hyphlow
             {
                 newVar.Init(value);
             }
-
-            VariableAdded(toRegister);
 
             return newVar;
         }
@@ -936,6 +945,149 @@ namespace AtMycelia.Hyphlow
 
         public event Action Reordered = delegate { };
 
+#if UNITY_EDITOR
+        /// <summary>
+        /// Makes this manager's Muscariables match the source's, keeping the instances of
+        /// those both have (same ItemId and type). See VariableSet.ApplyStateFrom for the
+        /// details. Legacy variables are left as they are, since VariableSets can't hold any.
+        /// </summary>
+        public void ApplyStateFrom(VariableManager source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (ReferenceEquals(source, this))
+            {
+                return;
+            }
+
+            EnsureInitialized();
+            Refresh(); // So the lookup reflects what's really in the lists
+
+            RemoveVarsNotMatchedIn(source._muscariables);
+            List<Muscariable> ordered = MatchVarsTo(source._muscariables);
+
+            // Matched vars kept their old positions and new ones went on the end, so
+            // this only differs from the source's order if something got moved.
+            // By reference, since Muscariable's Equals compares values
+            bool orderChanged = !_muscariables.SequenceEqual(ordered,
+                ReferenceEqualityComparer<Muscariable>.Instance);
+            _muscariables.Clear();
+            _muscariables.AddRange(ordered);
+            _nextValidVarID = source._nextValidVarID;
+            MarkOwnerAsDirty();
+
+            if (orderChanged)
+            {
+                Reordered();
+            }
+        }
+
+        private void RemoveVarsNotMatchedIn(IReadOnlyList<Muscariable> sourceVars)
+        {
+            var sourceTypeById = new Dictionary<byte, Type>();
+            for (int i = 0; i < sourceVars.Count; i++)
+            {
+                Muscariable sourceVar = sourceVars[i];
+                if (sourceVar is not null)
+                {
+                    sourceTypeById.TryAdd(sourceVar.ItemId, sourceVar.GetType());
+                }
+            }
+
+            var toRemove = new List<Muscariable>();
+            for (int i = 0; i < _muscariables.Count; i++)
+            {
+                Muscariable ours = _muscariables[i];
+                // Ids get reused, so a matching id alone could be a different variable
+                bool isMatched = sourceTypeById.TryGetValue(ours.ItemId, out Type sourceType) &&
+                    sourceType == ours.GetType();
+                if (!isMatched)
+                {
+                    toRemove.Add(ours);
+                }
+            }
+
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                RemoveFromCaches(toRemove[i]);
+            }
+        }
+
+        /// <summary>
+        /// Overwrites the state of the vars we have that the source does too, and adds
+        /// copies of the ones we don't. Returns ours in the source's order.
+        /// </summary>
+        private List<Muscariable> MatchVarsTo(IReadOnlyList<Muscariable> sourceVars)
+        {
+            var ordered = new List<Muscariable>(sourceVars.Count);
+            var claimedIds = new HashSet<byte>();
+
+            for (int i = 0; i < sourceVars.Count; i++)
+            {
+                Muscariable sourceVar = sourceVars[i];
+                if (sourceVar is null)
+                {
+                    continue;
+                }
+
+                // A source with duplicate ids is broken, but the duplicates are still
+                // variables the user made, so they come over under fresh ids.
+                bool firstWithThisId = claimedIds.Add(sourceVar.ItemId);
+                bool weHaveIt = firstWithThisId &&
+                    _lookup.TryGetValue(sourceVar.ItemId, out IVariable found) &&
+                    found is Muscariable;
+
+                if (weHaveIt)
+                {
+                    var ours = (Muscariable)_lookup[sourceVar.ItemId];
+                    CopyStateInto(sourceVar, ours);
+                    ordered.Add(ours);
+                    continue;
+                }
+
+                Muscariable added = CopyOf(sourceVar);
+                if (!firstWithThisId)
+                {
+                    added.ItemId = Muscariable.InvalidId;
+                }
+
+                // Not through Integrate, which could rename the key: the source's keys are
+                // already unique among themselves, and they're what we're matching.
+                added.Owner = VarOwner;
+                added.ParentFlowchart = VarOwner as Flowchart;
+                AddToCaches(added);
+                ordered.Add(added);
+            }
+
+            return ordered;
+        }
+
+        /// <summary>
+        /// Same approach as VariableSet's Play Mode restore: overwriting keeps the
+        /// instance, along with its non-serialized links (Owner and such).
+        /// </summary>
+        private static void CopyStateInto(Muscariable from, Muscariable to)
+        {
+            EditorJsonUtility.FromJsonOverwrite(EditorJsonUtility.ToJson(from), to);
+        }
+
+        /// <summary>
+        /// Not Clone, since that only carries the key, scope, id and value over, into
+        /// whatever type is registered for the content type rather than the exact one.
+        /// </summary>
+        private static Muscariable CopyOf(Muscariable original)
+        {
+            var copy = (Muscariable)Activator.CreateInstance(original.GetType());
+            CopyStateInto(original, copy);
+            return copy;
+        }
+#endif
+
+#if UNITY_EDITOR
+        // PlayModeStateChange is an editor type, so this can't exist in builds
         public void OnPlayModeStateChanged(PlayModeStateChange change)
         {
             if (change == PlayModeStateChange.ExitingEditMode)
@@ -950,6 +1102,7 @@ namespace AtMycelia.Hyphlow
                 }
             }
         }
+#endif
 
         public void RemoveAll(Predicate<IVariable> match)
         {

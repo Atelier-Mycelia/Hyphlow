@@ -564,8 +564,8 @@ MonoBehaviour:
 
     Image Here'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d1d9e371be19ba342bb816d57e3538fd, type: 2}
-  m_sharedMaterial: {fileID: 6241437236972252228, guid: d1d9e371be19ba342bb816d57e3538fd, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -986,16 +986,16 @@ MonoBehaviour:
   _varManager: {fileID: 1157026473}
   _execManager: {fileID: 1157026488}
   _blockManager: {fileID: 1157026489}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 11400000, guid: 9228d71678b417b41aa7006c8cf7b910, type: 2}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
@@ -1061,7 +1061,7 @@ MonoBehaviour:
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -1168,7 +1168,7 @@ MonoBehaviour:
     _value: 1.5
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -1313,7 +1313,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -1396,7 +1396,7 @@ MonoBehaviour:
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -1503,7 +1503,7 @@ MonoBehaviour:
     _value: 1.5
     floatRef: {fileID: 0}
     floatVal: 0
-  _tweenerSO: {fileID: 11400000, guid: 0fe6d0bda105c9c448e83b288be3fa91, type: 2}
+  _tweenerSO: {fileID: 11400000, guid: ba33009a0d242e04f871510c7e88f11e, type: 2}
   _stopPreviousTweens:
     _backingVarRef:
       _itemId: 0
@@ -1898,8 +1898,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Made With
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2109d325e1c07124787fc7b71120afb3, type: 2}
-  m_sharedMaterial: {fileID: 8845191788533661663, guid: 2109d325e1c07124787fc7b71120afb3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

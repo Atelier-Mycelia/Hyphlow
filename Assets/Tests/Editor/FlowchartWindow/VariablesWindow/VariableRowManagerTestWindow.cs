@@ -255,40 +255,7 @@ namespace VScriptingTests.VariableOperations
                 Debug.LogError("VariableRowManagerTestWindow: UXML is missing required elements: rowList / varCountLabel / addVarButton");
                 return;
             }
-            var visualHandlerLookup = RowVisualHandlerRegistry.VisualHandlerLookup;
-            var handlerPool = new RowVisualHandlerPool(_resolver, visualHandlerLookup);
-            var factoryInitArgs = new VariableRowFactoryInitArgs()
-            {
-                RowPool = new VariableRowPool(),
-                HandlerPool = handlerPool,
-                Holder = _holdsManager,
-            };
-            var varRowFactory = new VariableRowFactory();
-            varRowFactory.Init(factoryInitArgs);
-
-            var listViewArgs = new VariableListViewInitArgs()
-            {
-                List = listContainer,
-                CountLabel = countLabel,
-                RowFactory = varRowFactory,
-                VariableSource = _flowchart,
-                AssetResolver = new DefaultEditorAssetResolver(),
-            };
-
-            var view = new VariableListView(listViewArgs);
-            
-            // Build manager
-            var args = new VRowManagerInitArgs
-            {
-                HoldsManager = _holdsManager,
-                Root = _root,
-                AddButton = addButton,
-                VariableSource = _flowchart,
-                VariableListView = view,
-            };
-
-            _vRowManager = new VariableRowManager();
-            _vRowManager.Init(args);
+            _vRowManager = VariableRowManager.CreateFor(_root, _flowchart);
 
             // Attach the manager's root to the window (Init doesn't do this)
             RegisterAndAddToRoot(_holdsManager);
@@ -314,7 +281,6 @@ namespace VScriptingTests.VariableOperations
         }
 
         protected VariableRowManager _vRowManager;
-        protected SilentTestResolver _resolver = new SilentTestResolver();
         protected VisualTreeAsset _variableTemplate;
 
 

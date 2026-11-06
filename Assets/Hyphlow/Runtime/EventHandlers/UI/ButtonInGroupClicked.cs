@@ -41,20 +41,20 @@ private GameObject[] parents;
                 }
             }
 
-            ToggleSubs(false);
-            ToggleSubs(true);
+            SetSubs(false);
+            SetSubs(true);
         }
 
         protected IList<Button> _buttons = new List<Button>();
 
-        protected override void ToggleSubs(bool on)
+        protected override void SetSubs(bool on)
         {
-            if (!Application.isPlaying && ToggleSubsOnlyInRuntime)
+            if (!Application.isPlaying && SetSubsOnlyInRuntime)
             {
                 return;
             }
 
-            base.ToggleSubs(on);
+            base.SetSubs(on);
 
             for (int i = 0; i < _buttons.Count; i++)
             {
@@ -72,7 +72,7 @@ private GameObject[] parents;
             }
         }
 
-        protected override bool ToggleSubsOnlyInRuntime => true;
+        protected override bool SetSubsOnlyInRuntime => true;
 
         private void OnButtonClicked()
         {

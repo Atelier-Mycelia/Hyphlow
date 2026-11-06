@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow
     /// when selecting a variable to add to a Flowchart.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+    [MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
     public sealed class VariableInfoAttribute : Attribute
     {
         // Note do not use "isPreviewedOnly:true", it causes the script to fail to load without errors shown

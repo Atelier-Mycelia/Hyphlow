@@ -1,0 +1,97 @@
+:root
+{
+    --tab-selected-color: rgb(44, 93, 135);
+    --tab-selected-text-color: rgb(222, 222, 222);
+    --tab-normal-text-color: rgb(222, 222, 222);
+    --tab-normal-bg-color: rgb(60, 60, 60);
+    --hover-color: rgb(100, 100, 100);
+    --active-color: rgb(50, 50, 50);
+    --selected-border-color: rgb(100, 140, 200);
+    --hyphlow-tab-icon: resource("Editor/Icons/hyphlowLogo_noText");
+    --border-color: rgb(30, 30, 30);
+    --height: 60px;
+    --label-font-size: 24px;
+    --border-width: 2px;
+    --border-radius: 5px;
+}
+
+.tabRoot 
+{
+    margin: 0px 0px 0px 0px;
+    border-radius: var(--border-radius);
+}
+
+.tabIcon
+{
+    background-image: var(--hyphlow-tab-icon);
+    -unity-background-scale-mode: scale-to-fit;
+
+    background-position-y: bottom; 
+    /* ^Prevents empty space below the icon that wasn't in the source image. */
+}
+
+.tabIconHolder
+{
+    padding: 8px 0px 0px 0px;
+    margin: 0px 0px 0px 3px;
+    width: 60px;
+}
+
+.hyphlow-tab {
+    justify-content: center;
+    height: var(--height);
+    color: var(--tab-normal-text-color);
+    -unity-text-align: middle-center;
+    background-color: var(--tab-normal-bg-color);
+    border-color: var(--border-color);
+    border-width: var(--border-width);
+    transition-property: background-color;
+    transition-duration: 0.2s;
+    width: 100%;
+    padding: 0;
+    flex-direction: column;
+    
+    flex-grow: 0;
+}
+
+.hyphlow-tab > Toggle {
+    height: 100%;
+}
+
+.hyphlow-tab > Toggle > VisualElement {
+    height: 100%;
+}
+
+/* Room for the icon, on the header instead of the Foldout so subtabs aren't indented
+   (Myceliarium's tab styles take care of the rest once the tab has subtabs) */
+.tabRoot.tab-foldout-root > .unity-foldout > .unity-toggle {
+    padding-left: 60px;
+}
+
+/* To hide the checkmark */
+.unity-toggle__checkmark
+{
+    visibility: hidden;
+    opacity: 0;
+    display: none;
+}
+
+.hyphlow-tab > Toggle > VisualElement > Label {
+    font-size: var(--label-font-size);
+    flex-grow: 1;
+    height: 100%;
+    -unity-text-align: middle-center;
+}
+
+.hyphlow-tab:hover {
+    /* background-color: var(--hover-color); */
+}
+
+.hyphlow-tab:active {
+    background-color: var(--active-color);
+}
+
+.hyphlow-tab.selected {
+    background-color: var(--tab-selected-color);
+    border-color: var(--selected-border-color);
+}

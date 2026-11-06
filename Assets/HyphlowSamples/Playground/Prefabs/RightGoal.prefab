@@ -179,8 +179,8 @@ MonoBehaviour:
     - _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _value: Ball
       stringRef: {fileID: 0}
       stringVal: 
@@ -188,8 +188,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 4351823283213207762}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -198,8 +198,8 @@ MonoBehaviour:
   _colliderVar:
     _itemId: 0
     _owningSource: {fileID: 0}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   colliderVar: {fileID: 0}
 --- !u!114 &4464386520276308582 stripped
 MonoBehaviour:

@@ -31,10 +31,10 @@ namespace AtMycelia.Hyphlow
             switch (mode)
             {
                 case Mode.Base10:
-                    outValue.Value = Mathf.Log10(inValue.Value);
+                    _outValue.Value = Mathf.Log10(_inValue.Value);
                     break;
                 case Mode.Natural:
-                    outValue.Value = Mathf.Log(inValue.Value);
+                    _outValue.Value = Mathf.Log(_inValue.Value);
                     break;
                 default:
                     break;
