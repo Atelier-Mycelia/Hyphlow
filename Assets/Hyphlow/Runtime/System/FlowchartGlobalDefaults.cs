@@ -73,7 +73,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
-        private const string _defaultResourcesPath = "AtMycelia/Hyphlow/FcDefaultConfig";
+        private const string _defaultResourcesPath = "Hyphlow/FcDefaultConfig";
 
         public static FlowchartGlobalDefaults S
         {

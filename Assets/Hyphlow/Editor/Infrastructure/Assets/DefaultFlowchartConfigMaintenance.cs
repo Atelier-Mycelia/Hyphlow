@@ -9,7 +9,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     public static class DefaultFlowchartConfigMaintenance
     {
         private const string ResourcesRootPath = "Assets/Resources";
-        private const string RelativeResourcesFolderPath = "AtMycelia/Hyphlow/Editor";
+        private const string RelativeResourcesFolderPath = "Hyphlow"; // Not under an Editor folder, or builds would omit it
         private const string AssetName = "FcDefaultConfig";
         private const string SearchFilter = "t:FlowchartGlobalDefaults";
 

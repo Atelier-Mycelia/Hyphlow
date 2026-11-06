@@ -14,8 +14,6 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow
 {
-    [CreateAssetMenu(fileName = "NewVariableSet",
-        menuName = "Atelier Mycelia/Hyphlow/VariableSet")]
     [MovedFrom(true, sourceNamespace: "AtMycelia.Hyphlow", sourceAssembly: "Assembly-CSharp",
         sourceClassName: "VariableSourceAsset")]
     public class VariableSet : ScriptableObject, IReorderableMuscariableSource,

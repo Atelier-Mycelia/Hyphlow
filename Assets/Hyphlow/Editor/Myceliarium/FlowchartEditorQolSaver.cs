@@ -16,7 +16,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
     public sealed class FlowchartEditorQolSaver : ControlPanelEntrySaver,
         IAtMyceliaControlPanelEntrySaver
     {
-        private const string AssetFolder = "Assets/Resources/AtMycelia/Hyphlow/Editor";
+        private const string AssetFolder = "Assets/Resources/Hyphlow/Editor";
 
         public override bool IsCompatibleWith(IControlPanelEntry toSaveFor)
         {
