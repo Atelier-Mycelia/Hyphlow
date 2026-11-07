@@ -79,22 +79,37 @@ namespace AtMycelia.Hyphlow
             return VarTypeFor(_legacyTypes, _contentTypeToLegacyVarType, contentType);
         }
 
-        private static Type VarTypeFor(IEnumerable<Type> varTypesToCheck, IDictionary<Type, Type> typeLookup, Type contentType)
+        private static Type VarTypeFor(IEnumerable<Type> varTypesToCheck, IDictionary<Type, Type> typeLookup,
+            Type contentType, bool preferMenuVisible = false)
         {
             Type result = null;
 
             bool alreadyRegistered = typeLookup.TryGetValue(contentType, out result);
             if (!alreadyRegistered)
             {
+                bool showsInMenu = false;
+                // Several Muscariables can share a content type once one supersedes another
+                // (NumberMuscariable vs DoubleMuscariable). For those, types shown in the menu win,
+                // so the outcome doesn't depend on TypeCache's ordering. Legacy types keep
+                // first-match-wins, since their menu flags were never meant to rank them.
                 foreach (var varType in varTypesToCheck)
                 {
                     VariableInfoAttribute attr = varType.GetCustomAttribute<VariableInfoAttribute>();
-                    if (attr != null && attr.ContentType.Equals(contentType))
+                    if (attr == null || !attr.ContentType.Equals(contentType))
+                    {
+                        continue;
+                    }
+
+                    if (result == null || (preferMenuVisible && attr.ShowInMenu && !showsInMenu))
                     {
                         result = varType;
-                        typeLookup.Add(attr.ContentType, varType);
-                        break;
+                        showsInMenu = attr.ShowInMenu;
                     }
+                }
+
+                if (result != null)
+                {
+                    typeLookup.Add(contentType, result);
                 }
             }
             
@@ -111,7 +126,8 @@ namespace AtMycelia.Hyphlow
         /// </summary>
         public static Type MuscariTypeFor(Type contentType)
         {
-            Type result = VarTypeFor(_muscariableTypes, _contentTypeToMuscariType, contentType);
+            Type result = VarTypeFor(_muscariableTypes, _contentTypeToMuscariType, contentType,
+                preferMenuVisible: true);
 
             // Generic fallback
             result ??= typeof(GenericMuscariable);

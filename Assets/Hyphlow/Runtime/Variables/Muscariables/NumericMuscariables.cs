@@ -100,7 +100,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("Numeric", "Integer", typeof(int))]
+    [VariableInfo("Numeric", "Integer", typeof(int), showInMenu: false)]
     [MovedFrom(true,
         "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core",
@@ -160,7 +160,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("Numeric", "Float", typeof(float))]
+    [VariableInfo("Numeric", "Float", typeof(float), showInMenu: false)]
     [MovedFrom(true, "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core",
         "FloatMuscariable")]
@@ -274,8 +274,144 @@ namespace AtMycelia.Hyphlow
 
     }
 
+    /// <summary>
+    /// The one variable type for plain numbers, meant to replace <see cref="IntMuscariable"/>,
+    /// <see cref="FloatMuscariable"/> and <see cref="DoubleMuscariable"/> so users don't have to
+    /// pick between them. Stores a double; with <see cref="WholeNumsOnly"/> on, assigned values
+    /// lose their fractional part (truncated toward zero) instead of being kept as-is.
+    /// </summary>
     [Serializable]
-    [VariableInfo("Numeric", "Double", typeof(double))]
+    [VariableInfo("Numeric", "Number", typeof(double))]
+    public class NumberMuscariable : NumericMuscariable<double>
+    {
+        [SerializeField]
+        protected bool _wholeNumsOnly;
+
+        static NumberMuscariable()
+        {
+            _Add = (a, b) => a + b;
+            _Sub = (a, b) => a - b;
+            _Mul = (a, b) => a * b;
+            _Div = (a, b) => a / b;
+            _Neg = a => -a;
+        }
+
+        public NumberMuscariable() : base() { }
+
+        public virtual bool WholeNumsOnly
+        {
+            get => _wholeNumsOnly;
+            set
+            {
+                if (_wholeNumsOnly == value)
+                {
+                    return;
+                }
+
+                _wholeNumsOnly = value;
+                // Re-run the value through the setter so turning this on drops the current fraction
+                Value = _value;
+            }
+        }
+
+        public override double Value
+        {
+            get => _value;
+            set => base.Value = Filter(value);
+        }
+
+        // Muscariable<T>.BoxedValue writes straight to _value, bypassing Value, so it
+        // needs its own pass through the filter.
+        protected override object FilterForValueSet(object valueToConvert)
+        {
+            object filtered = base.FilterForValueSet(valueToConvert);
+            if (!_wholeNumsOnly || filtered == null || filtered is not IConvertible)
+            {
+                return filtered;
+            }
+
+            return Filter(Convert.ToDouble(filtered));
+        }
+
+        public override void OnReset()
+        {
+            _value = Filter(_startValue);
+            TriggerOnValueChanged();
+        }
+
+        public override Muscariable Clone()
+        {
+            return new NumberMuscariable
+            {
+                _scope = _scope,
+                _key = _key,
+                _itemId = _itemId,
+                _wholeNumsOnly = _wholeNumsOnly,
+                _startValue = _startValue,
+                _value = _value
+            };
+        }
+
+        // Values this close (relative to their magnitude) to a whole number are treated as that
+        // number, so floating-point noise like 2.9999999999999996 doesn't lose a whole unit
+        // when the fraction is dropped.
+        public const double WholeNumTolerance = 1e-9;
+
+        private double Filter(double toFilter)
+        {
+            if (!_wholeNumsOnly)
+            {
+                return toFilter;
+            }
+
+            double nearest = Math.Round(toFilter);
+            double tolerance = WholeNumTolerance * Math.Max(1.0, Math.Abs(toFilter));
+            return Math.Abs(toFilter - nearest) <= tolerance ? nearest : Math.Truncate(toFilter);
+        }
+
+        public static NumberMuscariable operator +(NumberMuscariable a, NumberMuscariable b)
+            => new NumberMuscariable { WholeNumsOnly = a.WholeNumsOnly, Value = a.Value + b.Value };
+
+        public static NumberMuscariable operator -(NumberMuscariable a, NumberMuscariable b)
+            => new NumberMuscariable { WholeNumsOnly = a.WholeNumsOnly, Value = a.Value - b.Value };
+
+        public static NumberMuscariable operator *(NumberMuscariable a, NumberMuscariable b)
+            => new NumberMuscariable { WholeNumsOnly = a.WholeNumsOnly, Value = a.Value * b.Value };
+
+        public static NumberMuscariable operator /(NumberMuscariable a, NumberMuscariable b)
+            => new NumberMuscariable { WholeNumsOnly = a.WholeNumsOnly, Value = a.Value / b.Value };
+
+        public static bool operator ==(NumberMuscariable a, NumberMuscariable b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(NumberMuscariable a, NumberMuscariable b)
+        {
+            if (ReferenceEquals(a, b)) return false;
+            if (!ReferenceEquals(a, null) && !ReferenceEquals(b, null)) return a.Value != b.Value;
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as NumberMuscariable;
+            if (ReferenceEquals(other, null)) return false;
+            return this.Value == other.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+    }
+
+    // Superseded by NumericMuscariable, which now owns the double content type. Kept (and
+    // hidden from the menu) so scenes and assets that already hold one still deserialize.
+    [Serializable]
+    [VariableInfo("Numeric", "Double", typeof(double), showInMenu: false)]
     [MovedFrom(true, "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core",
         "DoubleMuscariable")]

@@ -1,0 +1,20 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="../../../Stylesheets/VarRows/_variableRowStyle.uss" />
+    <Style src="../../../Stylesheets/VarRows/numericVariableRow.uss" />
+    <Style src="../../../Stylesheets/VarRows/numericWholeNumsStyle.uss" />
+    <engine:VisualElement name="VarRowRoot">
+        <engine:VisualElement name="TopRow">
+            <engine:Label text="Number" name="TypeLabel" class="varRowTypeLabel" />
+            <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" placeholder-text="var name" binding-path="_key" class="varRowInputField keyInput" />
+            <engine:VisualElement name="SpaceFiller" />
+            <engine:EnumField value="Private" type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" binding-path="_scope" class="scopeRoot" />
+            <engine:Button text="-" name="RemoveButton" class="removeButton" />
+        </engine:VisualElement>
+        <engine:VisualElement name="BottomRow">
+            <engine:VisualElement name="ValueFieldHolder">
+                <engine:DoubleField value="42.2" name="ValueField" select-all-on-focus="false" class="numericField" />
+            </engine:VisualElement>
+            <engine:Toggle label="Whole nums only" name="WholeNumsOnly" tooltip="Drops the fractional part of any value assigned to this variable." toggle-on-label-click="true" class="wholeNumsToggle" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</UXML>

@@ -14,13 +14,59 @@ namespace AtMycelia.Hyphlow.EditorExt
 
     }
 
+    /// <summary>
+    /// Takes over the double content type from the old Double row (the registry keeps one
+    /// handler per content type). Adds a toggle for NumericMuscariable's whole-numbers setting.
+    /// </summary>
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(double),
-        typeDisplayName: "Double",
-        pathToTemplate: "Editor/Uxml/VarRows/Numeric/DoubleVariableRow")]
-    public class DoubleRowVisualHandler : RowVisualHandler<double>
+        typeDisplayName: "Number",
+        pathToTemplate: "Editor/Uxml/VarRows/Numeric/NumericVariableRow")]
+    public class NumericRowVisualHandler : RowVisualHandler<double>
     {
+        protected override void BuildValueEditor(VisualElement valueField)
+        {
+            base.BuildValueEditor(valueField);
 
+            _wholeNumsToggle = RowRoot.Q<Toggle>("WholeNumsOnly");
+            if (_wholeNumsToggle == null)
+            {
+                Debug.LogWarning($"{GetType().Name}: row template is missing a Toggle named 'WholeNumsOnly'.");
+                return;
+            }
+
+            _wholeNumsToggle.RegisterValueChangedCallback(evt =>
+                ReportPropertyEdited("Whole Nums Only", edited =>
+                {
+                    if (edited is NumberMuscariable numeric)
+                    {
+                        numeric.WholeNumsOnly = evt.newValue;
+                    }
+                }));
+        }
+
+        protected override void BindValue(IVariable variable)
+        {
+            base.BindValue(variable);
+
+            if (_wholeNumsToggle == null)
+            {
+                return;
+            }
+
+            // Variables saved before NumericMuscariable existed can still be DoubleMuscariables
+            bool isNumeric = variable is NumberMuscariable;
+            _wholeNumsToggle.SetEnabled(isNumeric);
+            _wholeNumsToggle.SetValueWithoutNotify(isNumeric && ((NumberMuscariable)variable).WholeNumsOnly);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _wholeNumsToggle = null;
+        }
+
+        private Toggle _wholeNumsToggle;
     }
 
     [RowVisualHandler(menuName: "Numeric",
