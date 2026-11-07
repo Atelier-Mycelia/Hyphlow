@@ -1,0 +1,544 @@
+/* Palette follows the other Hyphlow submenus (Variable Sets, Editor QoL) */
+:root
+{
+    --hy-bg: rgb(56, 56, 56);
+    --hy-card-bg: rgb(50, 50, 50);
+    --hy-card-border: rgb(70, 70, 70);
+    --hy-row-bg: rgb(60, 60, 60);
+    --hy-row-hover: rgb(68, 68, 68);
+    --hy-divider: rgb(80, 80, 80);
+    --hy-text: rgb(220, 220, 220);
+    --hy-text-muted: rgb(160, 160, 160);
+    --hy-text-disabled: rgb(120, 120, 120);
+    --hy-accent: rgb(80, 120, 180);
+    --hy-accent-hover: rgb(95, 140, 205);
+    --hy-accent-bg: rgba(80, 120, 180, 0.18);
+    --hy-success: rgb(98, 178, 118);
+    --hy-success-bg: rgba(98, 178, 118, 0.16);
+    --hy-warning: rgb(214, 160, 64);
+    --hy-warning-bg: rgba(214, 160, 64, 0.14);
+    --hy-error: rgb(235, 110, 100);
+    --hy-error-bg: rgba(235, 110, 100, 0.14);
+
+    /* The Control Panel window has a fixed size, so the lists can have fixed heights too.
+       That lets each list scroll on its own instead of the whole page. */
+    --hy-log-height: 230px;
+    --hy-details-height: 196px;
+    --hy-picker-height: 390px;
+}
+
+.hy-root
+{
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 12px 16px 12px 16px;
+    background-color: var(--hy-bg);
+    color: var(--hy-text);
+}
+
+/* ---- Header ---- */
+
+.hy-header
+{
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(100, 100, 100);
+}
+
+.hy-title
+{
+    font-size: 26px;
+    -unity-font-style: bold;
+    color: var(--hy-text);
+}
+
+.hy-subtitle
+{
+    font-size: 13px;
+    color: var(--hy-text-muted);
+    white-space: normal;
+    margin-top: 2px;
+}
+
+.hy-banner
+{
+    display: none; /* Shown in Play Mode */
+    margin-bottom: 12px;
+    padding: 8px 12px 8px 12px;
+    border-radius: 4px;
+    border-left-width: 4px;
+    border-left-color: var(--hy-warning);
+    background-color: var(--hy-warning-bg);
+}
+
+.hy-banner__text
+{
+    font-size: 13px;
+    white-space: normal;
+    color: var(--hy-text);
+}
+
+.hy-view
+{
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+
+/* ---- Cards ---- */
+
+.hy-card
+{
+    padding: 12px;
+    background-color: var(--hy-card-bg);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: var(--hy-card-border);
+}
+
+.hy-card__header
+{
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--hy-divider);
+}
+
+.hy-card__title
+{
+    flex-grow: 1;
+    font-size: 17px;
+    -unity-font-style: bold;
+    color: var(--hy-text);
+}
+
+.hy-card__summary
+{
+    margin-right: 8px;
+}
+
+.hy-muted
+{
+    font-size: 12px;
+    color: var(--hy-text-muted);
+}
+
+/* ---- Stat cards ---- */
+
+.hy-stat-row
+{
+    flex-direction: row;
+    margin-bottom: 12px;
+}
+
+.hy-stat
+{
+    flex-grow: 1;
+    flex-basis: 0;
+    margin-right: 12px;
+    padding: 12px 14px 12px 14px;
+}
+
+.hy-stat--last
+{
+    margin-right: 0;
+}
+
+.hy-stat__value
+{
+    font-size: 30px;
+    -unity-font-style: bold;
+    color: var(--hy-text);
+}
+
+.hy-stat__value--accent
+{
+    color: var(--hy-accent-hover);
+}
+
+.hy-stat__caption
+{
+    font-size: 12px;
+    color: var(--hy-text-muted);
+}
+
+/* ---- Action card ---- */
+
+.hy-action
+{
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 12px;
+    border-left-width: 4px;
+    border-left-color: var(--hy-accent);
+}
+
+.hy-action__text
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: 12px;
+}
+
+.hy-action__title
+{
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.hy-action__description
+{
+    font-size: 12px;
+    color: var(--hy-text-muted);
+    white-space: normal;
+    margin-top: 2px;
+}
+
+/* ---- Buttons ---- */
+
+.hy-button
+{
+    height: 26px;
+    margin: 0 0 0 6px;
+    padding: 0 14px 0 14px;
+    flex-shrink: 0;
+    border-radius: 3px;
+}
+
+.hy-button--small
+{
+    height: 22px;
+    padding: 0 10px 0 10px;
+    font-size: 11px;
+}
+
+.hy-button--primary
+{
+    background-color: var(--hy-accent);
+    border-color: rgb(60, 95, 150);
+    color: rgb(245, 245, 245);
+    -unity-font-style: bold;
+}
+
+.hy-button--primary:hover
+{
+    background-color: var(--hy-accent-hover);
+}
+
+.hy-button--primary:disabled
+{
+    background-color: rgb(70, 78, 92);
+    border-color: rgb(62, 68, 78);
+    color: var(--hy-text-disabled);
+}
+
+/* ---- Lists ---- */
+
+.hy-list-holder
+{
+    flex-shrink: 0;
+}
+
+.hy-list-holder--log
+{
+    height: var(--hy-log-height);
+}
+
+.hy-list-holder--picker
+{
+    height: var(--hy-picker-height);
+}
+
+.hy-list
+{
+    flex-grow: 1;
+}
+
+.hy-empty
+{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 24px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    font-size: 13px;
+    color: var(--hy-text-muted);
+}
+
+/* ---- List items ---- */
+
+.hy-item
+{
+    flex-direction: row;
+    align-items: center;
+    height: 44px;
+    margin: 2px 0 2px 0;
+    padding: 0 10px 0 6px;
+    background-color: var(--hy-row-bg);
+    border-radius: 4px;
+    border-left-width: 3px;
+    border-left-color: rgba(0, 0, 0, 0);
+}
+
+.hy-item:hover
+{
+    background-color: var(--hy-row-hover);
+}
+
+.hy-item--selected
+{
+    border-left-color: var(--hy-accent);
+    background-color: var(--hy-accent-bg);
+}
+
+.hy-item--disabled
+{
+    opacity: 0.6;
+}
+
+.hy-item--disabled:hover
+{
+    background-color: var(--hy-row-bg);
+}
+
+.hy-item__toggle
+{
+    margin: 0 8px 0 4px;
+    flex-shrink: 0;
+}
+
+.hy-item__text
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    margin-right: 8px;
+}
+
+.hy-item__name
+{
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--hy-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hy-item__detail
+{
+    font-size: 11px;
+    color: var(--hy-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hy-item--disabled .hy-item__name
+{
+    color: var(--hy-text-disabled);
+}
+
+/* ---- Badges ---- */
+
+.hy-badge
+{
+    flex-shrink: 0;
+    padding: 3px 9px 3px 9px;
+    border-radius: 9px;
+    font-size: 11px;
+    -unity-font-style: bold;
+    color: var(--hy-text-muted);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.hy-badge--ready
+{
+    color: var(--hy-accent-hover);
+    background-color: var(--hy-accent-bg);
+}
+
+.hy-badge--idle
+{
+    color: var(--hy-text-disabled);
+}
+
+.hy-badge--unknown
+{
+    color: var(--hy-text-muted);
+    -unity-font-style: normal;
+}
+
+/* ---- Log items ---- */
+
+.hy-log-item
+{
+    padding-left: 0;
+    border-left-width: 0;
+}
+
+.hy-log-item__status
+{
+    width: 4px;
+    align-self: stretch;
+    margin: 4px 10px 4px 0;
+    border-radius: 2px;
+    background-color: var(--hy-text-disabled);
+}
+
+.hy-log-item--done .hy-log-item__status
+{
+    background-color: var(--hy-success);
+}
+
+.hy-log-item--failed .hy-log-item__status
+{
+    background-color: var(--hy-error);
+}
+
+.hy-log-item--done .hy-badge
+{
+    color: var(--hy-success);
+    background-color: var(--hy-success-bg);
+}
+
+.hy-log-item--failed .hy-badge
+{
+    color: var(--hy-error);
+    background-color: var(--hy-error-bg);
+}
+
+/* ---- Log details ---- */
+
+.hy-log-body
+{
+    flex-direction: row;
+}
+
+.hy-log-body__list
+{
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-right: 12px;
+}
+
+.hy-details
+{
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    padding: 8px 8px 8px 8px;
+    background-color: rgba(0, 0, 0, 0.14);
+    border-radius: 4px;
+}
+
+.hy-details__title
+{
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: var(--hy-text-muted);
+    margin-bottom: 6px;
+}
+
+.hy-details__holder
+{
+    height: var(--hy-details-height); /* The log height, minus the title above it */
+}
+
+/* The selected log entry */
+.unity-collection-view__item--selected .hy-log-item
+{
+    background-color: var(--hy-accent-bg);
+}
+
+.hy-migration-item
+{
+    height: 36px;
+    margin: 1px 0 1px 0;
+    padding: 2px 8px 2px 8px;
+    justify-content: center;
+    background-color: var(--hy-row-bg);
+    border-radius: 3px;
+}
+
+.hy-migration-item__key
+{
+    font-size: 12px;
+    -unity-font-style: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hy-migration-item__types
+{
+    font-size: 11px;
+    color: var(--hy-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- Picker ---- */
+
+.hy-picker-header
+{
+    margin-bottom: 12px;
+}
+
+.hy-picker-title
+{
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.hy-picker-hint
+{
+    font-size: 12px;
+    color: var(--hy-text-muted);
+    white-space: normal;
+    margin-top: 2px;
+}
+
+.hy-columns
+{
+    flex-direction: row;
+    margin-bottom: 12px;
+}
+
+.hy-column
+{
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    margin-right: 12px;
+}
+
+.hy-column--last
+{
+    margin-right: 0;
+}
+
+.hy-footer
+{
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 12px 10px 12px;
+    background-color: var(--hy-card-bg);
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: var(--hy-card-border);
+}
+
+.hy-footer__summary
+{
+    flex-grow: 1;
+    font-size: 13px;
+    color: var(--hy-text-muted);
+}

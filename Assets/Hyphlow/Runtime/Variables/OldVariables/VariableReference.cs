@@ -201,6 +201,11 @@ namespace AtMycelia.Hyphlow
                     Debug.LogError($"VariableReference: Variable content type {contentType} is not " +
                         $"assignable to target type {targetType}.");
                 }
+                else if (VectorConversion.TryConvert(varToFetchFrom.BoxedValue, targetType,
+                    out object vector))
+                {
+                    result = (T)vector;
+                }
                 else
                 {
                     result = (T)varToFetchFrom.BoxedValue;
@@ -247,20 +252,7 @@ namespace AtMycelia.Hyphlow
 
         private static bool TryConvertValue(object value, System.Type targetType, out object convertedValue)
         {
-            if (value is Vector3 vector3 && targetType == typeof(Vector2))
-            {
-                convertedValue = (Vector2)vector3;
-                return true;
-            }
-
-            if (value is Vector2 vector2 && targetType == typeof(Vector3))
-            {
-                convertedValue = (Vector3)vector2;
-                return true;
-            }
-
-            convertedValue = null;
-            return false;
+            return VectorConversion.TryConvert(value, targetType, out convertedValue);
         }
     }
 

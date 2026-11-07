@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <!-- Styled by HyphrationSubwindowStyle, which the subwindow it's cloned into already has -->
+    <ui:VisualElement name="LogItemRoot" class="hy-item hy-log-item">
+        <ui:VisualElement name="StatusBar" class="hy-log-item__status" />
+        <ui:VisualElement class="hy-item__text">
+            <ui:Label name="NameLabel" class="hy-item__name" />
+            <ui:Label name="DetailLabel" class="hy-item__detail" />
+        </ui:VisualElement>
+        <ui:Label name="CountLabel" class="hy-badge" />
+    </ui:VisualElement>
+</ui:UXML>

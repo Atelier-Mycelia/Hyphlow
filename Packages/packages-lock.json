@@ -7,7 +7,7 @@
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       },
-      "hash": "88ad70e762f60179e4d6f499296f52b79f968a9d"
+      "hash": "4d889d5460f03e0bd6c483c45a8a1fa9f5b12f79"
     },
     "com.ateliermycelia.hyphatween": {
       "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
