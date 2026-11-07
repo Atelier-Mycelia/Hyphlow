@@ -1,0 +1,12 @@
+<UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/CustomFields/vectorField.uss?fileID=7433441132597879392&amp;guid=809c68fab78a6a54ca9de7a4b4ce56a7&amp;type=3#vectorField" />
+    <engine:VisualElement name="XyzRow" class="vectorRow">
+        <engine:FloatField label="X" name="XField" class="vectorComponent" />
+        <engine:FloatField label="Y" name="YField" class="vectorComponent" />
+        <engine:FloatField label="Z" name="ZField" class="vectorComponent" />
+    </engine:VisualElement>
+    <engine:VisualElement name="WRow" class="vectorRow">
+        <engine:FloatField label="W" name="WField" class="vectorComponent" />
+        <engine:EnumField name="DimensionField" class="vectorDimension" />
+    </engine:VisualElement>
+</UXML>

@@ -469,7 +469,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("Numeric/Structured", "VectorTwo", typeof(Vector2))]
+    [VariableInfo("Numeric/Structured", "VectorTwo", typeof(Vector2), showInMenu: false)]
     [MovedFrom(true, "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core",
         "VectorTwoMuscariable")]
@@ -613,7 +613,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("Numeric/Structured", "VectorThree", typeof(Vector3))]
+    [VariableInfo("Numeric/Structured", "VectorThree", typeof(Vector3), showInMenu: false)]
     [MovedFrom(true, "AtMycelia.Hyphlow",
         "AtMycelia.Amanita.Core",
         "VectorThreeMuscariable")]
@@ -723,7 +723,7 @@ namespace AtMycelia.Hyphlow
     }
 
     [Serializable]
-    [VariableInfo("Numeric/Structured", "VectorFour", typeof(Vector4))]
+    [VariableInfo("Numeric/Structured", "VectorFour", typeof(Vector4), showInMenu: false)]
     public class VectorFourMuscariable : Muscariable<Vector4>
     {
         public VectorFourMuscariable() : base() { }
@@ -841,6 +841,247 @@ namespace AtMycelia.Hyphlow
         }
 
 
+    }
+
+    /// <summary>
+    /// How many components of a <see cref="VectorMuscariable"/> are in use.
+    /// Declared in order of size; code compares them.
+    /// </summary>
+    public enum VectorDimension
+    {
+        TwoD,
+        ThreeD,
+        FourD
+    }
+
+    /// <summary>
+    /// The one variable type for vectors, meant to replace <see cref="VectorTwoMuscariable"/>,
+    /// <see cref="VectorThreeMuscariable"/> and <see cref="VectorFourMuscariable"/>. Always
+    /// stores a Vector4; Vector2s and Vector3s assigned to it are padded with zeroes, so the
+    /// unused components stay zero. Arithmetic is component-wise.
+    ///
+    /// <see cref="Dimension"/> is how many components the variable is meant to use. It only
+    /// affects how editors present the value, and it grows on its own so that a non-zero
+    /// component is never hidden.
+    /// </summary>
+    [Serializable]
+    [VariableInfo("Numeric", "Vector", typeof(Vector4))]
+    public class VectorMuscariable : Muscariable<Vector4>
+    {
+        [SerializeField]
+        protected VectorDimension _dimension = VectorDimension.ThreeD;
+
+        public VectorMuscariable() : base() { }
+
+        /// <summary>
+        /// Setting a smaller dimension zeroes the components it drops, so the value always
+        /// matches what's meant to be in use.
+        /// </summary>
+        public virtual VectorDimension Dimension
+        {
+            get => _dimension;
+            set
+            {
+                if (_dimension == value)
+                {
+                    return;
+                }
+
+                _dimension = value;
+                if (value < VectorDimension.FourD)
+                {
+                    _value.w = 0f;
+                }
+                if (value < VectorDimension.ThreeD)
+                {
+                    _value.z = 0f;
+                }
+
+                TriggerOnValueChanged();
+            }
+        }
+
+        public static VectorDimension DimensionNeededFor(Vector4 vector)
+        {
+            if (vector.w != 0f)
+            {
+                return VectorDimension.FourD;
+            }
+
+            return vector.z != 0f ?
+                VectorDimension.ThreeD :
+                VectorDimension.TwoD;
+        }
+
+        public override Vector4 Value
+        {
+            get => _value;
+            set
+            {
+                GrowDimensionToFit(value);
+                base.Value = value;
+            }
+        }
+
+        // Muscariable<T>.BoxedValue writes straight to _value, bypassing Value
+        public override object BoxedValue
+        {
+            get => base.BoxedValue;
+            set
+            {
+                if (FilterForValueSet(value) is Vector4 vector)
+                {
+                    GrowDimensionToFit(vector);
+                }
+                base.BoxedValue = value;
+            }
+        }
+
+        public override void OnReset()
+        {
+            GrowDimensionToFit(_startValue);
+            base.OnReset();
+        }
+
+        private void GrowDimensionToFit(Vector4 vector)
+        {
+            VectorDimension needed = DimensionNeededFor(vector);
+            if (needed > _dimension)
+            {
+                _dimension = needed;
+            }
+        }
+
+        public override bool IsArithmeticSupported(SetOperator op) => true;
+        public override bool IsComparisonSupported() => true;
+
+        public virtual float X
+        {
+            get => Value.x;
+            set { Vector4 v = Value; v.x = value; Value = v; }
+        }
+
+        public virtual float Y
+        {
+            get => Value.y;
+            set { Vector4 v = Value; v.y = value; Value = v; }
+        }
+
+        public virtual float Z
+        {
+            get => Value.z;
+            set { Vector4 v = Value; v.z = value; Value = v; }
+        }
+
+        public virtual float W
+        {
+            get => Value.w;
+            set { Vector4 v = Value; v.w = value; Value = v; }
+        }
+
+        public override void Apply(SetOperator setOperator, Vector4 toApply)
+        {
+            switch (setOperator)
+            {
+                case SetOperator.Assign:
+                    Value = toApply;
+                    break;
+
+                case SetOperator.Add:
+                    Value += toApply;
+                    break;
+
+                case SetOperator.Subtract:
+                    Value -= toApply;
+                    break;
+
+                case SetOperator.Multiply:
+                    Value = Vector4.Scale(Value, toApply);
+                    break;
+
+                case SetOperator.Divide:
+                    Vector4 v = Value;
+                    Value = new Vector4(v.x / toApply.x, v.y / toApply.y, v.z / toApply.z, v.w / toApply.w);
+                    break;
+
+                case SetOperator.Negate:
+                    Value = -Value;
+                    break;
+
+                default:
+                    Debug.LogError($"The {setOperator} set operator is not valid for {ContentType.Name} variable {Key}.");
+                    break;
+            }
+        }
+
+        // The object-taking overloads of Apply/Evaluate convert via ConvertToValue, which can't
+        // turn a boxed Vector2/Vector3 into a Vector4, so we pad those ourselves first.
+        public override void Apply(SetOperator setOperator, object toApply)
+        {
+            base.Apply(setOperator, FilterForValueSet(toApply));
+        }
+
+        public override bool Evaluate(CompareOperator op, object value)
+        {
+            return base.Evaluate(op, FilterForValueSet(value));
+        }
+
+        protected override bool CanHoldAsValue(object obj)
+        {
+            return obj is Vector2 || obj is Vector3 || obj is Vector4;
+        }
+
+        protected override object FilterForValueSet(object valueToConvert)
+        {
+            switch (valueToConvert)
+            {
+                case Vector2 two: return new Vector4(two.x, two.y, 0f, 0f);
+                case Vector3 three: return new Vector4(three.x, three.y, three.z, 0f);
+                default: return valueToConvert;
+            }
+        }
+
+        public override Muscariable Clone()
+        {
+            return new VectorMuscariable
+            {
+                _scope = _scope,
+                _key = _key,
+                _itemId = _itemId,
+                _dimension = _dimension,
+                _startValue = _startValue,
+                _value = _value
+            };
+        }
+
+        public static VectorMuscariable operator +(VectorMuscariable a, VectorMuscariable b)
+            => new VectorMuscariable { Value = a.Value + b.Value };
+
+        public static VectorMuscariable operator -(VectorMuscariable a, VectorMuscariable b)
+            => new VectorMuscariable { Value = a.Value - b.Value };
+
+        public static VectorMuscariable operator *(VectorMuscariable a, float scalar)
+            => new VectorMuscariable { Value = a.Value * scalar };
+
+        public static bool operator ==(VectorMuscariable a, VectorMuscariable b)
+        {
+            if (ReferenceEquals(a, b)) return true;
+            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
+            return a.Value == b.Value;
+        }
+
+        public static bool operator !=(VectorMuscariable a, VectorMuscariable b) => !(a == b);
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as VectorMuscariable;
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
 
     [Serializable]

@@ -1,0 +1,94 @@
+/* Keep row heights in sync with VectorField.ContentHeight (2 rows of 28 + a 2px gap) */
+
+.vectorField
+{
+	flex-direction: column;
+	align-items: stretch;
+}
+
+/* A non-empty label gets its own row above the fields */
+.vectorField > Label
+{
+	min-width: 0;
+	width: auto;
+	margin: 0 0 2px 0;
+	padding: 0;
+}
+
+/* flex-basis must be auto: Unity's default is 0, which collapses this to nothing when the
+   field's own height comes from its contents (as it does inside the animated ListView) */
+.vectorField > .unity-base-field__input
+{
+	flex-direction: column;
+	flex-grow: 1;
+	flex-shrink: 0;
+	flex-basis: auto;
+	margin: 0;
+	min-width: 0;
+}
+
+.vectorRow
+{
+	flex-direction: row;
+	height: 28px;
+	margin: 0;
+}
+
+#XyzRow
+{
+	margin-bottom: 2px;
+}
+
+.vectorComponent
+{
+	flex-grow: 1;
+	flex-basis: 0;
+	min-width: 0;
+	margin: 0 2px 0 0;
+}
+
+.vectorComponent > Label
+{
+	/* Wide enough for "W", the widest letter, at font sizes up to ~18px. Labels default to
+	   ellipsis overflow, so a too-narrow one swallows the letter instead of clipping it. */
+	min-width: 22px;
+	width: 22px;
+	padding: 0;
+	overflow: visible;
+	text-overflow: clip;
+	-unity-text-align: middle-center;
+}
+
+.vectorComponent > .unity-base-field__input
+{
+	flex-grow: 1;
+	flex-basis: 0;
+	width: auto;
+	min-width: 0;
+	background-color: rgb(40, 40, 40);
+	padding-top: 0;
+	padding-bottom: 0;
+	-unity-text-align: middle-left; /* Vertically centers the text */
+}
+
+.vectorDimension
+{
+	flex-grow: 1;
+	flex-basis: 0;
+	min-width: 0;
+	margin: 0 2px 0 0;
+}
+
+.vectorDimension > Label
+{
+	display: none;
+}
+
+.vectorDimension > .unity-base-field__input
+{
+	flex-grow: 1;
+	min-width: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+	-unity-text-align: middle-left;
+}

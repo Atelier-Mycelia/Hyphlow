@@ -1,0 +1,58 @@
+/* Two-row layout for VectorMuscariable: identity row on top, the VectorField (which is
+   58px tall without a label, see VectorField.ContentHeight) below. */
+
+#VarRowRoot
+{
+	flex-grow: 1;
+	height: auto;
+	min-height: 95px; /* Top row + its gap + VectorField.ContentHeight */
+	flex-direction: column;
+}
+
+#TopRow
+{
+	flex-direction: row;
+	flex-grow: 0;
+	flex-shrink: 0;
+	height: var(--normal-row-height);
+	margin: var(--slight-bottom-margin-only);
+}
+
+#SpaceFiller
+{
+	flex-grow: 1; /* Pushes Scope and RemoveButton to the right edge */
+}
+
+#BottomRow
+{
+	flex-direction: row;
+	flex-grow: 0;
+	flex-shrink: 0;
+	height: 58px;
+}
+
+#BottomRow > #ValueField
+{
+	flex-grow: 1;
+	height: 100%;
+	margin: 0;
+}
+
+.vectorVarField
+{
+	flex-grow: 1;
+	margin: 0;
+	-unity-font-definition: var(--main-font);
+	color: var(--dark-mode-text-color);
+}
+
+.varRowTypeLabel
+{
+	background-color: #005A9C;
+	font-size: 18px;
+}
+
+#BottomRow
+{
+	font-size: 16px;
+}
