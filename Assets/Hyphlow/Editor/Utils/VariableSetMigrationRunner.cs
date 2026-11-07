@@ -3,20 +3,12 @@ using UnityEditor;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    [InitializeOnLoad]
     public static class VariableSetMigrationRunner
     {
-        static VariableSetMigrationRunner()
-        {
-            AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
-        }
-
-        private static void OnAfterAssemblyReload()
-        {
-            EditorApplication.delayCall += MigrateAllVariableSourceAssets;
-        }
-
-        private static void MigrateAllVariableSourceAssets()
+        /// <summary>
+        /// Called by its module in HyphlowMaintenanceModules.cs via the Common lib's MaintenanceRunner; don't call it from lifecycle hooks.
+        /// </summary>
+        public static void Run()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
             {

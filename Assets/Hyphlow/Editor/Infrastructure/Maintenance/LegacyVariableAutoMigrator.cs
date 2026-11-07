@@ -4,45 +4,14 @@ using UnityEngine.SceneManagement;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    [InitializeOnLoad]
     public static class LegacyVariableAutoMigrator
     {
         private static bool _enabled = false;
 
-        static LegacyVariableAutoMigrator()
-        {
-            Init();
-        }
-
-        [InitializeOnLoadMethod]
-        private static void Init()
-        {
-            AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
-            AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
-
-            EditorSceneManager.sceneOpened -= OnSceneOpened;
-            EditorSceneManager.sceneOpened += OnSceneOpened;
-
-            QueueMigration();
-        }
-
-        private static void OnAfterAssemblyReload()
-        {
-            QueueMigration();
-        }
-
-        private static void OnSceneOpened(Scene scene, OpenSceneMode mode)
-        {
-            QueueMigration();
-        }
-
-        private static void QueueMigration()
-        {
-            EditorApplication.delayCall -= MigrateActiveSceneFlowcharts;
-            EditorApplication.delayCall += MigrateActiveSceneFlowcharts;
-        }
-
-        private static void MigrateActiveSceneFlowcharts()
+        /// <summary>
+        /// Called by its module in HyphlowMaintenanceModules.cs via the Common lib's MaintenanceRunner; don't call it from lifecycle hooks.
+        /// </summary>
+        public static void Run()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || !_enabled)
             {

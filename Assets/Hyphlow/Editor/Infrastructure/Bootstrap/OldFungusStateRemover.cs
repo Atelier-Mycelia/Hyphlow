@@ -7,23 +7,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 {
     public static class OldFungusStateRemover
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
-        [InitializeOnLoadMethod]
-        public static void Init()
-        {
-            AssemblyReloadEvents.afterAssemblyReload -= RemoveOldFungusState;
-            AssemblyReloadEvents.afterAssemblyReload += RemoveOldFungusState;
-
-            EditorSceneManager.sceneOpened -= RemoveOldFungusStateOnSceneOpen;
-            EditorSceneManager.sceneOpened += RemoveOldFungusStateOnSceneOpen;
-        }
-
-        private static void RemoveOldFungusStateOnSceneOpen(Scene scene, OpenSceneMode mode)
-        {
-            RemoveOldFungusState();
-        }
-
-        private static void RemoveOldFungusState()
+        /// <summary>
+        /// Called by its module in HyphlowMaintenanceModules.cs via the Common lib's MaintenanceRunner; don't call it from lifecycle hooks.
+        /// </summary>
+        public static void Run()
         {
             int deletedCount = 0;
             var scene = SceneManager.GetActiveScene();

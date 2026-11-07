@@ -26,8 +26,8 @@ namespace AtMycelia.Hyphlow
             UnityObj.DontDestroyOnLoad(hyphlowRoot);
             hyphlowRoot.name = managerPrefab.name;
 
-            RootBootstrapper.EnsureRoot();
-            var atMyceliaRoot = RootBootstrapper.Root.gameObject;
+            GameObjectRootBootstrapper.EnsureRoot();
+            var atMyceliaRoot = GameObjectRootBootstrapper.Root.gameObject;
             hyphlowRoot.transform.SetParent(atMyceliaRoot.transform, true);
         }
 
