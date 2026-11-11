@@ -21,8 +21,8 @@ namespace AtMycelia.Hyphlow.EditorExt
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(double),
         typeDisplayName: "Number",
-        pathToTemplate: "Editor/Uxml/VarRows/Numeric/NumericVariableRow")]
-    public class NumericRowVisualHandler : RowVisualHandler<double>
+        pathToTemplate: "Editor/Uxml/VarRows/Numeric/NumberVariableRow")]
+    public class NumberRowVisualHandler : RowVisualHandler<double>
     {
         protected override void BuildValueEditor(VisualElement valueField)
         {
