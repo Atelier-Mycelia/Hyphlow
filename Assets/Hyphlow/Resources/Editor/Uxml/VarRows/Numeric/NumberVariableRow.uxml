@@ -1,7 +1,7 @@
 <UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="../../../Stylesheets/VarRows/_variableRowStyle.uss" />
-    <Style src="../../../Stylesheets/VarRows/numericVariableRow.uss" />
-    <Style src="../../../Stylesheets/VarRows/numericWholeNumsStyle.uss" />
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/VarRows/_variableRowStyle.uss?fileID=7433441132597879392&amp;guid=dc36f721c9349184d99e907b905f9005&amp;type=3#_variableRowStyle" />
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/VarRows/numberWholeNumsStyle.uss?fileID=7433441132597879392&amp;guid=6f0d90e001d02054d9187f7151d98693&amp;type=3#numberWholeNumsStyle" />
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/numberVariableRowStyle.uss?fileID=7433441132597879392&amp;guid=747fb99aa0406ed4484b2b7e3733fddc&amp;type=3#numberVariableRowStyle" />
     <engine:VisualElement name="VarRowRoot">
         <engine:VisualElement name="TopRow">
             <engine:Label text="Number" name="TypeLabel" class="varRowTypeLabel" />
