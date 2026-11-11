@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace AtMycelia.Hyphlow.EditorExt
 {
-    [InitializeOnLoad]
     public static class DefaultFlowchartConfigMaintenance
     {
         private const string ResourcesRootPath = "Assets/Resources";
@@ -15,14 +14,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         private static readonly string _defaultAssetPath =
             $"{ResourcesRootPath}/{RelativeResourcesFolderPath}/{AssetName}.asset";
-
-        static DefaultFlowchartConfigMaintenance()
-        {
-            AssemblyReloadEvents.afterAssemblyReload -= EnsureFcGlobalDefaults;
-            AssemblyReloadEvents.afterAssemblyReload += EnsureFcGlobalDefaults;
-
-            EditorApplication.delayCall += EnsureFcGlobalDefaults;
-        }
 
         public static void EnsureFcGlobalDefaults()
         {

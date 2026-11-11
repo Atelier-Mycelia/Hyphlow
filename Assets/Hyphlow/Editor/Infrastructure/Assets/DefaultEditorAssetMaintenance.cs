@@ -10,32 +10,10 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public static class DefaultEditorAssetMaintenance 
     {
-        public static void InitializeAfterAssembliesLoaded()
-        {
-            _framesToWait = 10;
-            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
-            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
-        }
-
-        private static int _framesToWait = 10;
-
-        private static void DoTheEnsuringDelayed()
-        {
-            EditorApplication.delayCall += () =>
-            {
-                _framesToWait--;
-                if (_framesToWait <= 0)
-                {
-                    DoTheEnsuring();
-                }
-                else
-                {
-                    EditorApplication.delayCall += DoTheEnsuringDelayed;
-                }
-            };
-        }
-
-        private static void DoTheEnsuring()
+        /// <summary>
+        /// Called by its module in HyphlowMaintenanceModules.cs via the Common lib's MaintenanceRunner; don't call it from lifecycle hooks.
+        /// </summary>
+        public static void Run()
         {
             Debug.Log($"Doing default editor asset maintenance.");
             EnsureHyphlowEditorResourcesAsset();

@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.ateliermycelia.commonlib": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib#develop_bak",
-    "com.ateliermycelia.hyphatween": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+    "com.ateliermycelia.commonlib": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib#v1.4.1Dev",
+    "com.ateliermycelia.hyphatween": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween#v1.1.1Dev",
     "com.ateliermycelia.myceliarium": "https://github.com/Atelier-Mycelia/Myceliarium.git?path=/Assets/Myceliarium#v0.6.1",
     "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main",
     "com.unity.feature.2d": "2.0.1",
