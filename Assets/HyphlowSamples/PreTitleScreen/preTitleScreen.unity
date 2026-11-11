@@ -970,8 +970,10 @@ MonoBehaviour:
   _editorQol: {fileID: 11400000, guid: 9228d71678b417b41aa7006c8cf7b910, type: 2}
   _description: 
   _uiModel:
-    _selectedLegacyBlocks: []
-    _selectedLegacyCommands: []
+    _selectedLegacyBlocks:
+    - {fileID: 1157026480}
+    _selectedLegacyCommands:
+    - {fileID: 1157026476}
     _owner: {fileID: 1157026472}
     <ScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}

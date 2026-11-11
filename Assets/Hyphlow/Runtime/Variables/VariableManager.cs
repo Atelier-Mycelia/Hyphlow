@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityObj = UnityEngine.Object;
 using UnityEngine.Serialization;
-
+using LegacyVariable = AtMycelia.Hyphlow.Variable;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -404,6 +404,16 @@ namespace AtMycelia.Hyphlow
             {
                 EnsureValidIdFor(elem);
                 _lookup[elem.ItemId] = elem;
+
+                // Owners aren't serialized. The VarOwner setter only updates variables that
+                // are already in the lookup, so variables that were deserialized (after a
+                // domain reload, scene load, etc.) would otherwise never get their owner,
+                // and anything that stores a reference to them (like VariableReference)
+                // would save an empty owner.
+                if (elem is not LegacyVariable) 
+                {
+                    elem.Owner = VarOwner;
+                }
             }
         }
 
@@ -500,7 +510,7 @@ namespace AtMycelia.Hyphlow
 
                     foreach (var elem in _lookup.Values)
                     {
-                        if (elem is not Variable)
+                        if (elem is not LegacyVariable)
                         {
                             elem.Owner = _varOwner;
                         }
