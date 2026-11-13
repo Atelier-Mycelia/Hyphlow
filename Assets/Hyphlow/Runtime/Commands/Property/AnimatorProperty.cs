@@ -73,9 +73,6 @@ namespace AtMycelia.Hyphlow
 		public override void OnEnter()
 		{
 			var inOutBool = _inOutVar.Variable as IVariable<bool>;
-			var inOutFloat = _inOutVar.Variable as IVariable<float>;
-			var inOutVecThree = _inOutVar.Variable as IVariable<Vector3>;
-			var inOutInt = _inOutVar.Variable as IVariable<int>;
 
 			var target = _animatorVar.GetValue<Animator>();
 
@@ -94,22 +91,22 @@ namespace AtMycelia.Hyphlow
 							inOutBool.Value = target.hasRootMotion;
 							break;
 						case Property.HumanScale:
-							inOutFloat.Value = target.humanScale;
+							_inOutVar.SetValue(target.humanScale);
 							break;
 						case Property.IsInitialized:
 							inOutBool.Value = target.isInitialized;
 							break;
 						case Property.DeltaPosition:
-							inOutVecThree.Value = target.deltaPosition;
+							_inOutVar.SetValue(target.deltaPosition);
 							break;
 						case Property.Velocity:
-							inOutVecThree.Value = target.velocity;
+							_inOutVar.SetValue(target.velocity);
 							break;
 						case Property.AngularVelocity:
-							inOutVecThree.Value = target.angularVelocity;
+							_inOutVar.SetValue(target.angularVelocity);
 							break;
 						case Property.RootPosition:
-							inOutVecThree.Value = target.rootPosition;
+							_inOutVar.SetValue(target.rootPosition);
 							break;
 						case Property.ApplyRootMotion:
 							inOutBool.Value = target.applyRootMotion;
@@ -118,46 +115,46 @@ namespace AtMycelia.Hyphlow
 							inOutBool.Value = target.hasTransformHierarchy;
 							break;
 						case Property.GravityWeight:
-							inOutFloat.Value = target.gravityWeight;
+							_inOutVar.SetValue(target.gravityWeight);
 							break;
 						case Property.BodyPosition:
-							inOutVecThree.Value = target.bodyPosition;
+							_inOutVar.SetValue(target.bodyPosition);
 							break;
 						case Property.StabilizeFeet:
 							inOutBool.Value = target.stabilizeFeet;
 							break;
 						case Property.LayerCount:
-							inOutInt.Value = target.layerCount;
+							_inOutVar.SetValue(target.layerCount);
 							break;
 						case Property.ParameterCount:
-							inOutInt.Value = target.parameterCount;
+							_inOutVar.SetValue(target.parameterCount);
 							break;
 						case Property.FeetPivotActive:
-							inOutFloat.Value = target.feetPivotActive;
+							_inOutVar.SetValue(target.feetPivotActive);
 							break;
 						case Property.PivotWeight:
-							inOutFloat.Value = target.pivotWeight;
+							_inOutVar.SetValue(target.pivotWeight);
 							break;
 						case Property.PivotPosition:
-							inOutVecThree.Value = target.pivotPosition;
+							_inOutVar.SetValue(target.pivotPosition);
 							break;
 						case Property.IsMatchingTarget:
 							inOutBool.Value = target.isMatchingTarget;
 							break;
 						case Property.Speed:
-							inOutFloat.Value = target.speed;
+							_inOutVar.SetValue(target.speed);
 							break;
 						case Property.TargetPosition:
-							inOutVecThree.Value = target.targetPosition;
+							_inOutVar.SetValue(target.targetPosition);
 							break;
 						case Property.PlaybackTime:
-							inOutFloat.Value = target.playbackTime;
+							_inOutVar.SetValue(target.playbackTime);
 							break;
 						case Property.RecorderStartTime:
-							inOutFloat.Value = target.recorderStartTime;
+							_inOutVar.SetValue(target.recorderStartTime);
 							break;
 						case Property.RecorderStopTime:
-							inOutFloat.Value = target.recorderStopTime;
+							_inOutVar.SetValue(target.recorderStopTime);
 							break;
 						case Property.HasBoundPlayables:
 							inOutBool.Value = target.hasBoundPlayables;
@@ -166,10 +163,10 @@ namespace AtMycelia.Hyphlow
 							inOutBool.Value = target.layersAffectMassCenter;
 							break;
 						case Property.LeftFeetBottomHeight:
-							inOutFloat.Value = target.leftFeetBottomHeight;
+							_inOutVar.SetValue(target.leftFeetBottomHeight);
 							break;
 						case Property.RightFeetBottomHeight:
-							inOutFloat.Value = target.rightFeetBottomHeight;
+							_inOutVar.SetValue(target.rightFeetBottomHeight);
 							break;
 						case Property.LogWarnings:
 							inOutBool.Value = target.logWarnings;
@@ -193,31 +190,31 @@ namespace AtMycelia.Hyphlow
 					switch (_property)
 					{
 						case Property.RootPosition:
-							target.rootPosition = inOutVecThree.Value;
+							target.rootPosition = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.ApplyRootMotion:
 							target.applyRootMotion = inOutBool.Value;
 							break;
 						case Property.BodyPosition:
-							target.bodyPosition = inOutVecThree.Value;
+							target.bodyPosition = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.StabilizeFeet:
 							target.stabilizeFeet = inOutBool.Value;
 							break;
 						case Property.FeetPivotActive:
-							target.feetPivotActive = inOutFloat.Value;
+							target.feetPivotActive = _inOutVar.GetValue<float>();
 							break;
 						case Property.Speed:
-							target.speed = inOutFloat.Value;
+							target.speed = _inOutVar.GetValue<float>();
 							break;
 						case Property.PlaybackTime:
-							target.playbackTime = inOutFloat.Value;
+							target.playbackTime = _inOutVar.GetValue<float>();
 							break;
 						case Property.RecorderStartTime:
-							target.recorderStartTime = inOutFloat.Value;
+							target.recorderStartTime = _inOutVar.GetValue<float>();
 							break;
 						case Property.RecorderStopTime:
-							target.recorderStopTime = inOutFloat.Value;
+							target.recorderStopTime = _inOutVar.GetValue<float>();
 							break;
 						case Property.LayersAffectMassCenter:
 							target.layersAffectMassCenter = inOutBool.Value;

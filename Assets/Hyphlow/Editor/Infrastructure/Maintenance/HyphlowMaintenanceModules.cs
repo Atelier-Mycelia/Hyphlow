@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     }
 
     /// <summary>
-    /// For modules that want to time their maintenances relative to Hyphlow's.
+    /// For modules that want to time their maintenances relative to ours.
     /// </summary>
     public static class MaintenanceOrder
     {
@@ -31,8 +31,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public static int EditorAssets => StartPriority + 1; 
         public static int DefaultAssets => EditorAssets + 1;
-        public static int VariableSetMigration => DefaultAssets + 1;
-        public static int LegacyVariableMigration => VariableSetMigration + 1;
+        public static int LegacyVariableMigration => DefaultAssets + 1;
         public static int OldFungusStateRemoval => LegacyVariableMigration + 1;
 
         public static int EndPriority => OldFungusStateRemoval + 1;
@@ -60,16 +59,6 @@ namespace AtMycelia.Hyphlow.EditorExt
             {
                 DefaultAssetMaintenance.Run();
             }
-        }
-    }
-
-    public class VariableSetMigrationModule : MaintenanceModule
-    {
-        public override int Priority => MaintenanceOrder.VariableSetMigration;
-
-        public override void RunSceneMaintenance()
-        {
-            VariableSetMigrationRunner.Run();
         }
     }
 

@@ -1082,6 +1082,7 @@ namespace AtMycelia.Hyphlow
         {
             return Value.GetHashCode();
         }
+
     }
 
     [Serializable]
