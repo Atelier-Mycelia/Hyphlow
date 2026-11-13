@@ -22,7 +22,7 @@ namespace AtMycelia.Hyphlow.EditorExt
     }
 
     /// <summary>
-    /// For modules that want to time their maintenances relative to Hyphlow's.
+    /// For modules that want to time their maintenances relative to ours.
     /// </summary>
     public static class MaintenanceOrder
     {

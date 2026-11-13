@@ -55,7 +55,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// Converts the flowchart's out-of-date variables and destroys the legacy components
         /// they came from. Legacy variables that are part of a prefab instance are left alone,
         /// since a scene can't remove components that belong to the prefab; the prefab itself
-        /// is where those get migrated. The converted variables end up last in the list.
+        /// is where those get migrated. The converted variables take their originals' places
+        /// in the list, unless such a variable is left over (see <see cref="RestoreOrder"/>).
         /// Returns how many were converted, and describes each one in
         /// <paramref name="migrations"/> if it's given.
         /// </summary>
@@ -79,6 +80,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 Undo.RecordObject(flowchart, "Migrate variables");
             }
 
+            var intendedOrder = new List<IVariable>(flowchart.Variables);
+
             for (int i = 0; i < legacyVars.Count; i++)
             {
                 Variable legacy = legacyVars[i];
@@ -87,6 +90,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                 flowchart.RemoveVariable(legacy);
                 Muscariable converted = ConvertKeepingIdentity(legacy, legacy.Scope);
                 flowchart.AddVariable(converted);
+                NoteReplacement(intendedOrder, legacy, converted);
                 migrations?.Add(Describe(legacy.Key, legacy, converted, flowchart.name));
 
                 if (recordUndo)
@@ -105,11 +109,14 @@ namespace AtMycelia.Hyphlow.EditorExt
                 flowchart.RemoveVariable(old);
                 Muscariable replacement = Supersede(old, old.Scope);
                 flowchart.AddVariable(replacement);
+                NoteReplacement(intendedOrder, old, replacement);
                 migrations?.Add(Describe(old.Key, old, replacement, flowchart.name));
             }
 
+            RestoreOrder(intendedOrder, flowchart.Variables, flowchart.ReorderVariables);
+
             EditorUtility.SetDirty(flowchart);
-            VariableManagerComponent manager = flowchart.GetComponent<VariableManagerComponent>();
+            var manager = flowchart.GetComponent<VariableManagerComponent>();
             if (manager != null)
             {
                 EditorUtility.SetDirty(manager);
@@ -134,7 +141,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// <summary>
         /// Converts the set's out-of-date Muscariables. Legacy (MonoBehaviour) Variables
         /// aren't handled, since a ScriptableObject can't hold components. The converted
-        /// variables end up last in the list. Returns how many were converted, and
+        /// variables take their originals' places in the list. Returns how many were converted, and
         /// describes each one in <paramref name="migrations"/> if it's given.
         /// </summary>
         public static int MigrateSet(VariableSet set, List<Migration> migrations = null)
@@ -145,6 +152,7 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             List<Muscariable> numerics = CollectSuperseded(set.Variables);
+            var intendedOrder = new List<IVariable>(set.Variables);
 
             #region Migrate Muscariables
             for (int i = 0; i < numerics.Count; i++)
@@ -153,9 +161,12 @@ namespace AtMycelia.Hyphlow.EditorExt
                 set.RemoveVariable(old);
                 Muscariable replacement = Supersede(old, AccessScope.Global);
                 set.AddVariable(replacement);
+                NoteReplacement(intendedOrder, old, replacement);
                 migrations?.Add(Describe(old.Key, old, replacement, string.Empty));
             }
             #endregion
+
+            RestoreOrder(intendedOrder, set.Variables, set.ReorderVariables);
 
             int migrated = numerics.Count;
             if (migrated > 0)
@@ -198,6 +209,75 @@ namespace AtMycelia.Hyphlow.EditorExt
             ToNumber(old, scope);
         }
 
+        // Reference comparisons throughout, since Muscariables compare by value
+        private static void NoteReplacement(List<IVariable> intendedOrder, IVariable old,
+            IVariable replacement)
+        {
+            for (int i = 0; i < intendedOrder.Count; i++)
+            {
+                if (ReferenceEquals(intendedOrder[i], old))
+                {
+                    intendedOrder[i] = replacement;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Migrating removes each old variable and appends its replacement, so this puts the
+        /// replacements back where the originals were. It skips the reorder if a legacy
+        /// Variable is still registered (one on a prefab instance, say), since reordering
+        /// re-adds every variable, which would convert that one behind the user's back.
+        /// </summary>
+        private static void RestoreOrder(List<IVariable> intendedOrder,
+            IReadOnlyList<IVariable> current, System.Action<IList<IVariable>> reorder)
+        {
+            var finalOrder = new List<IVariable>(current.Count);
+            for (int i = 0; i < intendedOrder.Count; i++)
+            {
+                if (ContainsReference(current, intendedOrder[i]))
+                {
+                    finalOrder.Add(intendedOrder[i]);
+                }
+            }
+
+            for (int i = 0; i < current.Count; i++)
+            {
+                if (current[i] is Variable)
+                {
+                    return;
+                }
+
+                if (!ContainsReference(finalOrder, current[i]))
+                {
+                    finalOrder.Add(current[i]);
+                }
+            }
+
+            bool alreadyInOrder = true;
+            for (int i = 0; i < current.Count && alreadyInOrder; i++)
+            {
+                alreadyInOrder = ReferenceEquals(current[i], finalOrder[i]);
+            }
+
+            if (!alreadyInOrder)
+            {
+                reorder(finalOrder);
+            }
+        }
+
+        private static bool ContainsReference(IReadOnlyList<IVariable> list, IVariable item)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (ReferenceEquals(list[i], item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static Migration Describe(string key, IVariable from, IVariable to, string source)
         {
             return new Migration
@@ -217,7 +297,9 @@ namespace AtMycelia.Hyphlow.EditorExt
             migrated.Scope = scope;
             migrated.BoxedValue = legacy.BoxedValue;
 
-            return IsSuperseded(migrated) ? Supersede(migrated, scope) : migrated;
+            return IsSuperseded(migrated) ? 
+            Supersede(migrated, scope) : 
+            migrated;
         }
 
         /// <summary>
