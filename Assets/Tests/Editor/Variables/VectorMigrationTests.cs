@@ -64,5 +64,21 @@ namespace VScriptingTests.VariableOperations
             Assert.AreEqual(VectorDimension.FourD, four.Dimension);
             Assert.AreEqual(new Vector4(1, 2, 3, 4), four.Value);
         }
+
+        [Test]
+        public void MigrateSet_KeepsConvertedVariablesInTheirOriginalPositions()
+        {
+            _set.AddVariable(new VectorTwoMuscariable { Key = "first", Value = new Vector2(1, 2) });
+            _set.AddVariable(new StringMuscariable { Key = "middle" });
+            _set.AddVariable(new VectorThreeMuscariable { Key = "last", Value = new Vector3(1, 2, 3) });
+
+            LegacyVariableConverter.MigrateSet(_set);
+
+            Assert.AreEqual("first", _set.Variables[0].Key);
+            Assert.IsInstanceOf<VectorMuscariable>(_set.Variables[0]);
+            Assert.AreEqual("middle", _set.Variables[1].Key);
+            Assert.AreEqual("last", _set.Variables[2].Key);
+            Assert.IsInstanceOf<VectorMuscariable>(_set.Variables[2]);
+        }
     }
 }

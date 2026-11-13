@@ -1144,8 +1144,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 2
       _owningSource: {fileID: 973132907}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: OnPlayerWin
     stringRef: {fileID: 0}
     stringVal: 
@@ -1207,8 +1207,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 3
       _owningSource: {fileID: 973132907}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: OnPlayerDie
     stringRef: {fileID: 0}
     stringVal: 
@@ -1269,25 +1269,25 @@ MonoBehaviour:
   _varManager: {fileID: 510833783}
   _execManager: {fileID: 510833796}
   _blockManager: {fileID: 510833797}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
     _selectedLegacyCommands: []
     _owner: {fileID: 510833760}
-    <ScrollPos>k__BackingField: {x: 0, y: 0}
+    <ScrollPos>k__BackingField: {x: 0, y: -3.3333335}
     <VariablesScrollPos>k__BackingField: {x: 0, y: 0}
     <VariablesExpanded>k__BackingField: 0
-    <Zoom>k__BackingField: 1
+    <Zoom>k__BackingField: 0.9
     <BlockViewHeight>k__BackingField: 231
     <ScrollViewRect>k__BackingField:
       serializedVersion: 2
@@ -1374,8 +1374,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 973132907}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1429,14 +1429,14 @@ MonoBehaviour:
       _varRef:
         _itemId: 1
         _owningSource: {fileID: 510833767}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _data:
           rid: 3688520032194134188
       variable: {fileID: 0}
@@ -1445,14 +1445,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -1461,8 +1461,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -1470,8 +1470,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -1479,8 +1479,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -1488,8 +1488,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1497,8 +1497,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
@@ -1506,16 +1506,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -1523,8 +1523,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -1532,8 +1532,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
@@ -1541,8 +1541,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
@@ -1550,8 +1550,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
@@ -1559,8 +1559,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
@@ -1568,8 +1568,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
@@ -1577,8 +1577,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -1586,8 +1586,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -1602,8 +1602,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 0
         integerRef: {fileID: 0}
         integerVal: 0
@@ -1626,14 +1626,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 1
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 510833767}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: 3688520032194134187
     variable: {fileID: 0}
@@ -1642,14 +1642,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 510833767}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 510833767}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -1664,8 +1664,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 1
         integerRef: {fileID: 0}
         integerVal: 0
@@ -1687,8 +1687,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 3
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -1696,8 +1696,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 'Lives: {$lives}'
     stringRef: {fileID: 0}
     stringVal: 
@@ -1705,8 +1705,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1735,8 +1735,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1744,8 +1744,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -1774,8 +1774,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1783,8 +1783,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -1809,8 +1809,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Winner
     stringRef: {fileID: 0}
     stringVal: 
@@ -1832,8 +1832,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 2
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -1841,8 +1841,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Game Over
     stringRef: {fileID: 0}
     stringVal: 
@@ -1850,8 +1850,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1875,8 +1875,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 2
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -1884,8 +1884,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: You win!
     stringRef: {fileID: 0}
     stringVal: 
@@ -1893,8 +1893,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -1917,18 +1917,32 @@ MonoBehaviour:
     _muscariables:
     - rid: 3688520032194134219
     - rid: 3688520032194134226
-    - rid: 3688520039579517043
+    - rid: 1296380599251239229
     - rid: 3688520039579517073
-    - rid: 588464230582976610
+    - rid: 1296380599251239230
     _legacyVariables: []
-    _nextValidVarID: 6
+    _nextValidVarID: 1
     _isInitted: 1
   _cachedFlowchart: {fileID: 510833767}
   references:
     version: 2
     RefIds:
-    - rid: 588464230582976610
-      type: {class: IntMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+    - rid: 1296380599251239229
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: delayBeforeReload
+        _itemId: 4
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 3.5
+        startValue: 0
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239230
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: lives
@@ -1940,6 +1954,7 @@ MonoBehaviour:
         _startValue: 0
         _value: 3
         startValue: 0
+        _wholeNumsOnly: 1
     - rid: 3688520032194134219
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -1966,19 +1981,6 @@ MonoBehaviour:
         _startValue: {fileID: 0}
         _value: {fileID: 143672176}
         startValue: {fileID: 0}
-    - rid: 3688520039579517043
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: delayBeforeReload
-        _itemId: 4
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: 3.5
-        startValue: 0
     - rid: 3688520039579517073
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -2011,8 +2013,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Responding to player death
     stringRef: {fileID: 0}
     stringVal: 
@@ -2039,8 +2041,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -2048,8 +2050,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -2078,8 +2080,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -2087,8 +2089,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -2112,8 +2114,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
@@ -2136,8 +2138,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 4
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2194,8 +2196,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2204,8 +2206,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2213,22 +2215,22 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _target:
     _itemId: 5
     _owningSource: {fileID: 510833767}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _targetColor:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -2236,8 +2238,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 100
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2245,8 +2247,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2254,8 +2256,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2277,8 +2279,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2287,8 +2289,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2296,22 +2298,22 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _target:
     _itemId: 5
     _owningSource: {fileID: 510833767}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _targetColor:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -2319,8 +2321,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2328,8 +2330,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2337,8 +2339,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2360,8 +2362,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2370,8 +2372,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2379,22 +2381,22 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _target:
     _itemId: 5
     _owningSource: {fileID: 510833767}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _targetColor:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -2402,8 +2404,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 100
     floatRef: {fileID: 0}
     floatVal: 0
@@ -2411,8 +2413,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2420,8 +2422,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -2448,8 +2450,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -2457,8 +2459,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 510833767}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -2901,16 +2903,16 @@ MonoBehaviour:
   _varManager: {fileID: 973132908}
   _execManager: {fileID: 973132910}
   _blockManager: {fileID: 973132911}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
@@ -3702,16 +3704,16 @@ MonoBehaviour:
   _varManager: {fileID: 1179951699}
   _execManager: {fileID: 1179951726}
   _blockManager: {fileID: 1179951727}
-  legacyVariableManager:
+  _legacyVariableManager:
     _muscariables: []
     _legacyVariables: []
     _nextValidVarID: 1
     _isInitted: 0
-  version: 1
+  _version: 1
   _legacyVariables: []
   _oldMuscariables: []
   _otherSettings: []
-  _flowchartSettings: {fileID: 0}
+  _editorQol: {fileID: 0}
   _description: 
   _uiModel:
     _selectedLegacyBlocks: []
@@ -3995,14 +3997,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 1
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: 3688520035386261672
     variable: {fileID: 0}
@@ -4011,14 +4013,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 1179951649}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 1179951649}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -4033,8 +4035,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 2
           _owningSource: {fileID: 1179951649}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 0
         floatRef: {fileID: 0}
         floatVal: 0
@@ -4056,8 +4058,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Horizontal
     stringRef: {fileID: 0}
     stringVal: 
@@ -4065,23 +4067,23 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _outValueRef:
     _itemId: 3
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _oldAxisRaw: 0
   _outValue:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -4103,8 +4105,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Vertical
     stringRef: {fileID: 0}
     stringVal: 
@@ -4112,23 +4114,23 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _outValueRef:
     _itemId: 1
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _oldAxisRaw: 0
   _outValue:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -4169,14 +4171,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 3
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: 3688520035386261673
     variable: {fileID: 0}
@@ -4185,14 +4187,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 1179951649}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 1179951649}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -4207,8 +4209,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 4
           _owningSource: {fileID: 1179951649}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 0
         floatRef: {fileID: 0}
         floatVal: 0
@@ -4232,16 +4234,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 8
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   _inOutVar:
     _itemId: 6
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _inOutVarOld: {fileID: 0}
 --- !u!114 &1179951669
 MonoBehaviour:
@@ -4263,16 +4265,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 8
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   _inOutVar:
     _itemId: 5
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _inOutVarOld: {fileID: 0}
 --- !u!114 &1179951670
 MonoBehaviour:
@@ -4295,8 +4297,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 973132907}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: Reset
     stringRef: {fileID: 0}
     stringVal: 
@@ -4357,8 +4359,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 3
       _owningSource: {fileID: 973132907}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -4471,8 +4473,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 2
       _owningSource: {fileID: 973132907}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -4530,8 +4532,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 13
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -4539,8 +4541,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
@@ -4548,8 +4550,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -4557,8 +4559,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -4566,16 +4568,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
   _newlySpawnedObject:
     _itemId: 0
     _owningSource: {fileID: 0}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   sourceObjectOLD: {fileID: 0}
   parentTransformOLD: {fileID: 0}
   spawnPositionOLD: {x: 0, y: 0, z: 0}
@@ -4601,14 +4603,14 @@ MonoBehaviour:
       _varRef:
         _itemId: 7
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _data:
           rid: 3688520035386261606
       variable: {fileID: 0}
@@ -4617,14 +4619,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -4633,8 +4635,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -4642,8 +4644,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -4651,8 +4653,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -4660,8 +4662,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -4669,8 +4671,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
@@ -4678,16 +4680,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -4695,8 +4697,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -4704,8 +4706,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
@@ -4713,8 +4715,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
@@ -4722,8 +4724,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
@@ -4731,8 +4733,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
@@ -4740,8 +4742,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
@@ -4749,8 +4751,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -4758,8 +4760,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -4774,8 +4776,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 1
         booleanRef: {fileID: 0}
         booleanVal: 0
@@ -4812,14 +4814,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 7
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: 3688520035386261849
     variable: {fileID: 0}
@@ -4828,14 +4830,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 1179951649}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 1179951649}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -4850,8 +4852,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 0
         booleanRef: {fileID: 0}
         booleanVal: 0
@@ -4874,14 +4876,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 7
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: 3688520035386261595
     variable: {fileID: 0}
@@ -4890,14 +4892,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 1179951649}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 1179951649}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -4912,8 +4914,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 1
         booleanRef: {fileID: 0}
         booleanVal: 0
@@ -4940,8 +4942,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -4949,8 +4951,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -4991,14 +4993,14 @@ MonoBehaviour:
       _varRef:
         _itemId: 7
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _data:
           rid: 3688520035386261774
       variable: {fileID: 0}
@@ -5007,14 +5009,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -5023,8 +5025,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5032,8 +5034,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -5041,8 +5043,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5050,8 +5052,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -5059,8 +5061,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
@@ -5068,16 +5070,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -5085,8 +5087,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -5094,8 +5096,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
@@ -5103,8 +5105,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
@@ -5112,8 +5114,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
@@ -5121,8 +5123,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
@@ -5130,8 +5132,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
@@ -5139,8 +5141,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -5148,8 +5150,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -5164,8 +5166,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 1
         booleanRef: {fileID: 0}
         booleanVal: 0
@@ -5188,14 +5190,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 7
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: 3688520035386261773
     variable: {fileID: 0}
@@ -5204,14 +5206,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 1179951649}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 1179951649}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -5226,8 +5228,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 0
         booleanRef: {fileID: 0}
         booleanVal: 0
@@ -5252,14 +5254,14 @@ MonoBehaviour:
       _varRef:
         _itemId: 7
         _owningSource: {fileID: 1179951649}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _data:
           rid: 3688520035386261674
       variable: {fileID: 0}
@@ -5268,14 +5270,14 @@ MonoBehaviour:
     _varRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _data:
       _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _data:
         rid: -2
     variable: {fileID: 0}
@@ -5284,8 +5286,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5293,8 +5295,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -5302,8 +5304,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5311,8 +5313,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -5320,8 +5322,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     animatorRef: {fileID: 0}
     animatorVal: {fileID: 0}
@@ -5329,16 +5331,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     audioSourceRef: {fileID: 0}
   colorData:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 0, g: 0, b: 0, a: 0}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -5346,8 +5348,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -5355,8 +5357,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     materialRef: {fileID: 0}
     materialVal: {fileID: 0}
@@ -5364,8 +5366,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     objectRef: {fileID: 0}
     objectVal: {fileID: 0}
@@ -5373,8 +5375,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     spriteRef: {fileID: 0}
     spriteVal: {fileID: 0}
@@ -5382,8 +5384,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     textureRef: {fileID: 0}
     textureVal: {fileID: 0}
@@ -5391,8 +5393,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
@@ -5400,8 +5402,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -5409,8 +5411,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -5425,8 +5427,8 @@ MonoBehaviour:
         _backingVarRef:
           _itemId: 0
           _owningSource: {fileID: 0}
-          legacyOwningFc: {fileID: 0}
-          legacyOwningVsa: {fileID: 0}
+          _legacyOwningFc: {fileID: 0}
+          _legacyOwningVsa: {fileID: 0}
         _value: 1
         booleanRef: {fileID: 0}
         booleanVal: 0
@@ -5461,102 +5463,24 @@ MonoBehaviour:
     _muscariables:
     - rid: 3688520032194134227
     - rid: 3688520035386261593
-    - rid: 3688520035386261596
-    - rid: 3688520035386261598
+    - rid: 1296380599251239231
+    - rid: 1296380599251239232
     - rid: 3688520035386261604
     - rid: 3688520035386261848
-    - rid: 588464230582976611
-    - rid: 588464230582976612
-    - rid: 588464230582976613
-    - rid: 588464230582976614
-    - rid: 588464230582976615
-    - rid: 588464230582976616
+    - rid: 1296380599251239233
+    - rid: 1296380599251239234
+    - rid: 1296380599251239235
+    - rid: 1296380599251239236
+    - rid: 1296380599251239237
+    - rid: 1296380599251239238
     - rid: 588464230582976617
     _legacyVariables: []
-    _nextValidVarID: 14
+    _nextValidVarID: 1
     _isInitted: 1
   _cachedFlowchart: {fileID: 1179951649}
   references:
     version: 2
     RefIds:
-    - rid: 588464230582976611
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: verticalAxis
-        _itemId: 1
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: 0
-        startValue: 0
-    - rid: 588464230582976612
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: rocketForceScale
-        _itemId: 2
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: 20
-        startValue: 0
-    - rid: 588464230582976613
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: horAxis
-        _itemId: 3
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: 0
-        startValue: 0
-    - rid: 588464230582976614
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: torqueScale
-        _itemId: 4
-        scope: 0
-        key: 
-        itemID: 0
-        value: 0
-        _startValue: 0
-        _value: -1
-        startValue: 0
-    - rid: 588464230582976615
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: startPos
-        _itemId: 5
-        scope: 0
-        key: 
-        itemID: 0
-        value: {x: 0, y: 0, z: 0}
-        _startValue: {x: 0, y: 0, z: 0}
-        _value: {x: 0, y: 0, z: 0}
-        startValue: {x: 0, y: 0, z: 0}
-    - rid: 588464230582976616
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: startRot
-        _itemId: 6
-        scope: 0
-        key: 
-        itemID: 0
-        value: {x: 0, y: 0, z: 0}
-        _startValue: {x: 0, y: 0, z: 0}
-        _value: {x: 0, y: 0, z: 0}
-        startValue: {x: 0, y: 0, z: 0}
     - rid: 588464230582976617
       type: {class: BoolMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -5570,6 +5494,118 @@ MonoBehaviour:
         _startValue: 0
         _value: 0
         startValue: 0
+    - rid: 1296380599251239231
+      type: {class: VectorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: targetScale
+        _itemId: 10
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0, z: 0, w: 0}
+        _startValue: {x: 0, y: 0, z: 0, w: 0}
+        _value: {x: 0, y: 0, z: 0, w: 0}
+        startValue: {x: 0, y: 0, z: 0, w: 0}
+        _dimension: 1
+    - rid: 1296380599251239232
+      type: {class: VectorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: nonexistent
+        _itemId: 11
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0, z: 0, w: 0}
+        _startValue: {x: 0, y: 0, z: 0, w: 0}
+        _value: {x: 0, y: 0, z: 0, w: 0}
+        startValue: {x: 0, y: 0, z: 0, w: 0}
+        _dimension: 1
+    - rid: 1296380599251239233
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: verticalAxis
+        _itemId: 1
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 0
+        startValue: 0
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239234
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: rocketForceScale
+        _itemId: 2
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 20
+        startValue: 0
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239235
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: horAxis
+        _itemId: 3
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: 0
+        startValue: 0
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239236
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: torqueScale
+        _itemId: 4
+        scope: 0
+        key: 
+        itemID: 0
+        value: 0
+        _startValue: 0
+        _value: -1
+        startValue: 0
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239237
+      type: {class: VectorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: startPos
+        _itemId: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0, z: 0, w: 0}
+        _startValue: {x: 0, y: 0, z: 0, w: 0}
+        _value: {x: 0, y: 0, z: 0, w: 0}
+        startValue: {x: 0, y: 0, z: 0, w: 0}
+        _dimension: 1
+    - rid: 1296380599251239238
+      type: {class: VectorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: startRot
+        _itemId: 6
+        scope: 0
+        key: 
+        itemID: 0
+        value: {x: 0, y: 0, z: 0, w: 0}
+        _startValue: {x: 0, y: 0, z: 0, w: 0}
+        _value: {x: 0, y: 0, z: 0, w: 0}
+        startValue: {x: 0, y: 0, z: 0, w: 0}
+        _dimension: 1
     - rid: 3688520032194134227
       type: {class: TransformMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -5596,32 +5632,6 @@ MonoBehaviour:
         _startValue: {fileID: 0}
         _value: {fileID: 1179951648}
         startValue: {fileID: 0}
-    - rid: 3688520035386261596
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: targetScale
-        _itemId: 10
-        scope: 0
-        key: 
-        itemID: 0
-        value: {x: 0, y: 0, z: 0}
-        _startValue: {x: 0, y: 0, z: 0}
-        _value: {x: 0, y: 0, z: 0}
-        startValue: {x: 0, y: 0, z: 0}
-    - rid: 3688520035386261598
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
-      data:
-        _scope: 0
-        _key: nonexistent
-        _itemId: 11
-        scope: 0
-        key: 
-        itemID: 0
-        value: {x: 0, y: 0, z: 0}
-        _startValue: {x: 0, y: 0, z: 0}
-        _value: {x: 0, y: 0, z: 0}
-        startValue: {x: 0, y: 0, z: 0}
     - rid: 3688520035386261604
       type: {class: RigidbodyTwoDMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -5668,8 +5678,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 12
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     rigidbody2DRef: {fileID: 0}
     rigidbody2DVal: {fileID: 0}
@@ -5728,8 +5738,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5738,8 +5748,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5747,22 +5757,22 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _target:
     _itemId: 9
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _targetColor:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -5770,8 +5780,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 100
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5779,8 +5789,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5788,8 +5798,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5812,8 +5822,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5821,8 +5831,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5845,8 +5855,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0.25
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5869,8 +5879,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5879,8 +5889,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5888,22 +5898,22 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
   _target:
     _itemId: 9
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _targetColor:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -5911,8 +5921,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -5920,8 +5930,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5929,8 +5939,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5953,8 +5963,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5962,8 +5972,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -5991,8 +6001,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -6000,8 +6010,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -6030,8 +6040,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -6039,8 +6049,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -6064,8 +6074,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0.75
     floatRef: {fileID: 0}
     floatVal: 0
@@ -6074,8 +6084,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6083,8 +6093,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6092,15 +6102,15 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 8
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
   _targetScale:
     _backingVarRef:
       _itemId: 10
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -6108,8 +6118,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 11
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0, z: 0}
     vector3Ref: {fileID: 0}
     vector3Val: {x: 0, y: 0, z: 0}
@@ -6167,16 +6177,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 8
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   _inOutVar:
     _itemId: 10
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _inOutVarOld: {fileID: 0}
 --- !u!114 &1179951716
 MonoBehaviour:
@@ -6196,8 +6206,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 12
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     rigidbody2DRef: {fileID: 0}
     rigidbody2DVal: {fileID: 0}
@@ -6206,8 +6216,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 3
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -6229,8 +6239,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 12
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     rigidbody2DRef: {fileID: 0}
     rigidbody2DVal: {fileID: 0}
@@ -6240,8 +6250,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 1}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -6249,8 +6259,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 1
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     floatRef: {fileID: 0}
     floatVal: 0
@@ -6258,8 +6268,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {x: 0, y: 0}
     vector2Ref: {fileID: 0}
     vector2Val: {x: 0, y: 0}
@@ -6285,8 +6295,8 @@ MonoBehaviour:
     - _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _value: Ground
       stringRef: {fileID: 0}
       stringVal: 
@@ -6294,8 +6304,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1179951648}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -6304,8 +6314,8 @@ MonoBehaviour:
   _collisionVar:
     _itemId: 0
     _owningSource: {fileID: 0}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   collisionVar: {fileID: 0}
 --- !u!114 &1179951719
 MonoBehaviour:
@@ -6329,8 +6339,8 @@ MonoBehaviour:
     - _backingVarRef:
         _itemId: 0
         _owningSource: {fileID: 0}
-        legacyOwningFc: {fileID: 0}
-        legacyOwningVsa: {fileID: 0}
+        _legacyOwningFc: {fileID: 0}
+        _legacyOwningVsa: {fileID: 0}
       _value: Finish
       stringRef: {fileID: 0}
       stringVal: 
@@ -6338,8 +6348,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 1179951648}
     gameObjectRef: {fileID: 0}
     gameObjectVal: {fileID: 0}
@@ -6348,8 +6358,8 @@ MonoBehaviour:
   _collisionVar:
     _itemId: 0
     _owningSource: {fileID: 0}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   collisionVar: {fileID: 0}
 --- !u!114 &1179951720
 MonoBehaviour:
@@ -6370,8 +6380,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 0}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: In DeathChecks
     stringRef: {fileID: 0}
     stringVal: 
@@ -6398,8 +6408,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 
     stringRef: {fileID: 0}
     stringVal: 
@@ -6407,8 +6417,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     integerRef: {fileID: 0}
     integerVal: 0
@@ -6434,16 +6444,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 8
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   _inOutVar:
     _itemId: 6
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _inOutVarOld: {fileID: 0}
 --- !u!114 &1179951723
 MonoBehaviour:
@@ -6465,16 +6475,16 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 8
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {fileID: 0}
     transformRef: {fileID: 0}
     transformVal: {fileID: 0}
   _inOutVar:
     _itemId: 5
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _inOutVarOld: {fileID: 0}
 --- !u!114 &1179951724
 MonoBehaviour:
@@ -6527,8 +6537,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -6537,8 +6547,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6546,22 +6556,22 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
   _target:
     _itemId: 9
     _owningSource: {fileID: 1179951649}
-    legacyOwningFc: {fileID: 0}
-    legacyOwningVsa: {fileID: 0}
+    _legacyOwningFc: {fileID: 0}
+    _legacyOwningVsa: {fileID: 0}
   _targetColor:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: {r: 1, g: 1, b: 1, a: 1}
     colorRef: {fileID: 0}
     colorVal: {r: 0, g: 0, b: 0, a: 0}
@@ -6569,8 +6579,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     floatRef: {fileID: 0}
     floatVal: 0
@@ -6578,8 +6588,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 1
     booleanRef: {fileID: 0}
     booleanVal: 0
@@ -6587,8 +6597,8 @@ MonoBehaviour:
     _backingVarRef:
       _itemId: 0
       _owningSource: {fileID: 1179951649}
-      legacyOwningFc: {fileID: 0}
-      legacyOwningVsa: {fileID: 0}
+      _legacyOwningFc: {fileID: 0}
+      _legacyOwningVsa: {fileID: 0}
     _value: 0
     booleanRef: {fileID: 0}
     booleanVal: 0
