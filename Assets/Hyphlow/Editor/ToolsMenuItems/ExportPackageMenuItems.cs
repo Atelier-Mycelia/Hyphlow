@@ -5,21 +5,22 @@ namespace AtMycelia.Hyphlow.EditorExt
 {
     public class ExportPackageMenuItems : MonoBehaviour
     {
-        [MenuItem("Tools/Atelier Mycelia/Hyphlow/Utilities/Export Amanita Package")]
-        static void ExportFungusPackageFull()
+        [MenuItem("Tools/Atelier Mycelia/Hyphlow/Utilities/Export Hyphlow Package")]
+        static void ExportAmanitaPackageFull()
         {
-            ExportAmanitaPackage( new string[] {"Assets/Amanita", "Assets/FungusExamples" });
+            ExportHyphlowPackage( new string[] {"Assets/Hyphlow", "Assets/HyphlowExamples" });
         }
 
         [MenuItem("Tools/Atelier Mycelia/Hyphlow/Utilities/Export Fungus Package - Lite")]
-        static void ExportFungusPackageLite()
+        static void ExportAmanitaPackageLite()
         {
-            ExportAmanitaPackage(new string[] { "Assets/Amanita" });
+            ExportHyphlowPackage(new string[] { "Assets/Hyphlow" });
         }
 
-        static void ExportAmanitaPackage(string[] folders)
+        static void ExportHyphlowPackage(string[] folders)
         {
-            string path = EditorUtility.SaveFilePanel("Export Amanita Package", "", "Amanita", "unitypackage");
+            string path = EditorUtility.SaveFilePanel("Export Amanita Package", "", 
+            "Amanita", "unitypackage");
             if (path.Length == 0)
             {
                 return;
