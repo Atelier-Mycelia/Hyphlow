@@ -1,22 +1,22 @@
 {
   "dependencies": {
     "com.ateliermycelia.commonlib": {
-      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib#develop_bak",
+      "version": "https://github.com/Atelier-Mycelia/CommonLib.git?path=Assets/AtMyceliaCommonLib#v1.4.1Dev",
       "depth": 0,
       "source": "git",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6"
       },
-      "hash": "88ad70e762f60179e4d6f499296f52b79f968a9d"
+      "hash": "8f2e8b2a4ed6595af188c985ffa2a5227fbff3dc"
     },
     "com.ateliermycelia.hyphatween": {
-      "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween",
+      "version": "https://github.com/Atelier-Mycelia/HyphaTween.git?path=Assets/HyphaTween#v1.1.1Dev",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.ateliermycelia.commonlib": "1.3.1"
+        "com.ateliermycelia.commonlib": "1.4.1"
       },
-      "hash": "e5fea3829e317eba31633dc4930182c25d0c46ee"
+      "hash": "83f5254f2a126cc14e76a06748a5b0229e8a02ca"
     },
     "com.ateliermycelia.myceliarium": {
       "version": "https://github.com/Atelier-Mycelia/Myceliarium.git?path=/Assets/Myceliarium#v0.6.1",

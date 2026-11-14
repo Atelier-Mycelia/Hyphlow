@@ -17,6 +17,16 @@ namespace AtMycelia.Hyphlow.EditorExt
         void ScopeEdited(IVariable variable, AccessScope newScope);
         void ValueEdited(IVariable variable, object newValue);
         void RemoveRequested(IVariable variable);
+
+        /// <summary>
+        /// For edits to a variable's own settings that aren't its value (like
+        /// NumericMuscariable's whole-numbers toggle), so they get the same undo and dirty
+        /// handling. Hosts that don't care can rely on this default, which just applies it.
+        /// </summary>
+        void PropertyEdited(IVariable variable, string description, Action<IVariable> applyChange)
+        {
+            applyChange?.Invoke(variable);
+        }
     }
 
     public interface IRowVisualHandler : IDisposable
@@ -142,6 +152,16 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
 
             _host?.ValueEdited(Variable, newValue);
+        }
+
+        protected void ReportPropertyEdited(string description, Action<IVariable> applyChange)
+        {
+            if (_isApplyingModel || Variable == null)
+            {
+                return;
+            }
+
+            _host?.PropertyEdited(Variable, description, applyChange);
         }
 
         private IRowEditHost _host;

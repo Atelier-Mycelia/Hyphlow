@@ -130,6 +130,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         public void ScopeEdited(IVariable variable, AccessScope newScope) => Host?.ScopeEdited(variable, newScope);
         public void ValueEdited(IVariable variable, object newValue) => Host?.ValueEdited(variable, newValue);
         public void RemoveRequested(IVariable variable) => Host?.RemoveRequested(variable);
+        public void PropertyEdited(IVariable variable, string description, Action<IVariable> applyChange)
+            => Host?.PropertyEdited(variable, description, applyChange);
 
         public void Dispose()
         {

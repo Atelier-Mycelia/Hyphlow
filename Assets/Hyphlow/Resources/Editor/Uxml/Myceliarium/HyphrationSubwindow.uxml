@@ -1,0 +1,95 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="../../Stylesheets/Myceliarium/HyphrationSubwindowStyle.uss" />
+    <ui:VisualElement name="Root" class="hy-root">
+        <ui:VisualElement name="Header" class="hy-header">
+            <ui:Label text="Hyphration" class="hy-title" />
+            <ui:Label text="Brings projects made with earlier Hyphlow versions, or with Fungus, up to date." class="hy-subtitle" />
+        </ui:VisualElement>
+        <ui:VisualElement name="PlayModeBanner" class="hy-banner">
+            <ui:Label text="Play Mode is running, so migrating is unavailable until it ends." class="hy-banner__text" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="OverviewView" class="hy-view">
+            <ui:VisualElement name="StatRow" class="hy-stat-row">
+                <ui:VisualElement class="hy-card hy-stat">
+                    <ui:Label name="ScenesCountLabel" text="0" class="hy-stat__value" />
+                    <ui:Label text="Scenes in the project" class="hy-stat__caption" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hy-card hy-stat">
+                    <ui:Label name="SetsCountLabel" text="0" class="hy-stat__value" />
+                    <ui:Label text="Variable Sets" class="hy-stat__caption" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hy-card hy-stat hy-stat--last">
+                    <ui:Label name="NeedingMigrationLabel" text="0" class="hy-stat__value hy-stat__value--accent" />
+                    <ui:Label text="Sets needing migration" class="hy-stat__caption" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="ActionCard" class="hy-card hy-action">
+                <ui:VisualElement class="hy-action__text">
+                    <ui:Label text="Migrate variables" class="hy-action__title" />
+                    <ui:Label text="Updates the variables in your Flowcharts and Variable Sets: Fungus-style variables become Muscariables, and Int, Float and Double variables become Numbers. You choose which scenes and sets to include." class="hy-action__description" />
+                </ui:VisualElement>
+                <ui:Button name="RescanButton" text="Rescan" tooltip="Looks through the project again." class="hy-button" />
+                <ui:Button name="MigrateButton" text="Migrate..." class="hy-button hy-button--primary" />
+            </ui:VisualElement>
+
+            <ui:VisualElement name="LogCard" class="hy-card hy-log-card">
+                <ui:VisualElement class="hy-card__header">
+                    <ui:Label text="Migration Log" class="hy-card__title" />
+                    <ui:Label name="LogSummaryLabel" class="hy-muted hy-card__summary" />
+                    <ui:Button name="ClearLogButton" text="Clear" class="hy-button" />
+                </ui:VisualElement>
+                <ui:VisualElement class="hy-log-body">
+                    <ui:VisualElement class="hy-list-holder hy-list-holder--log hy-log-body__list">
+                        <ui:ListView name="LogListView" class="hy-list" />
+                        <ui:Label name="LogEmptyLabel" text="Nothing has been migrated yet. What each migration does shows up here." class="hy-empty" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="DetailsPane" class="hy-details">
+                        <ui:Label name="DetailsTitleLabel" text="Migrated variables" class="hy-details__title" />
+                        <ui:VisualElement class="hy-list-holder hy-details__holder">
+                            <ui:ListView name="DetailsListView" class="hy-list" />
+                            <ui:Label name="DetailsEmptyLabel" class="hy-empty" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="SelectionView" class="hy-view">
+            <ui:VisualElement class="hy-picker-header">
+                <ui:Label text="Choose what to migrate" class="hy-picker-title" />
+                <ui:Label text="Variable Sets with nothing to migrate are listed, but can't be picked. Scenes are checked as they're migrated, and are saved only if something in them changed." class="hy-picker-hint" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hy-columns">
+                <ui:VisualElement class="hy-card hy-column">
+                    <ui:VisualElement class="hy-card__header">
+                        <ui:Label text="Scenes" class="hy-card__title" />
+                        <ui:Button name="ScenesAllButton" text="All" class="hy-button hy-button--small" />
+                        <ui:Button name="ScenesNoneButton" text="None" class="hy-button hy-button--small" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hy-list-holder hy-list-holder--picker">
+                        <ui:ListView name="ScenesListView" class="hy-list" />
+                        <ui:Label name="ScenesEmptyLabel" text="No scenes in the project." class="hy-empty" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="hy-card hy-column hy-column--last">
+                    <ui:VisualElement class="hy-card__header">
+                        <ui:Label text="Variable Sets" class="hy-card__title" />
+                        <ui:Button name="SetsAllButton" text="All" class="hy-button hy-button--small" />
+                        <ui:Button name="SetsNoneButton" text="None" class="hy-button hy-button--small" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="hy-list-holder hy-list-holder--picker">
+                        <ui:ListView name="SetsListView" class="hy-list" />
+                        <ui:Label name="SetsEmptyLabel" text="No Variable Sets in the project." class="hy-empty" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="hy-footer">
+                <ui:Label name="SelectionSummaryLabel" class="hy-footer__summary" />
+                <ui:Button name="CancelButton" text="Back" class="hy-button" />
+                <ui:Button name="RunButton" text="Migrate" class="hy-button hy-button--primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -18,7 +18,8 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             EditorGUI.BeginProperty(position, label, blockRefProp);
 
-            blockRefProp.serializedObject.Update();
+            // Deliberately no serializedObject.Update() here; see VariableReferenceDrawer.
+            // It would discard pending edits other fields made earlier in the same pass.
 
             UnityObj targetObject = blockRefProp.serializedObject.targetObject;
             SerializedProperty itemIdProp = blockRefProp.FindPropertyRelative("_itemId");

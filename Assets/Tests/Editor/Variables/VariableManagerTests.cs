@@ -443,6 +443,53 @@ namespace VScriptingTests.Variables
         }
 
         [Test]
+        public void Refresh_AssignsOwnerToMuscariablesThatLostIt()
+        {
+            // Owners aren't serialized, so deserialized variables come back without one.
+            StringMuscariable muscari = new StringMuscariable { Key = "deserialized", Value = "abc" };
+            _manager.Initialize(new List<Muscariable> { muscari }, new List<Variable>());
+            muscari.Owner = null;
+
+            _manager.Refresh();
+
+            Assert.AreSame(_fc, muscari.Owner,
+                "Expected Refresh to restore the Owner of muscariables that were deserialized.");
+        }
+
+        [Test]
+        public void Refresh_LeavesLegacyVariableOwnerUntouched()
+        {
+            GameObject legacyHost = CreateHostWithFlowchart("VariableManagerTests_RefreshLegacyHost");
+            Flowchart legacyFlowchart = legacyHost.GetComponent<Flowchart>();
+            IntegerVariable legacyVar = legacyHost.AddComponent<IntegerVariable>();
+            legacyVar.Key = "legacyVar";
+            _manager.Initialize(new List<Muscariable>(), new List<Variable> { legacyVar });
+
+            _manager.Refresh();
+
+            Assert.AreNotSame(_fc, legacyVar.Owner,
+                "Expected Refresh not to overwrite the Owner of legacy variables.");
+            Assert.AreSame(legacyFlowchart, legacyVar.Owner,
+                "Expected legacy Variable Owner to remain its original Flowchart.");
+        }
+
+        [Test]
+        public void Refresh_AfterOwnerIsSetLate_PointsMuscariablesAtTheNewOwner()
+        {
+            // VarOwner defaults to the manager itself, so a Refresh before assignment
+            // stamps the manager as owner; the later assignment must correct that.
+            VariableManager lateManager = new VariableManager();
+            StringMuscariable muscari = new StringMuscariable { Key = "late", Value = "abc" };
+            lateManager.Initialize(new List<Muscariable> { muscari }, new List<Variable>());
+            lateManager.Refresh();
+
+            lateManager.VarOwner = _fc;
+
+            Assert.AreSame(_fc, muscari.Owner,
+                "Expected assigning VarOwner after Refresh to update the muscariable's Owner.");
+        }
+
+        [Test]
         public void ResetAllVars_CallsOnResetExactlyOncePerVariable()
         {
             ResetTrackingStringMuscariable first = new ResetTrackingStringMuscariable

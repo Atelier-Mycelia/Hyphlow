@@ -14,13 +14,59 @@ namespace AtMycelia.Hyphlow.EditorExt
 
     }
 
+    /// <summary>
+    /// Takes over the double content type from the old Double row (the registry keeps one
+    /// handler per content type). Adds a toggle for NumericMuscariable's whole-numbers setting.
+    /// </summary>
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(double),
-        typeDisplayName: "Double",
-        pathToTemplate: "Editor/Uxml/VarRows/Numeric/DoubleVariableRow")]
-    public class DoubleRowVisualHandler : RowVisualHandler<double>
+        typeDisplayName: "Number",
+        pathToTemplate: "Editor/Uxml/VarRows/Numeric/NumberVariableRow")]
+    public class NumberRowVisualHandler : RowVisualHandler<double>
     {
+        protected override void BuildValueEditor(VisualElement valueField)
+        {
+            base.BuildValueEditor(valueField);
 
+            _wholeNumsToggle = RowRoot.Q<Toggle>("WholeNumsOnly");
+            if (_wholeNumsToggle == null)
+            {
+                Debug.LogWarning($"{GetType().Name}: row template is missing a Toggle named 'WholeNumsOnly'.");
+                return;
+            }
+
+            _wholeNumsToggle.RegisterValueChangedCallback(evt =>
+                ReportPropertyEdited("Whole Nums Only", edited =>
+                {
+                    if (edited is NumberMuscariable numeric)
+                    {
+                        numeric.WholeNumsOnly = evt.newValue;
+                    }
+                }));
+        }
+
+        protected override void BindValue(IVariable variable)
+        {
+            base.BindValue(variable);
+
+            if (_wholeNumsToggle == null)
+            {
+                return;
+            }
+
+            // Variables saved before NumericMuscariable existed can still be DoubleMuscariables
+            bool isNumeric = variable is NumberMuscariable;
+            _wholeNumsToggle.SetEnabled(isNumeric);
+            _wholeNumsToggle.SetValueWithoutNotify(isNumeric && ((NumberMuscariable)variable).WholeNumsOnly);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _wholeNumsToggle = null;
+        }
+
+        private Toggle _wholeNumsToggle;
     }
 
     [RowVisualHandler(menuName: "Numeric",
@@ -57,12 +103,55 @@ namespace AtMycelia.Hyphlow.EditorExt
     {
     }
 
+    /// <summary>
+    /// Takes over the Vector4 content type from the old VectorFour row (the registry keeps one
+    /// handler per content type). The template's ValueField is an empty holder; the
+    /// <see cref="VectorField"/> goes in it from code, since it isn't a UXML-instantiable element.
+    /// </summary>
     [RowVisualHandler(menuName: "Numeric",
         contentType: typeof(Vector4),
-        typeDisplayName: "VectorFour",
-        pathToTemplate: "Editor/Uxml/VarRows/Numeric/VectorFourVariableRow")]
-    public class VectorFourVisualHandler : RowVisualHandler<Vector4>
+        typeDisplayName: "Vector",
+        pathToTemplate: "Editor/Uxml/VarRows/Numeric/VectorVariableRow")]
+    public class VectorRowVisualHandler : RowVisualHandler<Vector4>
     {
+        protected override void BuildValueEditor(VisualElement valueField)
+        {
+            _vectorField = new VectorField();
+            _vectorField.AddToClassList("vectorVarField");
+            valueField.Add(_vectorField);
+
+            _vectorField.RegisterValueChangedCallback(evt => ReportValueEdited(evt.newValue));
+            _vectorField.UserChangedDimension += dimension =>
+                ReportPropertyEdited("Vector Dimension", edited =>
+                {
+                    if (edited is VectorMuscariable vectorVar)
+                    {
+                        vectorVar.Dimension = dimension;
+                    }
+                });
+        }
+
+        protected override void BindValue(IVariable variable)
+        {
+            Vector4 value = variable.BoxedValue is Vector4 vector ? vector : default;
+
+            // The field's dimension is view state that outlives a bind (rows are pooled), so it
+            // has to be set every time. Variables saved before VectorMuscariable existed don't
+            // store one, so for those we show the fewest components that fit the value.
+            _vectorField.Dimension = variable is VectorMuscariable vectorVar ?
+                vectorVar.Dimension :
+                VectorMuscariable.DimensionNeededFor(value);
+
+            _vectorField.SetValueWithoutNotify(value);
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _vectorField = null;
+        }
+
+        private VectorField _vectorField;
     }
 
     /// <summary>

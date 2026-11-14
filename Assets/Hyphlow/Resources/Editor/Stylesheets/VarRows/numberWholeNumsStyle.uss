@@ -1,0 +1,84 @@
+/* Two-row layout for NumericMuscariable: identity row on top, value + toggle below. */
+
+#VarRowRoot
+{
+	flex-grow: 1;
+	height: auto;
+	min-height: 63px; /* Two normal rows plus the gap between them */
+	flex-direction: column;
+}
+
+#TopRow
+{
+	flex-direction: row;
+	flex-grow: 0;
+	flex-shrink: 0;
+	height: var(--normal-row-height);
+	margin: var(--slight-bottom-margin-only);
+}
+
+#SpaceFiller
+{
+	flex-grow: 1; /* Pushes Scope and RemoveButton to the right edge */
+}
+
+#BottomRow
+{
+	flex-direction: row;
+	flex-grow: 0;
+	flex-shrink: 0;
+	align-items: center;
+	height: var(--normal-row-height);
+}
+
+#BottomRow > #ValueFieldHolder
+{
+	/* TypeLabel (75px) + KeyInput's left margin (1px) + KeyInput (130px), so that the right
+	   edge lines up with the key field's. Update this if those widths change. */
+	width: 206px;
+	flex-grow: 0;
+	flex-shrink: 0;
+	height: 100%;
+	margin: 0px 8px 0px 0px;
+}
+
+.varRowTypeLabel
+{
+	background-color: #005A9C;
+}
+
+.wholeNumsToggle
+{
+	-unity-font-definition: var(--main-font);
+	color: var(--dark-mode-text-color);
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	align-items: center;
+	flex-grow: 1;
+	justify-content: flex-end; /* Label and checkbox hug the row's right edge */
+}
+
+.wholeNumsToggle > Label
+{
+	-unity-font-definition: var(--main-font);
+	color: var(--dark-mode-text-color);
+	min-width: 0px;
+	width: auto;
+	margin: 0px 6px 0px 0px;
+	padding: 0px;
+	font-size: 14px;
+	-unity-text-align: middle-left;
+	flex-grow: 0;
+}
+
+.wholeNumsToggle > VisualElement
+{
+	flex-grow: 0;
+	margin: 0px;
+}
+
+.wholeNumsToggle #unity-checkmark
+{
+	background-color: rgb(26, 26, 26);
+}

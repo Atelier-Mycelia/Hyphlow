@@ -349,6 +349,16 @@ namespace AtMycelia.Hyphlow.EditorExt
             }
         }
 
+        public virtual void PropertyEdited(IVariable variable, string description, Action<IVariable> applyChange)
+        {
+            if (!ReadyToEdit(variable))
+            {
+                return;
+            }
+
+            RecordAndApplyChange(variable, description, applyChange);
+        }
+
         protected virtual bool ReadyToEdit(IVariable variable)
         {
             if (_isDisposed || variable == null)

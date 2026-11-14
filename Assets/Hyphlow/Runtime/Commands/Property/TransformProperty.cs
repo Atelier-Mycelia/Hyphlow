@@ -58,9 +58,7 @@ namespace AtMycelia.Hyphlow
 
 		public override void OnEnter()
 		{
-			var iov = _inOutVar.Variable as IVariable<Vector3>;
 			var iot = _inOutVar.Variable as IVariable<Transform>;
-			var ioi = _inOutVar.Variable as IVariable<int>;
 			var iob = _inOutVar.Variable as IVariable<bool>;
 
 			var target = _transformData.Value;
@@ -71,28 +69,28 @@ namespace AtMycelia.Hyphlow
 					switch (_property)
 					{
 						case Property.Position:
-							iov.Value = target.position;
+							_inOutVar.SetValue(target.position);
 							break;
 						case Property.LocalPosition:
-							iov.Value = target.localPosition;
+							_inOutVar.SetValue(target.localPosition);
 							break;
 						case Property.EulerAngles:
-							iov.Value = target.eulerAngles;
+							_inOutVar.SetValue(target.eulerAngles);
 							break;
 						case Property.LocalEulerAngles:
-							iov.Value = target.localEulerAngles;
+							_inOutVar.SetValue(target.localEulerAngles);
 							break;
 						case Property.Right:
-							iov.Value = target.right;
+							_inOutVar.SetValue(target.right);
 							break;
 						case Property.Up:
-							iov.Value = target.up;
+							_inOutVar.SetValue(target.up);
 							break;
 						case Property.Forward:
-							iov.Value = target.forward;
+							_inOutVar.SetValue(target.forward);
 							break;
 						case Property.LocalScale:
-							iov.Value = target.localScale;
+							_inOutVar.SetValue(target.localScale);
 							break;
 						case Property.Parent:
 							iot.Value = target.parent;
@@ -101,19 +99,19 @@ namespace AtMycelia.Hyphlow
 							iot.Value = target.root;
 							break;
 						case Property.ChildCount:
-							ioi.Value = target.childCount;
+							_inOutVar.SetValue(target.childCount);
 							break;
 						case Property.LossyScale:
-							iov.Value = target.lossyScale;
+							_inOutVar.SetValue(target.lossyScale);
 							break;
 						case Property.HasChanged:
 							iob.Value = target.hasChanged;
 							break;
 						case Property.HierarchyCapacity:
-							ioi.Value = target.hierarchyCapacity;
+							_inOutVar.SetValue(target.hierarchyCapacity);
 							break;
 						case Property.HierarchyCount:
-							ioi.Value = target.hierarchyCount;
+							_inOutVar.SetValue(target.hierarchyCount);
 							break;
 						default:
 							Debug.Log("Unsupported get or set attempted");
@@ -124,28 +122,28 @@ namespace AtMycelia.Hyphlow
 					switch (_property)
 					{
 						case Property.Position:
-							target.position = iov.Value;
+							target.position = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.LocalPosition:
-							target.localPosition = iov.Value;
+							target.localPosition = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.EulerAngles:
-							target.eulerAngles = iov.Value;
+							target.eulerAngles = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.LocalEulerAngles:
-							target.localEulerAngles = iov.Value;
+							target.localEulerAngles = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.Right:
-							target.right = iov.Value;
+							target.right = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.Up:
-							target.up = iov.Value;
+							target.up = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.Forward:
-							target.forward = iov.Value;
+							target.forward = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.LocalScale:
-							target.localScale = iov.Value;
+							target.localScale = _inOutVar.GetValue<Vector3>();
 							break;
 						case Property.Parent:
 							target.parent = iot.Value;
@@ -154,7 +152,7 @@ namespace AtMycelia.Hyphlow
 							target.hasChanged = iob.Value;
 							break;
 						case Property.HierarchyCapacity:
-							target.hierarchyCapacity = ioi.Value;
+							target.hierarchyCapacity = _inOutVar.GetValue<int>();
 							break;
 						default:
 							Debug.Log("Unsupported get or set attempted");

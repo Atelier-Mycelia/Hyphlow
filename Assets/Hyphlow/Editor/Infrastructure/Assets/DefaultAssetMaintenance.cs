@@ -8,38 +8,10 @@ namespace AtMycelia.Hyphlow.EditorExt
     /// </summary>
     public static class DefaultAssetMaintenance
     {
-        public static void InitializeAfterAssembliesLoaded()
-        {
-            _framesToWait = 15;
-            AssemblyReloadEvents.afterAssemblyReload -= DoTheEnsuringDelayed;
-            AssemblyReloadEvents.afterAssemblyReload += DoTheEnsuringDelayed;
-        }
-
-        private static float _framesToWait = 15;
-
-        public static void InitializeBeforeSceneLoad()
-        {
-            // This is to help make sure that the Singletons aren't lost for too long.
-            DoTheEnsuring();
-        }
-
-        private static void DoTheEnsuringDelayed()
-        {
-            EditorApplication.delayCall += () =>
-            {
-                _framesToWait--;
-                if (_framesToWait <= 0)
-                {
-                    DoTheEnsuring();
-                }
-                else
-                {
-                    EditorApplication.delayCall += DoTheEnsuringDelayed;
-                }
-            };
-        }
-
-        private static void DoTheEnsuring()
+        /// <summary>
+        /// Called by its module in HyphlowMaintenanceModules.cs via the Common lib's MaintenanceRunner; don't call it from lifecycle hooks.
+        /// </summary>
+        public static void Run()
         {
             Debug.Log($"Doing default asset maintenance.");
             EnsureFlowchartGlobalDefaults();

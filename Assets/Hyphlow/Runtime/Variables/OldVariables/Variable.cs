@@ -514,6 +514,11 @@ private int oldItemID = 0;
                     return (T)Enum.ToObject(underlying, src);
                 }
 
+                if (VectorConversion.TryConvert(src, underlying, out object vector))
+                {
+                    return (T)vector;
+                }
+
                 // If source implements IConvertible, use Convert.ChangeType
                 if (src is IConvertible)
                 {

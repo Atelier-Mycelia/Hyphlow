@@ -50,7 +50,9 @@ namespace VScriptingTests.VariableRows
             _uiHost = ScriptableObject.CreateInstance<TestHostWindow>();//
             InitializeVariableUi();
             _uiHost.rootVisualElement.Add(_uiRoot);
-            _uiHost.ShowAuxWindow();
+            // Not ShowAuxWindow: Unity closes aux windows when the editor loses focus, which took
+            // the host (and the panel the rows need) away mid-test whenever the run wasn't in front.
+            _uiHost.ShowUtility();
             _uiHost.rootVisualElement.schedule.Execute(() => { }).ExecuteLater(0);
         }
 
@@ -98,7 +100,10 @@ namespace VScriptingTests.VariableRows
 
             _objectsToDestroy.Clear();
             Undo.ClearAll();
-            _uiHost.Close();
+            if (_uiHost != null)
+            {
+                _uiHost.Close();
+            }
         }
 
         [UnityTest]

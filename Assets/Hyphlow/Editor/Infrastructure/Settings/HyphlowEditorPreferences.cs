@@ -5,7 +5,8 @@ using UnityEngine;
 namespace AtMycelia.Hyphlow.EditorExt
 {
     /// <summary>
-    /// Shows Amanita section in the Edit->Preferences in unity allows you to configure Amanita behaviour
+    /// Shows Hyphlow section in the Edit->Preferences in unity allows you to
+    /// configure Hyphlow behaviour.
     /// 
     /// ref https://docs.unity3d.com/ScriptReference/PreferenceItem.html
     /// </summary>

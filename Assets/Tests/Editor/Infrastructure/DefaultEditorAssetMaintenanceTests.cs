@@ -16,16 +16,6 @@ namespace VScriptingTests.Infrastructure
             return method.Invoke(null, null);
         }
 
-        private static FieldInfo GetFramesToWaitField()
-        {
-            FieldInfo field = typeof(AtMycelia.Hyphlow.EditorExt.DefaultEditorAssetMaintenance).GetField(
-                "_framesToWait",
-                BindingFlags.NonPublic | BindingFlags.Static);
-
-            Assert.IsNotNull(field, "Could not find field '_framesToWait' via reflection.");
-            return field;
-        }
-
         [Test]
         public void EnsureHyphlowEditorResourcesAsset_ReturnsExistingInstance()
         {
@@ -65,19 +55,6 @@ namespace VScriptingTests.Infrastructure
             Assert.AreEqual(AtMycelia.Hyphlow.EditorExt.HyphlowEditorSysAssets.FcwConfig, result,
                 "EnsureFcWindowConfig should return the config referenced by HyphlowEditorSysAssets " +
                 "once ensured.");
-        }
-
-        [Test]
-        public void InitializeAfterAssembliesLoaded_ResetsFramesToWaitCounter()
-        {
-            FieldInfo framesField = GetFramesToWaitField();
-            framesField.SetValue(null, 0);
-            Assert.AreEqual(0, (int)framesField.GetValue(null));
-
-            AtMycelia.Hyphlow.EditorExt.DefaultEditorAssetMaintenance.InitializeAfterAssembliesLoaded();
-
-            Assert.AreEqual(10, (int)framesField.GetValue(null),
-                "InitializeAfterAssembliesLoaded should reset the frame-wait counter back to its default.");
         }
 
         [Test]

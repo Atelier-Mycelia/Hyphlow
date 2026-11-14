@@ -80,9 +80,26 @@ namespace AtMycelia.Hyphlow
     }
 
     /// <summary>
-    /// Container for a double variable reference or constant value.
+    /// Container for a number variable reference or constant value. Takes over from
+    /// <see cref="DoubleData"/> as the registered data type for doubles, and works with any
+    /// numeric variable (the same way FloatData and IntegerData do), NumberMuscariable
+    /// included.
     /// </summary>
     [VariableData(typeof(double), typeof(IVariable<double>))]
+    [System.Serializable]
+    public class NumberData : VariableData<double>
+    {
+        public NumberData() : base(default) { }
+        public NumberData(double startVal) : base(startVal) { }
+    }
+
+    /// <summary>
+    /// Container for a double variable reference or constant value. Superseded by
+    /// <see cref="NumberData"/>, so it no longer claims any variable types in the registry
+    /// (the registry keeps one data type per variable type). It stays so that data saved
+    /// as one still deserializes.
+    /// </summary>
+    [VariableData(typeof(double))]
     [System.Serializable]
     public class DoubleData : VariableData<double>
     {
@@ -137,6 +154,20 @@ namespace AtMycelia.Hyphlow
     }
 
     /// <summary>
+    /// Container for a vector variable reference or constant value, for use with
+    /// VectorMuscariable. Always holds a Vector4. Vector2s and Vector3s that get assigned
+    /// are padded with zeroes, and any vector variable can be referenced (see
+    /// <see cref="VectorConversion"/>).
+    /// </summary>
+    [System.Serializable]
+    [VariableData(typeof(Vector4), typeof(IVariable<Vector4>))]
+    public class VectorData : VariableData<Vector4>
+    {
+        public VectorData() : base(default) { }
+        public VectorData(Vector4 startVal) : base(startVal) { }
+    }
+
+    /// <summary>
     /// Container for a Vector2 variable reference or constant value.
     /// </summary>
     [System.Serializable]
@@ -164,11 +195,6 @@ namespace AtMycelia.Hyphlow
         {
             get => vector2Val;
             set => vector2Val = value;
-        }
-
-        protected override bool CanHoldAsValue(object obj)
-        {
-            return obj is Vector2 || obj is Vector3;
         }
     }
 
@@ -201,12 +227,6 @@ namespace AtMycelia.Hyphlow
             get => vector3Val;
             set => vector3Val = value;
         }
-
-        protected override bool CanHoldAsValue(object obj)
-        {
-            return obj is Vector2 || obj is Vector3;
-        }
-
 
     }
 }

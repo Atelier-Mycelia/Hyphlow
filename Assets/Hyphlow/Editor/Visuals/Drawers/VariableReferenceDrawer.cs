@@ -45,7 +45,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             EditorGUI.BeginProperty(position, label, varRefProp);
 
-            varRefProp.serializedObject.Update();
+            // Deliberately no serializedObject.Update() here. This drawer shares its
+            // SerializedObject with every other field drawn by the same Editor, which applies
+            // it once at the end. Update() re-reads the target and discards edits that other
+            // fields made earlier in the same pass but that aren't applied yet (for example,
+            // an object field assigned just above this one would snap back).
 
             UnityObj targetObject = varRefProp.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);

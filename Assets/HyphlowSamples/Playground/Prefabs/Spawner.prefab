@@ -18,10 +18,6 @@ GameObject:
   - component: {fileID: 114197543733484370}
   - component: {fileID: 114186534075702092}
   - component: {fileID: 114845356377412462}
-  - component: {fileID: 114205508981943572}
-  - component: {fileID: 114451434740700826}
-  - component: {fileID: 114158483713016934}
-  - component: {fileID: 114708947738974764}
   - component: {fileID: 114536672983551206}
   - component: {fileID: 5482640307690825514}
   - component: {fileID: 3169451157478701340}
@@ -99,7 +95,7 @@ MonoBehaviour:
   _loadPriority: 0
   _alwaysKeepGuid: 1
   nextValidVarID: 11
-  _uniqueId: 
+  _uniqueId: 8962c00a-1245-4a84-b605-998376b3e210
   references:
     version: 2
     RefIds: []
@@ -378,78 +374,6 @@ MonoBehaviour:
     floatRef: {fileID: 0}
     floatVal: 0
   _oldVariable: {fileID: 0}
---- !u!114 &114205508981943572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1643320542487702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: x
-  _itemId: 0
-  oldItemID: 0
-  _owner: {fileID: 114094183539183980}
-  _value: 0
---- !u!114 &114451434740700826
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1643320542487702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 705fa1ac97df74e3a84ff952ffd923f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: y
-  _itemId: 0
-  oldItemID: 0
-  _owner: {fileID: 114094183539183980}
-  _value: 0
---- !u!114 &114158483713016934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1643320542487702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: spawnPos
-  _itemId: 0
-  oldItemID: 0
-  _owner: {fileID: 114094183539183980}
-  _value: {x: 0, y: 0, z: 0}
---- !u!114 &114708947738974764
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1643320542487702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d769ea3513ad47aabf805db5252341d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scope: 0
-  _key: SpawnOffset
-  _itemId: 0
-  oldItemID: 0
-  _owner: {fileID: 114094183539183980}
-  _value: {x: 0, y: 6, z: 0}
 --- !u!114 &114536672983551206
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -512,25 +436,25 @@ MonoBehaviour:
   _unityObjOwner: {fileID: 114094183539183980}
   _variableManager:
     _muscariables:
-    - rid: 3688519964252438529
-    - rid: 3688519964252438530
-    - rid: 3688519964252438531
-    - rid: 3688519964252438532
-    - rid: 3688519964252438533
-    - rid: 3688519964252438534
-    - rid: 3688519964252438535
-    - rid: 3688519964252438536
     - rid: 3688519964252438540
     - rid: 3688519964252438545
+    - rid: 1296380599251239050
+    - rid: 1296380599251239051
+    - rid: 1296380599251239052
+    - rid: 1296380599251239053
+    - rid: 1296380599251239054
+    - rid: 1296380599251239055
+    - rid: 1296380599251239056
+    - rid: 1296380599251239057
     _legacyVariables: []
     _nextValidVarID: 11
-    _isInitted: 0
+    _isInitted: 1
   _cachedFlowchart: {fileID: 114094183539183980}
   references:
     version: 2
     RefIds:
-    - rid: 3688519964252438529
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+    - rid: 1296380599251239050
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: x
@@ -542,8 +466,9 @@ MonoBehaviour:
         _startValue: 0
         _value: 0
         startValue: 0
-    - rid: 3688519964252438530
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239051
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: y
@@ -555,8 +480,9 @@ MonoBehaviour:
         _startValue: 0
         _value: 0
         startValue: 0
-    - rid: 3688519964252438531
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239052
+      type: {class: VectorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: spawnPos
@@ -564,12 +490,13 @@ MonoBehaviour:
         scope: 0
         key: 
         itemID: 0
-        value: {x: 0, y: 0, z: 0}
-        _startValue: {x: 0, y: 0, z: 0}
-        _value: {x: 0, y: 0, z: 0}
-        startValue: {x: 0, y: 0, z: 0}
-    - rid: 3688519964252438532
-      type: {class: VectorThreeMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        value: {x: 0, y: 0, z: 0, w: 0}
+        _startValue: {x: 0, y: 0, z: 0, w: 0}
+        _value: {x: 0, y: 0, z: 0, w: 0}
+        startValue: {x: 0, y: 0, z: 0, w: 0}
+        _dimension: 1
+    - rid: 1296380599251239053
+      type: {class: VectorMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: spawnOffset
@@ -577,12 +504,13 @@ MonoBehaviour:
         scope: 0
         key: 
         itemID: 0
-        value: {x: 0, y: 0, z: 0}
-        _startValue: {x: 0, y: 0, z: 0}
-        _value: {x: 0, y: 6, z: 0}
-        startValue: {x: 0, y: 0, z: 0}
-    - rid: 3688519964252438533
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        value: {x: 0, y: 0, z: 0, w: 0}
+        _startValue: {x: 0, y: 0, z: 0, w: 0}
+        _value: {x: 0, y: 6, z: 0, w: 0}
+        startValue: {x: 0, y: 0, z: 0, w: 0}
+        _dimension: 1
+    - rid: 1296380599251239054
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: minX
@@ -594,8 +522,9 @@ MonoBehaviour:
         _startValue: 0
         _value: -6
         startValue: 0
-    - rid: 3688519964252438534
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239055
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: maxX
@@ -607,8 +536,9 @@ MonoBehaviour:
         _startValue: 0
         _value: 6
         startValue: 0
-    - rid: 3688519964252438535
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239056
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: minY
@@ -620,8 +550,9 @@ MonoBehaviour:
         _startValue: 0
         _value: 0
         startValue: 0
-    - rid: 3688519964252438536
-      type: {class: FloatMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+        _wholeNumsOnly: 0
+    - rid: 1296380599251239057
+      type: {class: NumberMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _scope: 0
         _key: maxY
@@ -633,6 +564,7 @@ MonoBehaviour:
         _startValue: 0
         _value: 2
         startValue: 0
+        _wholeNumsOnly: 0
     - rid: 3688519964252438540
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
@@ -745,7 +677,7 @@ MonoBehaviour:
           _legacyOwningFc: {fileID: 0}
           _legacyOwningVsa: {fileID: 0}
         _data:
-          rid: 3688519988602209251
+          rid: 588464204092014989
       variable: {fileID: 0}
   _compareOperator: 0
   _anyVar:
@@ -903,7 +835,7 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 3688519988602209251
+    - rid: 588464204092014989
       type: {class: BooleanData, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
       data:
         _backingVarRef:
@@ -941,9 +873,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _blockManager:
-    _legacyBlocks: []
+    _legacyBlocks:
+    - {fileID: 114158188752211888}
     _nextValidBlockId: 1
-    _blockOwner: {fileID: 0}
+    _blockOwner: {fileID: 114094183539183980}
   _cachedFlowchart: {fileID: 0}
 --- !u!114 &4775604374903582685
 MonoBehaviour:
@@ -957,10 +890,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efcfad39446ab494eaaa242a86e90bc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _owner: {fileID: 0}
+  _owner: {fileID: 114094183539183980}
   _manager:
-    _coroutineRunner: {fileID: 0}
-  _unityObjBlockManager: {fileID: 0}
+    _coroutineRunner: {fileID: 114094183539183980}
+  _unityObjBlockManager: {fileID: 4280202623686693629}
   _nonUnityObjBlockManager:
     rid: -2
   references:

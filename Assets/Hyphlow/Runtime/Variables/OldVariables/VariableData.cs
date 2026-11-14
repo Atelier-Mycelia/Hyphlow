@@ -321,6 +321,11 @@ namespace AtMycelia.Hyphlow
                 return (TValue)enumValue;
             }
 
+            if (VectorConversion.TryConvert(value, underlying, out object vector))
+            {
+                return (TValue)vector;
+            }
+
             if (value is IConvertible)
             {
                 object changedValue = Convert.ChangeType(value, underlying);

@@ -293,6 +293,11 @@ namespace AtMycelia.Hyphlow
                 return (T)enumValue;
             }
 
+            if (VectorConversion.TryConvert(value, underlying, out object vector))
+            {
+                return (T)vector;
+            }
+
             if (value is IConvertible)
             {
                 object changedValue = Convert.ChangeType(value, underlying);
@@ -374,6 +379,11 @@ namespace AtMycelia.Hyphlow
         }
 
         public override Type ContentType { get { return typeof(T); } }
+
+        /// <summary>
+        /// What the variable resets to.
+        /// </summary>
+        public virtual T StartValue => _startValue;
 
         public virtual T Value
         {

@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <!-- Styled by HyphrationSubwindowStyle, which the subwindow it's cloned into already has -->
+    <ui:VisualElement name="MigrationItemRoot" class="hy-migration-item">
+        <ui:Label name="KeyLabel" class="hy-migration-item__key" />
+        <ui:Label name="TypesLabel" class="hy-migration-item__types" />
+    </ui:VisualElement>
+</ui:UXML>
