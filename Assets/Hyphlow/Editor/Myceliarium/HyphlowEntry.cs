@@ -21,6 +21,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 new FcGlobalDefaultsEntry(),
                 new FlowchartEditorQolEntry(),
+                new EditorSysAssetsEntry(),
                 new VariableSetsEntry(),
                 new HyphrationEntry()
             };
