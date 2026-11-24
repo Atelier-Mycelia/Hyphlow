@@ -287,13 +287,41 @@ namespace AtMycelia.Hyphlow
         [SerializeField]
         protected bool _wholeNumsOnly;
 
+        /// <summary>
+        /// Default tolerance used when comparing floating-point values.
+        /// </summary>
+        public const double ComparisonTolerance = 1e-9;
+
+        /// <summary>
+        /// Returns true if the supplied values are close enough to be considered equal.
+        /// Useful for visual scripting comparisons involving floating-point math.
+        /// </summary>
+        public static bool ApproximatelyEqual(double first, double second)
+        {
+            if (double.IsNaN(first) || double.IsNaN(second))
+            {
+                Debug.LogWarning($"Either the first or second double being compared is NaN");
+                return false;
+            }
+
+            double absFirst = Math.Abs(first);
+            double absSecond = Math.Abs(second);
+
+            double bigger = Math.Max(absFirst, absSecond);
+
+            double tolerance = ComparisonTolerance * Math.Max(1.0, bigger);
+            bool result = Math.Abs(first - second) <= tolerance;
+
+            return result;
+        }
+
         static NumberMuscariable()
         {
-            _Add = (a, b) => a + b;
-            _Sub = (a, b) => a - b;
-            _Mul = (a, b) => a * b;
-            _Div = (a, b) => a / b;
-            _Neg = a => -a;
+            _Add = (first, second) => first + second;
+            _Sub = (first, second) => first - second;
+            _Mul = (first, second) => first * second;
+            _Div = (first, second) => first / second;
+            _Neg = first => -first;
         }
 
         public NumberMuscariable() : base() { }
@@ -309,7 +337,7 @@ namespace AtMycelia.Hyphlow
                 }
 
                 _wholeNumsOnly = value;
-                // Re-run the value through the setter so turning this on drops the current fraction
+                // Re-run the value through the setter so turning this on drops the current fraction 
                 Value = _value;
             }
         }
@@ -330,7 +358,8 @@ namespace AtMycelia.Hyphlow
                 return filtered;
             }
 
-            return Filter(Convert.ToDouble(filtered));
+            double converted = Convert.ToDouble(filtered);
+            return Filter(converted);
         }
 
         public override void OnReset()
@@ -359,6 +388,26 @@ namespace AtMycelia.Hyphlow
 
         private double Filter(double toFilter)
         {
+            // Prevent invalid floating-point values from propagating
+            // through visual-script calculations.
+            string logMessage = "", cType = ContentType.Name;
+            if (double.IsNaN(toFilter))
+            {
+                logMessage = $"NaN was assigned to {cType} variable {Key}; using 0 instead.";
+                Debug.LogWarning(logMessage);
+                return 0.0;
+            }
+
+            if (double.IsInfinity(toFilter))
+            {
+                logMessage = $"{toFilter} was assigned to {cType} variable {Key}; clamping it " +
+                "to the nearest finite value.";
+                Debug.LogWarning(logMessage);
+                return toFilter > 0
+                    ? double.MaxValue
+                    : double.MinValue;
+            }
+
             if (!_wholeNumsOnly)
             {
                 return toFilter;
@@ -366,7 +415,10 @@ namespace AtMycelia.Hyphlow
 
             double nearest = Math.Round(toFilter);
             double tolerance = WholeNumTolerance * Math.Max(1.0, Math.Abs(toFilter));
-            return Math.Abs(toFilter - nearest) <= tolerance ? nearest : Math.Truncate(toFilter);
+            double result = Math.Abs(toFilter - nearest) <= tolerance ? 
+            nearest : 
+            Math.Truncate(toFilter);
+            return result;
         }
 
         public static NumberMuscariable operator +(NumberMuscariable a, NumberMuscariable b)
@@ -381,17 +433,17 @@ namespace AtMycelia.Hyphlow
         public static NumberMuscariable operator /(NumberMuscariable a, NumberMuscariable b)
             => new NumberMuscariable { WholeNumsOnly = a.WholeNumsOnly, Value = a.Value / b.Value };
 
-        public static bool operator ==(NumberMuscariable a, NumberMuscariable b)
+        public static bool operator ==(NumberMuscariable first, NumberMuscariable second)
         {
-            if (ReferenceEquals(a, b)) return true;
-            if (ReferenceEquals(a, null) || ReferenceEquals(b, null)) return false;
-            return a.Value == b.Value;
+            if (ReferenceEquals(first, second)) return true;
+            if (ReferenceEquals(first, null) || ReferenceEquals(second, null)) return false;
+            return first.Value == second.Value;
         }
 
-        public static bool operator !=(NumberMuscariable a, NumberMuscariable b)
+        public static bool operator !=(NumberMuscariable first, NumberMuscariable second)
         {
-            if (ReferenceEquals(a, b)) return false;
-            if (!ReferenceEquals(a, null) && !ReferenceEquals(b, null)) return a.Value != b.Value;
+            if (ReferenceEquals(first, second)) return false;
+            if (!ReferenceEquals(first, null) && !ReferenceEquals(second, null)) return first.Value != second.Value;
             return true;
         }
 
