@@ -87,7 +87,7 @@
             </ui:VisualElement>
             <ui:VisualElement class="hy-footer">
                 <ui:Label name="SelectionSummaryLabel" class="hy-footer__summary" />
-                <ui:Button name="CancelButton" text="Back" class="hy-button" />
+                <ui:Button name="BackButton" text="Back" class="hy-button" />
                 <ui:Button name="RunButton" text="Migrate" class="hy-button hy-button--primary" />
             </ui:VisualElement>
         </ui:VisualElement>
