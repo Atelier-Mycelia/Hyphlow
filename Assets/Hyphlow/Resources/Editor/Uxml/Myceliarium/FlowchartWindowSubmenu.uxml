@@ -1,0 +1,68 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="../../Stylesheets/Myceliarium/FlowchartDefaultsSubmenuStyle.uss" />
+    <ui:VisualElement name="Root" class="content-container">
+        <ui:HelpBox name="EditWarning" text="These are only meant to be edited in a Hyphlow repo or a fork thereof. Mess with the controls in this entry at your own risk." message-type="Warning" class="help-box edit-warning" />
+        <ui:VisualElement name="Controls">
+            <ui:VisualElement name="WindowSection" class="section">
+                <ui:Label text="Window" class="section-header" />
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Title" class="field-label" />
+                    <ui:TextField name="WindowTitle" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Minimum Size" class="field-label" />
+                    <ui:Vector2Field name="WindowMinSize" class="field-input" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="ZoomSection" class="section">
+                <ui:Label text="Zoom" class="section-header" />
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Minimum Zoom" class="field-label" />
+                    <ui:FloatField name="MinZoom" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Maximum Zoom" class="field-label" />
+                    <ui:FloatField name="MaxZoom" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Zoom Step" class="field-label" />
+                    <ui:FloatField name="ZoomStep" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Default Zoom" class="field-label" />
+                    <ui:FloatField name="DefaultZoom" class="field-input" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="GridSection" class="section">
+                <ui:Label text="Grid" class="section-header" />
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Snap Blocks To Grid" class="field-label" />
+                    <ui:Toggle name="SnapBlocksToGrid" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Line Spacing" class="field-label" />
+                    <ui:FloatField name="GridLineSpacing" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Line Color" class="field-label" />
+                    <uie:ColorField name="GridLineColor" class="field-input" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="AssetsSection" class="section">
+                <ui:Label text="Block Visuals" class="section-header" />
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Block UXML" class="field-label" />
+                    <uie:ObjectField name="BlockUxml" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Block Style Sheet" class="field-label" />
+                    <uie:ObjectField name="BlockStyleSheet" class="field-input" />
+                </ui:VisualElement>
+                <ui:VisualElement class="field-row">
+                    <ui:Label text="Selected Block Style Sheet" class="field-label" />
+                    <uie:ObjectField name="SelectedBlockStyleSheet" class="field-input" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
