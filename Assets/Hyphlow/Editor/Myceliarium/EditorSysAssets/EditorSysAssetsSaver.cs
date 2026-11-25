@@ -2,8 +2,6 @@ using AtMycelia.Hyphlow.EditorExt;
 using AtMycelia.Myceliarium;
 using System.Collections;
 using UnityEditor;
-using UnityEditor.PackageManager;
-using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace AtMycelia.Hyphlow.MyceliariumInt
 {
@@ -25,7 +23,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             }
 
             string path = AssetDatabase.GetAssetPath(real);
-            if (IsInReadOnlyPackage(path))
+            if (HyphlowRepoGuard.IsInReadOnlyPackage(path))
             {
                 // Unity would refuse the write anyway, only with a less helpful message
                 EditorUtility.DisplayDialog("Can't Save Editor Icons",
@@ -39,19 +37,6 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             EditorUtility.CopySerialized(entry.WorkingState, real);
             EditorUtility.SetDirty(real); // So Unity writes it to disk
             AssetDatabase.SaveAssetIfDirty(real);
-        }
-
-        private static bool IsInReadOnlyPackage(string assetPath)
-        {
-            if (!assetPath.StartsWith("Packages/"))
-            {
-                return false;
-            }
-
-            PackageInfo package = PackageInfo.FindForAssetPath(assetPath);
-            bool editable = package != null &&
-                (package.source == PackageSource.Embedded || package.source == PackageSource.Local);
-            return !editable;
         }
     }
 }

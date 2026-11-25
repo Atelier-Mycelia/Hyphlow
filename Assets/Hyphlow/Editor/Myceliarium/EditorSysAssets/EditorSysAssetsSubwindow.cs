@@ -54,18 +54,9 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             BuildIconRows();
 
             // Disabling the containers also disables the squares and field inside them
-            bool editable = IsInHyphlowRepo();
+            bool editable = HyphlowRepoGuard.IsHyphlowRepo();
             _iconsContainer.SetEnabled(editable);
             _fcwConfigField.SetEnabled(editable);
-        }
-
-        /// <summary>
-        /// These assets are for Hyphlow's developers; in a project that merely uses the
-        /// package, an Assets/Hyphlow folder is what tells a repo or fork apart.
-        /// </summary>
-        private static bool IsInHyphlowRepo()
-        {
-            return AssetDatabase.IsValidFolder("Assets/Hyphlow");
         }
 
         private void BuildIconRows()
