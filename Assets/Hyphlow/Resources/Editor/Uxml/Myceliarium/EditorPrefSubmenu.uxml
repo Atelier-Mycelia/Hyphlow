@@ -1,0 +1,43 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/Myceliarium/EditorPrefSubmenuStyle.uss?fileID=7433441132597879392&amp;guid=5a4f5a90f401c9841b0557dd6781a4ff&amp;type=3#EditorPrefSubmenuStyle" />
+    <ui:VisualElement name="Root" class="content-container">
+        <ui:HelpBox name="ScopeNote" text="These preferences are saved to this machine&apos;s EditorPrefs, so they apply to every Unity project you open here and aren&apos;t shared with your team." message-type="Info" class="help-box" />
+        <ui:VisualElement name="InterfaceSection" class="section">
+            <ui:Label text="Interface Flags" name="InterfaceSecHeader" class="section-header" />
+            <ui:VisualElement name="HideMushroomHolder" class="field-row">
+                <ui:Label text="Hide Mushroom Flowchart Icon" name="Label" class="field-label" />
+                <ui:Toggle name="HideMushroom" tooltip="Hides the mushroom icon that flowcharts show in the Hierarchy." class="field-input" />
+            </ui:VisualElement>
+            <ui:VisualElement name="UseLegacyMenuHolder" class="field-row">
+                <ui:Label text="Legacy Menus" class="field-label" />
+                <ui:Toggle name="UseLegacyMenus" tooltip="Force Legacy menus for Event, Add Variable and Add Command menus." class="field-input" />
+            </ui:VisualElement>
+            <ui:VisualElement name="HideHelpBoxHolder" class="field-row">
+                <ui:Label text="Hide Help Boxes" class="field-label" />
+                <ui:Toggle name="SuppressHelpBoxes" tooltip="Hides the default help boxes shown in the Block inspector for EventHandlers and Commands." class="field-input" />
+            </ui:VisualElement>
+            <ui:VisualElement name="NavWithArrowsHolder" class="field-row">
+                <ui:Label text="Use Arrows In Command List" class="field-label" />
+                <ui:Toggle name="NavigateWithArrows" tooltip="Allows the use of the Up and Down arrows to move between Commands in the Command list, in the Block inspector." class="field-input" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="FlowchartWindowSection" class="section">
+            <ui:Label text="Flowchart Window" name="Label" class="section-header" />
+            <ui:VisualElement name="GridSnapHolder" class="field-row">
+                <ui:Label text="Grid Snap" class="field-label" />
+                <ui:Toggle name="UseGridSnap" tooltip="Align and snap block positions and widths in the Flowchart Window to the grid." class="field-input" />
+            </ui:VisualElement>
+            <ui:VisualElement name="BlockTintHolder" class="field-row">
+                <ui:Label text="Block Tint" class="field-label" />
+                <uie:ColorField name="FlowchartBlockTint" tooltip="Custom tint used on the Block icons in the Flowchart Window. Default is white." class="field-input" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="BlockInspectorSection" class="section">
+            <ui:Label text="Block Inspector" name="BlockInspectorHeader" class="section-header" />
+            <ui:VisualElement name="CmdListTintHolder" class="field-row">
+                <ui:Label text="Command List Tint" class="field-label" />
+                <uie:ColorField name="CommandListTint" tooltip="Custom tint used on the Command List in the Block inspector. Default is white." class="field-input" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
