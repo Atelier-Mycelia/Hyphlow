@@ -111,7 +111,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
         private Button _setsAllButton;
         private Button _setsNoneButton;
         private UitkLabel _selectionSummaryLabel;
-        private Button _cancelButton;
+        private Button _backButton;
         private Button _runButton;
 
         protected override void RegisterVisualElements()
@@ -143,7 +143,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             _setsAllButton = Root.Q<Button>("SetsAllButton");
             _setsNoneButton = Root.Q<Button>("SetsNoneButton");
             _selectionSummaryLabel = Root.Q<UitkLabel>("SelectionSummaryLabel");
-            _cancelButton = Root.Q<Button>("CancelButton");
+            _backButton = Root.Q<Button>("BackButton");
             _runButton = Root.Q<Button>("RunButton");
 
             _targetItemTemplate = Resources.Load<VisualTreeAsset>(TargetItemPath);
@@ -526,7 +526,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 _rescanButton.clicked += RaiseRescanRequested;
                 _openPickerButton.clicked += ShowSelection;
-                _cancelButton.clicked += ShowOverview;
+                _backButton.clicked += ShowOverview;
                 _runButton.clicked += RaiseMigrateRequested;
                 _clearLogButton.clicked += ClearLog;
                 _scenesAllButton.clicked += SelectAllScenes;
@@ -540,7 +540,7 @@ namespace AtMycelia.Hyphlow.MyceliariumInt
             {
                 _rescanButton.clicked -= RaiseRescanRequested;
                 _openPickerButton.clicked -= ShowSelection;
-                _cancelButton.clicked -= ShowOverview;
+                _backButton.clicked -= ShowOverview;
                 _runButton.clicked -= RaiseMigrateRequested;
                 _clearLogButton.clicked -= ClearLog;
                 _scenesAllButton.clicked -= SelectAllScenes;

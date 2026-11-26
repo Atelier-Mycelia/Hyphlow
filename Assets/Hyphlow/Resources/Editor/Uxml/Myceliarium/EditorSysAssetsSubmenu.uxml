@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="../../Stylesheets/Myceliarium/FlowchartDefaultsSubmenuStyle.uss" />
+    <Style src="../../Stylesheets/Myceliarium/EditorSysAssetsSubmenuStyle.uss" />
+    <ui:VisualElement name="Root" class="content-container">
+        <ui:HelpBox name="EditWarning" text="These are only meant to be edited in a Hyphlow repo or a fork thereof. Mess with the controls in this entry at your own risk." message-type="Warning" class="help-box edit-warning" />
+        <ui:VisualElement name="IconsSection" class="section">
+            <ui:Label text="Editor Icons" class="section-header" />
+            <ui:Label text="Click a square to pick a texture; right-click it to clear. The Pro skin icon is used in the dark editor theme, falling back to the Free one when empty." class="icons-hint" />
+            <ui:VisualElement name="IconsContainer" />
+        </ui:VisualElement>
+        <ui:VisualElement name="ConfigSection" class="section">
+            <ui:Label text="Flowchart Window" class="section-header" />
+            <ui:VisualElement name="FcwConfigHolder" class="field-row">
+                <ui:Label text="Window Config" class="field-label" />
+                <uie:ObjectField name="FcwConfig" class="field-input" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
