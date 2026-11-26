@@ -28,7 +28,7 @@ MonoBehaviour:
     _free: {fileID: 2800000, guid: f20b67a04f0b875489e3aee79b434135, type: 3}
     _pro: {fileID: 2800000, guid: 219d91bf7500ee244a5b0eada5f47ccf, type: 3}
   _mushroomIcon:
-    _free: {fileID: 2800000, guid: e2214a5eec201ec4db941159b08ec4bf, type: 3}
+    _free: {fileID: 2800000, guid: d99e5954653daba4e9d7bd5b70b6b81f, type: 3}
     _pro: {fileID: 2800000, guid: d99e5954653daba4e9d7bd5b70b6b81f, type: 3}
   _up:
     _free: {fileID: 2800000, guid: d86d71581f669b444b72ed6895a3bc58, type: 3}
