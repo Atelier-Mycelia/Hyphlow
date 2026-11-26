@@ -423,17 +423,15 @@ namespace AtMycelia.Hyphlow
 			{
 				return false;
 			}
-			bool anyRemoved = false;
 			for (int i = 0; i < _legacyBlocks.Count; i++)
 			{
 				Block block = _legacyBlocks[i];
 				if (block != null && block.Contains(cmd))
 				{
-					anyRemoved = true;
-					break;
+					return block.Remove(cmd, triggerSignals);
 				}
 			}
-			return anyRemoved;
+			return false;
 		}
 
 		private bool RemoveFromCaches(IBlock toRemove, bool triggerSignals)
@@ -541,7 +539,7 @@ namespace AtMycelia.Hyphlow
 				Block block = _legacyBlocks[i];
 				if (block != null)
 				{
-					bool removedFromBlock = block.RemoveCommandWithId(id);
+					bool removedFromBlock = block.RemoveCommandWithId(id, triggerSignals);
 					if (removedFromBlock)
 					{
 						return true;

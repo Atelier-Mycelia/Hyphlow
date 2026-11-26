@@ -570,11 +570,12 @@ namespace AtMycelia.Hyphlow
         public override string ToString()
         {
             string result = $"{GetType().Name} Command (ItemId: {ItemId})";
-            if (ParentBlock != null)
+            if (ParentBlock == null)
             {
-                result += $" on Block {ParentBlock.BlockName}";
+                return result;
             }
 
+            result += $" on Block {ParentBlock.BlockName}";
             if (ParentBlock.ParentFlowchart != null)
             {
                 result += $", Flowchart: {ParentBlock.ParentFlowchart.name}";

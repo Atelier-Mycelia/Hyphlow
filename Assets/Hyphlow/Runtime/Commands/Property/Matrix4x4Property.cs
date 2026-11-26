@@ -41,12 +41,12 @@ namespace AtMycelia.Hyphlow
 
 
 		[SerializeField]
-[FormerlySerializedAs("property")]
-		protected Property property;
+		[FormerlySerializedAs("property")]
+		protected Property _property;
 
 		[SerializeField]
-[FormerlySerializedAs("matrix4x4Data")]
-		protected Matrix4x4Data matrix4x4Data;
+		[FormerlySerializedAs("matrix4x4Data")]
+		protected Matrix4x4Data _matrix4x4Data;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
@@ -54,24 +54,24 @@ namespace AtMycelia.Hyphlow
 						  typeof(Vector3Variable),
 						  typeof(BooleanVariable),
 						  typeof(Matrix4x4Variable))]
-[FormerlySerializedAs("inOutVar")]
-		protected Variable inOutVar;
+		[FormerlySerializedAs("inOutVar")]
+		protected Variable _inOutVar;
 
 		public override void OnEnter()
 		{
-			var iof = inOutVar as FloatVariable;
-			var ioq = inOutVar as QuaternionVariable;
-			var iov = inOutVar as Vector3Variable;
-			var iob = inOutVar as BooleanVariable;
-			var iom4 = inOutVar as Matrix4x4Variable;
+			var iof = _inOutVar as FloatVariable;
+			var ioq = _inOutVar as QuaternionVariable;
+			var iov = _inOutVar as Vector3Variable;
+			var iob = _inOutVar as BooleanVariable;
+			var iom4 = _inOutVar as Matrix4x4Variable;
 
 
-			var target = matrix4x4Data.Value;
+			var target = _matrix4x4Data.Value;
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
-					switch (property)
+					switch (_property)
 					{
 						case Property.M00:
 							iof.Value = target.m00;
@@ -147,7 +147,7 @@ namespace AtMycelia.Hyphlow
 					break;
 
 				case GetSet.Set:
-					switch (property)
+					switch (_property)
 					{
 						case Property.M00:
 							target.m00 = iof.Value;
@@ -208,19 +208,19 @@ namespace AtMycelia.Hyphlow
 					break;
 			}
 
-			matrix4x4Data.Value = target;
+			_matrix4x4Data.Value = target;
 
 			Continue();
 		}
 
 		public override string GetSummary()
 		{
-			if (inOutVar == null)
+			if (_inOutVar == null)
 			{
 				return "Error: no variable set to push or pull data to or from";
 			}
 
-			return getOrSet.ToString() + " " + property.ToString();
+			return getOrSet.ToString() + " " + _property.ToString();
 		}
 
 		public override Color GetButtonColor()
@@ -230,7 +230,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-			if (ReferenceEquals(matrix4x4Data.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+			if (ReferenceEquals(_matrix4x4Data.VarRef, variable) || ReferenceEquals(_inOutVar, variable))
 				return true;
 
 			return false;

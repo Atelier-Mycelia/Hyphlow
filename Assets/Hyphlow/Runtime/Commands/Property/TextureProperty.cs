@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
 				 "Texture",
 				 "Get or Set a property of a Texture component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class TextureProperty : BaseVariableProperty
 	{
 		//generated property
@@ -30,35 +30,35 @@ namespace AtMycelia.Hyphlow
 
 		
 		[SerializeField]
-[FormerlySerializedAs("property")]
-		protected Property property;
+		[FormerlySerializedAs("property")]
+		protected Property _property;
 		
 		[SerializeField]
 		[VariableProperty(typeof(TextureVariable))]
-[FormerlySerializedAs("textureVar")]
-		protected TextureVariable textureVar;
+		[FormerlySerializedAs("textureVar")]
+		protected TextureVariable _textureVar;
 
 		[SerializeField]
 		[VariableProperty(typeof(IntegerVariable),
 						  typeof(BooleanVariable),
 						  typeof(FloatVariable),
 						  typeof(Vector2Variable))]
-[FormerlySerializedAs("inOutVar")]
-		protected Variable inOutVar;
+		[FormerlySerializedAs("inOutVar")]
+		protected Variable _inOutVar;
 
 		public override void OnEnter()
 		{
-			var ioi = inOutVar as IntegerVariable;
-			var iob = inOutVar as BooleanVariable;
-			var iof = inOutVar as FloatVariable;
-			var iov2 = inOutVar as Vector2Variable;
+			var ioi = _inOutVar as IntegerVariable;
+			var iob = _inOutVar as BooleanVariable;
+			var iof = _inOutVar as FloatVariable;
+			var iov2 = _inOutVar as Vector2Variable;
 
-			var target = textureVar.Value;
+			var target = _textureVar.Value;
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
-					switch (property)
+					switch (_property)
 				{
 						case Property.Width:
 							ioi.Value = target.width;
@@ -88,7 +88,7 @@ namespace AtMycelia.Hyphlow
 
 					break;
 				case GetSet.Set:
-					switch (property)
+					switch (_property)
 					{
 						case Property.Width:
 							target.width = ioi.Value;
@@ -117,16 +117,16 @@ namespace AtMycelia.Hyphlow
 
 		public override string GetSummary()
 		{
-			if (textureVar == null)
+			if (_textureVar == null)
 			{
 				return "Error: no textureVar set";
 			}
-			if (inOutVar == null)
+			if (_inOutVar == null)
 			{
 				return "Error: no variable set to push or pull data to or from";
 			}
 
-			return getOrSet.ToString() + " " + property.ToString();
+			return getOrSet.ToString() + " " + _property.ToString();
 		}
 
 		public override Color GetButtonColor()
@@ -136,7 +136,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-         if (ReferenceEquals(textureVar, variable) || ReferenceEquals(inOutVar, variable))
+         if (ReferenceEquals(_textureVar, variable) || ReferenceEquals(_inOutVar, variable))
 				return true;
 
 			return false;

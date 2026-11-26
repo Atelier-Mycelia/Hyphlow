@@ -236,10 +236,11 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
+            string uid = flowchart.UniqueId;
             lock (_syncLock)
             {
-                lookup[flowchart.UniqueId] = flowchart;
-                _flowchartLookup[flowchart.UniqueId] = flowchart;
+                lookup[uid] = flowchart;
+                RefreshLookupEntry(uid);
             }
         }
 
@@ -250,14 +251,83 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
+            string uid = flowchart.UniqueId;
             lock (_syncLock)
             {
                 //Debug.Log($"Unregistering Flowchart {flowchart.name} from registry");
-                _sceneFlowcharts.Remove(flowchart.UniqueId);
-                _assetFlowcharts.Remove(flowchart.UniqueId);
-                _prefabModeFlowcharts.Remove(flowchart.UniqueId);
-                _flowchartLookup.Remove(flowchart.UniqueId);
+                // A prefab instance shares its asset's id, so only remove the entries that
+                // are this exact Flowchart. Otherwise, closing prefab mode (for example)
+                // would also unregister the matching scene and asset Flowcharts.
+                RemoveIfRegisteredAs(_sceneFlowcharts, uid, flowchart);
+                RemoveIfRegisteredAs(_assetFlowcharts, uid, flowchart);
+                RemoveIfRegisteredAs(_prefabModeFlowcharts, uid, flowchart);
+                RefreshLookupEntry(uid);
             }
+        }
+
+        private static void RemoveIfRegisteredAs(IDictionary<string, Flowchart> lookup, string uid,
+            Flowchart flowchart)
+        {
+            bool found = lookup.TryGetValue(uid, out Flowchart registered);
+            if (found && ReferenceEquals(registered, flowchart))
+            {
+                lookup.Remove(uid);
+            }
+        }
+
+        /// <summary>
+        /// Points the main lookup's entry for the uid at the Flowchart that should represent
+        /// it. A prefab instance shares its asset's id, so without this, whichever registered
+        /// last would win; that used to let prefab assets hide their scene instances.
+        /// </summary>
+        private static void RefreshLookupEntry(string uid)
+        {
+            Flowchart preferred = FindPreferredFlowchart(uid);
+            if (preferred == null)
+            {
+                _flowchartLookup.Remove(uid);
+            }
+            else
+            {
+                _flowchartLookup[uid] = preferred;
+            }
+        }
+
+        /// <summary>
+        /// Prefab-mode Flowcharts come first since they're what's being edited when prefab
+        /// mode is open, then scene Flowcharts, then asset ones.
+        /// </summary>
+        private static Flowchart FindPreferredFlowchart(string uid)
+        {
+            if (TryGetLive(_prefabModeFlowcharts, uid, out Flowchart result))
+            {
+                return result;
+            }
+
+            if (TryGetLive(_sceneFlowcharts, uid, out result))
+            {
+                return result;
+            }
+
+            TryGetLive(_assetFlowcharts, uid, out result);
+            return result;
+        }
+
+        private static bool TryGetLive(IDictionary<string, Flowchart> lookup, string uid,
+            out Flowchart flowchart)
+        {
+            lookup.TryGetValue(uid, out flowchart);
+            bool isLive = flowchart != null; // Unity's null check, to skip destroyed ones
+            return isLive;
+        }
+
+        /// <summary>
+        /// Rebuilds the registry from scratch. Call this after changing a Flowchart's
+        /// UniqueId, since the registry is keyed by it.
+        /// </summary>
+        public static void Recapture()
+        {
+            CaptureExistingFlowcharts();
         }
 
         private static bool IsSceneFlowchart(Flowchart flowchart)

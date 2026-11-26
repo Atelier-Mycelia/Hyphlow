@@ -251,19 +251,8 @@ namespace AtMycelia.Hyphlow
             // completes in the same frame this func is called. Hence the 
             // onComplete being invoked here.
 
+            // ValidateBlockForExecution already rejected a missing CoroutineRunner
             IEnumerator coroutine = ExecutionCoroutine(block, commandIndex, onComplete);
-            if (_coroutineRunner == null)
-            {
-                Debug.Break();
-                return false;
-            }
-            if (_coroutineRunner == null)
-            {
-                string logMessage = $"Cannot execute block {block.BlockName} because " +
-                    $"BlockLogicManager has no CoroutineRunner.";
-                Debug.LogError(logMessage);
-                Debug.DebugBreak();
-            }
             _coroutineRunner.StartCoroutine(coroutine);
             return true;
         }
@@ -523,30 +512,24 @@ namespace AtMycelia.Hyphlow
                 return;
             }
 
-            block.ExecutionState = ExecutionState.Idle;
-            OnBlockExecEnded(block);
-
-            block.ActiveCommand = null;
-            block.PreviousActiveCommandIndex = -1;
-            block.NextExecCmdIndex = -1;
-
-            if (_executionCountsAtStart.ContainsKey(block))
-            {
-                _executionCountsAtStart.Remove(block);
-            }
-
-            BlockSignals.BlockExecEnded(block);
-
             if (!invokeOnComplete)
             {
                 _lastOnCompleteActions.Remove(block);
-                return;
             }
 
-            if (_lastOnCompleteActions.TryGetValue(block, out Action callback))
+            // Reset before going idle, since the onComplete callback (run from
+            // OnBlockExecEnded) may start this Block again, and we mustn't clobber that run.
+            block.ActiveCommand = null;
+            block.PreviousActiveCommandIndex = -1;
+            block.NextExecCmdIndex = -1;
+            _executionCountsAtStart.Remove(block);
+
+            // Raises the Block's ExecEnded and BlockSignals.BlockExecEnded
+            block.ExecutionState = ExecutionState.Idle;
+
+            if (!_subscribedBlocks.Contains(block))
             {
-                _lastOnCompleteActions.Remove(block);
-                callback?.Invoke();
+                OnBlockExecEnded(block);
             }
         }
 
@@ -679,6 +662,15 @@ namespace AtMycelia.Hyphlow
             for (int i = 0; i < cmdIdsToRemove.Count; i++)
             {
                 _executingCommands.Remove(cmdIdsToRemove[i]);
+            }
+
+            // Here rather than in ReturnToIdle, so it also runs when the Block stops itself
+            // through Block.Stop (Stop command, an If with nothing after it...). Otherwise a
+            // Call waiting on that Block would never continue.
+            if (_lastOnCompleteActions.TryGetValue(block, out Action callback))
+            {
+                _lastOnCompleteActions.Remove(block);
+                callback?.Invoke();
             }
         }
 

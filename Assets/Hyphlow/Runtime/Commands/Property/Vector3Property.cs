@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
 				 "Vector3",
 				 "Get or Set a property of a Vector3 component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class Vector3Property : BaseVariableProperty
 	{
 		//generated property
@@ -28,25 +28,24 @@ namespace AtMycelia.Hyphlow
 
 		
 		[SerializeField]
-[FormerlySerializedAs("property")]
+		[FormerlySerializedAs("property")]
 		protected Property property;
 		
 		[SerializeField]
 		[VariableProperty(typeof(Vector3Variable))]
-[FormerlySerializedAs("vector3Var")]
+		[FormerlySerializedAs("vector3Var")]
 		protected Vector3Variable vector3Var;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
 						  typeof(Vector3Variable))]
-[FormerlySerializedAs("inOutVar")]
+		[FormerlySerializedAs("inOutVar")]
 		protected Variable inOutVar;
 
 		public override void OnEnter()
 		{
 			var iof = inOutVar as FloatVariable;
 			var iov = inOutVar as Vector3Variable;
-
 
 			var target = vector3Var.Value;
 

@@ -53,9 +53,8 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             UnityObj targetObject = varRefProp.serializedObject.targetObject;
             Type[] allowedContentTypes = GetAllowedTypes(fieldInfo);
-            bool canContinue = true;
 
-            var validVarsInScene = VariableRegistry.GetVarsOfMultiTypes(allowedContentTypes);
+            var validVarsInScene = VariableRegistry.GetVarsOfMultiTypes(allowedContentTypes, true);
 
             List<IVariable> candidates = new List<IVariable>(validVarsInScene.Values);
             string[] options = validVarsInScene.Keys

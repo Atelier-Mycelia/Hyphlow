@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
 				 "Sprite",
 				 "Get or Set a property of a Sprite component")]
 	[AddComponentMenu("")]
-[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
+	[MovedFrom(true, sourceNamespace: "Fungus", sourceAssembly: "Fungus")]
 	public class SpriteProperty : BaseVariableProperty
 	{
 		//generated property
@@ -26,35 +26,34 @@ namespace AtMycelia.Hyphlow
 			TextureRectOffset, 
 		}
 
-		
 		[SerializeField]
-[FormerlySerializedAs("property")]
-		protected Property property;
+		[FormerlySerializedAs("property")]
+		protected Property _property;
 		
 		[SerializeField]
 		[VariableProperty(typeof(SpriteVariable))]
-[FormerlySerializedAs("spriteVar")]
-		protected SpriteVariable spriteVar;
+		[FormerlySerializedAs("spriteVar")]
+		protected SpriteVariable _spriteVar;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
 						  typeof(Vector2Variable),
 						  typeof(BooleanVariable))]
-[FormerlySerializedAs("inOutVar")]
-		protected Variable inOutVar;
+		[FormerlySerializedAs("inOutVar")]
+		protected Variable _inOutVar;
 
 		public override void OnEnter()
 		{
-			var iof = inOutVar as FloatVariable;
-			var iov2 = inOutVar as Vector2Variable;
-			var iob = inOutVar as BooleanVariable;
+			var iof = _inOutVar as FloatVariable;
+			var iov2 = _inOutVar as Vector2Variable;
+			var iob = _inOutVar as BooleanVariable;
 
-			var target = spriteVar.Value;
+			var target = _spriteVar.Value;
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
-					switch (property)
+					switch (_property)
 					{
 						case Property.PixelsPerUnit:
 							iof.Value = target.pixelsPerUnit;
@@ -75,7 +74,7 @@ namespace AtMycelia.Hyphlow
 
 					break;
 				case GetSet.Set:
-					switch (property)
+					switch (_property)
 					{
 						default:
 							Debug.Log("Unsupported get or set attempted");
@@ -92,16 +91,17 @@ namespace AtMycelia.Hyphlow
 
 		public override string GetSummary()
 		{
-			if (spriteVar == null)
+			if (_spriteVar == null)
 			{
 				return "Error: no spriteVar set";
 			}
-			if (inOutVar == null)
+
+			if (_inOutVar == null)
 			{
 				return "Error: no variable set to push or pull data to or from";
 			}
 
-			return getOrSet.ToString() + " " + property.ToString();
+			return getOrSet.ToString() + " " + _property.ToString();
 		}
 
 		public override Color GetButtonColor()
@@ -111,7 +111,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-          if (ReferenceEquals(spriteVar, variable) || ReferenceEquals(inOutVar, variable))
+          if (ReferenceEquals(_spriteVar, variable) || ReferenceEquals(_inOutVar, variable))
 				return true;
 
 			return false;

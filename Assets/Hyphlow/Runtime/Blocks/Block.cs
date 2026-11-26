@@ -148,19 +148,15 @@ namespace AtMycelia.Hyphlow
                 ExecutionState prevState = _executionState;
                 _executionState = value;
 
-                if (prevState == ExecutionState.Executing)
-                {
-                    OnReturnToIdle();
-                }
                 if (_executionState == ExecutionState.Executing)
                 {
                     ExecStarted(this);
                     BlockSignals.BlockExecStarted(this);
                 }
-                else if (_executionState == ExecutionState.Idle)
+                else if (prevState == ExecutionState.Executing)
                 {
-                    ExecEnded(this);
-                    BlockSignals.BlockExecEnded(this);
+                    // Raises the end events itself, so they mustn't be raised here too
+                    OnReturnToIdle();
                 }
             }
         }
@@ -617,9 +613,13 @@ namespace AtMycelia.Hyphlow
             return result;
         }
 
+        /// <summary>
+        /// Returns null if this Block has no Command with that id.
+        /// </summary>
         public virtual ICommand GetCommandWithId(byte id)
         {
-            ICommand result = _commandListDict[id];
+            // Not the indexer: BlockManager asks every Block in turn, so a miss is normal
+            _commandListDict.TryGetValue(id, out ICommand result);
             return result;
         }
 
@@ -690,9 +690,8 @@ namespace AtMycelia.Hyphlow
             if (legCommand != null)
             {
                 _legacyCommandList.Insert(index, legCommand);
+                legCommand.CommandIndex = index;
             }
-
-            legCommand.CommandIndex = index;
 
             if (triggerSignals)
             {
@@ -727,16 +726,26 @@ namespace AtMycelia.Hyphlow
 
         public virtual bool RemoveCommandWithId(byte id, bool triggerSignals = true)
         {
-            ICommand toRemove = _commandListDict[id];
+            if (!_commandListDict.TryGetValue(id, out ICommand toRemove))
+            {
+                return false;
+            }
+
             bool successfulRemoval = Remove(toRemove, triggerSignals);
             return successfulRemoval;
         }
 
         public virtual bool Remove(ICommand cmd, bool triggerSignals = true)
         {
-            bool alreadyRegistered = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd)
-                && existingCmd == cmd;
-            if (alreadyRegistered)
+            if (ReferenceEquals(cmd, null))
+            {
+                return false;
+            }
+
+            int listIndex = IndexOfByReference(cmd);
+            bool inLookup = _commandListDict.TryGetValue(cmd.ItemId, out ICommand existingCmd)
+                && ReferenceEquals(existingCmd, cmd);
+            if (listIndex < 0 && !inLookup)
             {
                 return false;
             }
@@ -746,31 +755,59 @@ namespace AtMycelia.Hyphlow
                 CommandSignals.PreCommandRemoved(cmd, this);
             }
 
-            Command legCommand = cmd as Command;
-            bool successfulRemoval = _legacyCommandList.Remove(legCommand);
-            if (successfulRemoval)
+            if (listIndex >= 0)
             {
-                _legacyCommandList.Remove(legCommand);
-                _commandListDict.Remove(cmd.ItemId);
-
-                if (triggerSignals)
-                {
-                    cmd.OnCommandRemoved(this);
-                    CommandSignals.CommandRemoved(cmd, this);
-                }
-
+                _legacyCommandList.RemoveAt(listIndex);
             }
-            return successfulRemoval;
+
+            if (inLookup)
+            {
+                _commandListDict.Remove(cmd.ItemId);
+            }
+
+            if (triggerSignals)
+            {
+                cmd.OnCommandRemoved(this);
+                CommandSignals.CommandRemoved(cmd, this);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// The editor destroys Commands before removing them, and List.Remove would match
+        /// any destroyed Command (Unity treats them all as equal to null), not just this one.
+        /// </summary>
+        private int IndexOfByReference(ICommand cmd)
+        {
+            for (int i = 0; i < _legacyCommandList.Count; i++)
+            {
+                if (ReferenceEquals(_legacyCommandList[i], cmd))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public virtual bool RemoveAllCommands(bool triggerSignals = true)
         {
             bool anyToRemove = _legacyCommandList.Count > 0;
-            while (_legacyCommandList.Count > 0)
+            // Back to front, so removing doesn't shift what's left to go through
+            for (int i = _legacyCommandList.Count - 1; i >= 0; i--)
             {
-                var cmd = _legacyCommandList[0];
+                Command cmd = _legacyCommandList[i];
+                if (ReferenceEquals(cmd, null))
+                {
+                    _legacyCommandList.RemoveAt(i);
+                    continue;
+                }
+
                 Remove(cmd, triggerSignals);
             }
+
+            _commandListDict.Clear();
             return anyToRemove;
         }
 

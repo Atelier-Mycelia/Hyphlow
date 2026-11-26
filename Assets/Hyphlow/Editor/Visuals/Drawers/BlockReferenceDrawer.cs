@@ -61,7 +61,7 @@ namespace AtMycelia.Hyphlow.EditorExt
                     string fcName = TruncatedAsNeeded(blockSource.name);
 
                     bool isLocal = ReferenceEquals(blockSource, localFlowchart);
-                    bool visibleToOutsiders = (block.Scope & AccessScopeDefaults.VisibleToOutsiders) > 0;
+                    bool visibleToOutsiders = AccessScopeDefaults.IsVisibleToOutsiders(block.Scope);
                     if (!isLocal && !visibleToOutsiders)
                     {
                         continue;

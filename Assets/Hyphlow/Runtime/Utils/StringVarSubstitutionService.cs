@@ -100,8 +100,8 @@ namespace AtMycelia.Hyphlow
                 }
 
                 IVariable candidate = flowchart.GetVariable(key, StringComparison.Ordinal);
-                bool isVisibleToUs = candidate != null && 
-                    (candidate.Scope & AccessScopeDefaults.VisibleToOutsiders) != 0;
+                bool isVisibleToUs = candidate != null &&
+                    AccessScopeDefaults.IsVisibleToOutsiders(candidate.Scope);
                 if (!isVisibleToUs)
                 {
                     continue;
@@ -118,26 +118,23 @@ namespace AtMycelia.Hyphlow
         {
             variable = null;
             var sourcesToConsider = VariableRegistry.RegisteredSources;
-
-            if (sourcesToConsider.Count == 0)
-            {
-                return false;
-            }
-
-#pragma warning disable CS0162 // Unreachable code detected
             for (int i = 0; i < sourcesToConsider.Count; i++)
             {
                 VariableSet source = sourcesToConsider[i];
+                if (source == null)
+                {
+                    continue;
+                }
 
                 IVariable candidate = source.GetVariableByName(key, StringComparison.Ordinal);
-                variable = candidate;
-                break;
-                
+                if (candidate != null)
+                {
+                    variable = candidate;
+                    return true;
+                }
             }
-#pragma warning restore CS0162 // Unreachable code detected
 
-            bool result = variable != null;
-            return result;
+            return false;
         }
 
         /// <summary>

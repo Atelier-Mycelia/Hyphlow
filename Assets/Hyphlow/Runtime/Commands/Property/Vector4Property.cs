@@ -24,33 +24,31 @@ namespace AtMycelia.Hyphlow
 			Normalized, 
 		}
 
+		[SerializeField]
+		[FormerlySerializedAs("property")]
+		protected Property _property;
 		
 		[SerializeField]
-[FormerlySerializedAs("property")]
-		protected Property property;
-		
-		[SerializeField]
-[FormerlySerializedAs("vector4Data")]
-		protected Vector4Data vector4Data;
+		[FormerlySerializedAs("vector4Data")]
+		protected Vector4Data _vector4Data;
 
 		[SerializeField]
 		[VariableProperty(typeof(FloatVariable),
 						  typeof(Vector4Variable))]
-[FormerlySerializedAs("inOutVar")]
-		protected Variable inOutVar;
+		[FormerlySerializedAs("inOutVar")]
+		protected Variable _inOutVar;
 
 		public override void OnEnter()
 		{
-			var iof = inOutVar as FloatVariable;
-			var iov4 = inOutVar as Vector4Variable;
+			var iof = _inOutVar as FloatVariable;
+			var iov4 = _inOutVar as Vector4Variable;
 
-
-			var target = vector4Data.Value;
+			var target = _vector4Data.Value;
 
 			switch (getOrSet)
 			{
 				case GetSet.Get:
-					switch (property)
+					switch (_property)
 					{
 						case Property.X:
 							iof.Value = target.x;
@@ -80,7 +78,7 @@ namespace AtMycelia.Hyphlow
 
 					break;
 				case GetSet.Set:
-					switch (property)
+					switch (_property)
 					{
 						case Property.X:
 							target.x = iof.Value;
@@ -105,19 +103,19 @@ namespace AtMycelia.Hyphlow
 			}
 
 
-			vector4Data.Value = target;
+			_vector4Data.Value = target;
 
 			Continue();
 		}
 
 		public override string GetSummary()
 		{
-			if (inOutVar == null)
+			if (_inOutVar == null)
 			{
 				return "Error: no variable set to push or pull data to or from";
 			}
 
-			return getOrSet.ToString() + " " + property.ToString();
+			return getOrSet.ToString() + " " + _property.ToString();
 		}
 
 		public override Color GetButtonColor()
@@ -127,7 +125,7 @@ namespace AtMycelia.Hyphlow
 
 		public override bool HasReference(IVariable variable)
 		{
-			if (ReferenceEquals(vector4Data.VarRef, variable) || ReferenceEquals(inOutVar, variable))
+			if (ReferenceEquals(_vector4Data.VarRef, variable) || ReferenceEquals(_inOutVar, variable))
 				return true;
 
 			return false;

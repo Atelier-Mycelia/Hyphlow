@@ -106,10 +106,10 @@ namespace AtMycelia.Hyphlow
                 FlowchartSignals.FlowchartDestroyed += OnFlowchartDestroyed;
                 VariableSignals.PostValueChange += OnVariableValueChanged;
 
-                VarSetSignals.VsaEnabled -= OnVsaChanged;
-                VarSetSignals.VsaDisabled -= OnVsaChanged;
-                VarSetSignals.VariableAdded -= OnAnyVariableChanged;
-                VarSetSignals.VariableRemoved -= OnAnyVariableChanged;
+                VarSetSignals.VsaEnabled += OnVsaChanged;
+                VarSetSignals.VsaDisabled += OnVsaChanged;
+                VarSetSignals.VariableAdded += OnAnyVariableChanged;
+                VarSetSignals.VariableRemoved += OnAnyVariableChanged;
             }
             else
             {
@@ -128,13 +128,40 @@ namespace AtMycelia.Hyphlow
 
         private static void OnVsaChanged(VariableSet asset)
         {
-            Rebuild();
+            RequestRebuild();
         }
 
         private static void OnAnyVariableChanged(VariableSet _, IVariable _2)
         {
-            Rebuild();
+            RequestRebuild();
         }
+
+        /// <summary>
+        /// For the VarSetSignals, which can come in bursts (a set with many variables
+        /// getting edited, or many sets loading), so in the editor they share one rebuild.
+        /// </summary>
+        private static void RequestRebuild()
+        {
+#if UNITY_EDITOR
+            if (_rebuildQueued)
+            {
+                return;
+            }
+
+            _rebuildQueued = true;
+            EditorApplication.delayCall += () =>
+            {
+                _rebuildQueued = false;
+                Rebuild();
+            };
+#else
+            Rebuild();
+#endif
+        }
+
+#if UNITY_EDITOR
+        private static bool _rebuildQueued;
+#endif
 
         private static void OnVariableValueChanged(IVariable variable, object arg2)
         {
@@ -180,6 +207,36 @@ namespace AtMycelia.Hyphlow
         }
 
         public static void Rebuild(IVariableSource localSource = null)
+        {
+            // Finding the sets loads them, and a set's OnEnable raises VsaEnabled, which
+            // would land us back here mid-rebuild. So those requests wait for this one.
+            if (_isRebuilding)
+            {
+                _rebuildPending = true;
+                return;
+            }
+
+            _isRebuilding = true;
+            try
+            {
+                RebuildNow(localSource);
+            }
+            finally
+            {
+                _isRebuilding = false;
+            }
+
+            if (_rebuildPending)
+            {
+                // The sets are all loaded by now, so this won't come back around again
+                _rebuildPending = false;
+                Rebuild(localSource);
+            }
+        }
+
+        private static bool _isRebuilding, _rebuildPending;
+
+        private static void RebuildNow(IVariableSource localSource)
         {
             RefreshSources();
             _registeredVars.Clear();
@@ -232,9 +289,7 @@ namespace AtMycelia.Hyphlow
                     for (int j = 0; j < otherVars.Count; j++)
                     {
                         IVariable toRegister = otherVars[j];
-                        bool isVisible = (toRegister.Scope & AccessScopeDefaults.VisibleToOutsiders)
-                            != 0;
-                        if (!isVisible)
+                        if (!AccessScopeDefaults.IsVisibleToOutsiders(toRegister.Scope))
                         {
                             continue;
                         }

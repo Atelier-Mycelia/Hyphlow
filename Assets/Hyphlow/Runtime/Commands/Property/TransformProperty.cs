@@ -47,7 +47,7 @@ namespace AtMycelia.Hyphlow
 		protected TransformData _transformData;
 
 		[SerializeField]
-		[ContentTypeConstraint(typeof(Vector3), typeof(Transform), typeof(int), typeof(bool))]
+		[ContentTypeConstraint(typeof(Vector3), typeof(Vector4), typeof(Transform), typeof(int), typeof(bool))]
 		protected VariableReference _inOutVar;
 
 		protected override void RefreshVariableDataCache()
