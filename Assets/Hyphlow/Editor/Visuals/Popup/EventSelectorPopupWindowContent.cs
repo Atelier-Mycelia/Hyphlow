@@ -152,9 +152,15 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             Undo.RecordObject(block.Owner, "Set Event Handler");
 
-            if (block.EventHandler != null)
+            if (block.EventHandler is UnityObj legacyHandler)
             {
-                Undo.DestroyObjectImmediate(block.EventHandler as UnityObj);
+                Undo.DestroyObjectImmediate(legacyHandler);
+            }
+            else if (block.EventHandler is Hyphandler && block is Block hyphandlerHost)
+            {
+                // A Hyphandler is data on the Block, so recording the Block is what makes this undoable
+                Undo.RecordObject(hyphandlerHost, "Set Event Handler");
+                block.EventHandler = null;
             }
 
             if (selectedType != null)

@@ -245,6 +245,8 @@ MonoBehaviour:
   _blockName: ApplyForce
   _description: 
   _legacyEventHandler: {fileID: 114201986544531680}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 169150097741699801}
   - {fileID: 114128824974302672}
@@ -261,6 +263,11 @@ MonoBehaviour:
   _owner: {fileID: 114126325013622294}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114201986544531680
 MonoBehaviour:
   m_ObjectHideFlags: 0

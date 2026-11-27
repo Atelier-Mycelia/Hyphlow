@@ -58,12 +58,12 @@ namespace AtMycelia.Hyphlow.EditorExt
             for (int i = 0; i < commands.Count; i++)
             {
                 ICommand cmd = commands[i];
-                if (cmd != null && cmd is UnityObjectMuscariable cmdUnityObj)
+                if (cmd != null && cmd is UnityEngine.Object cmdUnityObj)
                     Undo.DestroyObjectImmediate(cmdUnityObj);
             }
 
-            // Destroy any event handler
-            if (block.EventHandler != null && block.EventHandler is UnityObjectMuscariable ehUnityObj)
+            // Destroy any legacy event handler. A Hyphandler lives in the Block, so it goes with it.
+            if (block.EventHandler is UnityEngine.Object ehUnityObj)
                 Undo.DestroyObjectImmediate(ehUnityObj);
 
             var fc = block.GetFlowchart();

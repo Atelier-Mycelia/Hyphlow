@@ -511,9 +511,10 @@ namespace AtMycelia.Hyphlow
                 {
                     handler.ParentBlock = blockEl;
 #if UNITY_EDITOR
-                    if (!Application.isPlaying)
+                    // A Hyphandler's parent link isn't serialized, so only legacy handlers need saving
+                    if (!Application.isPlaying && handler is UnityEngine.Object handlerObj)
                     {
-                        EditorUtility.SetDirty(handler as UnityEngine.Object);
+                        EditorUtility.SetDirty(handlerObj);
                         EditorUtility.SetDirty(blockEl.Owner);
                     }
 #endif

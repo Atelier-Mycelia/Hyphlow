@@ -43,11 +43,20 @@ namespace AtMycelia.Hyphlow.EditorExt
                 PrepareCommandForSnapshot(commandEl as Command, isCut);
                 _commands.Add(new ClipboardObject(commandEl as Command));
             }
-            if (block.EventHandler != null)
+            if (block.EventHandler is UnityObj legacyHandler)
             {
-                _eventHandler = new ClipboardObject(block.EventHandler as UnityObj);
+                _eventHandler = new ClipboardObject(legacyHandler);
+            }
+            else if (block.EventHandler is Hyphandler hyphandler)
+            {
+                // Snapshotted by value, so later edits to the source don't leak into the paste
+                _hyphandlerType = hyphandler.GetType();
+                _hyphandlerJson = EditorJsonUtility.ToJson(hyphandler);
             }
         }
+
+        protected System.Type _hyphandlerType;
+        protected string _hyphandlerJson;
 
         public virtual int BlockID { get; protected set; }
 
@@ -436,6 +445,10 @@ namespace AtMycelia.Hyphlow.EditorExt
                 newEventHandler.ParentBlock = newBlock;
                 newBlock.EventHandler = newEventHandler;
             }
+            else if (_hyphandlerType != null)
+            {
+                newBlock.EventHandler = RecreateHyphandler();
+            }
 
             // Copy block properties, but do not copy references because those were just assigned
             ApplyProperties(_blockPropertySnapshots, newBlock as Block);
@@ -446,7 +459,19 @@ namespace AtMycelia.Hyphlow.EditorExt
             return newBlock;
         }
 
-        internal void RestoreObjectReferences(IBlock pastedBlock, Flowchart flowchart, 
+        private Hyphandler RecreateHyphandler()
+        {
+            // nonPublic, since [SerializeReference] types don't need a public constructor
+            var hyphandler = System.Activator.CreateInstance(_hyphandlerType, nonPublic: true) as Hyphandler;
+            if (hyphandler != null)
+            {
+                EditorJsonUtility.FromJsonOverwrite(_hyphandlerJson, hyphandler);
+            }
+
+            return hyphandler;
+        }
+
+        internal void RestoreObjectReferences(IBlock pastedBlock, Flowchart flowchart,
             IDictionary<ushort, IBlock> pastedBlockLookup)
         {
             if (pastedBlock == null || flowchart == null)

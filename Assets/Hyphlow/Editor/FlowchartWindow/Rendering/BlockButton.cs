@@ -183,7 +183,7 @@ namespace AtMycelia.Hyphlow.EditorExt.FcWindow
                 return;
             }
 
-            var info = EventHandlerEditor.GetEventHandlerInfo(handler.GetType());
+            // Works for both legacy handlers and Hyphandlers, each reading its own info attribute
             string handlerName = handler.DisplayNameAboveBlock;
 
             _eventHandlerLabel.text = string.Format(_eventHandlerLabelFormat, handlerName);

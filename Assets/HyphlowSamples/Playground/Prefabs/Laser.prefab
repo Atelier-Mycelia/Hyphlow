@@ -462,6 +462,8 @@ MonoBehaviour:
   _blockName: Init
   _description: 
   _legacyEventHandler: {fileID: 114602407226986924}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 4278132626369988641}
   - {fileID: 114751314740007556}
@@ -470,6 +472,11 @@ MonoBehaviour:
   _owner: {fileID: 114526636883379746}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114602407226986924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -582,6 +589,8 @@ MonoBehaviour:
   _blockName: HitEnemy
   _description: 
   _legacyEventHandler: {fileID: 958645331840734462}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 4484725498435143672}
   - {fileID: 114299940920854140}
@@ -591,6 +600,11 @@ MonoBehaviour:
   _owner: {fileID: 114526636883379746}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114299940920854140
 MonoBehaviour:
   m_ObjectHideFlags: 2

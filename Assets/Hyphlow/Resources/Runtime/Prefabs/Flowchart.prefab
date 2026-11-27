@@ -137,12 +137,19 @@ MonoBehaviour:
   _blockName: Init
   _description: 
   _legacyEventHandler: {fileID: 2938136129897735517}
+  _hyphandler:
+    rid: -2
   _legacyCommandList: []
   _includeInSaves: 1
   _loadPriority: 0
   _owner: {fileID: 2276537957769623347}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &2938136129897735517
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -224,6 +224,8 @@ MonoBehaviour:
   _blockName: OnFireKeyPressed
   _description: 
   _legacyEventHandler: {fileID: 114036837631678186}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114945764084547224}
   - {fileID: 8016971695314608662}
@@ -240,6 +242,11 @@ MonoBehaviour:
   _owner: {fileID: 114116014992790474}
   _nextValidCommandId: 2
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114036837631678186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -497,6 +504,8 @@ MonoBehaviour:
   _blockName: Rotate
   _description: 
   _legacyEventHandler: {fileID: 114194947709156218}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114110427670967256}
   - {fileID: 114873397630457622}
@@ -508,6 +517,11 @@ MonoBehaviour:
   _owner: {fileID: 114116014992790474}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114194947709156218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -995,6 +1009,8 @@ MonoBehaviour:
   _blockName: FireBullet
   _description: 
   _legacyEventHandler: {fileID: 0}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 4758335226291315948}
   - {fileID: 9103704289418209129}
@@ -1006,6 +1022,11 @@ MonoBehaviour:
   _owner: {fileID: 114116014992790474}
   _nextValidCommandId: 2
   suppressAllAutoSelections: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &4758335226291315948
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -1823,6 +1844,8 @@ MonoBehaviour:
   _blockName: OnBulletFiredMessage
   _description: 
   _legacyEventHandler: {fileID: 3185542831494786953}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 6129903370379657775}
   _includeInSaves: 1
@@ -1830,6 +1853,11 @@ MonoBehaviour:
   _owner: {fileID: 5874667703830646828}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 1
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &3185542831494786953
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -288,6 +288,8 @@ MonoBehaviour:
   _blockName: Init
   _description: 
   _legacyEventHandler: {fileID: 114380220327066724}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114293439357397826}
   - {fileID: 114321934423954670}
@@ -298,6 +300,11 @@ MonoBehaviour:
   _owner: {fileID: 114619489782507194}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114293439357397826
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -403,6 +410,8 @@ MonoBehaviour:
   _blockName: HitGround
   _description: 
   _legacyEventHandler: {fileID: -4082920858961323404}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114899146109398040}
   _includeInSaves: 1
@@ -410,6 +419,11 @@ MonoBehaviour:
   _owner: {fileID: 114619489782507194}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114685860866778978
 MonoBehaviour:
   m_ObjectHideFlags: 2
@@ -435,6 +449,8 @@ MonoBehaviour:
   _blockName: DestroySelf
   _description: 
   _legacyEventHandler: {fileID: 0}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114478123438267686}
   - {fileID: 114612287158334692}
@@ -445,6 +461,11 @@ MonoBehaviour:
   _owner: {fileID: 114619489782507194}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114434000303693764
 MonoBehaviour:
   m_ObjectHideFlags: 2

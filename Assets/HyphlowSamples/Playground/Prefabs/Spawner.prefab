@@ -124,6 +124,8 @@ MonoBehaviour:
   _blockName: Init
   _description: 
   _legacyEventHandler: {fileID: 114271269415529472}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114220456410977536}
   - {fileID: 8716954193096103847}
@@ -140,6 +142,11 @@ MonoBehaviour:
   _owner: {fileID: 114094183539183980}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114271269415529472
 MonoBehaviour:
   m_ObjectHideFlags: 0

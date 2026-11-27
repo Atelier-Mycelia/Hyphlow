@@ -51,6 +51,9 @@ namespace AtMycelia.Hyphlow
         [FormerlySerializedAs("_legacyEventHandler")]
         [SerializeField] protected EventHandler _legacyEventHandler;
 
+        [Tooltip("An optional plain C# Event Handler. A Block has either this or a legacy one, never both.")]
+        [SerializeReference] protected Hyphandler _hyphandler;
+
         [FormerlySerializedAs("commandList")]
         [FormerlySerializedAs("_commandList")]
         [SerializeField] protected List<Command> _legacyCommandList = new List<Command>();
@@ -178,6 +181,43 @@ namespace AtMycelia.Hyphlow
         protected virtual void OnEnable()
         {
             Refresh();
+            SyncHyphandlerSubscription();
+        }
+
+        /// <summary>
+        /// Makes sure the only Hyphandler subscribed to its events is the one this Block holds right
+        /// now, and only while the Block is enabled. Unity can swap the instance out from under us
+        /// when it deserializes in place (undo, inspector edits...), which would otherwise leave the
+        /// old instance subscribed and the new one deaf.
+        /// </summary>
+        private void SyncHyphandlerSubscription()
+        {
+            bool shouldBeSubscribed = _hyphandler != null && isActiveAndEnabled;
+            if (_subscribedHyphandler != null &&
+                (!shouldBeSubscribed || !ReferenceEquals(_subscribedHyphandler, _hyphandler)))
+            {
+                _subscribedHyphandler.Disable();
+                _subscribedHyphandler = null;
+            }
+
+            if (!shouldBeSubscribed)
+            {
+                return;
+            }
+
+            _hyphandler.ParentBlock = this;
+            _hyphandler.Enable();
+            if (_hyphandler.IsEnabled)
+            {
+                _subscribedHyphandler = _hyphandler;
+            }
+        }
+
+        private Hyphandler _subscribedHyphandler;
+
+        protected virtual void OnDisable()
+        {
+            SyncHyphandlerSubscription();
         }
 
         public virtual void Refresh()
@@ -210,18 +250,27 @@ namespace AtMycelia.Hyphlow
 
         private void EnsureEventHandlerOwnership()
         {
-            if (_legacyEventHandler == null)
+            if (_hyphandler != null)
+            {
+                _hyphandler.ParentBlock = this;
+                if (_legacyEventHandler != null)
+                {
+                    Debug.LogWarning($"{this} has both a legacy EventHandler and a Hyphandler. " +
+                        "Only the legacy one will be used until one of them is removed.", this);
+                }
+            }
+
+            // A stale legacy handler still pointing here mustn't push out a Hyphandler
+            if (_legacyEventHandler == null && _hyphandler == null)
             {
                 RecoverLegacyEventHandlerFromComponents();
             }
 
             if (_legacyEventHandler == null)
             {
-                _eventHandler = null;
                 return;
             }
 
-            _eventHandler = _legacyEventHandler;
             if (!ReferenceEquals(_legacyEventHandler.ParentBlock, this))
             {
                 _legacyEventHandler.ParentBlock = this;
@@ -249,7 +298,6 @@ namespace AtMycelia.Hyphlow
                 if (ReferenceEquals(candidate.ParentBlock, this))
                 {
                     _legacyEventHandler = candidate;
-                    _eventHandler = candidate;
 #if UNITY_EDITOR
                     if (!Application.isPlaying)
                     {
@@ -336,38 +384,53 @@ namespace AtMycelia.Hyphlow
         public virtual string Description { get { return _description; } }
 
         /// <summary>
-        /// An optional Event Handler which can execute the block when an event occurs.
-        /// Note: Using the concrete class instead of the interface here because 
-        /// of weird editor behaviour.
+        /// An optional Event Handler which can execute the block when an event occurs: either a
+        /// legacy (MonoBehaviour) <see cref="Hyphlow.EventHandler"/> or a <see cref="Hyphandler"/>.
+        /// Assigning one clears the other.
         /// </summary>
         public virtual IEventHandler EventHandler
         {
             get
             {
-                if (_eventHandler == null && _legacyEventHandler != null)
+                // Unity's null check, so a destroyed legacy handler doesn't hide the Hyphandler
+                if (_legacyEventHandler != null)
                 {
-                    _eventHandler = _legacyEventHandler;
+                    return _legacyEventHandler;
                 }
-                return _eventHandler;
+                return _hyphandler;
             }
             set
             {
-                if (ReferenceEquals(_eventHandler, value))
+                if (ReferenceEquals(EventHandler, value))
                 {
                     return;
                 }
 
-                _eventHandler = value;
-                _legacyEventHandler = value as EventHandler;
-
-                if (_eventHandler != null)
+                if (value != null && !(value is EventHandler) && !(value is Hyphandler))
                 {
-                    _eventHandler.ParentBlock = this;
+                    Debug.LogError($"{this} can't hold an Event Handler of type {value.GetType().Name}. " +
+                        $"It must derive from either {nameof(Hyphlow.EventHandler)} or {nameof(Hyphandler)}.", this);
+                    return;
+                }
+
+                Hyphandler previousHyphandler = _hyphandler;
+                _legacyEventHandler = value as EventHandler;
+                _hyphandler = value as Hyphandler;
+
+                if (value != null)
+                {
+                    value.ParentBlock = this;
+                }
+
+                SyncHyphandlerSubscription();
+
+                // Only after the sync, since unsubscribing may still need to reach the host
+                if (previousHyphandler != null && !ReferenceEquals(previousHyphandler, _hyphandler))
+                {
+                    previousHyphandler.ParentBlock = null;
                 }
             }
         }
-
-        private IEventHandler _eventHandler;
 
         /// <summary>
         /// The currently executing command.
@@ -830,6 +893,7 @@ namespace AtMycelia.Hyphlow
         protected virtual void OnValidate()
         {
             hideFlags = HideFlags.HideInInspector;
+            _hyphandler?.Validate();
 #if UNITY_EDITOR
             if (_owner == null)
             {
@@ -847,6 +911,12 @@ namespace AtMycelia.Hyphlow
 
         public virtual void OnAfterDeserialize()
         {
+            // Plain field assignment, so it's safe here; deserialization may have made a new instance
+            if (_hyphandler != null)
+            {
+                _hyphandler.ParentBlock = this;
+            }
+
 #if UNITY_EDITOR
             EditorApplication.delayCall += () =>
             {
@@ -856,6 +926,8 @@ namespace AtMycelia.Hyphlow
                 }
 
                 AssertOwnershipAndUpdateIndexes();
+                // Can't be done during deserialization itself, since it touches the Unity API
+                SyncHyphandlerSubscription();
             };
 #endif
         }

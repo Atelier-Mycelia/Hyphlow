@@ -218,6 +218,8 @@ MonoBehaviour:
   _blockName: Trigger
   _description: 
   _legacyEventHandler: {fileID: 5403693197157987605}
+  _hyphandler:
+    rid: -2
   _legacyCommandList:
   - {fileID: 114034257819947328}
   _includeInSaves: 1
@@ -225,6 +227,11 @@ MonoBehaviour:
   _owner: {fileID: 114600625297110402}
   _nextValidCommandId: 1
   suppressAllAutoSelections: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &114034257819947328
 MonoBehaviour:
   m_ObjectHideFlags: 2

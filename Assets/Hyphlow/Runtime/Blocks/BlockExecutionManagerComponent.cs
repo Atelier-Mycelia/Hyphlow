@@ -58,16 +58,33 @@ namespace AtMycelia.Hyphlow
         protected virtual IEnumerator HandleGameStartedBlocks()
         {
             IList<GameStarted> gsEventHandler = GetComponents<GameStarted>();
-
-            if (gsEventHandler.Count == 0)
-            {
-                yield break;
-            }
-
             for (int i = 0; i < gsEventHandler.Count; i++)
             {
                 var elem = gsEventHandler[i];
                 elem.Trigger();
+            }
+
+            TriggerGameStartedHyphandlers();
+            yield break;
+        }
+
+        // Hyphandlers aren't components, so GetComponents can't find them; they live in their Blocks
+        private void TriggerGameStartedHyphandlers()
+        {
+            IReadOnlyList<IBlock> blocks = UnderlyingBlockManager?.Blocks;
+            if (blocks == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < blocks.Count; i++)
+            {
+                IBlock block = blocks[i];
+                // The legacy GameStarted components were already triggered above
+                if (block?.EventHandler is IGameStartedHandler handler && handler is Hyphandler)
+                {
+                    handler.Trigger();
+                }
             }
         }
 

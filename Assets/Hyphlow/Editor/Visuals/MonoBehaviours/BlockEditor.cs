@@ -431,6 +431,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 				{
 					currentHandlerName = info.EventHandlerName;
 				}
+				else if (block.EventHandler is Hyphandler hyphandler)
+				{
+					currentHandlerName = hyphandler.DisplayNameAboveBlock;
+				}
 			}
 
 			var pos = EditorGUILayout.GetControlRect(true, 0, EditorStyles.objectField);
@@ -448,9 +452,13 @@ namespace AtMycelia.Hyphlow.EditorExt
 			}
 			EditorGUILayout.EndHorizontal();
 
-			if (block.EventHandler != null)
+			if (block.EventHandler is Hyphandler)
 			{
-				EventHandlerEditor eventHandlerEditor = Editor.CreateEditor(block.EventHandler as UnityObj) 
+				DrawHyphandlerFields();
+			}
+			else if (block.EventHandler is UnityObj legacyHandler)
+			{
+				EventHandlerEditor eventHandlerEditor = Editor.CreateEditor(legacyHandler)
 					as EventHandlerEditor;
 				if (eventHandlerEditor != null)
 				{
@@ -464,6 +472,45 @@ namespace AtMycelia.Hyphlow.EditorExt
 
 					DestroyImmediate(eventHandlerEditor);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Hyphandlers are data on the Block rather than components, so they're drawn from the
+		/// Block's own SerializedObject instead of through an EventHandlerEditor.
+		/// </summary>
+		private void DrawHyphandlerFields()
+		{
+			serializedObject.Update();
+			SerializedProperty hyphandlerProp = serializedObject.FindProperty("_hyphandler");
+			if (hyphandlerProp == null)
+			{
+				return;
+			}
+
+			HyphandlerInfoAttribute info = hyphandlerProp.managedReferenceValue?.GetType()
+				.GetCustomAttribute<HyphandlerInfoAttribute>();
+			if (info != null && !string.IsNullOrEmpty(info.HelpText))
+			{
+				EditorGUILayout.HelpBox(info.HelpText, MessageType.Info);
+			}
+
+			EditorGUI.BeginChangeCheck();
+
+			// Children only, so the fields sit right under the dropdown like a legacy handler's do
+			SerializedProperty end = hyphandlerProp.GetEndProperty();
+			SerializedProperty child = hyphandlerProp.Copy();
+			bool enterChildren = true;
+			while (child.NextVisible(enterChildren) && !SerializedProperty.EqualContents(child, end))
+			{
+				EditorGUILayout.PropertyField(child, true);
+				enterChildren = false;
+			}
+
+			if (EditorGUI.EndChangeCheck())
+			{
+				serializedObject.ApplyModifiedProperties();
+				SelectedBlockDataStale = true;
 			}
 		}
 

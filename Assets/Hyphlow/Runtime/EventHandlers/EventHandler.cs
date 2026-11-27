@@ -153,7 +153,7 @@ namespace AtMycelia.Hyphlow
 
 		private bool IsInTheScene => gameObject.scene.IsValid() && !string.IsNullOrEmpty(gameObject.scene.name);
 
-#if UNITY_EDITOR
+		// Not editor-only: IEventHandler requires it in player builds too
 		public virtual string DisplayNameAboveBlock
 		{
 			get
@@ -166,7 +166,6 @@ namespace AtMycelia.Hyphlow
 				return GetType().Name;
 			}
 		}
-#endif
 
 		protected virtual void OnDisable()
 		{
