@@ -64,19 +64,28 @@ namespace AtMycelia.Hyphlow.EditorExt
 
             PrepareAllItems();
 
-            _allItems.Sort((lhs, rhs) => 
-            {
-                //order root level objects first
-                var islhsRoot = lhs.lowerName.IndexOf(_CATEGORY_CHAR) != -1;
-                var isrhsRoot = rhs.lowerName.IndexOf(_CATEGORY_CHAR) != -1;
-
-                if(islhsRoot == isrhsRoot)
-                    return lhs.lowerName.CompareTo(rhs.lowerName);
-                return islhsRoot ? 1 : -1;
-            });
+            _allItems.Sort(CompareItems);
             UpdateFilter();
             _currentIndex = Mathf.Max(0, _visibleItems.FindIndex(x=>x.name.Contains(currentHandlerName)));
             _hoverIndex = _currentIndex;
+        }
+
+        /// <summary>
+        /// Decides the order the items are listed in: root-level items first, then alphabetical.
+        /// Called from the base constructor, so overrides mustn't rely on fields the subclass
+        /// constructor sets.
+        /// </summary>
+        protected virtual int CompareItems(FilteredListItem first, FilteredListItem second)
+        {
+            string firstLower = first.lowerName;
+            string secondLower = second.lowerName;
+            var isFirstRoot = firstLower.IndexOf(_CATEGORY_CHAR) != -1;
+            var isSecondRoot = secondLower.IndexOf(_CATEGORY_CHAR) != -1;
+
+            int result = isFirstRoot == isSecondRoot ?
+            firstLower.CompareTo(secondLower) : 
+            isFirstRoot ? 1 : -1;
+            return result;
         }
 
         public override void OnGUI(Rect rect)

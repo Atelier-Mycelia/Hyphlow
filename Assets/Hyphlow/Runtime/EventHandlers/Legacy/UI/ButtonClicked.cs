@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.Serialization;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the user clicks on the target UI button object.
@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "Button Clicked",
                       "The block will execute when the user clicks on the target UI button object.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class ButtonClicked : EventHandler
     {
         [Tooltip("The UI Button that the user can click on")]

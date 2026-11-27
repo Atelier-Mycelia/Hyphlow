@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// Execute a block when a targeted InputAction is performed. Optionally reads the value from the action.
@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
                       "Execute a block when a targeted InputAction is performed. " +
                       "Optionally reads the value from the action.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class InputActionEventHandler : EventHandler
     {
         [SerializeField] protected InputActionReference inputAction;

@@ -54,17 +54,17 @@ protected MessageTarget messageTarget;
                 return;
             }
 
-            MessageReceived[] receivers = null;
+            Legacy.MessageReceived[] receivers = null;
             if (messageTarget == MessageTarget.SameFlowchart)
             {
-                receivers = GetComponents<MessageReceived>();
+                receivers = GetComponents<Legacy.MessageReceived>();
             }
             else
             {
             #if UNITY_6000
-                receivers = GameObject.FindObjectsByType<MessageReceived>(FindObjectsSortMode.None);
+                receivers = GameObject.FindObjectsByType<Legacy.MessageReceived>(FindObjectsSortMode.None);
             #else
-                receivers = GameObject.FindObjectsOfType<MessageReceived>();
+                receivers = GameObject.FindObjectsOfType<Legacy.MessageReceived>();
             #endif
             }
 

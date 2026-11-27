@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the user finishes editing the text in the input field.
@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "End Edit",
                       "The block will execute when the user finishes editing the text in the input field.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class EndEdit : EventHandler
     {   
         [Tooltip("The UI Input Field that the user can enter text into")]

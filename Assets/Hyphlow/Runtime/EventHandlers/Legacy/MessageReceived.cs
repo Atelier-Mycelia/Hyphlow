@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.Serialization;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the specified message is received from a Send Message command.
@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                       "Message Received",
                       "The block will execute when the specified message is received from a Send Message command.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class MessageReceived : EventHandler 
     {
         [Tooltip("Fungus message to listen for")]

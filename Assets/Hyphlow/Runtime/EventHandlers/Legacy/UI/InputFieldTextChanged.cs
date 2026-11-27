@@ -4,12 +4,12 @@ using UnityEngine.UI;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     [EventHandlerInfo("UI",
         "InputFieldTextChanged",
         "Executes this block when an input field's text changes.")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class InputFieldTextChanged : EventHandler
     {
         [SerializeField] [VariableProperty(typeof(GameObjectVariable))]

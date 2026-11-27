@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 using UnityCollision = UnityEngine.Collision;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when a 3d physics collision matching some basic conditions is met. 
@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                       "Collision",
                       "The block will execute when a 2d or 3d physics collision matching some basic conditions is met.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class Collision : BasePhysicsEventHandler
     {
         [Tooltip("Optional variable to store the collision that caused the collision to occur.")]

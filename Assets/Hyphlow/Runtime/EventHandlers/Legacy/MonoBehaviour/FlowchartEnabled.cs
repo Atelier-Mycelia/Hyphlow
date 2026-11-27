@@ -2,7 +2,7 @@ using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the Flowchart game object is enabled.
@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
                       "Flowchart Enabled",
                       "The block will execute when the Flowchart game object is enabled.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class FlowchartEnabled : EventHandler
     {   
         protected override void OnEnable()

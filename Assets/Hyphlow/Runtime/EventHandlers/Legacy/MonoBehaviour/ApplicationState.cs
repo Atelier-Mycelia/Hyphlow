@@ -3,7 +3,7 @@ using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the desired OnApplication message for the monobehaviour is received.
@@ -13,7 +13,7 @@ namespace AtMycelia.Hyphlow
                       "The block will execute when the desired OnApplication message " +
                       "for the Monobehaviour is received.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class ApplicationState : EventHandler
     {
 

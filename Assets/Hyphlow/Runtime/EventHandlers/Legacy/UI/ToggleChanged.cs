@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the user toggles on the target UI toggle object.
@@ -15,7 +15,7 @@ namespace AtMycelia.Hyphlow
                       "toggle object changes. The state of the toggle is stored in the " +
                       "Toggle State boolean variable.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class ToggleChanged : EventHandler
     {   
         [Tooltip("The block will execute when the state of the target UI toggle object changes.")]

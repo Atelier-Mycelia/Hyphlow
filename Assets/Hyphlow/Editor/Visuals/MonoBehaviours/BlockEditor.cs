@@ -431,10 +431,6 @@ namespace AtMycelia.Hyphlow.EditorExt
 				{
 					currentHandlerName = info.EventHandlerName;
 				}
-				else if (block.EventHandler is Hyphandler hyphandler)
-				{
-					currentHandlerName = hyphandler.DisplayNameAboveBlock;
-				}
 			}
 
 			var pos = EditorGUILayout.GetControlRect(true, 0, EditorStyles.objectField);
@@ -488,8 +484,10 @@ namespace AtMycelia.Hyphlow.EditorExt
 				return;
 			}
 
-			HyphandlerInfoAttribute info = hyphandlerProp.managedReferenceValue?.GetType()
-				.GetCustomAttribute<HyphandlerInfoAttribute>();
+			Type hyphandlerType = hyphandlerProp.managedReferenceValue?.GetType();
+			EventHandlerInfoAttribute info = hyphandlerType != null ?
+				EventHandlerEditor.GetEventHandlerInfo(hyphandlerType) :
+				null;
 			if (info != null && !string.IsNullOrEmpty(info.HelpText))
 			{
 				EditorGUILayout.HelpBox(info.HelpText, MessageType.Info);

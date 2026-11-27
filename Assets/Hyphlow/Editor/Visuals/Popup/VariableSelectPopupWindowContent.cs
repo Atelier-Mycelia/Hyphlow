@@ -16,29 +16,19 @@ namespace AtMycelia.Hyphlow.EditorExt
     public class VariableSelectPopupWindowContent : BasePopupWindowContent
     {
         /// <summary>
-        /// All variable types available for user selection. Lazily (re)cached.
+        /// The variable types offered for adding, one per content type. Both the searchable popup
+        /// and the context menu list these, and the popup's item indexes point into this list.
+        /// Lazily (re)cached.
         /// </summary>
-        protected static IReadOnlyList<Type> LegacyTypes
+        protected static IReadOnlyList<Type> MenuTypes
         {
             get
             {
-                if (_legacyTypes == null || _legacyTypes.Count == 0)
+                if (_menuTypes == null || _menuTypes.Count == 0)
                 {
                     RefreshVariableTypeCache();
                 }
-                return _legacyTypes;
-            }
-        }
-
-        protected static IReadOnlyList<Type> MuscariTypes
-        {
-            get
-            {
-                if (_muscariTypes == null || _muscariTypes.Count == 0)
-                {
-                    RefreshVariableTypeCache();
-                }
-                return _muscariTypes;
+                return _menuTypes;
             }
         }
 
@@ -61,24 +51,28 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// </summary>
         protected static void RefreshVariableTypeCache()
         {
-            // Using registry instead of reflection scan for performance / determinism.
-            _legacyTypes = VariableTypeRegistry.AllLegacyTypes.Where(ShouldBeShownInMenu).ToList();
-            _muscariTypes = VariableTypeRegistry.AllMuscariableTypes.Where(ShouldBeShownInMenu).ToList();
-            _allTypes = _legacyTypes.Concat(_muscariTypes).ToList();
-            bool ShouldBeShownInMenu(Type varType)
+            // Only Muscariables: AddVariable can't create legacy (MonoBehaviour) variables, so
+            // listing those would only offer duplicates of Muscariables, or options that fail.
+            // Using the registry instead of a reflection scan for performance / determinism.
+            var menuTypes = new List<Type>();
+            var contentTypesListed = new HashSet<Type>();
+            foreach (Type varType in VariableTypeRegistry.AllMuscariableTypes)
             {
-                bool result = false;
-                VariableInfoAttribute attr = varType.GetCustomAttribute<VariableInfoAttribute>();
-                if (attr != null)
+                VariableInfoAttribute info = varType.GetCustomAttribute<VariableInfoAttribute>();
+                bool belongsInMenu = info != null && info.ShowInMenu && !info.IsTest;
+                // One option per content type, so two Muscariables wrapping the same type can't both show
+                if (!belongsInMenu || !contentTypesListed.Add(info.ContentType))
                 {
-                    result = attr.ShowInMenu;
+                    continue;
                 }
-                return result;
+
+                menuTypes.Add(varType);
             }
+
+            _menuTypes = menuTypes;
         }
 
-        // Cached list of concrete variable component types (legacy Variable system)
-        protected static IReadOnlyList<Type> _legacyTypes, _muscariTypes, _allTypes;
+        protected static IReadOnlyList<Type> _menuTypes;
 
         #endregion
 
@@ -98,37 +92,15 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// </summary>
         protected override void PrepareAllItems()
         {
-            // Iterate with index so we can map back to original type directly.
-            IList<Type> contentTypesPreparedFor = new List<Type>();
-
-            // Check for muscariables first
-            PrepareItemsFor(MuscariTypes);
-            PrepareItemsFor(LegacyTypes);
-
-            void PrepareItemsFor(IReadOnlyList<Type> varTypes)
+            for (int typeIndex = 0; typeIndex < MenuTypes.Count; typeIndex++)
             {
-                for (int typeIndex = 0; typeIndex < varTypes.Count; typeIndex++)
-                {
-                    var type = varTypes[typeIndex];
-                    var info = VariableEditor.GetVariableInfo(type);
-                    if (info == null)
-                    {
-                        string logMessage = $"Type {type.Name} does not have a variable info attribute.";
-                        Debug.LogWarning(logMessage);
-                        continue;
-                    }
-
-                    if (contentTypesPreparedFor.Contains(info.ContentType))
-                    {
-                        continue;
-                    }
-
-                    // We're not going to worry about any of the types having an ObsoleteAttribute
-                    string display = MakeDisplayLabel(info);
-
-                    // The original index into VariableTypes is preserved in 'typeIndex'.
-                    _allItems.Add(new FilteredListItem(typeIndex, display));
-                }
+                Type mType = MenuTypes[typeIndex];
+                VariableInfoAttribute info = VariableEditor.GetVariableInfo(mType);
+                // We're not going to worry about any of the types having an ObsoleteAttribute.
+                // typeIndex is what SelectByOrigIndex gets back, so it must index MenuTypes.
+                string displayLabel = MakeDisplayLabel(info);
+                FilteredListItem listItem = new FilteredListItem(typeIndex, displayLabel);
+                _allItems.Add(listItem);
             }
         }
 
@@ -155,10 +127,11 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// </summary>
         protected override void SelectByOrigIndex(int index)
         {
-            if (index < 0 || index >= LegacyTypes.Count)
+            if (index < 0 || index >= MenuTypes.Count)
                 return;
 
-            AddVariable(LegacyTypes[index]);
+            Type mType = MenuTypes[index];
+            AddVariable(mType);
         }
 
         #endregion
@@ -178,14 +151,21 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             _curSource = toAddVarTo;
 
+            ShowMenu(position, currentHandlerName, toAddVarTo);
+        }
+
+        // One or the other, like CommandSelectorPopupWindowContent; showing both opened two menus at once
+        private static void ShowMenu(Rect position, string currentHandlerName, IMuscariableSource toAddVarTo)
+        {
             if (!HyphlowEditorPreferences.useLegacyMenus)
             {
                 var win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);
                 PopupWindow.Show(position, win);
             }
-
-            // Always build / show the legacy menu (mirrors CommandSelector pattern).
-            ShowLegacyMenu(toAddVarTo);
+            else
+            {
+                ShowLegacyMenu(toAddVarTo);
+            }
         }
 
         protected const int POPUP_WIDTH = 200;
@@ -196,15 +176,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         {
             _curFlowchart = null;
             _curSource = toAddVarTo;
-
-            if (!HyphlowEditorPreferences.useLegacyMenus)
-            {
-                var win = new VariableSelectPopupWindowContent(currentHandlerName, POPUP_WIDTH, POPUP_HEIGHT);
-                PopupWindow.Show(position, win);
-            }
-
-            // Always build / show the legacy menu (mirrors CommandSelector pattern).
-            ShowLegacyMenu(toAddVarTo);
+            ShowMenu(position, currentHandlerName, toAddVarTo);
         }
         #endregion
 
@@ -215,7 +187,7 @@ namespace AtMycelia.Hyphlow.EditorExt
         /// </summary>
         protected static void ShowLegacyMenu(Flowchart flowchart)
         {
-            GenericMenu menu = PrepMenu(_allTypes);
+            GenericMenu menu = PrepMenu(MenuTypes);
             menu.ShowAsContext();
         }
 
@@ -240,7 +212,8 @@ namespace AtMycelia.Hyphlow.EditorExt
                 {
                     var info = VariableEditor.GetVariableInfo(typeEl);
                     string displayLabel = MakeDisplayLabel(info);
-                    menu.AddItem(new GUIContent(displayLabel), false, AddVariable, typeEl);
+                    GUIContent label = new GUIContent(displayLabel);
+                    menu.AddItem(label, false, AddVariable, typeEl);
                 }
             }
             AddToMenu(typesWithCategory);
@@ -249,7 +222,7 @@ namespace AtMycelia.Hyphlow.EditorExt
 
         public static void ShowLegacyMenu(IVariableSource variableSource)
         {
-            GenericMenu menu = PrepMenu(_muscariTypes);
+            GenericMenu menu = PrepMenu(MenuTypes);
             menu.ShowAsContext();
         }
 

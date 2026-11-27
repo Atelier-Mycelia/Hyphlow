@@ -3,7 +3,7 @@ using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute when the desired OnTransform related
@@ -14,7 +14,7 @@ namespace AtMycelia.Hyphlow
                       "The block will execute when the desired OnTransform " +
                       "related message for the Nonobehaviour is received.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class TransformChanged : EventHandler
     {
 

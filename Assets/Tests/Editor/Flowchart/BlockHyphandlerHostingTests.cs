@@ -64,7 +64,7 @@ namespace VScriptingTests.FlowchartStructure
         [Test]
         public void AssigningHyphandler_ClearsLegacyHandler()
         {
-            KeyPressed legacy = _fcHolder.AddComponent<KeyPressed>();
+            var legacy = _fcHolder.AddComponent<AtMycelia.Hyphlow.Legacy.KeyPressed>();
             _block.EventHandler = legacy;
 
             CountingHyphandler handler = AssignCountingHyphandler();
@@ -77,7 +77,7 @@ namespace VScriptingTests.FlowchartStructure
         public void AssigningLegacyHandler_ClearsAndUnsubscribesHyphandler()
         {
             CountingHyphandler handler = AssignCountingHyphandler();
-            KeyPressed legacy = _fcHolder.AddComponent<KeyPressed>();
+            var legacy = _fcHolder.AddComponent<AtMycelia.Hyphlow.Legacy.KeyPressed>();
 
             _block.EventHandler = legacy;
 
@@ -250,6 +250,7 @@ namespace VScriptingTests.FlowchartStructure
         #endregion
     }
 
+    [EventHandlerInfo("TestOnly", "Counting Hyphandler", "", showInMenu: false, isTest: true)]
     [Serializable]
     public class CountingHyphandler : Hyphandler
     {
@@ -279,6 +280,7 @@ namespace VScriptingTests.FlowchartStructure
         }
     }
 
+    [EventHandlerInfo("TestOnly", "Runtime-Only Hyphandler", "", showInMenu: false, isTest: true)]
     [Serializable]
     public class RuntimeOnlyHyphandler : Hyphandler
     {

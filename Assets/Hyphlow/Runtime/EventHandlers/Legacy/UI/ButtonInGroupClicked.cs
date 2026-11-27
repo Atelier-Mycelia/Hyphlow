@@ -5,12 +5,12 @@ using UnityEngine.UI;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     [EventHandlerInfo("UI/ButtonInGroupClicked", 
         "Button In Group Clicked",
         "Called when any buttons parented to specified GameObjects are clicked.")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class ButtonInGroupClicked : EventHandler
     {
         [Tooltip("The buttons parented to any of these will be responded to.")]

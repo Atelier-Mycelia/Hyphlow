@@ -2,7 +2,7 @@ using UnityEngine.Serialization;
 using UnityEngine;
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
 	/// <summary>
 	/// The block will execute when a 3d physics trigger matching some basic conditions is met. 
@@ -11,7 +11,7 @@ namespace AtMycelia.Hyphlow
 					  "Trigger",
 					  "The block will execute when a 2d or 3d physics trigger matching some basic conditions is met.")]
 	[AddComponentMenu("")]
-	[MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+	[MovedFrom("AtMycelia.Hyphlow")]
 	public class Trigger : BasePhysicsEventHandler
 	{
 		[Tooltip("Optional variable to store the collider that caused the trigger to occur.")]

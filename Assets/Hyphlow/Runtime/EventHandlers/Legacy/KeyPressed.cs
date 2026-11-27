@@ -17,7 +17,11 @@ namespace AtMycelia.Hyphlow
         /// <summary> Execute once per frame when key is held down. </summary>
         KeyRepeat
     }
+}
 
+// The enum above stays in the main namespace, since the Hyphandler version will use it too
+namespace AtMycelia.Hyphlow.Legacy
+{
     /// <summary>
     /// The block will execute when a key press event occurs.
     /// </summary>
@@ -25,7 +29,7 @@ namespace AtMycelia.Hyphlow
                       "Key Pressed",
                       "The block will execute when a key press event occurs.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class KeyPressed : EventHandler
     {
         [Tooltip("The type of keypress to activate on")]

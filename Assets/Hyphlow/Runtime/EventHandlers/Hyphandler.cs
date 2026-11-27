@@ -19,7 +19,8 @@ namespace AtMycelia.Hyphlow
     /// </list>
     ///
     /// To make one: subclass this, mark the subclass [Serializable] (that attribute isn't
-    /// inherited), add a <see cref="HyphandlerInfoAttribute"/>, subscribe to whatever event you
+    /// inherited), add an <see cref="EventHandlerInfoAttribute"/> (the same one legacy handlers
+    /// use), subscribe to whatever event you
     /// respond to in <see cref="SetSubs"/>, and call <see cref="ExecuteBlock"/> when it fires.
     /// Handlers that relied on Unity messages (OnMouseDown, Update...) need a notifier component
     /// to subscribe to instead, like the physics handlers' PhysicsEventNotifier.
@@ -33,6 +34,7 @@ namespace AtMycelia.Hyphlow
         [Tooltip("If true, the flowchart window will not auto select the Block when the Event " +
             "Handler fires. Affects Editor only.")]
         [SerializeField] protected bool _suppressBlockAutoSelect = false;
+
 
         #region Ownership
 
@@ -233,9 +235,9 @@ namespace AtMycelia.Hyphlow
         {
             get
             {
-                HyphandlerInfoAttribute info = GetType().GetCustomAttribute<HyphandlerInfoAttribute>();
+                EventHandlerInfoAttribute info = GetType().GetCustomAttribute<EventHandlerInfoAttribute>();
                 return info != null ?
-                    info.HandlerName :
+                    info.EventHandlerName :
                     GetType().Name;
             }
         }

@@ -57,7 +57,7 @@ namespace AtMycelia.Hyphlow
 
         protected virtual IEnumerator HandleGameStartedBlocks()
         {
-            IList<GameStarted> gsEventHandler = GetComponents<GameStarted>();
+            IList<IGameStartedHandler> gsEventHandler = GetComponents<IGameStartedHandler>();
             for (int i = 0; i < gsEventHandler.Count; i++)
             {
                 var elem = gsEventHandler[i];

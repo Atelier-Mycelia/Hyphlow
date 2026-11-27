@@ -121,7 +121,7 @@ namespace VScriptingTests.FlowchartLifecycle
 
         }
 
-        private class TestGameStarted : GameStarted
+        private class TestGameStarted : AtMycelia.Hyphlow.Legacy.GameStarted
         {
             public static int TriggerCount;
             public override void Trigger()

@@ -3,7 +3,7 @@ using UnityEngine;
 
 using UnityEngine.Scripting.APIUpdating;
 
-namespace AtMycelia.Hyphlow
+namespace AtMycelia.Hyphlow.Legacy
 {
     /// <summary>
     /// The block will execute every chosen Update, or FixedUpdate or LateUpdate.
@@ -12,7 +12,7 @@ namespace AtMycelia.Hyphlow
                       "Update",
                       "The block will execute every chosen Update, or FixedUpdate or LateUpdate.")]
     [AddComponentMenu("")]
-    [MovedFrom("AtMycelia.Mycorrhiza.EventHandlers")]
+    [MovedFrom("AtMycelia.Hyphlow")]
     public class UpdateTick : EventHandler
     {
         [System.Flags]
