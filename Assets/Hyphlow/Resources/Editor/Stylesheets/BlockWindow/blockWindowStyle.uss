@@ -1,0 +1,316 @@
+/* Laid out for a floating window locked to 1280x800 / 1280x1000; docked sizes aren't supported */
+
+:root
+{
+    --bw-pane-bg: var(--unity-colors-window-background);
+    --bw-pane-border: var(--unity-colors-default-border);
+    --bw-subtle-text: var(--unity-colors-label-text-focus);
+    --bw-header-height: 30px;
+    --bw-gap: 4px;
+    --bw-pane-padding: 6px;
+    --bw-pane-radius: 3px;
+    --bw-title-font-size: 14px;
+    --bw-command-name-font-size: 16px;
+    --bw-danger-color: rgb(200, 70, 70);
+    --bw-description-max-height: 90px;
+    --bw-trigger-max-height: 260px;
+}
+
+.block-window
+{
+    flex-grow: 1;
+    padding: var(--bw-gap);
+}
+
+/* Header: block settings + command toolbar, then the description foldout */
+
+.block-window__header
+{
+    flex-shrink: 0;
+    margin-bottom: var(--bw-gap);
+}
+
+.block-window__settings-row
+{
+    flex-direction: row;
+    align-items: center;
+    min-height: var(--bw-header-height);
+}
+
+.block-window__setting
+{
+    flex-shrink: 0;
+    margin: 0px 12px 0px var(--bw-gap);
+}
+
+.block-window__setting > Label
+{
+    min-width: 0px;
+    padding-right: 4px;
+}
+
+.block-window__name-field
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-width: 400px;
+}
+
+.block-window__scope-field
+{
+    width: 150px;
+}
+
+.block-window__load-priority-field
+{
+    width: 140px;
+}
+
+.block-window__load-priority-field > .unity-base-field__input
+{
+    min-width: 40px;
+}
+
+.block-window__toolbar
+{
+    flex-direction: row;
+    flex-shrink: 0;
+    /* Settings are capped in width, so this soaks up the leftover space */
+    margin-left: auto;
+}
+
+.block-window__toolbar-button
+{
+    min-width: 64px;
+    height: var(--bw-header-height);
+    margin: 0px 0px 0px 2px;
+    border-radius: var(--bw-pane-radius);
+}
+
+.block-window__toolbar-button--danger:hover:enabled
+{
+    color: var(--bw-danger-color);
+}
+
+.block-window__foldout
+{
+    flex-shrink: 0;
+}
+
+.block-window__foldout > Toggle
+{
+    margin: 0px;
+}
+
+.block-window__foldout > Toggle Label
+{
+    -unity-font-style: bold;
+}
+
+.block-window__description-foldout
+{
+    margin: 2px var(--bw-gap) 0px var(--bw-gap);
+}
+
+/* The collapsed header shows a one-line preview set from code, so keep it from wrapping */
+.block-window__description-foldout > Toggle Label
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.block-window__description-field
+{
+    margin: 2px 0px 0px 0px;
+}
+
+.block-window__description-field > .unity-text-field__input
+{
+    min-height: 40px;
+    max-height: var(--bw-description-max-height);
+    white-space: normal;
+    -unity-text-align: upper-left;
+}
+
+/* Body: inspector pane (left) and contents pane (right) */
+
+.block-window__body
+{
+    flex-grow: 1;
+}
+
+.block-window__pane
+{
+    flex-grow: 1;
+    padding: var(--bw-pane-padding);
+    background-color: var(--bw-pane-bg);
+    border-width: 1px;
+    border-color: var(--bw-pane-border);
+    border-radius: var(--bw-pane-radius);
+}
+
+.block-window__inspector-pane
+{
+    min-width: 320px;
+    margin-right: 2px;
+}
+
+.block-window__contents-pane
+{
+    min-width: 480px;
+    margin-left: 2px;
+}
+
+.block-window__pane-title
+{
+    -unity-font-style: bold;
+    font-size: var(--bw-title-font-size);
+    margin-bottom: var(--bw-gap);
+}
+
+/* Inspector pane: trigger section */
+
+.block-window__trigger-foldout
+{
+    padding-bottom: var(--bw-gap);
+    margin-bottom: var(--bw-gap);
+    border-bottom-width: 1px;
+    border-color: var(--bw-pane-border);
+}
+
+.block-window__trigger-foldout > #unity-content
+{
+    margin-left: 0px;
+}
+
+.block-window__event-handler-row
+{
+    flex-direction: row;
+    align-items: center;
+    margin: 2px 0px var(--bw-gap) 0px;
+}
+
+.block-window__event-handler-label
+{
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.block-window__event-handler-button
+{
+    flex-grow: 1;
+    margin: 0px;
+    -unity-text-align: middle-left;
+}
+
+/* Capped so a long handler can't push the Command inputs off-screen */
+.block-window__trigger-scroll
+{
+    max-height: var(--bw-trigger-max-height);
+}
+
+/* Inspector pane: command section */
+
+.block-window__command-section
+{
+    flex-grow: 1;
+}
+
+.block-window__command-header
+{
+    flex-shrink: 0;
+    padding-bottom: var(--bw-gap);
+    margin-bottom: var(--bw-gap);
+    border-bottom-width: 1px;
+    border-color: var(--bw-pane-border);
+}
+
+.block-window__command-name
+{
+    -unity-font-style: bold;
+    font-size: var(--bw-command-name-font-size);
+}
+
+.block-window__command-help
+{
+    white-space: normal;
+    color: var(--bw-subtle-text);
+    margin-top: 2px;
+}
+
+.block-window__input-scroll
+{
+    flex-grow: 1;
+}
+
+.block-window__holder-slot
+{
+    flex-grow: 1;
+}
+
+.block-window__no-selection
+{
+    display: none;
+    flex-grow: 1;
+    -unity-text-align: middle-center;
+    -unity-font-style: italic;
+    color: var(--bw-subtle-text);
+}
+
+/* Contents pane */
+
+.block-window__command-list
+{
+    flex-grow: 1;
+}
+
+/* Footer: ItemId (debug) on the left, OK / Cancel / Apply on the right */
+
+.block-window__footer
+{
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: var(--bw-gap);
+}
+
+.block-window__item-id
+{
+    display: none;
+    font-size: 11px;
+    color: var(--bw-subtle-text);
+    margin-left: var(--bw-gap);
+}
+
+.block-window__footer-buttons
+{
+    flex-direction: row;
+    margin-left: auto;
+}
+
+.block-window__footer-button
+{
+    min-width: 80px;
+    height: 24px;
+    margin: 0px 0px 0px var(--bw-gap);
+    border-radius: var(--bw-pane-radius);
+}
+
+/* State classes toggled on the root by code */
+
+.block-window--no-selection .block-window__command-header,
+.block-window--no-selection .block-window__input-scroll
+{
+    display: none;
+}
+
+.block-window--no-selection .block-window__no-selection
+{
+    display: flex;
+}
+
+.block-window--debug .block-window__item-id
+{
+    display: flex;
+}

@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="../../Stylesheets/BlockWindow/defaultCommandInputHolderStyle.uss" />
+    <!--
+        Fallback for Commands with no dedicated input holder: draws the Command's serialized
+        fields through IMGUI, the same way the BlockInspector's CommandEditor does.
+
+        Contract:
+            InputHolderRoot   VisualElement - bound to the Command's SerializedObject, so custom
+                                              holders can use binding-path on their own fields
+            ImguiFields       IMGUIContainer - default holder only; its onGUIHandler is assigned in code
+    -->
+    <ui:VisualElement name="InputHolderRoot" class="command-input-holder">
+        <ui:IMGUIContainer name="ImguiFields" class="command-input-holder__imgui" />
+    </ui:VisualElement>
+</ui:UXML>

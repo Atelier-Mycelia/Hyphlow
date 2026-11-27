@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Hyphlow/Resources/Editor/Stylesheets/BlockWindow/defaultCommandEntryStyle.uss?fileID=7433441132597879392&amp;guid=386e9a22b5a87914aa8e449436050d4c&amp;type=3#defaultCommandEntryStyle" />
+    <ui:VisualElement name="CommandEntryRoot" class="command-entry">
+        <ui:Label name="IndexLabel" text="0" class="command-entry__index" />
+        <ui:VisualElement name="IndentSpacer" class="command-entry__indent" />
+        <ui:VisualElement name="Background" class="command-entry__background">
+            <ui:VisualElement name="TitleRow" class="command-entry__title-row">
+                <ui:Label name="Bullet" text="◆" class="command-entry__bullet" />
+                <ui:Label name="NameLabel" text="Command Name Here" class="command-entry__name" />
+                <ui:VisualElement name="ExecutingIndicator" tooltip="Executing" class="command-entry__executing-indicator" />
+            </ui:VisualElement>
+            <ui:TextField name="SummaryField" value="Summary" readonly="true" multiline="true" focusable="true" class="command-entry__summary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

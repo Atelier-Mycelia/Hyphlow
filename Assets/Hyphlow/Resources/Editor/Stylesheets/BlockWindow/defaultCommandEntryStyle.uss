@@ -1,0 +1,152 @@
+:root
+{
+    --ce-index-width: 26px;
+    --ce-indent-step: 16px;
+    --ce-radius: 3px;
+    --ce-subtle-text: var(--unity-colors-label-text-focus);
+    --ce-name-text: rgb(20, 20, 20);
+    --ce-summary-bg: rgba(0, 0, 0, 0.55);
+    --ce-summary-text: rgb(225, 225, 225);
+    --ce-font-size: 12px;
+    /* USS has no line-height, so 5 lines is approximated from the font size plus padding */
+    --ce-summary-line-height: 15px;
+    --ce-summary-max-height: 79px;
+    --ce-executing-color: rgb(250, 200, 60);
+    --ce-error-color: rgb(220, 70, 70);
+}
+
+.command-entry
+{
+    flex-direction: row;
+    align-items: stretch;
+    padding: 2px 4px 2px 0px;
+}
+
+.command-entry__index
+{
+    width: var(--ce-index-width);
+    flex-shrink: 0;
+    -unity-text-align: upper-right;
+    padding: 4px 4px 0px 0px;
+    font-size: 11px;
+    color: var(--ce-subtle-text);
+}
+
+/* Width is set from IndentLevel in code (IndentLevel * --ce-indent-step); zero by default */
+.command-entry__indent
+{
+    width: 0px;
+    flex-shrink: 0;
+}
+
+/* Neutral by default so custom templates reusing this sheet aren't tied to CommandColors;
+   the default entry handler overrides background-color with GetButtonColor() */
+.command-entry__background
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0px;
+    padding: 2px 4px 4px 4px;
+    border-radius: var(--ce-radius);
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.35);
+    background-color: rgb(128, 128, 128);
+}
+
+.command-entry__title-row
+{
+    flex-direction: row;
+    align-items: center;
+}
+
+.command-entry__bullet
+{
+    flex-shrink: 0;
+    padding: 0px 3px 0px 0px;
+    font-size: 10px;
+    color: var(--ce-name-text);
+}
+
+.command-entry__name
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    -unity-font-style: bold;
+    font-size: 13px;
+    padding: 1px 0px;
+    color: var(--ce-name-text);
+}
+
+.command-entry__executing-indicator
+{
+    display: none;
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    margin-left: 4px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--ce-executing-color);
+}
+
+/* Summary: read-only multiline field, grows with the text up to 5 lines */
+
+.command-entry__summary
+{
+    margin: 2px 0px 0px 0px;
+    flex-shrink: 0;
+}
+
+.command-entry__summary > .unity-text-field__input,
+.command-entry__summary > #unity-text-input
+{
+    min-height: var(--ce-summary-line-height);
+    max-height: var(--ce-summary-max-height);
+    overflow: hidden;
+    padding: 2px 4px;
+    white-space: normal;
+    -unity-text-align: upper-left;
+    font-size: var(--ce-font-size);
+    color: var(--ce-summary-text);
+    background-color: var(--ce-summary-bg);
+    border-width: 0px;
+    border-radius: 2px;
+}
+
+/* Read-only fields still show hover/focus outlines by default; keep it looking like a panel */
+.command-entry__summary:hover > .unity-text-field__input,
+.command-entry__summary:focus > .unity-text-field__input
+{
+    border-width: 0px;
+    background-color: var(--ce-summary-bg);
+}
+
+/* States */
+
+.command-entry--disabled
+{
+    opacity: 0.45;
+}
+
+.command-entry--disabled .command-entry__name
+{
+    -unity-font-style: bold-and-italic;
+}
+
+.command-entry--executing .command-entry__background
+{
+    border-color: var(--ce-executing-color);
+    border-width: 2px;
+}
+
+.command-entry--executing .command-entry__executing-indicator
+{
+    display: flex;
+}
+
+.command-entry--error .command-entry__background
+{
+    border-color: var(--ce-error-color);
+    border-width: 2px;
+}

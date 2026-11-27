@@ -1,0 +1,89 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="../../Stylesheets/BlockWindow/blockWindowStyle.uss" />
+    <!--
+        Designed for a floating window locked to 1280x800 or 1280x1000; docked layouts aren't supported.
+
+        Contract (elements the window code queries by name):
+          Header
+            BlockNameField       TextField      - bound to Block._blockName
+            ScopeField           EnumField      - bound to Block._scope
+            LoadPriorityField    IntegerField   - bound to Block._loadPriority
+            IncludeInSavesToggle Toggle         - bound to Block._includeInSaves
+            DeleteButton         Button         - deletes the selected Command
+            CopyButton           Button         - copies the selected Command to the clipboard
+            PasteButton          Button         - pastes after the selected Command, or at the bottom when none is
+            DescriptionFoldout   Foldout        - text set in code to a one-line preview of the description
+            DescriptionField     TextField      - bound to Block._description
+          Inspector pane
+            TriggerFoldout       Foldout        - text set in code to a summary, e.g. "Trigger: Key Pressed (Space)"
+            EventHandlerButton   Button         - shows the current handler's name; opens the event handler selector
+            TriggerHolderSlot    VisualElement  - the EventHandler's input holder gets cloned in here
+            CommandNameLabel     Label          - selected Command's Name
+            CommandHelpLabel     Label          - selected Command's help text / description
+            InputHolderSlot      VisualElement  - the Command's input holder gets cloned in here
+            NoSelectionLabel     Label          - shown instead of the Command section when nothing is selected
+          Contents pane
+            CommandList          ListView       - one cloned entry template per Command
+          Footer
+            ItemIdLabel          Label          - Block's ItemId; only visible in debug mode
+            OkButton             Button         - applies pending edits and closes the window
+            CancelButton         Button         - discards pending edits and closes the window
+            ApplyButton          Button         - applies pending edits; disabled while there are none
+
+        State classes the window code toggles on BlockWindowRoot: the no-selection and debug
+        modifiers (see the end of blockWindowStyle.uss).
+    -->
+    <ui:VisualElement name="BlockWindowRoot" class="block-window">
+        <ui:VisualElement name="Header" class="block-window__header">
+            <ui:VisualElement name="BlockSettingsRow" class="block-window__settings-row">
+                <ui:TextField name="BlockNameField" label="Name" binding-path="_blockName" is-delayed="true" class="block-window__setting block-window__name-field" />
+                <ui:EnumField name="ScopeField" label="Scope" type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" value="Public" binding-path="_scope" class="block-window__setting block-window__scope-field" />
+                <ui:IntegerField name="LoadPriorityField" label="Load Priority" value="0" binding-path="_loadPriority" is-delayed="true" class="block-window__setting block-window__load-priority-field" />
+                <ui:Toggle name="IncludeInSavesToggle" label="Include in Saves" value="true" binding-path="_includeInSaves" class="block-window__setting block-window__saves-toggle" />
+                <ui:VisualElement name="Toolbar" class="block-window__toolbar">
+                    <ui:Button name="DeleteButton" text="Delete" tooltip="Delete the selected Command" class="block-window__toolbar-button block-window__toolbar-button--danger" />
+                    <ui:Button name="CopyButton" text="Copy" tooltip="Copy the selected Command" class="block-window__toolbar-button" />
+                    <ui:Button name="PasteButton" text="Paste" tooltip="Paste after the selected Command (or at the bottom when none is selected)" class="block-window__toolbar-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Foldout name="DescriptionFoldout" text="Description" value="false" view-data-key="BlockWindow_DescriptionFoldout" class="block-window__foldout block-window__description-foldout">
+                <ui:TextField name="DescriptionField" binding-path="_description" multiline="true" is-delayed="true" class="block-window__description-field" />
+            </ui:Foldout>
+        </ui:VisualElement>
+        <ui:TwoPaneSplitView name="Body" fixed-pane-index="0" fixed-pane-initial-dimension="420" orientation="Horizontal" class="block-window__body">
+            <ui:VisualElement name="InspectorPane" class="block-window__pane block-window__inspector-pane">
+                <ui:Foldout name="TriggerFoldout" text="Trigger" value="true" view-data-key="BlockWindow_TriggerFoldout" class="block-window__foldout block-window__trigger-foldout">
+                    <ui:VisualElement name="EventHandlerRow" class="block-window__event-handler-row">
+                        <ui:Label text="Event Handler" class="block-window__event-handler-label" />
+                        <ui:Button name="EventHandlerButton" text="&lt;None&gt;" tooltip="Choose what starts this Block" class="block-window__event-handler-button" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="TriggerScroll" mode="Vertical" horizontal-scroller-visibility="Hidden" class="block-window__trigger-scroll">
+                        <ui:VisualElement name="TriggerHolderSlot" class="block-window__holder-slot" />
+                    </ui:ScrollView>
+                </ui:Foldout>
+                <ui:VisualElement name="CommandSection" class="block-window__command-section">
+                    <ui:VisualElement name="CommandHeader" class="block-window__command-header">
+                        <ui:Label name="CommandNameLabel" text="Command Name" class="block-window__command-name" />
+                        <ui:Label name="CommandHelpLabel" text="Command description goes here." class="block-window__command-help" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="InputScroll" mode="Vertical" horizontal-scroller-visibility="Hidden" class="block-window__input-scroll">
+                        <ui:VisualElement name="InputHolderSlot" class="block-window__holder-slot" />
+                    </ui:ScrollView>
+                    <ui:Label name="NoSelectionLabel" text="Select a Command to edit it." class="block-window__no-selection" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="ContentsPane" class="block-window__pane block-window__contents-pane">
+                <ui:Label name="ContentsHeader" text="Contents" class="block-window__pane-title" />
+                <ui:ListView name="CommandList" reorderable="true" reorder-mode="Animated" selection-type="Single" virtualization-method="DynamicHeight" show-alternating-row-backgrounds="ContentOnly" show-border="true" class="block-window__command-list" />
+            </ui:VisualElement>
+        </ui:TwoPaneSplitView>
+        <ui:VisualElement name="Footer" class="block-window__footer">
+            <ui:Label name="ItemIdLabel" text="ItemId: 0" class="block-window__item-id" />
+            <ui:VisualElement name="FooterButtons" class="block-window__footer-buttons">
+                <ui:Button name="OkButton" text="OK" tooltip="Apply the edits and close" class="block-window__footer-button" />
+                <ui:Button name="CancelButton" text="Cancel" tooltip="Discard the edits and close" class="block-window__footer-button" />
+                <ui:Button name="ApplyButton" text="Apply" tooltip="Apply the edits" enabled="false" class="block-window__footer-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

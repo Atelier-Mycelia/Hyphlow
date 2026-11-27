@@ -1,0 +1,11 @@
+.command-input-holder
+{
+    flex-grow: 1;
+    padding: 2px 0px;
+}
+
+.command-input-holder__imgui
+{
+    flex-grow: 1;
+    min-height: 20px;
+}
