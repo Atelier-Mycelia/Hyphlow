@@ -884,8 +884,14 @@ MonoBehaviour:
     - rid: 7589700379545960449
     - rid: 7589700379545960450
     - rid: 588464207758360769
+    - rid: 1296380914481496775
+    - rid: 1296380914481496776
+    - rid: 1296380914481496777
+    - rid: 1296380914481496778
+    - rid: 1296380914481496779
+    - rid: 1296380914481496780
     _legacyVariables: []
-    _nextValidVarID: 5
+    _nextValidVarID: 11
     _isInitted: 0
   _cachedFlowchart: {fileID: 1157026474}
   references:
@@ -903,6 +909,84 @@ MonoBehaviour:
         value: {fileID: 0}
         _startValue: {fileID: 0}
         _value: {fileID: 1120369429361536294, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+        startValue: {fileID: 0}
+    - rid: 1296380914481496775
+      type: {class: AudioClipMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Key
+        _itemId: 5
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 1296380914481496776
+      type: {class: AudioSourceMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Key1
+        _itemId: 6
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 1296380914481496777
+      type: {class: AudioMixerSnapshotMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Key2
+        _itemId: 7
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 1296380914481496778
+      type: {class: AudioMixerMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Key3
+        _itemId: 8
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 1296380914481496779
+      type: {class: AudioMixerGroupMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Key4
+        _itemId: 9
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
+        startValue: {fileID: 0}
+    - rid: 1296380914481496780
+      type: {class: AudioMixerGroupMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}
+      data:
+        _scope: 0
+        _key: Key5
+        _itemId: 10
+        scope: 0
+        key: 
+        itemID: 0
+        value: {fileID: 0}
+        _startValue: {fileID: 0}
+        _value: {fileID: 0}
         startValue: {fileID: 0}
     - rid: 7589700379545960448
       type: {class: GameObjectMuscariable, ns: AtMycelia.Hyphlow, asm: AtMycelia.Hyphlow.Core}

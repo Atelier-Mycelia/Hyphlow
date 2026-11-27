@@ -5,7 +5,7 @@
         <engine:Label text="Audio Source" name="TypeLabel" class="varRowTypeLabel" />
         <engine:TextField name="KeyInput" hide-placeholder-on-focus="true" binding-path="_key" class="varRowInputField keyInput" />
         <engine:VisualElement name="ValueFieldHolder">
-            <editor:ObjectField data-source-type="UnityEngine.AudioClip, UnityEngine.AudioModule" name="ValueField" binding-path="_value" />
+            <editor:ObjectField data-source-type="UnityEngine.AudioSource, UnityEngine.AudioModule" name="ValueField" binding-path="_value" />
         </engine:VisualElement>
         <engine:EnumField value="Private" type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" name="Scope" data-source-type="AtMycelia.Hyphlow.AccessScope, AtMycelia.Hyphlow.Core" binding-path="_scope" class="scopeRoot" />
         <engine:Button text="-" name="RemoveButton" class="removeButton" />
